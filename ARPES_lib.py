@@ -1,0 +1,453 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Nov 18 21:15:20 2017
+
+@author: ryanday
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+import klib as K_lib
+import sympy.physics.wigner as wig
+import adaptive_int as adint
+from scipy.interpolate import interp1d
+import orbital as olib
+import Ylm 
+import scipy.ndimage as nd
+import datetime as dt
+
+
+
+hb = 6.626*10**-34/(2*np.pi)
+c  = 3.0*10**8
+q = 1.602*10**-19
+A = 10.0**-10
+me = 9.11*10**-31
+mN = 1.67*10**-27
+kb = 1.38*10**-23
+Lpd = {0:[1],1:[0,2],2:[1,3],3:[2,4]}
+
+
+
+
+###
+class experiment:
+    
+    def __init__(self,TB,ARPES_dict):#hv,pol,mfp,dE,dk,T,ang=0.0,W=4.0):
+        self.TB = TB
+        self.hv = ARPES_dict['hv']
+        self.pol = ARPES_dict['pol']
+        self.mfp = ARPES_dict['mfp'] #photoelectron mean free path for escape
+        self.dE = ARPES_dict['resolution']['E'] #energy resolution FWHM
+        self.dk = ARPES_dict['resolution']['k'] #momentum resolution FWHM
+        self.ang = ARPES_dict['angle']
+        self.T = ARPES_dict['T'][1]
+        self.W = ARPES_dict['W']
+    
+    
+    
+    def diagonalize(self,X,Y,kz):
+        self.X = X
+        self.Y = Y
+        self.kz = kz
+        
+        k_arr,self.ph = K_lib.kmesh(self.ang,self.X,self.Y,self.kz)      
+    
+        self.TB.Kobj = K_lib.kpath(k_arr)
+        self.Eb,self.Ev = self.TB.solve_H()
+        self.Eb = np.reshape(self.Eb,(np.shape(self.Eb)[-1]*np.shape(self.X)[0]*np.shape(self.X)[1])) 
+        
+        
+        
+    def datacube(self,ARPES_dict):#cube,G,spin=None,T_eval = True, directory=None):
+        '''
+            This function produces a series of text files which can be exported to eg Igor and loaded like an experiment.
+            Given a kmesh to calculate the photoemission over, the mesh is reshaped to an nx3 array and the Hamiltonian
+            diagonalized over this set of k points. The output is then digitized, binnind the different Ek into the 
+            energy linear array set by Eb. This is similar to experiment where the detector only samples the spectra
+            from discrete energy bins. The matrix elements are then calculated, much as in Ecut_Intensity_v2 for each 
+            of these E-k points. This then sets the basis for building a series of Lorentzians at each of these points
+            which extend in the k-direction. 
+        '''      
+        cube = ARPES_dict['cube']
+        SE = ARPES_dict['SE']
+        spin = ARPES_dict['spin']
+        T_eval = ARPES_dict['T'][0]
+        directory = ARPES_dict['directory']
+        
+        xv,yv,kz,Ev = cube['X'],cube['Y'],cube['kz'],cube['E']
+        x = np.linspace(*xv)
+        y = np.linspace(*yv)
+        X,Y = np.meshgrid(x,y)
+        Eb = np.linspace(*Ev)
+
+        tmp_basis = self.rot_basis()
+        print('Initiate diagonalization: ')
+        self.diagonalize(X,Y,kz)
+
+        blen = len(tmp_basis)
+        
+        dE = Eb[1]-Eb[0]
+        
+        dig_range = np.arange(self.Eb.min()-5*dE,self.Eb.max()+dE*5,dE)
+        shift,end = np.where(abs(dig_range-Eb[0])==abs(dig_range-Eb[0]).min())[0][0],np.where(abs(dig_range-Eb[-1])==abs(dig_range-Eb[-1]).min())[0][0]
+        band_mask = np.array([True if shift<=val<=end else False for val in range(len(dig_range))])
+        
+        Eband_dig = np.digitize(self.Eb,dig_range) #values correspond to index of erange
+        
+        ##cube_indx is the position in the 3d cube of K and energy where this band is
+        cube_indx = np.array([[int(i/blen),i%blen,int(Eband_dig[i]-shift)] for i in range(len(Eband_dig)) if band_mask[Eband_dig[i]]])
+
+        Gvals = G_dic()
+        Bvals = self.Bdic(dig_range,tmp_basis)
+        
+        if T_eval:
+            fermi = np.array([con_ferm(self.Eb[i]/(kb*self.T/q)) for i in range(len(Eband_dig)) if band_mask[Eband_dig[i]]])
+        else:
+            fermi = np.ones(len(cube_indx))
+            
+        self.pks = np.zeros((len(cube_indx),3,3),dtype=complex)
+#        self.pks[:,0,:] = np.array([cube_indx[:,0],cube_indx[:,1],cube_indx[:,2]-shift]).T
+        self.pks[:,0,:] = np.array([np.floor(cube_indx[:,0]/np.shape(X)[1]),np.floor(cube_indx[:,0])%np.shape(X)[1],cube_indx[:,2]]).T
+        kn = np.sqrt(2.*me/hb**2*(self.hv+Eb-self.W)*q)*A
+        self.th = np.array([np.arccos(np.sqrt(kn[cube_indx[i,2]]**2-self.X[int(cube_indx[i,0]/np.shape(X)[1]),cube_indx[i,0]%np.shape(X)[1]]**2-self.Y[int(cube_indx[i,0]/np.shape(X)[1]),cube_indx[i,0]%np.shape(X)[1]]**2)/kn[cube_indx[i,2]]) for i in range(len(cube_indx))])
+#        self.th = np.array([np.arccos(np.sqrt(kn[cube_indx[i,2]]**2-self.X[]**2-self.Y[tuple(self.pks[i,0,:2].astype(int))]**2)/kn[self.pks[i,0,2]]) for i in range(len(self.pks))])
+        (i/blen)/np.shape(X)[1],(i/blen)%np.shape(X)[1]
+        spin_mat = self.spin_rot(spin)
+        blen = len(self.TB.basis)
+        sigma = np.zeros(len(cube_indx))
+        
+        tol = 0.01
+        strmats = Gstrings()
+        t1 = dt.datetime.now()
+        print('Begin computing matrix elements: ')
+        for i in range(len(cube_indx)):
+#            self.pks[i,0,:] = np.array([np.floor(cube_indx[i,0]/np.shape(X)[1]),cube_indx[i,0]%np.shape(X)[1],cube_indx[i,2]])
+            tmp_M = self.M_compute(Gvals,Bvals,dig_range[cube_indx[i,2]+shift],i,cube_indx[i],tmp_basis,spin_mat,fermi[i],tol,strmats)
+
+            sigma[i] = SE[0]+SE[1]*cube_indx[i,2]**2
+            self.pks[i,1:,:] += tmp_M
+
+#     
+#        Au,Ad = self.spectral(X,Y,Eb,sigma)
+#        self.write(Au,Ad,Eb,X,Y,directory,G)
+        return True#Au,Ad
+    
+    def M_compute(self,G,B,E,i,cube,basis,spinmat,fermi,tol,strmats):
+
+        phi = self.ph[int(i/len(basis))]
+        th = self.th[i]
+        Mtmp = np.zeros((2,3),dtype=complex)
+        
+        psi = self.Ev[cube[0],:,cube[1]]
+        
+        if spinmat is not None:
+            psi = np.dot(spinmat,psi)
+        for coeff in list(enumerate(psi)):
+
+            if abs(coeff[1])>tol:
+                o = basis[coeff[0]]
+
+                L = [lp for lp in ([o.l-1,o.l+1] if (o.l-1)>=0 else [o.l+1])]
+                pref = o.sigma*coeff[1]*fermi
+                for lp in L:
+
+                    tmp_B = B['{:d}-{:d}-{:d}-{:d}'.format(o.atom,o.n,o.l,lp)](E)
+                    tmp_G = np.zeros(3,dtype=complex)
+                    for op in o.proj:
+                        tmp_G += (op[0]+1.0j*op[1])*np.array([G['{:d}{:d}{:d}{:d}'.format(o.l,lp,int(op[-1]),-1)]*Ylm.Y(lp,int(op[-1])-1,th,phi),G['{:d}{:d}{:d}{:d}'.format(o.l,lp,int(op[-1]),0)]*Ylm.Y(lp,int(op[-1]),th,phi),G['{:d}{:d}{:d}{:d}'.format(o.l,lp,int(op[-1]),1)]*Ylm.Y(lp,int(op[-1])+1,th,phi)])
+
+                    Mtmp[int((o.spin+1)/2),:]+=pref*tmp_B*tmp_G
+                   
+        return Mtmp
+    
+    
+    def spectral(self,X,Y,Er,sigma):
+        fw2sig = np.sqrt(8.0*np.log(2)) #spectrometer resolution is FWHM, but nd.gaussian_filter takes STD of gaussian kernel, need to convert
+        xg = self.dk/(X[0,1]-X[0,0])/fw2sig
+        yg = self.dk/(Y[1,0]-Y[0,0])/fw2sig
+        Eg = self.dE/(Er[1]-Er[0])/fw2sig
+        
+        Iu_tmp = np.real(abs(np.dot(self.pks[:,1,:],self.pol))**2)
+        Id_tmp = np.real(abs(np.dot(self.pks[:,2,:],self.pol))**2)
+                
+        Au = np.zeros((np.shape(X)[0],np.shape(X)[1],len(Er)),dtype=float)
+        Ad = np.zeros_like(Au)
+        
+#        dt1s =[dt.timedelta(0),dt.timedelta(0),0,dt.timedelta(0)]
+#        dt2s = [dt.timedelta(0),dt.timedelta(0),0,dt.timedelta(0)]
+#        dt3s = [dt.timedelta(0),dt.timedelta(0),0,dt.timedelta(0)]
+        t0 = dt.datetime.now()
+        for p in range(len(self.pks)):
+#            t1 = dt.datetime.now()
+            pks = np.real(self.pks[p,0,:]).astype(int)
+#            t2 = dt.datetime.now()
+            Au[:,:,pks[2]]+=np.real(Iu_tmp[p])*(sigma[pks[2]]/2.0)/(((X-X[pks[0],pks[1]])**2+(Y-Y[pks[0],pks[1]])**2)+(sigma[pks[2]]/2.0)**2)
+#            t3 = dt.datetime.now()
+            Ad[:,:,pks[2]]+=np.real(Id_tmp[p])*(sigma[pks[2]]/2.0)/(((X-X[pks[0],pks[1]])**2+(Y-Y[pks[0],pks[1]])**2)+(sigma[pks[2]]/2.0)**2)
+#            t4 = dt.datetime.now()
+#            dt1s,dt2s,dt3s = tstat(t2-t1,dt1s),tstat(t3-t2,dt2s),tstat(t4-t3,dt3s)
+        tf= dt.datetime.now()
+#        print('copy peaks took at least: ',dt1s[0],' and at most: ',dt1s[1],' and on average: ',dt1s[3]/dt1s[2])
+#        print('Fill A 1: ',dt2s[0],' and at most: ',dt2s[1],' and on average: ',dt2s[3]/dt2s[2])
+#        print('Fill A 2: ',dt3s[0],' and at most: ',dt3s[1],' and on average: ',dt3s[3]/dt3s[2])
+#        
+        print('Fill spectra took: ',tf-t0,' to complete for ',len(self.pks),' points')
+        Au_r = nd.gaussian_filter(Au,sigma = (xg,yg,Eg))
+        Ad_r = nd.gaussian_filter(Ad,sigma = (xg,yg,Eg))
+
+        return Au_r,Ad_r
+#       
+     
+    def write(self,Au,Ad,Evals,X,Y,directory,G):
+        pars = directory+'_params.txt'
+        self.write_params([X[0,:],Y[:,0]],Evals,pars,G)
+
+        for i in range(len(Evals)):   
+            filename_u = directory + '_up_%d.txt'%i
+            self.write_Ik(filename_u,Au[:,:,i])
+#            
+            filename_d = directory + '_down_%d.txt'%i
+            self.write_Ik(filename_d,Ad[:,:,i])
+#            
+        return True
+
+    def write_params(self,ks,Erange,parfile,G):
+        
+        with open(parfile,"w") as params:
+            params.write("Photon Energy: {:0.2f} eV \n".format(self.hv))
+            params.write("Temperature: {:0.2f} K \n".format(self.T))
+            params.write("Polarization: {:0.2f} {:0.2f} {:0.2f}\n".format(self.pol[0],self.pol[1],self.pol[2]))
+            params.write("\n")
+            for k in list(enumerate(ks)):
+                params.write('Momentum axis {:d}: '.format(k[0]+1))
+                kline = " ".join(map(str,k[1]))
+                kline+="\n\n"
+                params.write(kline)
+            params.write("Binding Energy Axis: ")
+            eline = " ".join(map(str,Erange))
+            eline+="\n"
+            params.write(eline)
+            params.write("Energy Resolution: {:0.4f} \n".format(self.dE))
+            params.write("Momentum Resolution: {:0.4f} \n".format(self.dk))
+            params.write("Self Energy: G1 + G2 w^2--{:0.4f} {:0.4f}\n".format(G[0],G[1]))
+    
+    def write_Ik(self,filename,mat):
+        with open(filename,"w") as destination:
+            for i in range(np.shape(mat)[0]):
+                tmpline = " ".join(map(str,mat[i,:]))
+                tmpline+="\n"
+                destination.write(tmpline)
+        destination.close()
+        return True
+
+    def Brad_calc(self,k_norm,basis):
+        '''
+        Compute dictionary of radial integrals evaluated at a single |k| value for the whole basis.
+        Will avoid redundant integrations by checking for the presence of an identical dictionary key.
+        The integration is done as a simple adaptive integration algorithm, defined in the adaptive_int library
+        args:
+            k_norm -- float length of the k-vector (as an argument for the spherical Bessel Function)
+            basis -- list of orbital objects, from which the orbital angular momentum is extracted
+        returns:
+            dictionary of key value pairs in form -- 'ATOM-N-L':Bval
+        '''
+        Bdic = {}
+        for o in basis:
+            tmp='{:d}-{:d}-{:d}'.format(o.atom,o.n,o.l)
+            L=[x for x in [o.l-1,o.l+1] if x>=0]
+            for lp in L:
+                Blabel=tmp+'-'+str(lp)
+                try:
+                    Bdic[Blabel]
+                    continue
+                except KeyError:
+                    trueconverge = False
+                    rmax = 10.0
+                    while not trueconverge:
+                        tmp_B = adint.Bintegral(0.0,rmax,10.0**-10,lp,k_norm,int(o.Z),o.label)
+                        if abs(tmp_B)<10**-10:
+                            rmax/=2.0
+                        else:
+                            trueconverge = True                        
+                    Bdic[Blabel]=tmp_B
+        return Bdic
+
+    def Bdic(self,Eb,basis):
+        '''
+        Function for computing dictionary of radial integrals. Can pass either an array of
+        binding energies or a single binding energy as a float. In either case, returns a dictionary
+        however the difference being that the key value pairs will have a value which is itself either a
+        float, or an interpolation mesh over the range of the binding energy array.
+        The output can then be used by either writing Bdic['key'] or Bdic['key'](valid float between endpoints of input array)
+        args:
+            Eb -- float or numpy array
+            basis -- orbital basis, passed to the B
+        '''
+        if type(Eb)==float:
+            kval = np.sqrt(2.0*me/hb**2*((self.hv-self.W)+Eb)*q)*A
+            return self.Brad_calc(kval,basis)
+        elif type(Eb)==np.ndarray:
+            Brad_es=np.linspace(Eb[0],Eb[-1],5)
+            BD_coarse={}
+            for en in Brad_es:
+                k_coarse = np.sqrt(2.0*me/hb**2*((self.hv-self.W)+en)*q)*A #calculate full 3-D k vector at this surface k-point given the incident radiation wavelength, and the energy eigenvalue, note binding energy follows opposite sign convention
+                tmp_Bdic = self.Brad_calc(k_coarse,basis)
+                for b in tmp_Bdic:
+                    try:
+                        BD_coarse[b].append(tmp_Bdic[b])
+                    except KeyError:
+                        BD_coarse[b] = [tmp_Bdic[b]]
+    
+            Brad = {}     
+            for b in BD_coarse:
+                f = interp1d(Brad_es,BD_coarse[b],kind='cubic')
+                Brad[b] = f
+            return Brad
+        else:
+            print('Invalid binding energy type--enter float or numpy array!')
+            return False
+
+
+
+    def Bdic_PP(self,kn):
+        Brads = {}
+        for p in self.PP_WF:
+            Bm,Bp = self.PP_WF[p].pseudo_integral(kn)
+            Brads[p+str(int(p[-1])-1)] = Bm
+            Brads[p+str(int(p[-1])+1)] = Bp
+        Blist = [{PP:Brads[PP][i] for PP in Brads} for i in range(len(kn))]
+        return Blist
+
+
+
+    def spin_rot(self,spin_ax):
+        '''
+        For spin-ARPES, want to project the eigenstates onto different spin axes than simply the canonical z axis. 
+        To do so we perform an unitary transformation of the eigenvectors. 
+        A generic spin vector basis can be defined as:
+            |+n> = cos(theta/2)|+z> + e(i*phi)*sin(theta/2)|-z>
+            |-n> = sin(theta/2)|+z> - e(i*phi)*cos(theta/2)|-z>
+        Then we define a
+         
+            |  <-n|-z> , <-n|+z> |
+        U = |                    |
+            |  <+n|-z> , <+n|+z> |
+        
+        Then using a Kroenecker (tensor) product, we form a len(basis)xlen(basis) square matrix which can be separated
+        into 4 blocks defined by the above 4x4. Where each block is uniform
+        
+        If the ARPES calculation is being done over a rotated k-space, we need to rotate our definitions of the spin
+        basis as well, and so the phi values in the 'ax_dict' will be increased by the angle by which we are rotating the
+        k-space
+        '''
+        
+        if spin_ax is not None:
+            spin_mat = np.zeros((len(self.TB.basis),len(self.TB.basis)))
+            ax_dict = {'x':[np.pi/2,0.0],'y':[np.pi/2,np.pi/2],'z':[0,0]}
+            if abs(self.ang)>0:
+                ax_dict[spin_ax][1]-=self.ang
+            US = np.array([[-np.cos(ax_dict[spin_ax][0]/2)*np.exp(-1.0j*ax_dict[spin_ax][1]),np.sin(ax_dict[spin_ax][0]/2)],[np.sin(ax_dict[spin_ax][0]/2)*np.exp(-1.0j*ax_dict[spin_ax][1]),np.cos(ax_dict[spin_ax][0]/2)]])
+            spin_mat = np.kron(US,np.identity(int(len(self.TB.basis)/2)))
+    
+            return spin_mat
+        else:
+            return np.identity(len(self.TB.basis))
+    
+    def rot_basis(self):
+        tmp_base = []
+        if abs(self.ang)>0.0:
+            for o in range(len(self.TB.basis)):
+                tmp = self.TB.basis[o].copy()
+                tmp_base.append(tmp)
+                tmp_base[-1].rot_projection(np.array([0,0,1]),self.ang)
+            return tmp_base
+        else:
+            return self.TB.basis
+        
+def G_dic():
+    
+    llp = [[l,lp] for l in range(4) for lp in ([l-1,l+1] if (l-1)>=0 else [l+1])]    
+    keyvals = [[str(l[0])+str(l[1]),float(wig.clebsch_gordan(l[0],1,l[1],0,0,0))] for l in llp] 
+    CGo_dict = dict(keyvals)
+    llpmu = [[l[0],l[1],m,u] for l in llp for m in np.arange(-l[0],l[0]+1,1) for u in [-1,0,1]]
+    keyvals = [[str(l[0])+str(l[1])+str(l[2])+str(l[3]),float(wig.clebsch_gordan(l[0],1,l[1],l[2],l[3],l[2]+l[3]))*CGo_dict[str(l[0])+str(l[1])]*np.sqrt((2.0*l[0]+1.0)/(2.0*l[1]+1.0))] for l in llpmu]
+    G_dict = dict(keyvals)
+    
+    for gi in G_dict:
+        if np.isnan(G_dict[gi]):
+            G_dict[gi]=0.0
+            
+    return G_dict        
+        
+def con_ferm(x):      ##Typical energy scales involved and temperatures involved give overflow in exponential--define a new fermi function that works around this problem
+    tmp = 0.0
+    if x<709:
+        tmp = 1.0/(np.exp(x)+1)
+    return tmp
+
+
+vf = np.vectorize(con_ferm)
+
+def pol_Y(pvec):
+    '''
+    Transform polarization vector from cartesian to spherical components
+    args: pvec -- len(3) numpy array with form ([p_x,p_y,p_z])
+    return: len(3) numpy array describing polarization vector projected as ([p_1,p_0,p_-1])
+    '''
+    R = np.array([[-np.sqrt(0.5),-np.sqrt(0.5)*1.0j,0],[0,0,1],[np.sqrt(0.5),-np.sqrt(0.5)*1.0j,0]])
+    return np.dot(R,pvec)
+
+def base2sph(basis):
+    '''
+    Define a basis transformation from user to Y_lm, this will simplify the calculation of matrix elements significantly
+    args: basis --list of orbital objects
+    '''
+    o2l = []
+    n,l,pos,s = basis[0].n,basis[0].l,basis[0].pos,basis[0].spin
+    mvals =[m for m in range(-l,l+1)]
+    tmp = np.zeros((2*l+1,len(basis)),dtype=complex)
+    for b in basis:
+        if b.n!=n or b.l!=l or np.linalg.norm(b.pos-pos)>0.0 or b.spin!=s:
+            for t in tmp:
+                o2l.append(t)
+            tmp = np.zeros((2*b.l+1,len(basis)),dtype=complex)
+            n,l,pos,s = b.n,b.l,b.pos,b.spin
+            mvals = mvals + [m for m in range(-l,l+1)]
+
+            
+            
+        for m in b.proj:
+            tmp[int(b.l+m[-1]),int(b.index)] +=m[0]+1.0j*m[1]
+    for t in tmp:
+        o2l.append(t)
+        
+    return np.array(o2l),np.array(mvals)
+             
+             
+         
+         
+    
+    
+    
+    
+
+
+
+def Gstrings():
+    strmats = {}
+    for l in Lpd:
+        strmats[l] = np.array([[str(l),str(lp),str(m),str(u)] for u in [-1,0,1] for lp in Lpd[l] for m in np.arange(-l,l+1,1)])
+#        strmats[l] = np.reshape(llpmu,(3,len(Lpd[l]),2*l+1))
+    
+    return strmats
+
+
+def tstat(t,ts):
+    if t<ts[0]:
+        ts[0]=t
+    if t>ts[1]:
+        ts[1]=t
+    ts[2]+=1
+    ts[3]+=t
