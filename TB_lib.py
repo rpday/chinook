@@ -46,6 +46,7 @@ class TB_model:
             {'type': "SK" ,"list", or "txt"
              if SK:
                  'V': dictionary of TB,
+                 'avec': lattice vectors for generating neighbours
                  'cutoff':cutoff distance
                  'renorm': renormalization factor
                  'offset':offset
@@ -89,7 +90,7 @@ class TB_model:
         '''
         htmp = []
         if H_args['type'] == "SK":
-            htmp = Hlib.sk_build(self.basis,H_args['V'],H_args['cutoff'],H_args['tol'])
+            htmp = Hlib.sk_build(H_args['avec'],self.basis,H_args['V'],H_args['cutoff'],H_args['tol'],H_args['renorm'],H_args['offset'])
         elif H_args['type'] == "txt":
             htmp = Hlib.txt_build(H_args['filename'],H_args['cutoff'],H_args['renorm'],H_args['offset'],H_args['tol'])
         elif H_args['type'] == "list":

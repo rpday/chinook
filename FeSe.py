@@ -52,7 +52,7 @@ if __name__=="__main__":
 			'so':spin['soc']}
  
     	#####
-    Bd = build_lib.gen_basis(avec,Bd,spin)
+    Bd = build_lib.gen_basis(Bd,spin)
     Kobj = build_lib.gen_K(Kd,avec)
     TB = build_lib.gen_TB(Bd,Hd,Kobj)
     TB.solve_H()

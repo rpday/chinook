@@ -16,9 +16,8 @@ import klib as klib
 
 
 ###Build Basis
-def gen_basis(a,basis,soc):
+def gen_basis(basis,soc):
 	
-#    bulk_basis = [olib.orbital(a,len(bulk_basis),o,basis['pos'][a],basis['Z'][a]) for o in basis['orbs'][a] for a in basis['atoms']]
     bulk_basis = []
     for a in list(enumerate(basis['atoms'])):
         for o in basis['orbs'][a[0]]:
@@ -40,7 +39,9 @@ def gen_K(Kdic,avec=None):
 	#
     if Kdic['type']=='F':
         B = klib.bvectors(avec)
-        klist = [np.dot(B,k) for k in Kdic['pts']]
+        klist = [np.dot(k,B) for k in Kdic['pts']]
+        for k in klist:
+            print(k)
     elif Kdic['type']=='A':
         klist = [k for k in Kdic['pts']]
     else:
@@ -70,8 +71,6 @@ def gen_TB(Bdict,H_args,Kobj):
 
     return TB
 
-'''EVERYTHING RUNNING RIGHT NOW EXCEPT THE SO+SLAB --IT'S CLOSE, BUT SOME FUNNINESS,
-CHECK IMPLEMENTATION OF SO HAMILTONIAN WITH SLAB'''
 
 ###Build ARPES Experiment
 

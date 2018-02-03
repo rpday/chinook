@@ -54,49 +54,55 @@ def txt_build(filename,cutoff,renorm,offset,tol):
 
                 
 
-def sk_build(cluster,V,cutoff,tol):
+def sk_build(avec,basis,V,cutoff,tol,renorm,offset):
     '''
     Would like to find a better way of doing this, or at least getting around the whole cluster thing...
     '''
-    
-    cutoff = [0.0]+cutoff
+    if type(cutoff)==list:
+        reg_cut = [0.0]+cutoff
+        reg_cut = np.array(reg_cut)
+    elif type(cutoff)==float:
+        reg_cut = np.array([cutoff])
+    else:
+        print('Invalid cutoff-format')
+        return None
+    pt_max = np.ceil(np.array([(reg_cut).max()/np.linalg.norm(avec[i]) for i in range(len(avec))]).max())
+    pts = region(int(pt_max)+1)
     H_raw = []
     o1o2norm = {}
-    
-    for o1 in cluster:
-        for o2 in cluster:
-            dir_cos = np.zeros(3)
+    for o1 in basis:
+        for o2 in basis:
+            if o1.index<=o2.index:
+                for p in pts:
+                    Rij = o2.pos-o1.pos+np.dot(p,avec)
             
-            Rij = o2.pos-o1.pos
-            
-            Rijn = np.linalg.norm(Rij)
-            
-            if Rijn>0.0:
-                dir_cos = np.copy(Rij)#/np.linalg.norm(o2.pos-o1.pos)
+                    Rijn = np.linalg.norm(Rij)
+ 
 
-            dirstr = "-{:0.2f}-{:0.2f}-{:0.2f}".format(dir_cos[0],dir_cos[1],dir_cos[2])
-            orb_label = str(o1.tag)+'-'+str(o2.tag)+'-'+dirstr
-            if Rijn>max(cutoff):
+                    orb_label = "{:d}-{:d}-{:0.3f}-{:0.3f}-{:0.3f}".format(o1.index,o2.index,Rij[0],Rij[1],Rij[2])
+                    if Rijn>max(reg_cut):
 
-                o1o2norm[orb_label] = True
+                        o1o2norm[orb_label] = True
+                        mat_el=0.0
                 
-            elif o2.index>=o1.index: #only going through the j>=i elements--saves computational time o2.tag>=o1.tag and
-                try:
-                    o1o2norm[orb_label] #check to see if a pairing of these orbitals, along this direction, has already been calculated--if so, skip to next o1,o2                     
-                    continue
-                except KeyError: #if this pair has not yet been included, proceed
+                    try:
+                        o1o2norm[orb_label] #check to see if a pairing of these orbitals, along this direction, has already been calculated--if so, skip to next o1,o2                     
+                        mat_el=0.0
+                        continue
+                    except KeyError: #if this pair has not yet been included, proceed
 
-                    if isinstance(V,list): #if we have given a list of SK dictionaries (relevant to different distance ranges)                        
-                        for i in range(len(cutoff)-1):
-                            if cutoff[i]<Rijn<cutoff[i+1]: #if in this range of the dictionaries, use the lower bound
-                                tmp_V = V[i]
-                                mat_el = SK.SK_coeff(o1,o2,tmp_V)  #then matrix element is computed using the SK function
-                    elif isinstance(V,dict): #if the SK matrix elements brought in NOT as a list of dictionaries...                               
-                        mat_el = SK.SK_coeff(o1,o2,V)
+                        if isinstance(V,list): #if we have given a list of SK dictionaries (relevant to different distance ranges)                        
+                            for i in range(len(reg_cut)-1):
+                                if reg_cut[i]<=Rijn<reg_cut[i+1]: #if in this range of the dictionaries, use the lower bound
+                                    tmp_V = V[i]
+                                    mat_el = SK.SK_coeff(o1,o2,Rij,tmp_V,renorm,offset,tol)  #then matrix element is computed using the SK function
+                        elif isinstance(V,dict): #if the SK matrix elements brought in NOT as a list of dictionaries...                               
+                            mat_el = SK.SK_coeff(o1,o2,Rij,V,renorm,offset,tol)
+                            
 
                             
-                    if abs(mat_el)>tol:                           
-                        H_raw.append([o1.tag,o2.tag,Rij[0],Rij[1],Rij[2],mat_el])
+                    if abs(mat_el)>tol: 
+                        H_raw.append([o1.index,o2.index,Rij[0],Rij[1],Rij[2],mat_el])
                             
                     o1o2norm[orb_label] = True #now that the pair has been calculated, disqualify from subsequent calculations
     return H_raw
@@ -117,12 +123,12 @@ def SO(basis,Md):
     al = []
     HSO = []
     for o in basis:
-        if (o.atom,o.l) not in al:
+        if (o.atom,o.l) not in al and o.l>0:
             M = Md[(o.atom,o.l)]
             LS[(o.atom,o.l)] = LSmat(M,o.l)
     for o1 in basis:
         for o2 in basis:
-            if np.linalg.norm(o1.pos-o2.pos)<0.0001 and o1.l==o2.l:
+            if np.linalg.norm(o1.pos-o2.pos)<0.0001 and o1.l==o2.l and o1.l>0:
                 L = o1.lam
                 inds = (normal_order[o1.l][o1.label[2:]],normal_order[o2.l][o2.label[2:]]) 
         
@@ -182,23 +188,24 @@ def Yproj(basis):
     M = {}
     M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
     for b in basis:
-        if b.atom==a and b.l==l:
-            label = b.label[2:]
-            for p in b.proj:
-                M_tmp[l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
-            
-        else:
-            #If we are using a reduced basis, fill in orthonormalized projections for other states in the shell
-            #which have been ignored in our basis choice--these will still be relevant to the definition of the LS operator
-            M_tmp = fillin(M_tmp,l)            
-            M[(a,l)] = M_tmp
-            ##Initialize the next M matrix               
-            a = b.atom
-            l = b.l
-            M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
-            
-    M_tmp = fillin(M_tmp,l)
-    M[(a,l)] = M_tmp
+        if l>0:
+            if b.atom==a and b.l==l:
+                label = b.label[2:]
+                for p in b.proj:
+                    M_tmp[l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
+                
+            else:
+                #If we are using a reduced basis, fill in orthonormalized projections for other states in the shell
+                #which have been ignored in our basis choice--these will still be relevant to the definition of the LS operator
+                M_tmp = fillin(M_tmp,l)            
+                M[(a,l)] = M_tmp
+                ##Initialize the next M matrix               
+                a = b.atom
+                l = b.l
+                M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
+    if l>0:        
+        M_tmp = fillin(M_tmp,l)
+        M[(a,l)] = M_tmp
     
     return M
 
@@ -225,6 +232,18 @@ def GrahamSchmidt(a,b):
     '''
     tmp = a - np.dot(a,b)/np.dot(b,b)*b
     return tmp/np.linalg.norm(tmp)
+
+
+def region(num):
+    '''
+    Generate a symmetric grid of points in number of lattice vectors. The tacit assumption is a 3 dimensional lattice
+    args: num -- integer--grid will have size 2*num+1 in each direction
+    returns numpy array of size ((2*num+1)**3,3) with centre value of first entry of (-num,-num,-num),...,(0,0,0),...,(num,num,num)
+    '''
+    num_symm = 2*num+1
+    return np.array([[int(i/num_symm**2)-num,int(i/num_symm)%num_symm-num,i%num_symm-num] for i in range((num_symm)**3)])
+
+
         
         
         
