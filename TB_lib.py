@@ -90,18 +90,17 @@ class TB_model:
         '''
         htmp = []
         if H_args['type'] == "SK":
-            htmp = Hlib.sk_build(H_args['avec'],self.basis,H_args['V'],H_args['cutoff'],H_args['tol'],H_args['renorm'],H_args['offset'])
+            htmp = Hlib.sk_build(H_args['avec'],self.basis,H_args['V'],H_args['cutoff'],H_args['tol'],H_args['renorm'],H_args['offset'],H_args['so'])
         elif H_args['type'] == "txt":
             htmp = Hlib.txt_build(H_args['filename'],H_args['cutoff'],H_args['renorm'],H_args['offset'],H_args['tol'])
         elif H_args['type'] == "list":
             htmp = H_args['list']
         if H_args['so']:
             h2 = Hlib.spin_double(htmp,len(self.basis))
+                
 
-
-            Mmats = Hlib.Yproj(self.basis)
-            so = Hlib.SO(self.basis,Mmats)
-            htmp = htmp + h2 + so
+            so = Hlib.SO(self.basis)
+            htmp = htmp + h2+ so
         
         htmp = sorted(htmp,key=itemgetter(0,1,2,3,4))
 

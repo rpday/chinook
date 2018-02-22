@@ -16,8 +16,9 @@ if __name__=="__main__":
     a,c =  4.1141,28.64704 
     avec = np.array([[0,a/np.sqrt(3),c/3.],[-a/2.,-a/np.sqrt(12),c/3.],[a/2.,-a/np.sqrt(12),c/3.]])
 
-    G,Z,F,L = np.array([0,0,0]),np.array([0.5,0.5,0.5]),np.array([0.5,0.5,0]),np.array([0,0,0.5])
+#    G,Z,F,L = np.array([0,0,0]),np.array([0.5,0.5,0.5]),np.array([0.5,0.5,0]),np.array([0,0,0.5])
 
+    G,K,M = np.array([0.0,0.0,0.0],float),0.2*np.array([0.0,4*np.pi/3./a,0.0],float),0.2*np.array([2*np.pi/np.sqrt(3)/a,0.0,0.0])
 
     nu,mu=0.792,0.399
     
@@ -43,9 +44,9 @@ if __name__=="__main__":
     
     slab_dict = {'bool':False,
                 'hkl':np.array([0,0,1]),
-                'cells':20,
-                'buff':8,
-                'term':0,
+                'cells':4,
+                'buff':1,
+                'term':2,
                 'avec':avec}
 
     Bd = {'atoms':[1,0,2,0,1],
@@ -55,10 +56,10 @@ if __name__=="__main__":
 ,
             'slab':slab_dict}
 
-    Kd = {'type':'F',
-			'pts':[G,Z,F,G,L],
-			'grain':200,
-			'labels':['$\Gamma$','Z','F','$\Gamma$','L']}
+    Kd = {'type':'A',
+			'pts':[K,G,M],
+			'grain':20,
+			'labels':['K','$\Gamma$','M']}#,'Z','F','$\Gamma$','L']}
 
 
     Hd = {'type':'SK',
@@ -73,6 +74,9 @@ if __name__=="__main__":
  
     	#####
     Bd = build_lib.gen_basis(Bd,spin)
+    slab = Bd['slab']['obj']
+    print('length of slab basis: ',len(slab.slab_base))
+    slab.plot_lattice(np.array([b.pos for b in slab.slab_base]))
     Kobj = build_lib.gen_K(Kd,avec)
     TB = build_lib.gen_TB(Bd,Hd,Kobj)
     TB.solve_H()
@@ -94,20 +98,12 @@ if __name__=="__main__":
 #
 #
 #    
-#
+##
 #    exp = ARPES.experiment(TB,ARPES_dict)
-##    X,Y,C,shift = exp.datacube(cube,SE,spin=None,T_eval = True, directory=direct)
-##    Au,Ad = exp.datacube(cube,G,spin=None,T_eval = True, directory=direct)
 #    exp.datacube(ARPES_dict)
-#    I = np.zeros((ARPES_dict['cube']['X'][-1],ARPES_dict['cube']['X'][-1],ARPES_dict['cube']['E'][-1]))
-#    for p in range(len(exp.pks)):
-#        I[int(np.real(exp.pks[p,0,0])),int(np.real(exp.pks[p,0,1])),int(np.real(exp.pks[p,0,2]))] += abs(exp.pks[p,2,0]+exp.pks[p,2,2])**2 + abs(exp.pks[p,1,0]+exp.pks[p,1,2])**2
-#    Ig = nd.gaussian_filter(I,(2,2,2))
-#    fig = plt.figure()
-#    plt.pcolormesh(exp.X,exp.Y,Ig[:,:,10])
-#    x = np.linspace(*xlims)
-#    es = np.linspace(*Elims)
-    
+#    exp.plot_slice(ARPES_dict)
+#    X,Y,E,I = exp.spectral(ARPES_dict)
+=
 
 
     

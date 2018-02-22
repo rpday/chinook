@@ -38,7 +38,7 @@ def LSmat(TB,axis=None):
         HSO (len(basis)xlen(basis)) numpy array of complex float
     '''
     Md = Hlib.Yproj(TB.basis)
-    normal_order = {1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4}}
+    normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4}}
     factors = {(2,-1):0.5,(0,1):0.5,(1,0):1.0}
     L,al = {},[]
     HSO = np.zeros((len(TB.basis),len(TB.basis)),dtype=complex)

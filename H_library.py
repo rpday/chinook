@@ -54,7 +54,7 @@ def txt_build(filename,cutoff,renorm,offset,tol):
 
                 
 
-def sk_build(avec,basis,V,cutoff,tol,renorm,offset):
+def sk_build(avec,basis,V,cutoff,tol,renorm,offset,so):
     '''
     Would like to find a better way of doing this, or at least getting around the whole cluster thing...
     '''
@@ -70,8 +70,12 @@ def sk_build(avec,basis,V,cutoff,tol,renorm,offset):
     pts = region(int(pt_max)+1)
     H_raw = []
     o1o2norm = {}
-    for o1 in basis:
-        for o2 in basis:
+    if so:
+        brange = len(basis)/2
+    else:
+        brange = len(basis)
+    for o1 in basis[:brange]:
+        for o2 in basis[:brange]:
             if o1.index<=o2.index:
                 for p in pts:
                     Rij = o2.pos-o1.pos+np.dot(p,avec)
@@ -116,57 +120,90 @@ def spin_double(H,lb):
     return h2
 
 
-
-def SO(basis,Md):
-    normal_order = {1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4}}
-    LS = {}
-    al = []
+def SO(basis):
+    '''
+    Generate L.S  matrix-elements for a given basis. 
+    This is generic to all l, except the normal_order, specifically defined for l=1,2...should generalize
+    Otherwise, this structure holds for all l!
+    
+    In the factors dictionary, the weight of the different LiSi terms is defined. The keys are tuples of (L+/-/z,S+/-/z) in a bit
+    of a cryptic way. For L, range (0,1,2) ->(-1,0,1) and for S range (-1,0,1) = S1-S2 with S1/2 = +/- 1 here
+    
+    L+,L-,Lz matrices are defined for each l shell in the basis, transformed into the basis of cubic harmonics.
+    The nonzero terms will then just be used along with the spin and weighted by the factor value, and slotted into 
+    a len(basis)xlen(basis) matrix HSO
+    args:
+        basis -- tight-binding model basis orbital list, as defined in TB_lib.py
+    return:
+        HSO list of matrix elements in standard format [i,j,0,0,0,HSO[i,j]]
+    '''
+    Md = Yproj(basis)
+    normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4}}
+    factors = {(2,-1):0.5,(0,1):0.5,(1,0):1.0}
+    L,al = {},[]
     HSO = []
     for o in basis:
-        if (o.atom,o.l) not in al and o.l>0:
+        if (o.atom,o.l) not in al:
+            al.append((o.atom,o.l))
             M = Md[(o.atom,o.l)]
-            LS[(o.atom,o.l)] = LSmat(M,o.l)
+            Mp = np.linalg.inv(M)
+            L[(o.atom,o.l)] = [np.dot(Mp,np.dot(Lm(o.l),M)),np.dot(Mp,np.dot(Lz(o.l),M)),np.dot(Mp,np.dot(Lp(o.l),M))]
+
     for o1 in basis:
         for o2 in basis:
-            if np.linalg.norm(o1.pos-o2.pos)<0.0001 and o1.l==o2.l and o1.l>0:
-                L = o1.lam
-                inds = (normal_order[o1.l][o1.label[2:]],normal_order[o2.l][o2.label[2:]]) 
-        
-                ds = (o1.spin-o2.spin)/2.0
-                if ds ==1.0:
-                    LSm = LS[(o1.atom,o1.l)]['+']
-                elif ds ==-1.0:
-                    LSm = LS[(o1.atom,o1.l)]['-']
-                elif ds==0.0:
-                    if o1.spin==1:
-                        LSm = LS[(o1.atom,o1.l)]['u']
+            if o1.index<=o2.index:
+                LS_val = 0.0
+                if np.linalg.norm(o1.pos-o2.pos)<0.0001 and o1.l==o2.l and o1.n==o2.n:
+                    inds = (normal_order[o1.l][o1.label[2:]],normal_order[o2.l][o2.label[2:]])
+                    
+                    ds = (o1.spin-o2.spin)/2.
+                    if ds==0:
+                        s=0.5*np.sign(o1.spin)
                     else:
-                        LSm = LS[(o1.atom,o1.l)]['d']
-                if abs(LSm[inds])!=0:
-                    HSO.append([o1.index,o2.index,0,0,0,L*LSm[inds]])
-        
+                        s=1.0
+                    for f in factors:
+                        if f[1]==ds:
+                            LS_val+=o1.lam*factors[f]*L[(o1.atom,o1.l)][f[0]][inds]*s
+                    HSO.append([o1.index,o2.index,0.,0.,0.,LS_val])
+
     return HSO
-    
-def LSmat(M,l):
-    Mp = np.linalg.inv(M)
-    if l==1:
-        LpSm = np.dot(Mp,np.dot(LS_1([1,0,0]),M))
-        LmSp = np.dot(Mp,np.dot(LS_1([0,0,1]),M))
-        LzSzd = np.dot(Mp,np.dot(LS_1([0,-0.5,0]),M))
-        LzSzu = np.dot(Mp,np.dot(LS_1([0,0.5,0]),M))
-    elif l==2:
-        LpSm = np.dot(Mp,np.dot(LS_2([1,0,0]),M))
-        LmSp = np.dot(Mp,np.dot(LS_2([0,0,1]),M))
-        LzSzd = np.dot(Mp,np.dot(LS_2([0,-0.5,0]),M))
-        LzSzu = np.dot(Mp,np.dot(LS_2([0,0.5,0]),M))
-    return {'-':LpSm,'+':LmSp,'d':LzSzd,'u':LzSzu}
-            
 
-def LS_1(s):
-    return np.array([[s[1],np.sqrt(0.5)*s[0],0.0],[np.sqrt(0.5)*s[2],0.0,np.sqrt(0.5)*s[0]],[0.0,np.sqrt(0.5)*s[2],-s[1]]])            
-def LS_2(s):
-    return np.array([[2*s[1],s[0],0,0,0],[s[2],s[1],np.sqrt(1.5)*s[0],0,0],[0,np.sqrt(1.5)*s[2],0,np.sqrt(1.5)*s[0],0],[0,0,np.sqrt(1.5)*s[2],-s[1],s[0]],[0,0,0,s[2],-2*s[1]]])  
 
+def Lp(l):
+    '''
+    L+ operator in the l,m_l basis, organized with (0,0) = |l,l>, (2*l,2*l) = |l,-l>
+    The nonzero elements are on the upper diagonal
+    arg: l int orbital angular momentum
+    return M: numpy array (2*l+1,2*l+1) of real float
+    '''
+    M = np.zeros((2*l+1,2*l+1))
+    r = np.arange(0,2*l,1)
+    M[r,r+1]=1.0
+    vals = [0]+[np.sqrt(l*(l+1)-(l-m)*(l-m+1)) for m in range(1,2*l+1)]
+    M = M*vals
+    return M
+
+def Lm(l):
+    '''
+    L- operator in the l,m_l basis, organized with (0,0) = |l,l>, (2*l,2*l) = |l,-l>
+    The nonzero elements are on the upper diagonal
+    arg: l int orbital angular momentum
+    return M: numpy array (2*l+1,2*l+1) of real float
+    '''
+    M = np.zeros((2*l+1,2*l+1))
+    r = np.arange(1,2*l+1,1)
+    M[r,r-1]=1.0
+    vals = [np.sqrt(l*(l+1)-(l-m)*(l-m-1)) for m in range(0,2*l)]+[0]
+    M = M*vals
+    return M
+
+def Lz(l):
+    '''
+    Lz operator in the l,m_l basis
+    arg: l int orbital angular momentum
+    retun numpy array (2*l+1,2*l+1)
+    '''
+    return np.identity(2*l+1)*np.array([l-m for m in range(2*l+1)])
 
 
 
@@ -182,35 +219,34 @@ def Yproj(basis):
     Note this works only on p and d type orbitals, s is irrelevant, not currently supporting f orbitals
     
     '''
-    normal_order = {1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
+    normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
     a = basis[0].atom
     l = basis[0].l
     M = {}
     M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
     for b in basis:
-        if l>0:
-            if b.atom==a and b.l==l:
-                label = b.label[2:]
-                for p in b.proj:
-                    M_tmp[l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
+        if b.atom==a and b.l==l:
+            label = b.label[2:]
+            for p in b.proj:
+                M_tmp[l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
                 
-            else:
+        else:
                 #If we are using a reduced basis, fill in orthonormalized projections for other states in the shell
                 #which have been ignored in our basis choice--these will still be relevant to the definition of the LS operator
-                M_tmp = fillin(M_tmp,l)            
-                M[(a,l)] = M_tmp
+            M_tmp = fillin(M_tmp,l)            
+            M[(a,l)] = M_tmp
                 ##Initialize the next M matrix               
-                a = b.atom
-                l = b.l
-                M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
-    if l>0:        
-        M_tmp = fillin(M_tmp,l)
-        M[(a,l)] = M_tmp
+            a = b.atom
+            l = b.l
+            M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
+    
+    M_tmp = fillin(M_tmp,l)
+    M[(a,l)] = M_tmp
     
     return M
 
 def fillin(M,l):
-    normal_order_rev = {1:{0:'x',1:'y',2:'z'},2:{0:'xz',1:'yz',2:'xy',3:'ZR',4:'XY'},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
+    normal_order_rev = {0:{0:''},1:{0:'x',1:'y',2:'z'},2:{0:'xz',1:'yz',2:'xy',3:'ZR',4:'XY'},3:{0:'z3',1:'xz2',2:'yz2',3:'xzy',4:'zXY',5:'xXY',6:'yXY'}}
 
     for m in range(2*l+1):
         if np.linalg.norm(M[:,m])==0: #if column is empty (i.e. user-defined projection does not exist)

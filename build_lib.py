@@ -27,6 +27,7 @@ def gen_basis(basis,soc):
     basis['bulk'] = bulk_basis
 
     if basis['slab']['bool']:
+        print('yes')
         slab_obj = slib.slab(basis['slab']['hkl'],basis['slab']['cells'],basis['slab']['buff'],basis['slab']['avec'],bulk_basis,basis['slab']['term'])
         if soc['soc']:        
             slab_obj.slab_base = olib.spin_double(slab_obj.slab_base,soc['lam'])
@@ -40,8 +41,6 @@ def gen_K(Kdic,avec=None):
     if Kdic['type']=='F':
         B = klib.bvectors(avec)
         klist = [np.dot(k,B) for k in Kdic['pts']]
-        for k in klist:
-            print(k)
     elif Kdic['type']=='A':
         klist = [k for k in Kdic['pts']]
     else:

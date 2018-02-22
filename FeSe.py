@@ -38,7 +38,7 @@ if __name__=="__main__":
             'slab':slab_dict}
 
     Kd = {'type':'F',
-			'pts':[mM,G,M],
+			'pts':[M,G,M],
 			'grain':200,
 			'labels':['M','$\Gamma$','M']}
 
@@ -56,36 +56,46 @@ if __name__=="__main__":
     Kobj = build_lib.gen_K(Kd,avec)
     TB = build_lib.gen_TB(Bd,Hd,Kobj)
     TB.solve_H()
-#    TB.plotting(-1.25,.75)
-    O = ops.LdotS(TB,axis=None,vlims=(-0.5,0.5),Elims=(-0.5,0.5))
+    TB.plotting(-1.5,0.5)
+#    O = ops.LdotS(TB,axis=None,vlims=(-0.5,0.5),Elims=(-0.5,0.5))
 ##    
 ##    
-#    ARPES_dict={'cube':{'X':[-0.4,0.4,80],'Y':[-0.4,0.4,80],'kz':0.0,'E':[-0.3,0.05,35]},
-#                'SE':[0.015,0.01],
-#                'directory':'C:\\Users\\rday\\Documents\\TB_ARPES\\2018\\TB_ARPES_2018\\FeSe',
-#                'hv': 21.2,
-#                'pol':np.array([0,1,0]),
-#                'mfp':7.0,
-#                'resolution':{'E':0.05,'k':0.05},
-#                'T':[True,10.0],
-#                'W':4.0,
-#                'angle':0.0,
-#                'spin':None}
-#
+    ARPES_dict={'cube':{'X':[-0.4,0.4,80],'Y':[-0.4,0.4,80],'kz':0.0,'E':[-0.3,0.05,100]},
+                'SE':[0.00,0.00],
+                'directory':'C:\\Users\\rday\\Documents\\TB_ARPES\\2018\\TB_ARPES_2018\\FeSe',
+                'hv': 21.2,
+                'pol':np.array([0,1,1]),
+                'mfp':7.0,
+                'resolution':{'E':0.03,'k':0.05},
+                'T':[True,10.0],
+                'W':4.0,
+                'angle':0.0,
+                'spin':None,
+                'slice':[False,-0.2]}
+
 #
 #    
 #
-#    exp = ARPES.experiment(TB,ARPES_dict)
-##    X,Y,C,shift = exp.datacube(cube,SE,spin=None,T_eval = True, directory=direct)
+    exp = ARPES.experiment(TB,ARPES_dict)
+#    X,Y,C,shift = exp.datacube(cube,SE,spin=None,T_eval = True, directory=direct)
 ##    Au,Ad = exp.datacube(cube,G,spin=None,T_eval = True, directory=direct)
-#    exp.datacube(ARPES_dict)
-#    I = np.zeros((ARPES_dict['cube']['X'][-1],ARPES_dict['cube']['X'][-1],ARPES_dict['cube']['E'][-1]))
+    exp.datacube(ARPES_dict)
+#    exp.plot_slice(ARPES_dict)
+    X,Y,E,I = exp.spectral(ARPES_dict)
+#    I = np.zeros((ARPES_dict['cube']['X'][-1],ARPES_dict['cube']['X'][-1]))
 #    for p in range(len(exp.pks)):
-#        I[int(np.real(exp.pks[p,0,0])),int(np.real(exp.pks[p,0,1])),int(np.real(exp.pks[p,0,2]))] += abs(exp.pks[p,2,0]+exp.pks[p,2,2])**2 + abs(exp.pks[p,1,0]+exp.pks[p,1,2])**2
-#    Ig = nd.gaussian_filter(I,(2,2,2))
+#        if abs(exp.Mk[p].max())>0:
+#            I[int(np.real(exp.pks[p,0])),int(np.real(exp.pks[p,1]))]+= abs(exp.Mk[p,1,0]+exp.Mk[p,1,2])**2 + abs(exp.Mk[p,0,0]+exp.Mk[p,0,2])**2
+#    I = np.zeros((ARPES_dict['cube']['X'][-1],ARPES_dict['cube']['X'][-1],ARPES_dict['cube']['E'][-1]))
+#    Ear=np.linspace(ARPES_dict['cube']['E'][0],ARPES_dict['cube']['E'][1],ARPES_dict['cube']['E'][2])
+#    dE = Ear[1]-Ear[0]
+#    for p in range(len(exp.pks)):
+#        if Ear[0]<=exp.pks[p,2]<=Ear[-1]:
+#            I[int(np.real(exp.pks[p,0])),int(np.real(exp.pks[p,1])),int((np.real(exp.pks[p,2])-Ear[0])/dE)] += abs(exp.Mk[p,1,0]+exp.Mk[p,1,2])**2 + abs(exp.Mk[p,0,0]+exp.Mk[p,0,2])**2
+#    Ig = nd.gaussian_filter(I,(1,1,1))
 #    fig = plt.figure()
-#    plt.pcolormesh(exp.X,exp.Y,Ig[:,:,10])
-#    x = np.linspace(*xlims)
+#    plt.pcolormesh(Ig[40,:,:])
+##    x = np.linspace(*xlims)
 #    es = np.linspace(*Elims)
     
 
