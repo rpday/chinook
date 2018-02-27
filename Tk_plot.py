@@ -23,8 +23,10 @@ import sys
 
 if sys.version_info[0]<3:
     import Tkinter as Tk
+    import tkMessageBox as messagebox
 else:
     import tkinter as Tk
+    from tkinter import messagebox
     
 
 
@@ -82,18 +84,6 @@ class plot_intensity_interface:
         ax3.set_ylabel('Momentum x ($\AA^{-1}$)')
         ax3.set_xlabel('Energy (eV)')
 
-        xpol_label = Tk.Label(master=self.root,text="Polarization x").grid(row=4,column=0)
-        ypol_label = Tk.Label(master=self.root,text="Polarization y").grid(row=4,column=3)
-        zpol_label = Tk.Label(master=self.root,text="Polarization z").grid(row=4,column=6)
-
-        xpol_ent = Tk.Entry(master=self.root)
-        ypol_ent = Tk.Entry(master=self.root)
-        zpol_ent = Tk.Entry(master=self.root)
-
-        xpol_ent.grid(row=4,column=1,columnspan=1)
-        ypol_ent.grid(row=4,column=4,columnspan=1)
-        zpol_ent.grid(row=4,column=7,columnspan=1)
-
         plt_win_1 = FigureCanvasTkAgg(fig1,master=self.root)
         plt_win_1.show()
         plt_win_1.get_tk_widget().grid(row=0,column=0,columnspan=3,rowspan=3)
@@ -134,37 +124,6 @@ class plot_intensity_interface:
         s3_label = Tk.Label(master=self.root,text="Momentum K_y (1/Å)").grid(row=3,column=6)
         slide_3 = Tk.Scale(master=self.root,from_=self.y[0],to=(self.y[1]-self.dy),orient='horizontal',resolution=self.dy,command=_update_slice)
         slide_3.grid(row=3,column=7,sticky='W')
-
-
-        def _update_pol():
-
-            try:
-    
-                self.Adict['pol'] = xyz(xpol_ent.get(),ypol_ent.get(),zpol_ent.get())
-                print('Recalculating matrix elements...')
-                _,self.Imat = self.expmnt.spectral(self.Adict)
-                print('Matrix element calculation complete')
-                
-                sv1 = int((float(slide_1.get())-self.w[0])/(self.dw))
-                sv2 = int((float(slide_2.get())-self.x[0])/(self.dx))
-                sv3 = int((float(slide_3.get())-self.y[0])/(self.dy))
-    
-                sp1.set_data(self.Imat[:,:,sv1])
-                sp2.set_data(self.Imat[sv2,:,:])
-                sp3.set_data(self.Imat[:,sv3,:])
-                sp1.set_clim(vmin=self.Imat.min(),vmax=self.Imat.max())
-                sp2.set_clim(vmin=self.Imat.min(),vmax=self.Imat.max())
-                sp3.set_clim(vmin=self.Imat.min(),vmax=self.Imat.max())
-                fig1.canvas.draw()
-                fig2.canvas.draw()
-                fig3.canvas.draw()
-            
-            except ValueError:
-                print('ERROR!! Polarization vector must be complex float!')
-    
-    
-        update_pol_button = Tk.Button(master=self.root,text='Update Polarization',command=_update_pol)
-        update_pol_button.grid(row=5,column=0)
         
         
         def _customize():
@@ -184,6 +143,10 @@ class plot_intensity_interface:
             sy = Tk.Entry(master=cwin)
             sz = Tk.Entry(master=cwin)
             
+            sx.insert('end','0.0')
+            sy.insert('end','0.0')
+            sz.insert('end','1.0')
+            
             sx.grid(row=2,column=1)
             sy.grid(row=2,column=2)
             sz.grid(row=2,column=3)
@@ -200,6 +163,10 @@ class plot_intensity_interface:
             pol_x = Tk.Entry(master=cwin)
             pol_y = Tk.Entry(master=cwin)
             pol_z = Tk.Entry(master=cwin)
+            
+            pol_x.insert('end','1.0+0.0j')
+            pol_y.insert('end','0.0+0.0j')
+            pol_z.insert('end','0.0+0.0j')
             
             pol_x.grid(row=4,column=1)
             pol_y.grid(row=4,column=2)
@@ -248,6 +215,7 @@ class plot_intensity_interface:
                 st_raw = st_raw.replace("TAN","np.tan")
                 st_raw = st_raw.replace("EXP","np.exp")
                 st_raw = st_raw.replace("LOG","np.log")
+                st_raw = st_raw.replace("^","**")
                 
                 tmp_mat = eval(st_raw)
                 map_nm = mat_nm.get() if (mat_nm.get()!="" or bool(sum([mat_nm==d for d in self.Imat_dict]))) else "I_{:d}".format(len(self.Imat_dict))
@@ -286,20 +254,87 @@ class plot_intensity_interface:
                     print('Please select a map to plot before attempting to plot.')
             
             plot_button = Tk.Button(master=cwin,text="Plot Selection", command=_plot_map)
-            plot_button.grid(row=8,column=0,columnspan=2)
+            plot_button.grid(row=8,column=0)
+            
+            def _infobox():
+                messagebox.showinfo("Information","This panel allows to generate intensity maps with or without\n spin projection, for arbitrary polarization. You can also enter a\n function over several intensity maps, referencing them by names indicated in the list of available maps. Standard polynomial\n operations as well as SQRT, COS, SIN, TAN, EXP, and LOG functions\n can be passed.",parent=cwin) 
+            
+            info_button = Tk.Button(master=cwin,text='Info',command=_infobox)
+            info_button.grid(row=8,column=2)
             
             def _quit_sub():
                 cwin.quit()
                 cwin.destroy()
             
             close_button = Tk.Button(master= cwin,text='Close Window',command=_quit_sub)
-            close_button.grid(row=8,column=2,columnspan=2)
+            close_button.grid(row=8,column=3,columnspan=1)
             cwin.mainloop()
             
             
         
         custmap_button = Tk.Button(master=self.root,text = 'Custom Map', command = _customize)
-        custmap_button.grid(row=5,column=1)
+        custmap_button.grid(row=5,column=0)
+        
+        clabel = Tk.Label(master=self.root,text='Colourmap: ').grid(row=4,column=0)
+        cmaps = ('Spectral','Blue-White-Red','Magma','Inferno','Black-to-White','White-to-Black')
+        cmdict = {'Spectral':cm.Spectral,'Blue-White-Red':cm.bwr,'Magma':cm.magma,'Inferno':cm.inferno,'Black-to-White':cm.Greys_r,'White-to-Black':cm.Greys}
+        cmap_var = Tk.StringVar()
+        cmap_var.set(cmaps[2])
+        cmap_opt = Tk.OptionMenu(self.root,cmap_var,*cmaps)
+        cmap_opt.grid(row=4,column=1)
+            
+        vmin_label = Tk.Label(master=self.root,text='Scale Min: ').grid(row=4,column=2)
+        vmin_ent = Tk.Entry(master=self.root)
+        vmin_ent.grid(row=4,column=3)
+        vmin_ent.insert('end','Auto')
+        vmax_label = Tk.Label(master=self.root,text='Scale Max: ').grid(row=4,column=4)
+        vmax_ent = Tk.Entry(master=self.root)
+        vmax_ent.grid(row=4,column=5)
+        vmax_ent.insert('end','Auto')
+            
+
+        def _update():
+            doit = True
+            try:
+                vmin = float(vmin_ent.get())
+            except ValueError:
+                if vmin_ent.get().upper()=='AUTO':
+                    vmin = self.Imat.min()
+                else:
+                    print( 'Please enter a numeric value for Scale Minimum ')
+                    doit = False
+            try:
+                vmax = float(vmax_ent.get())
+            except ValueError:
+                if vmax_ent.get().upper()=='AUTO':
+                    vmax = self.Imat.max()
+                else:
+                    print ('Please enter a numeric value for Scale Maximum ')
+                    doit = False
+            if vmin>=vmax:
+                doit= False
+            if doit:
+                sp1.set_clim(vmin=vmin,vmax=vmax)
+                sp2.set_clim(vmin=vmin,vmax=vmax)
+                sp3.set_clim(vmin=vmin,vmax=vmax)
+                sp1.set_cmap(cmdict[cmap_var.get()])
+                sp2.set_cmap(cmdict[cmap_var.get()])
+                sp3.set_cmap(cmdict[cmap_var.get()])
+                fig1.canvas.draw()
+                fig2.canvas.draw()
+                fig3.canvas.draw()
+                    
+        col_up = Tk.Button(master=self.root,text='Update Colourscale',command=_update)
+        col_up.grid(row=4,column=6)
+        
+        def _infobox_main():
+            messagebox.showinfo("Information","This plotting GUI allows for the user to scan through\n different slices of the momentum-energy cube generated\n in an ARPES experiment. The 'Custom Map' panel allows you to\n change the polarization and spin projection (for Spin-ARPES) as well as \n to produce composite maps generated as a function of maps with different experimental parameters.",parent=self.root) 
+            
+        main_info_button = Tk.Button(master=self.root,text='Info',command=_infobox_main)
+        main_info_button.grid(row=5,column=1)
+            
+
+        
         quit_button = Tk.Button(master=self.root,text="Quit",command=_quit_win)
         quit_button.grid(row=5,column=8)
 
