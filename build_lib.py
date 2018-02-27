@@ -16,9 +16,8 @@ import klib as klib
 
 
 ###Build Basis
-def gen_basis(a,basis,soc):
+def gen_basis(basis,soc):
 	
-#    bulk_basis = [olib.orbital(a,len(bulk_basis),o,basis['pos'][a],basis['Z'][a]) for o in basis['orbs'][a] for a in basis['atoms']]
     bulk_basis = []
     for a in list(enumerate(basis['atoms'])):
         for o in basis['orbs'][a[0]]:
@@ -28,6 +27,7 @@ def gen_basis(a,basis,soc):
     basis['bulk'] = bulk_basis
 
     if basis['slab']['bool']:
+        print('yes')
         slab_obj = slib.slab(basis['slab']['hkl'],basis['slab']['cells'],basis['slab']['buff'],basis['slab']['avec'],bulk_basis,basis['slab']['term'])
         if soc['soc']:        
             slab_obj.slab_base = olib.spin_double(slab_obj.slab_base,soc['lam'])
@@ -40,7 +40,7 @@ def gen_K(Kdic,avec=None):
 	#
     if Kdic['type']=='F':
         B = klib.bvectors(avec)
-        klist = [np.dot(B,k) for k in Kdic['pts']]
+        klist = [np.dot(k,B) for k in Kdic['pts']]
     elif Kdic['type']=='A':
         klist = [k for k in Kdic['pts']]
     else:
@@ -70,8 +70,6 @@ def gen_TB(Bdict,H_args,Kobj):
 
     return TB
 
-'''EVERYTHING RUNNING RIGHT NOW EXCEPT THE SO+SLAB --IT'S CLOSE, BUT SOME FUNNINESS,
-CHECK IMPLEMENTATION OF SO HAMILTONIAN WITH SLAB'''
 
 ###Build ARPES Experiment
 

@@ -74,16 +74,15 @@ if __name__=="__main__":
                 'W':4.0,
                 'angle':0.0,
                 'spin':None,
-                'slice':[True,-0.01]}
+                'slice':[True,-0.1]}
+=======
 
 #
 #    
 #
     exp = ARPES.experiment(TB,ARPES_dict)
     exp.datacube(ARPES_dict)
-    exp.plot_slice(ARPES_dict) #If you want to see another polarization, simply update ARPES_dict['pol'] and re-run exp.plot_slice(ARPES_dict)
-
-
-    
-    
+    _,Ig=exp.plot_slice(ARPES_dict) #If you want to see another polarization, simply update ARPES_dict['pol'] and re-run exp.plot_slice(ARPES_dict)
+=======
+   
 	#####
