@@ -103,7 +103,6 @@ if __name__=="__main__":
 #    exp.datacube(ARPES_dict)
 #    exp.plot_slice(ARPES_dict)
 #    X,Y,E,I = exp.spectral(ARPES_dict)
-=
 
 
     

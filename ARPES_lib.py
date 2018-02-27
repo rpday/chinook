@@ -9,6 +9,7 @@ Created on Sat Nov 18 21:15:20 2017
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+from matplotlib.widgets import Slider
 import klib as K_lib
 import sympy.physics.wigner as wig
 import adaptive_int as adint
@@ -17,6 +18,7 @@ import orbital as olib
 import Ylm 
 import scipy.ndimage as nd
 import datetime as dt
+import Tk_plot
 
 
 
@@ -74,7 +76,6 @@ class experiment:
         cube = ARPES_dict['cube']
         SE = ARPES_dict['SE']
         spin = ARPES_dict['spin']
-        T_eval = ARPES_dict['T'][0]
         directory = ARPES_dict['directory']
         
         xv,yv,kz,Ev = cube['X'],cube['Y'],cube['kz'],cube['E']
@@ -100,10 +101,8 @@ class experiment:
         Gvals = G_dic()
         Bvals = self.Bdic(dig_range,tmp_basis)
         
-        if T_eval:
-            fermi = np.array([con_ferm(self.Eb[i]/(kb*self.T/q)) for i in range(len(Eband_dig)) if dig_range[0]<=self.Eb[i]<=dig_range[-1]])
-        else:
-            fermi = np.ones(len(cube_indx))
+#        GB = self.matel_matrix(Bvals,Gvals,tmp_basis)
+        
             
         self.pks = np.zeros((len(cube_indx),3),dtype=float)
         self.Mk = np.zeros((len(cube_indx),2,3),dtype=complex)
@@ -113,35 +112,77 @@ class experiment:
         self.th = np.array([np.arccos(np.sqrt(kn[int(cube_indx[i,0])]**2-self.X[int(self.pks[i,0]),int(self.pks[i,1])]**2-self.Y[int(self.pks[i,0]),int(self.pks[i,1])]**2)/kn[int(cube_indx[i,0])]) for i in range(len(cube_indx))])
         spin_mat = self.spin_rot(spin)
         blen = len(self.TB.basis)
-        sigma = np.zeros(len(cube_indx))
+        
+        
+        
+#        div = (int(len(tmp_basis)/2) if tmp_basis[0].spin!=tmp_basis[int(len(tmp_basis)/2)].spin else int(len(tmp_basis)/1))
+#        print('div',div)
+
         
         tol = 0.01
         strmats = Gstrings()
         print('Begin computing matrix elements: ')
         for i in range(len(cube_indx)):
             if not ARPES_dict['slice'][0]:
-                
-                tmp_M = self.M_compute(Gvals,Bvals,i,cube_indx[i],tmp_basis,spin_mat,fermi[i],tol,strmats)
+
+                tmp_M = self.M_compute(Gvals,Bvals,i,cube_indx[i],tmp_basis,spin_mat,tol,strmats)
             elif abs(cube_indx[i][1]-ARPES_dict['slice'][1])<self.dE:
-                tmp_M = self.M_compute(Gvals,Bvals,i,cube_indx[i],tmp_basis,spin_mat,fermi[i],tol,strmats)*np.exp(-(cube_indx[i][1]-ARPES_dict['slice'][1])**2/(2*self.dE))
+                tmp_M = self.M_compute(Gvals,Bvals,i,cube_indx[i],tmp_basis,spin_mat,tol,strmats)*np.exp(-(cube_indx[i][1]-ARPES_dict['slice'][1])**2/(2*self.dE))
             else:
                 tmp_M = 0.0
 
-#            sigma[i] = SE[0]+SE[1]*cube_indx[i,1]**2
+
             self.Mk[i,:,:] = tmp_M
+        print('Done matrix elements')
 
 #     
 #        Au,Ad = self.spectral(X,Y,Eb,sigma)
 #        self.write(Au,Ad,Eb,X,Y,directory,G)
         return True#Au,Ad
     
-    def M_compute(self,G,B,i,cube,basis,spinmat,fermi,tol,strmats):
+    def matel_matrix(self,B,G,basis):
+        
+        B_funcs= [[B['{:d}-{:d}-{:d}-{:d}'.format(o.atom,o.n,o.l,o.l-1)],B['{:d}-{:d}-{:d}-{:d}'.format(o.atom,o.n,o.l,o.l+1)]] for o in basis]
+        def GBmats(E,theta,phi):
+            mv1 = np.array([[0*B_funcs[i][0](E)] for i in range(len(B_funcs))])
+            mv2 = np.array([[0*B_funcs[i][0](E)] for i in range(len(B_funcs))])
+            mv3 = np.array([[0*B_funcs[i][0](E)] for i in range(len(B_funcs))])
+            for i in range(len(mv1)):
+                for op in basis[i].proj:
+                    mv1[i] += B_funcs[i][0](E)*(op[0]+1.0j*op[1])*G['{:d}{:d}{:d}{:d}'.format(basis[i].l,basis[i].l-1,int(op[-1]),-1)]*Ylm.Y(basis[i].l-1,int(op[-1])-1,theta,phi)+ B_funcs[i][1](E)*(op[0]+1.0j*op[1])*G['{:d}{:d}{:d}{:d}'.format(basis[i].l,basis[i].l+1,int(op[-1]),-1)]*Ylm.Y(basis[i].l+1,int(op[-1])-1,theta,phi)
+                    mv2[i] += B_funcs[i][0](E)*(op[0]+1.0j*op[1])*G['{:d}{:d}{:d}{:d}'.format(basis[i].l,basis[i].l-1,int(op[-1]),0)]*Ylm.Y(basis[i].l-1,int(op[-1]),theta,phi)+B_funcs[i][1](E)*(op[0]+1.0j*op[1])*G['{:d}{:d}{:d}{:d}'.format(basis[i].l,basis[i].l+1,int(op[-1]),0)]*Ylm.Y(basis[i].l+1,int(op[-1]),theta,phi)
+                    mv3[i] += basis[i].sigma*(B_funcs[i][0](E)*(op[0]+1.0j*op[1])*G['{:d}{:d}{:d}{:d}'.format(basis[i].l,basis[i].l-1,int(op[-1]),1)]*Ylm.Y(basis[i].l-1,int(op[-1])+1,theta,phi)+ B_funcs[i][1](E)*(op[0]+1.0j*op[1])*G['{:d}{:d}{:d}{:d}'.format(basis[i].l,basis[i].l+1,int(op[-1]),1)]*Ylm.Y(basis[i].l+1,int(op[-1])+1,theta,phi))
+
+            return np.array([mv1,mv2,mv3])
+
+        
+        return GBmats#mat_m1,mat_0,mat_p1
+    
+    
+    def M_compute_2(self,GBval,cube,basis,spinmat,div):
+
+        Mtmp = np.zeros((2,3),dtype=complex)
+        
+        psi = self.Ev[int(cube[0]/len(basis)),:,int(cube[0]%len(basis))]
+                
+        if spinmat is not None:
+            psi = np.dot(spinmat,psi)
+        Mtmp[:,0] = np.array([np.dot(GBval[0][:div,0],psi[:div]),np.dot(GBval[0][div:,0],psi[div:])])
+        Mtmp[:,1] = np.array([np.dot(GBval[1][:div,0],psi[:div]),np.dot(GBval[1][div:,0],psi[div:])])
+        Mtmp[:,2] = np.array([np.dot(GBval[2][:div,0],psi[:div]),np.dot(GBval[2][div:,0],psi[div:])])
+        
+            
+    
+    def M_compute(self,G,B,i,cube,basis,spinmat,tol,strmats):
+        
 
         phi = self.ph[int(cube[0]/len(basis))]
         th = self.th[i]
         Mtmp = np.zeros((2,3),dtype=complex)
         
         psi = self.Ev[int(cube[0]/len(basis)),:,int(cube[0]%len(basis))]
+        
+        
         if spinmat is not None:
             psi = np.dot(spinmat,psi)
         for coeff in list(enumerate(psi)):
@@ -150,7 +191,7 @@ class experiment:
                 o = basis[coeff[0]]
 
                 L = [lp for lp in ([o.l-1,o.l+1] if (o.l-1)>=0 else [o.l+1])]
-                pref = o.sigma*coeff[1]*fermi
+                pref = o.sigma*coeff[1]
                 for lp in L:
 
                     tmp_B = B['{:d}-{:d}-{:d}-{:d}'.format(o.atom,o.n,o.l,lp)](cube[1])
@@ -161,44 +202,7 @@ class experiment:
                     Mtmp[int((o.spin+1)/2),:]+=pref*tmp_B*tmp_G
                    
         return Mtmp
-    
-    
-#    def spectral(self,X,Y,Er,sigma):
-#        fw2sig = np.sqrt(8.0*np.log(2)) #spectrometer resolution is FWHM, but nd.gaussian_filter takes STD of gaussian kernel, need to convert
-#        xg = self.dk/(X[0,1]-X[0,0])/fw2sig
-#        yg = self.dk/(Y[1,0]-Y[0,0])/fw2sig
-#        Eg = self.dE/(Er[1]-Er[0])/fw2sig
-#        
-#        Iu_tmp = np.real(abs(np.dot(self.pks[:,1,:],self.pol))**2)
-#        Id_tmp = np.real(abs(np.dot(self.pks[:,2,:],self.pol))**2)
-#                
-#        Au = np.zeros((np.shape(X)[0],np.shape(X)[1],len(Er)),dtype=float)
-#        Ad = np.zeros_like(Au)
-#        
-##        dt1s =[dt.timedelta(0),dt.timedelta(0),0,dt.timedelta(0)]
-##        dt2s = [dt.timedelta(0),dt.timedelta(0),0,dt.timedelta(0)]
-##        dt3s = [dt.timedelta(0),dt.timedelta(0),0,dt.timedelta(0)]
-#        t0 = dt.datetime.now()
-#        for p in range(len(self.pks)):
-##            t1 = dt.datetime.now()
-#            pks = np.real(self.pks[p,0,:]).astype(int)
-##            t2 = dt.datetime.now()
-#            Au[:,:,pks[2]]+=np.real(Iu_tmp[p])*(sigma[pks[2]]/2.0)/(((X-X[pks[0],pks[1]])**2+(Y-Y[pks[0],pks[1]])**2)+(sigma[pks[2]]/2.0)**2)
-##            t3 = dt.datetime.now()
-#            Ad[:,:,pks[2]]+=np.real(Id_tmp[p])*(sigma[pks[2]]/2.0)/(((X-X[pks[0],pks[1]])**2+(Y-Y[pks[0],pks[1]])**2)+(sigma[pks[2]]/2.0)**2)
-##            t4 = dt.datetime.now()
-##            dt1s,dt2s,dt3s = tstat(t2-t1,dt1s),tstat(t3-t2,dt2s),tstat(t4-t3,dt3s)
-#        tf= dt.datetime.now()
-##        print('copy peaks took at least: ',dt1s[0],' and at most: ',dt1s[1],' and on average: ',dt1s[3]/dt1s[2])
-##        print('Fill A 1: ',dt2s[0],' and at most: ',dt2s[1],' and on average: ',dt2s[3]/dt2s[2])
-##        print('Fill A 2: ',dt3s[0],' and at most: ',dt3s[1],' and on average: ',dt3s[3]/dt3s[2])
-##        
-#        print('Fill spectra took: ',tf-t0,' to complete for ',len(self.pks),' points')
-#        Au_r = nd.gaussian_filter(Au,sigma = (xg,yg,Eg))
-#        Ad_r = nd.gaussian_filter(Ad,sigma = (xg,yg,Eg))
-#
-#        return Au_r,Ad_r
-#       
+
      
     def write(self,Au,Ad,Evals,X,Y,directory,G):
         pars = directory+'_params.txt'
@@ -269,30 +273,66 @@ class experiment:
         else:
             return None
         
-    def spectral(self,ARPES_dict):
-        
+    def spectral(self,ARPES_dict,slice_select=None):
         pol = pol_2_sph(ARPES_dict['pol'])
         xv,yv,Ev = ARPES_dict['cube']['X'],ARPES_dict['cube']['Y'],ARPES_dict['cube']['E']
+        T_eval = ARPES_dict['T'][0]
         x = np.linspace(*xv)
         y = np.linspace(*yv)
-        X,Y = np.meshgrid(x,y)
         w = np.linspace(*Ev)
-        Kp,Ep=np.meshgrid(w,x)
-        SE = [ARPES_dict['SE'][0]+p[2]**2*ARPES_dict['SE'][1] for p in self.pks]
-        I = np.zeros((np.shape(X)[0],np.shape(X)[1],len(w)))
         
-        for p in range(len(self.pks)):
-            if abs(self.Mk[p].max())>0:
-                Ev = int((self.pks[p,2]-w[0])/(w[1]-w[0]))
-                I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),Ev]+= (abs(np.dot(self.Mk[p,1,:],pol))**2 + abs(np.dot(self.Mk[p,1,:],pol))**2)*np.imag(-1./(np.pi*(w-self.pks[p,2]+0.02j)))
+        if ARPES_dict['spin']!=None:
+            sv = ARPES_dict['spin'][1]/np.linalg.norm(ARPES_dict['spin'][1])
+            th = np.arccos(sv[2])
+            ph = np.arctan2(sv[1],sv[0])
+            Smat = np.array([[np.cos(th/2),np.exp(-1.0j*ph)*np.sin(th/2)],[np.sin(th/2),-np.exp(-1.0j*ph)*np.cos(th/2)]])
+            Mspin = np.swapaxes(np.dot(Smat,self.Mk),0,1)
+            
+                
+                
         
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        p = ax.pcolormesh(Kp,Ep,I[:,int(np.shape(X)[1]/2),:],cmap=cm.magma)
-        plt.axis([w[0],w[-1],x[0],x[-1]])
-        plt.colorbar(p,ax=ax)
         
-        return X,Y,w,I
+        SE = [1.0j*(ARPES_dict['SE'][0]+p[2]**2*ARPES_dict['SE'][1]) for p in self.pks]
+        if T_eval:
+            fermi = vf(w/(kb*self.T/q))
+        else:
+            fermi = np.ones(len(w))
+        I = np.zeros((len(x),len(y),len(w)))
+        if ARPES_dict['spin']==None:
+            for p in range(len(self.pks)):
+                if abs(self.Mk[p].max())>0:
+                    I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= (abs(np.dot(self.Mk[p,0,:],pol))**2 + abs(np.dot(self.Mk[p,1,:],pol))**2)*np.imag(-1./(np.pi*(w-self.pks[p,2]-SE[p]+0.01j)))*fermi
+        else:
+            for p in range(len(self.pks)):
+                if abs(Mspin[p].max())>0:
+                    I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= abs(np.dot(Mspin[p,(ARPES_dict['spin'][0]+1)/2,:],pol))**2*np.imag(-1./(np.pi*(w-self.pks[p,2]-SE[p]+0.01j)))*fermi
+        kxg = self.dk/(x[1]-x[0])
+        kyg = self.dk/(y[1]-y[0])
+        wg = self.dE/(w[1]-w[0])
+        
+        Ig = nd.gaussian_filter(I,(kxg,kyg,wg))
+        
+        if slice_select!=None:
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            if slice_select[0]==2:
+                X,Y=np.meshgrid(x,y)
+                p = ax.pcolormesh(X,Y,Ig[:,:,slice_select[1]],cmap=cm.magma)    
+            elif slice_select[0]==1:
+                X,Y=np.meshgrid(w,x)
+                p = ax.pcolormesh(X,Y,Ig[:,slice_select[1],:],cmap=cm.magma)    
+            elif slice_select[0]==0:
+                X,Y=np.meshgrid(w,y)
+                p = ax.pcolormesh(X,Y,Ig[slice_select[1],:,:],cmap=cm.magma)    
+            
+            plt.axis([w[0],w[-1],x[0],x[-1]])
+            plt.colorbar(p,ax=ax)
+        
+        return I,Ig
+    
+    def plot_gui(self,Adict):
+        TK_win = Tk_plot.plot_intensity_interface(self,Adict)
+        
 
 
     def Brad_calc(self,k_norm,basis):
