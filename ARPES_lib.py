@@ -300,15 +300,16 @@ class experiment:
         I = np.zeros((len(x),len(y),len(w)))
         if ARPES_dict['spin']==None:
             for p in range(len(self.pks)):
-                if abs(self.Mk[p].max())>0:
+                if abs(self.Mk[p]).max()>0:
                     I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= (abs(np.dot(self.Mk[p,0,:],pol))**2 + abs(np.dot(self.Mk[p,1,:],pol))**2)*np.imag(-1./(np.pi*(w-self.pks[p,2]-SE[p]+0.01j)))*fermi
         else:
             for p in range(len(self.pks)):
-                if abs(Mspin[p].max())>0:
-                    I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= abs(np.dot(Mspin[p,(ARPES_dict['spin'][0]+1)/2,:],pol))**2*np.imag(-1./(np.pi*(w-self.pks[p,2]-SE[p]+0.01j)))*fermi
+                if abs(Mspin[p]).max()>0:
+                    I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= abs(np.dot(Mspin[p,int((ARPES_dict['spin'][0]+1)/2),:],pol))**2*np.imag(-1./(np.pi*(w-self.pks[p,2]-SE[p]+0.01j)))*fermi
         kxg = self.dk/(x[1]-x[0])
         kyg = self.dk/(y[1]-y[0])
         wg = self.dE/(w[1]-w[0])
+        print('kxg',kxg,'kyg',kyg, 'wg',wg)
         
         Ig = nd.gaussian_filter(I,(kxg,kyg,wg))
         

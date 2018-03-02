@@ -7,10 +7,11 @@ Created on Thu Feb 22 11:34:32 2018
 """
 
 import matplotlib
+#matplotlib.use('TkAgg')
 from matplotlib import rc
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout':True})
-matplotlib.use('TkAgg')
+
 
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -21,12 +22,12 @@ import matplotlib.cm as cm
 import sys
 
 
-if sys.version_info[0]<3:
-    import Tkinter as Tk
-    import tkMessageBox as messagebox
-else:
-    import tkinter as Tk
-    from tkinter import messagebox
+#if sys.version_info[0]<3:
+#    import Tkinter as Tk
+#    import tkMessageBox as messagebox
+#else:
+import tkinter as Tk
+from tkinter import messagebox
     
 
 

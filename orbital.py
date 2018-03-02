@@ -69,7 +69,7 @@ class orbital:
             self.proj = orient #projection into Ylm of form in projdict--array: [Real,Imag,l,ml]
         elif type(self.orient)==list: #can also pass a rotation from the conventional orientation
             self.proj = projdict[self.label[1:]]
-            self.proj,self.Dmat = self.rot_projection(self.orient[0],self.orient[1])
+            self.proj,self.Dmat = self.rot_projection(self.orient[0])#,self.orient[1])
         else:
             self.proj = projdict[self.label[1:]]
             
@@ -81,7 +81,7 @@ class orbital:
 #        return orbital(self.atom,self.index,self.label,self.pos,self.Z,self.orient,self.spin,self.lam,self.sigma,self.slab_index)
 
         
-    def rot_projection(self,vector,gamma):
+    def rot_projection(self,gamma,vector=None):
         
         '''
         Go through the projection array, and apply the correct transformation to
@@ -89,7 +89,7 @@ class orbital:
         Define Euler angles in the z-y-z convention
         THIS WILL BE A COUNTERCLOCKWISE ROTATION ABOUT vector BY gamma
         '''
-        vector = vector/np.linalg.norm(vector)
+        vector = np.array([0,0,1])# for now only accept z-rotations vector/np.linalg.norm(vector)
         Ylm_vec = np.zeros((2*self.l+1),dtype=complex)
         for a in range(len(self.proj)):
             Ylm_vec[int(self.proj[a,-1]+self.l)] +=self.proj[a,0]+1.0j*self.proj[a,1]
@@ -204,6 +204,9 @@ def spin_double(basis,lamdict):
         spin_up = basis[ind].copy()
         spin_up.spin = 1
         spin_up.index = basis[ind].index+LB
+        if type(basis[ind].orient)==list:
+            spin_up.proj = rot_spin(basis[ind].proj,2*basis[ind].orient[0],basis[ind].spin)
+        
         b_2.append(spin_up)
     return basis + b_2
         
@@ -227,7 +230,21 @@ if __name__=="__main__":
 #    print(proj_x)
   
         
-                
+
+def rot_spin(projection,angle,spin):
+    for i in range(len(projection)):
+        tmp_coeff = complex(projection[i,0]+1.0j*projection[i,1])
+        tmp_coeff*=np.exp(-1.0j*angle/2*spin)  
+        projection[:2] = np.array([np.real(tmp_coeff),np.imag(tmp_coeff)])
+    return projection
+
+
+def rotate_util(proj,phi):
+    proj_new = np.zeros(np.shape(proj))
+    for p in list(enumerate(proj)):
+        pp = np.exp(1.0j*phi*p[1][3])*(p[1][0]+1.0j*p[1][1])
+        proj_new[p[0]] = np.array([np.real(pp),np.imag(pp),p[1][2],p[1][3]])
+    return proj_new
         
         
         

@@ -78,9 +78,9 @@ if __name__=="__main__":
 #    
 
     expmt = ARPES.experiment(TB,ARPES_dict)
-    expmt.datacube()
+    expmt.datacube(ARPES_dict)
     
-    expmt.plot_gui()
+    expmt.plot_gui(ARPES_dict)
 
 
     

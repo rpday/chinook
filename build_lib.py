@@ -20,14 +20,17 @@ def gen_basis(basis,soc):
 	
     bulk_basis = []
     for a in list(enumerate(basis['atoms'])):
-        for o in basis['orbs'][a[0]]:
-            bulk_basis.append(olib.orbital(a[1],len(bulk_basis),o,basis['pos'][a[0]],basis['Z'][a[1]]))
+        for o in list(enumerate(basis['orbs'][a[0]])):
+            try:
+                
+                bulk_basis.append(olib.orbital(a[1],len(bulk_basis),o[1],basis['pos'][a[0]],basis['Z'][a[1]],orient=basis['orient'][a[0]][o[0]]))
+            except KeyError:
+                bulk_basis.append(olib.orbital(a[1],len(bulk_basis),o[1],basis['pos'][a[0]],basis['Z'][a[1]]))
     if soc['soc'] and not basis['slab']['bool']:
         bulk_basis = olib.spin_double(bulk_basis,soc['lam'])  
     basis['bulk'] = bulk_basis
 
     if basis['slab']['bool']:
-        print('yes')
         slab_obj = slib.slab(basis['slab']['hkl'],basis['slab']['cells'],basis['slab']['buff'],basis['slab']['avec'],bulk_basis,basis['slab']['term'])
         if soc['soc']:        
             slab_obj.slab_base = olib.spin_double(slab_obj.slab_base,soc['lam'])
