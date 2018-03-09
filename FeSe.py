@@ -61,16 +61,16 @@ if __name__=="__main__":
 #    O = ops.LdotS(TB,axis=None,vlims=(-0.5,0.5),Elims=(-0.5,0.5))
 ##    
 ##    
-    ARPES_dict={'cube':{'X':[-0.3,0.3,60],'Y':[-0.3,0.3,60],'kz':0.0,'E':[-0.3,0.05,120]},
+    ARPES_dict={'cube':{'X':[-0.4,0.4,80],'Y':[-0.4,0.4,80],'kz':0.0,'E':[-0.25,0.2,200]},
                 'SE':[0.005,0.01],
                 'directory':'C:\\Users\\rday\\Documents\\TB_ARPES\\2018\\TB_ARPES_2018\\FeSe',
                 'hv': 21.2,
                 'pol':np.array([0,np.sqrt(0.5),-np.sqrt(0.5)]),
                 'mfp':7.0,
                 'resolution':{'E':0.03,'k':0.05},
-                'T':[True,10.0],
+                'T':[False,10.0],
                 'W':4.0,
-                'angle':0.0,
+                'angle':np.pi/4,
                 'spin':None,
                 'slice':[False,-0.2]}
 
@@ -78,9 +78,9 @@ if __name__=="__main__":
 #    
 
     expmt = ARPES.experiment(TB,ARPES_dict)
-    expmt.datacube()
+    expmt.datacube(ARPES_dict)
     
-    expmt.plot_gui()
+#    expmt.plot_gui(ARPES_dict)
 
 
     

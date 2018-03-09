@@ -110,7 +110,6 @@ class experiment:
         kn = np.sqrt(2.*me/hb**2*(self.hv+cube_indx[:,1]-self.W)*q)*A
         
         self.th = np.array([np.arccos(np.sqrt(kn[int(cube_indx[i,0])]**2-self.X[int(self.pks[i,0]),int(self.pks[i,1])]**2-self.Y[int(self.pks[i,0]),int(self.pks[i,1])]**2)/kn[int(cube_indx[i,0])]) for i in range(len(cube_indx))])
-        spin_mat = self.spin_rot(spin)
         blen = len(self.TB.basis)
         
         
@@ -125,9 +124,9 @@ class experiment:
         for i in range(len(cube_indx)):
             if not ARPES_dict['slice'][0]:
 
-                tmp_M = self.M_compute(Gvals,Bvals,i,cube_indx[i],tmp_basis,spin_mat,tol,strmats)
+                tmp_M = self.M_compute(Gvals,Bvals,i,cube_indx[i],tmp_basis,tol,strmats)
             elif abs(cube_indx[i][1]-ARPES_dict['slice'][1])<self.dE:
-                tmp_M = self.M_compute(Gvals,Bvals,i,cube_indx[i],tmp_basis,spin_mat,tol,strmats)*np.exp(-(cube_indx[i][1]-ARPES_dict['slice'][1])**2/(2*self.dE))
+                tmp_M = self.M_compute(Gvals,Bvals,i,cube_indx[i],tmp_basis,tol,strmats)*np.exp(-(cube_indx[i][1]-ARPES_dict['slice'][1])**2/(2*self.dE))
             else:
                 tmp_M = 0.0
 
@@ -173,7 +172,7 @@ class experiment:
         
             
     
-    def M_compute(self,G,B,i,cube,basis,spinmat,tol,strmats):
+    def M_compute(self,G,B,i,cube,basis,tol,strmats):
         
 
         phi = self.ph[int(cube[0]/len(basis))]
@@ -183,8 +182,6 @@ class experiment:
         psi = self.Ev[int(cube[0]/len(basis)),:,int(cube[0]%len(basis))]
         
         
-        if spinmat is not None:
-            psi = np.dot(spinmat,psi)
         for coeff in list(enumerate(psi)):
 
             if abs(coeff[1])>tol:
@@ -300,15 +297,16 @@ class experiment:
         I = np.zeros((len(x),len(y),len(w)))
         if ARPES_dict['spin']==None:
             for p in range(len(self.pks)):
-                if abs(self.Mk[p].max())>0:
+                if abs(self.Mk[p]).max()>0:
                     I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= (abs(np.dot(self.Mk[p,0,:],pol))**2 + abs(np.dot(self.Mk[p,1,:],pol))**2)*np.imag(-1./(np.pi*(w-self.pks[p,2]-SE[p]+0.01j)))*fermi
         else:
             for p in range(len(self.pks)):
-                if abs(Mspin[p].max())>0:
-                    I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= abs(np.dot(Mspin[p,(ARPES_dict['spin'][0]+1)/2,:],pol))**2*np.imag(-1./(np.pi*(w-self.pks[p,2]-SE[p]+0.01j)))*fermi
+                if abs(Mspin[p]).max()>0:
+                    I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= abs(np.dot(Mspin[p,int((ARPES_dict['spin'][0]+1)/2),:],pol))**2*np.imag(-1./(np.pi*(w-self.pks[p,2]-SE[p]+0.01j)))*fermi
         kxg = self.dk/(x[1]-x[0])
         kyg = self.dk/(y[1]-y[0])
         wg = self.dE/(w[1]-w[0])
+        print('kxg',kxg,'kyg',kyg, 'wg',wg)
         
         Ig = nd.gaussian_filter(I,(kxg,kyg,wg))
         
@@ -453,8 +451,13 @@ class experiment:
         if abs(self.ang)>0.0:
             for o in range(len(self.TB.basis)):
                 tmp = self.TB.basis[o].copy()
+                proj_arr = np.zeros(np.shape(tmp.proj),dtype=float)
+                for p in range(len(tmp.proj)):
+                    pnew = (tmp.proj[p][0]+1.0j*tmp.proj[p][1])*np.exp(-1.0j*tmp.proj[p][-1]*self.ang)
+                    tmp_proj = np.array([np.around(np.real(pnew),5),np.around(np.imag(pnew),5),tmp.proj[p][2],tmp.proj[p][3]])
+                    proj_arr[p] = tmp_proj
                 tmp_base.append(tmp)
-                tmp_base[-1].rot_projection(np.array([0,0,1]),self.ang)
+                tmp_base[-1].proj = proj_arr
             return tmp_base
         else:
             return self.TB.basis

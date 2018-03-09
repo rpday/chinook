@@ -7,10 +7,11 @@ Created on Thu Feb 22 11:34:32 2018
 """
 
 import matplotlib
+#matplotlib.use('TkAgg')
 from matplotlib import rc
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout':True})
-matplotlib.use('TkAgg')
+
 
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -21,12 +22,12 @@ import matplotlib.cm as cm
 import sys
 
 
-if sys.version_info[0]<3:
-    import Tkinter as Tk
-    import tkMessageBox as messagebox
-else:
-    import tkinter as Tk
-    from tkinter import messagebox
+#if sys.version_info[0]<3:
+#    import Tkinter as Tk
+#    import tkMessageBox as messagebox
+#else:
+import tkinter as Tk
+from tkinter import messagebox
     
 
 
@@ -190,7 +191,6 @@ class plot_intensity_interface:
                 else:
                     
                     tmp_dict['spin'] = [-1 if proj_choice=="Down" else 1,np.array([float(sx.get()),float(sy.get()),float(sz.get())])]
-                print(tmp_dict['spin'])
                 mat_name = mat_nm.get() if mat_nm.get()!="" else "I_{:d}".format(len(self.Imat_dict))
 
                 _,self.Imat_dict[mat_name] = self.expmnt.spectral(tmp_dict)

@@ -61,6 +61,20 @@ def Bintegral(r_o,r_f,tol,lp,knorm,Z,orb):
     Q = integrate(integrand,r_o,r_f,tol,arglist)
     return Q
 
+def direct(r,arglist): #arglist : [Z1,orb1,Z2,orb2]
+    #for computing direct transition integral between two states
+    orb1,_,_ = econ.Slater(arglist[0],arglist[1],r)
+    orb2,_,_ = econ.Slater(arglist[2],arglist[3],r)
+    
+    return r**3*orb1*orb2
+
+def direct_integrate(r_o,r_f,tol,Z,orbs):
+    
+    arglist = [Z[0],orbs[0],Z[1],orbs[1]]
+    
+    return integrate(direct,r_o,r_f,tol,arglist)
+    
+
 
 
 if __name__=="__main__":
