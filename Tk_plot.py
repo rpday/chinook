@@ -191,7 +191,6 @@ class plot_intensity_interface:
                 else:
                     
                     tmp_dict['spin'] = [-1 if proj_choice=="Down" else 1,np.array([float(sx.get()),float(sy.get()),float(sz.get())])]
-                print(tmp_dict['spin'])
                 mat_name = mat_nm.get() if mat_nm.get()!="" else "I_{:d}".format(len(self.Imat_dict))
 
                 _,self.Imat_dict[mat_name] = self.expmnt.spectral(tmp_dict)

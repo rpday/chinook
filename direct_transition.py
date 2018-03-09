@@ -26,6 +26,12 @@ class direct:
         self.TB = Adict['TB']
         self.Gamma = Adict['Gamma']
         
+        try:
+            self.ang = Adict['rot']
+            self.TB.basis = self.rot_basis()
+        except KeyError:
+            self.ang=0.0
+        
         cube = Adict['cube']
         xv,yv,self.kz,Ev = cube['X'],cube['Y'],cube['kz'],cube['E']
         self.x = np.linspace(*xv)
@@ -108,7 +114,7 @@ class direct:
     
     
     def resonant_intensity(self):
-
+        
         self.diagonalize(self.X,self.Y,self.kz)
         Beta =1./kb*self.T/q
         ##cube_indx is the position in the 3d cube of K and energy where this band is
@@ -149,7 +155,7 @@ class direct:
         fig = plt.figure()
         ax = fig.add_subplot(111)
         E,K = np.meshgrid(self.Earr,self.x)
-        p = ax.pcolormesh(E,K,Mk[:,int(np.shape(Mk)[1]/2),:],cmap=cm.bwr)
+        p = ax.pcolormesh(E,K,Mk[:,int(np.shape(Mk)[1]/2),:],cmap=cm.bwr,vmin = -abs(Mk).max(),vmax=abs(Mk).max())
         plt.colorbar(p,ax=ax)
         
         return Mk
@@ -160,7 +166,7 @@ class direct:
         self.Y = Y
         self.kz = kz
         
-        k_arr,_ = K_lib.kmesh(0.0,self.X,self.Y,self.kz)      
+        k_arr,_ = K_lib.kmesh(self.ang,self.X,self.Y,self.kz)      
     
         self.TB.Kobj = K_lib.kpath(k_arr)
         self.Eb,self.Ev = self.TB.solve_H()
@@ -168,6 +174,23 @@ class direct:
         #self.Evec has shape(len(K),len(base),len(base))
         self.Eb = np.reshape(self.Eb,(np.shape(X)[0],np.shape(X)[1],len(self.TB.basis)))
         self.Ev = np.reshape(self.Ev,(np.shape(X)[0],np.shape(X)[1],len(self.TB.basis),len(self.TB.basis)))
+        
+        
+    def rot_basis(self):
+        tmp_base = []
+        if abs(self.ang)>0.0:
+            for o in range(len(self.TB.basis)):
+                tmp = self.TB.basis[o].copy()
+                proj_arr = np.zeros(np.shape(tmp.proj),dtype=float)
+                for p in range(len(tmp.proj)):
+                    pnew = (tmp.proj[p][0]+1.0j*tmp.proj[p][1])*np.exp(-1.0j*tmp.proj[p][-1]*self.ang)
+                    tmp_proj = np.array([np.around(np.real(pnew),5),np.around(np.imag(pnew),5),tmp.proj[p][2],tmp.proj[p][3]])
+                    proj_arr[p] = tmp_proj
+                tmp_base.append(tmp)
+                tmp_base[-1].proj = proj_arr
+            return tmp_base
+        else:
+            return self.TB.basis
         
 def lineshape(w,wo,Gamma):
     return Gamma/(2*((w-wo)**2+Gamma**2/4))
