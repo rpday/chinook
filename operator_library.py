@@ -120,8 +120,52 @@ def Lz(l):
     return np.identity(2*l+1)*np.array([l-m for m in range(2*l+1)])
 
 
+def fatbs(proj,TB,Kobj=None,vlims=(0,0),Elims=(0,0),degen=False):
+    '''
+    Fat band projections. User denotes which orbital index projection is of interest
+    
+    '''
+    proj = np.array(proj)
+    
+    O = np.identity(len(TB.basis))
+    
+    if len(np.shape(proj))<2:
+        tmp = np.zeros((len(proj),2))
+        tmp[:,0] = proj
+        tmp[:,1] = 1.0
+        proj = tmp
+    pvec = np.zeros(len(TB.basis),dtype=complex)
+    try:
+        pvec[np.real(proj[:,0]).astype(int)] = proj[:,1]
+        O = O*pvec
+    
+        Ovals = O_path(O,TB,Kobj,vlims,Elims,degen=degen)
+    except ValueError:
+        print('projections need to be passed as list or array of type [index,projection]')
+    
+    
+    
+    return Ovals
+    
+    
 
-def O_path(O,TB,Kobj=None,axis=None,vlims=(0,0),Elims=(0,0)):
+
+def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(0,0),degen=False):
+    '''Compute and plot the expectation value of an user-defined operator along a k-path
+        Option of summing over degenerate bands (for e.g. fat bands) with degen boolean flag
+        
+        args: O -- matrix representation of the operator (numpy array len(basis), len(basis) of complex float)
+            TB -- Tight binding object from TB_lib
+            Kobj -- Kobject -- if not defined, use the TB object's Kobject
+            vlims -- limits for the colourscale (optional argument)
+            Elims -- limit for energy limits in plot (optional)
+            degen -- degenerate sum flag
+
+        return -- the numpy array of expectation values
+    
+    '''
+    
+    
     if np.shape(O)!=(len(TB.basis),len(TB.basis)):
         print('ERROR! Ensure your operator has the same dimension as the basis.')
         return None
@@ -138,7 +182,9 @@ def O_path(O,TB,Kobj=None,axis=None,vlims=(0,0),Elims=(0,0)):
             except TypeError:
                 print('ERROR! Please include a K-object, or diagonalize your tight-binding model over a k-path first to initialize the eigenvectors')
                 return None
-    O_vals = np.zeros(np.shape(TB.Eband))
+            
+    O_vals = np.zeros((int(np.shape(TB.Eband)[0]),int(np.shape(TB.Eband)[1]/int(2 if degen else 1))))
+
     fig = plt.figure()
     ax=fig.add_subplot(111)
     plt.axhline(y=0,color='grey',lw=1,ls='--')
@@ -148,17 +194,21 @@ def O_path(O,TB,Kobj=None,axis=None,vlims=(0,0),Elims=(0,0)):
         plt.axvline(x = b,color = 'grey',ls='--',lw=1.0)
         
     for e in range(len(TB.Evec)):
-        for p in range(len(TB.basis)):
-            O_vals[e,p] = np.real(np.dot(np.conj(TB.Evec[e,:,p]),np.dot(O,TB.Evec[e,:,p])))#operator expectation values MUST be real--they correspond to physical observables
-            
+        for p in range(np.shape(O_vals)[1]):
+            if degen:
+                O_vals[e,p] = np.real(np.dot(np.conj(TB.Evec[e,:,2*p]),np.dot(O,TB.Evec[e,:,2*p])))#operator expectation values MUST be real--they correspond to physical observables
+                O_vals[e,p] += np.real(np.dot(np.conj(TB.Evec[e,:,2*p+1]),np.dot(O,TB.Evec[e,:,2*p+1])))
+            else:
+                O_vals[e,p] = np.real(np.dot(np.conj(TB.Evec[e,:,p]),np.dot(O,TB.Evec[e,:,p])))
+                
     if vlims==(0,0):
         vlims = (O_vals.min()-(O_vals.max()-O_vals.min())/10.0,O_vals.max()+(O_vals.max()-O_vals.min())/10.0)
     if Elims==(0,0):
         Elims = (TB.Eband.min()-(TB.Eband.max()-TB.Eband.min())/10.0,TB.Eband.max()+(TB.Eband.max()-TB.Eband.min())/10.0)
         
-    for p in range(len(TB.basis)):
-        plt.plot(TB.Kobj.kcut,TB.Eband[:,p],color='navy',lw=1.0)
-        O_line=plt.scatter(TB.Kobj.kcut,TB.Eband[:,p],c=O_vals[:,p],cmap=cm.Spectral,marker='.',lw=0,s=60,vmin=vlims[0],vmax=vlims[1])
+    for p in range(np.shape(O_vals)[1]):
+        plt.plot(TB.Kobj.kcut,TB.Eband[:,(2 if degen else 1)*p],color='navy',lw=1.0)
+        O_line=plt.scatter(TB.Kobj.kcut,TB.Eband[:,(2 if degen else 1)*p],c=O_vals[:,p],cmap=cm.Spectral,marker='.',lw=0,s=100,vmin=vlims[0],vmax=vlims[1])
     plt.axis([TB.Kobj.kcut[0],TB.Kobj.kcut[-1],Elims[0],Elims[1]])
     plt.xticks(TB.Kobj.kcut_brk,TB.Kobj.labels)
     plt.colorbar(O_line,ax=ax)
@@ -169,7 +219,7 @@ def O_path(O,TB,Kobj=None,axis=None,vlims=(0,0),Elims=(0,0)):
 
 def LdotS(TB,axis=None,Kobj=None,vlims=(0,0),Elims=(0,0)):
     HSO = LSmat(TB,axis)
-    O = O_path(HSO,TB,axis,Kobj,vlims,Elims)
+    O = O_path(HSO,TB,Kobj,vlims,Elims)
     return O
     
     

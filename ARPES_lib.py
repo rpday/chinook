@@ -74,11 +74,15 @@ class experiment:
             to for example Igor where they can be loaded like experimental data.
         '''      
         cube = ARPES_dict['cube']
-        SE = ARPES_dict['SE']
-        spin = ARPES_dict['spin']
         directory = ARPES_dict['directory']
         
         xv,yv,kz,Ev = cube['X'],cube['Y'],cube['kz'],cube['E']
+        
+        try:
+            Ef = cube['Ef']
+        except KeyError:
+            Ef = 0.0
+            
         x = np.linspace(*xv)
         y = np.linspace(*yv)
         X,Y = np.meshgrid(x,y)
@@ -91,16 +95,20 @@ class experiment:
         blen = len(tmp_basis)
         
         dE = Eb[1]-Eb[0]
+        self.Eb-Ef #offset energies by the Fermi energy
         
         dig_range = np.arange(self.Eb.min()-5*dE,self.Eb.max()+dE*5,dE)
-        
-        Eband_dig = np.digitize(self.Eb,dig_range) #values correspond to index of erange
-        
+                
         ##cube_indx is the position in the 3d cube of K and energy where this band is
         cube_indx = np.array([[i,self.Eb[i]] for i in range(len(self.Eb)) if dig_range[0]<=self.Eb[i]<=dig_range[-1]])
         Gvals = G_dic()
-        Bvals = self.Bdic(dig_range,tmp_basis)
-        
+        try:
+            self.Bvals = {}
+            for bkey in ARPES_dict['Brads']:
+                self.Bvals[bkey] = lambda_gen(ARPES_dict['Brads'][bkey])
+        except KeyError:
+            self.Bvals = self.Bdic(dig_range,tmp_basis)
+
 #        GB = self.matel_matrix(Bvals,Gvals,tmp_basis)
         
             
@@ -124,9 +132,9 @@ class experiment:
         for i in range(len(cube_indx)):
             if not ARPES_dict['slice'][0]:
 
-                tmp_M = self.M_compute(Gvals,Bvals,i,cube_indx[i],tmp_basis,tol,strmats)
+                tmp_M = self.M_compute(Gvals,self.Bvals,i,cube_indx[i],kn[i],tmp_basis,tol,strmats)
             elif abs(cube_indx[i][1]-ARPES_dict['slice'][1])<self.dE:
-                tmp_M = self.M_compute(Gvals,Bvals,i,cube_indx[i],tmp_basis,tol,strmats)*np.exp(-(cube_indx[i][1]-ARPES_dict['slice'][1])**2/(2*self.dE))
+                tmp_M = self.M_compute(Gvals,self.Bvals,i,cube_indx[i],kn[i],tmp_basis,tol,strmats)*np.exp(-(cube_indx[i][1]-ARPES_dict['slice'][1])**2/(2*self.dE))
             else:
                 tmp_M = 0.0
 
@@ -172,7 +180,7 @@ class experiment:
         
             
     
-    def M_compute(self,G,B,i,cube,basis,tol,strmats):
+    def M_compute(self,G,B,i,cube,kn,basis,tol,strmats):
         
 
         phi = self.ph[int(cube[0]/len(basis))]
@@ -181,14 +189,13 @@ class experiment:
         
         psi = self.Ev[int(cube[0]/len(basis)),:,int(cube[0]%len(basis))]
         
-        
         for coeff in list(enumerate(psi)):
 
             if abs(coeff[1])>tol:
                 o = basis[coeff[0]]
 
                 L = [lp for lp in ([o.l-1,o.l+1] if (o.l-1)>=0 else [o.l+1])]
-                pref = o.sigma*coeff[1]
+                pref = o.sigma*coeff[1]*np.exp(-self.mfp*abs(o.depth))*np.exp(1.0j*kn*o.depth)
                 for lp in L:
 
                     tmp_B = B['{:d}-{:d}-{:d}-{:d}'.format(o.atom,o.n,o.l,lp)](cube[1])
@@ -289,13 +296,13 @@ class experiment:
                 
         
         
-        SE = [1.0j*(ARPES_dict['SE'][0]+p[2]**2*ARPES_dict['SE'][1]) for p in self.pks]
+        SE = [-1.0j*(ARPES_dict['SE'][0]+p[2]**2*ARPES_dict['SE'][1]) for p in self.pks]
         if T_eval:
             fermi = vf(w/(kb*self.T/q))
         else:
             fermi = np.ones(len(w))
         I = np.zeros((len(x),len(y),len(w)))
-        if ARPES_dict['spin']==None:
+        if ARPES_dict['spin'] is None:
             for p in range(len(self.pks)):
                 if abs(self.Mk[p]).max()>0:
                     I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= (abs(np.dot(self.Mk[p,0,:],pol))**2 + abs(np.dot(self.Mk[p,1,:],pol))**2)*np.imag(-1./(np.pi*(w-self.pks[p,2]-SE[p]+0.01j)))*fermi
@@ -357,7 +364,7 @@ class experiment:
                     trueconverge = False
                     rmax = 10.0
                     while not trueconverge:
-                        tmp_B = adint.Bintegral(0.0,rmax,10.0**-10,lp,k_norm,int(o.Z),o.label)
+                        tmp_B = adint.Bintegral(0.001,rmax,10.0**-10,lp,k_norm,int(o.Z),o.label)
                         if abs(tmp_B)<10**-10:
                             rmax/=2.0
                         else:
@@ -377,14 +384,14 @@ class experiment:
             basis -- orbital basis, passed to the B
         '''
         if type(Eb)==float:
-            kval = np.sqrt(2.0*me/hb**2*((self.hv-self.W)+Eb)*q)*A
-            return self.Brad_calc(kval,basis)
+            kval = np.sqrt(2.0*me/hb**2*((self.hv-self.W)+Eb)*q)*A 
+            return (self.Brad_calc(kval,basis) if ((self.hv-self.W)+Eb)>=0 else 0)
         elif type(Eb)==np.ndarray:
             Brad_es=np.linspace(Eb[0],Eb[-1],5)
             BD_coarse={}
             for en in Brad_es:
                 k_coarse = np.sqrt(2.0*me/hb**2*((self.hv-self.W)+en)*q)*A #calculate full 3-D k vector at this surface k-point given the incident radiation wavelength, and the energy eigenvalue, note binding energy follows opposite sign convention
-                tmp_Bdic = self.Brad_calc(k_coarse,basis)
+                tmp_Bdic = (self.Brad_calc(k_coarse,basis) if ((self.hv-self.W)+en)>=0 else 0)
                 for b in tmp_Bdic:
                     try:
                         BD_coarse[b].append(tmp_Bdic[b])
@@ -465,10 +472,11 @@ class experiment:
 def G_dic():
     
     llp = [[l,lp] for l in range(4) for lp in ([l-1,l+1] if (l-1)>=0 else [l+1])]    
-    keyvals = [[str(l[0])+str(l[1]),float(wig.clebsch_gordan(l[0],1,l[1],0,0,0))] for l in llp] 
-    CGo_dict = dict(keyvals)
+#    keyvals = [[str(l[0])+str(l[1]),float(wig.clebsch_gordan(l[0],1,l[1],0,0,0))] for l in llp] 
+#    CGo_dict = dict(keyvals)
     llpmu = [[l[0],l[1],m,u] for l in llp for m in np.arange(-l[0],l[0]+1,1) for u in [-1,0,1]]
-    keyvals = [[str(l[0])+str(l[1])+str(l[2])+str(l[3]),float(wig.clebsch_gordan(l[0],1,l[1],l[2],l[3],l[2]+l[3]))*CGo_dict[str(l[0])+str(l[1])]*np.sqrt((2.0*l[0]+1.0)/(2.0*l[1]+1.0))] for l in llpmu]
+    keyvals = [[str(l[0])+str(l[1])+str(l[2])+str(l[3]), Ylm.gaunt(l[0],l[2],l[1]-l[0],l[3])] for l in llpmu]
+#    keyvals = [[str(l[0])+str(l[1])+str(l[2])+str(l[3]),float(wig.clebsch_gordan(l[0],1,l[1],l[2],l[3],l[2]+l[3]))*CGo_dict[str(l[0])+str(l[1])]*np.sqrt((2.0*l[0]+1.0)/(2.0*l[1]+1.0))] for l in llpmu]
     G_dict = dict(keyvals)
     
     for gi in G_dict:
@@ -553,3 +561,6 @@ def tstat(t,ts):
         ts[1]=t
     ts[2]+=1
     ts[3]+=t
+    
+def lambda_gen(val):
+    return lambda x: val

@@ -128,13 +128,13 @@ def hydrogenic(Z_ind,mn,orb,r):
     return orb
 
 if __name__=="__main__":
-    mn = am.get_mass_from_number(26)
+    mn = am.get_mass_from_number(6)
     r = np.linspace(0,10,1000)
-    Fehyd = hydrogenic(26,mn,'32xz',r)
-    FeSlat,_,_ = Slater(26,'32xz',r)
+    Chyd = hydrogenic(6,mn,'21z',r)
+    CSlat,_,_ = Slater(6,'21x',r)
     plt.figure()
-    plt.plot(r,Fehyd)
-    plt.plot(r,FeSlat)
+    plt.plot(r,Chyd)
+    plt.plot(r,CSlat)
     
 #    vals = Slater(6,'21x',0.1)
 

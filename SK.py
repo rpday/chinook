@@ -122,9 +122,9 @@ def SK_coeff(o1,o2,R12,Vcoeff,renorm,offset,tol):
         elif l12== "22":
 
             if tmp+"S" in eta:
-                V = [hb2m/((1.0)**2)*eta[tmp+"S"],hb2m/((1.0)**2)*eta[tmp+"P"],hb2m/((1.0)**2)*eta[tmp+"D"]]
+                V = [eta[tmp+"S"],eta[tmp+"P"],eta[tmp+"D"]]
             elif tmp2+"S" in eta:                       
-                V = [hb2m/((1.0)**2)*eta[tmp2+"S"],hb2m/((1.0)**2)*eta[tmp2+"P"],hb2m/((1.0)**2)*eta[tmp2+"D"]]
+                V = [eta[tmp2+"S"],eta[tmp2+"P"],eta[tmp2+"D"]]
             else:
                 V = [0.0,0.0,0.0]     
             E["2xy-2xy"] = 3*l**2*m**2*V[0]+(l**2+m**2-4*l**2*m**2)*V[1]+(n**2+l**2*m**2)*V[2]

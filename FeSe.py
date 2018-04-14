@@ -39,9 +39,9 @@ if __name__=="__main__":
             'slab':slab_dict}
 
     Kd = {'type':'F',
-			'pts':[M,G,M],
-			'grain':200,
-			'labels':['M','$\Gamma$','M']}
+			'pts':[-0.36*X,G,0.36*X],
+			'grain':400,
+			'labels':['X','$\Gamma$','X','X','$\Gamma$']}
 
 
     Hd = {'type':'txt',
@@ -57,11 +57,14 @@ if __name__=="__main__":
     Kobj = build_lib.gen_K(Kd,avec)
     TB = build_lib.gen_TB(Bd,Hd,Kobj)
     TB.solve_H()
-    TB.plotting(-1.5,0.5)
-#    O = ops.LdotS(TB,axis=None,vlims=(-0.5,0.5),Elims=(-0.5,0.5))
-##    
-##    
-    ARPES_dict={'cube':{'X':[-0.4,0.4,80],'Y':[-0.4,0.4,80],'kz':0.0,'E':[-0.25,0.2,200]},
+#    TB.plotting(-1.5,0.5)
+#    O = ops.LdotS(TB,axis='z',vlims=(-0.5,0.5),Elims=(-0.25,0.1))
+
+#    O = ops.fatbs(proj,TB,vlims=(0,1),Elims=(-1,1),degen=True)
+    
+#    
+#    
+    ARPES_dict={'cube':{'X':[-0.4,0.4,70],'Y':[-0.4,0.4,70],'kz':0.0,'E':[-0.45,0.05,100]},
                 'SE':[0.005,0.01],
                 'directory':'C:\\Users\\rday\\Documents\\TB_ARPES\\2018\\TB_ARPES_2018\\FeSe',
                 'hv': 21.2,
@@ -72,15 +75,18 @@ if __name__=="__main__":
                 'W':4.0,
                 'angle':np.pi/4,
                 'spin':None,
-                'slice':[False,-0.2]}
+                'slice':[False,-0.35]}
+                #'Brads':{'0-3-2-1':100.0,'0-3-2-3':0.0}}
 
 #
 #    
 
     expmt = ARPES.experiment(TB,ARPES_dict)
     expmt.datacube(ARPES_dict)
-    
-#    expmt.plot_gui(ARPES_dict)
+#    expmt.plot_slice(ARPES_dict)
+#    
+#    
+    expmt.plot_gui(ARPES_dict)
 
 
     

@@ -79,6 +79,45 @@ def laguerre(x,l,j):
     tmp = sum([((-1)**i)*(binom(l+j,j-i)*x**i/float(factorial(i))) for i in range(j+1)])
     return tmp
 
+
+def gaunt(l,m,dl,dm):
+    '''
+    I prefer to avoid using the sympy library where possible. These are the explicitly defined
+    Gaunt coefficients required for dipole-allowed transitions (dl = +/-1) for arbitrary m,l and dm
+    These have been tested against the sympy package to confirm numerical accuracy for all l,m possible
+    up to l=5. This function is equivalent, for the subset of dm, dl allowed to
+    sympy.physics.wigner.gaunt(l,1,l+dl,m,dm,-(m+dm))
+    args:
+        l: int orbital angular momentum quantum number
+        m: int azimuthal angular momentum quantum number
+        dl: int change in l (+/-1)
+        dm: int change in azimuthal angular momentum (-1,0,1)
+    return:
+        float Gaunt coefficient
+    '''
+    try:
+        if abs(m + dm)<=(l+dl):
+            if dl==1:
+                if dm == 1:
+                    return (-1.)**(m+1)*np.sqrt(3*(l+m+2)*(l+m+1)/(8*np.pi*(2*l+3)*(2*l+1)))
+                elif dm == 0:
+                    return (-1.)**(m)*np.sqrt(3*(l-m+1)*(l+m+1)/(4*np.pi*(2*l+3)*(2*l+1)))
+                elif dm == -1:
+                    return (-1.)**(m-1)*np.sqrt(3*(l-m+2)*(l-m+1)/(8*np.pi*(2*l+3)*(2*l+1)))
+            elif dl == -1:
+                if dm==1:
+                    return (-1.)**(m)*np.sqrt(3*(l-m)*(l-m-1)/(8*np.pi*(2*l+1)*(2*l-1)))
+                elif dm == 0:
+                    return (-1.)**(m)*np.sqrt(3*(l+m)*(l-m)/(4*np.pi*(2*l+1)*(2*l-1)))
+                elif dm == -1:
+                    return (-1.)**(m)*np.sqrt(3*(l+m)*(l+m-1)/(8*np.pi*(2*l+1)*(2*l-1)))
+        else:
+            return 0.0
+    except ValueError:
+        print('Invalid entries for dipole matrix element-related Gaunt coefficients')
+        print('l = {:0.4f}, m = {:0.4f}, dl = {:0.4f}, dm = {:0.4f}'.format(l,m,dl,dm))
+        return 0.0
+    
 if __name__=="__main__":
     x = np.linspace(0,5,100)
     tmp = laguerre(x,5,0)

@@ -59,10 +59,12 @@ class orbital:
         self.lam = lam
         self.sigma = 1.0
         self.n,self.l = int(self.label[0]),int(self.label[1])
-        if slab_index==None:
+        if slab_index is None:
             self.slab_index = index #this is redundant for bulk calc, but index in slab is distinct from lattice index
+            self.depth = 0.0
         else:
             self.slab_index = slab_index
+            self.depth = self.pos[2]
 
         self.orient = orient
         if type(self.orient)==np.ndarray:

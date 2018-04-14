@@ -26,8 +26,6 @@ import scipy.special as sc
 import electron_configs as econ
 
 
-
-
 def integrand(r,arglist): #arglist: [lp,knorm,Z,orb]
 
     orb,_,_ = econ.Slater(arglist[2],arglist[3],r)
@@ -79,9 +77,9 @@ def direct_integrate(r_o,r_f,tol,Z,orbs):
 
 if __name__=="__main__":
     
-    Z =  77
+    Z =  6
     
-    lp = [1,3]
+    lp = [0,2]
     r = [0,1]
 #    
 #    
@@ -89,21 +87,21 @@ if __name__=="__main__":
 #    lp = [1,3]
 #    r = [0,25]
     tol = 0.5*10**-9
-    hv = np.linspace(20,120,40)
+    hv = np.linspace(10,120,40)
     kn = np.sqrt(2*(9.11*10**-31)/(6.626*10**-34/(2*np.pi))**2*(hv-4.5)*(1.602*10**-19))/10**10
-    Qf=np.zeros((len(hv)),dtype=complex)
-    Qp = np.copy(Qf)
+    Qp=np.zeros((len(hv)),dtype=complex)
+    Qf = np.copy(Qp)
     for i in range(len(kn)):
-        Qf[i] = Bintegral(r[0],r[1],tol,lp[1],kn[i],Z,'52')
-        Qp[i] = Bintegral(r[0],r[1],tol,lp[0],kn[i],Z,'52')
+        Qf[i] = Bintegral(r[0],r[1],tol,lp[1],kn[i],Z,'20')
+        Qp[i] = Bintegral(r[0],r[1],tol,lp[0],kn[i],Z,'21')
     
     fig = plt.figure()
     ax = fig.add_subplot(1,2,1)
-    ax.plot(hv,np.imag(Qp),c='k')
-    ax.plot(hv,np.imag(Qf),c='r')
-    ax.legend(["d -> p","d -> f"],loc=4)
-    ax2 = fig.add_subplot(1,2,2)
-    ax2.plot(hv,(Qp/Qf))
-    ax2.set_title('Ratio of Radial Integrals--p:f')
-    ax.set_title('Radial Integrals from Fe3d')
-    plt.show()
+    ax.plot(hv,np.real(Qp),c='k')
+    ax.plot(hv,np.real(Qf),c='r')
+#    ax.legend(["d -> p","d -> f"],loc=4)
+#    ax2 = fig.add_subplot(1,2,2)
+#    ax2.plot(hv,(Qp/Qf))
+#    ax2.set_title('Ratio of Radial Integrals--p:f')
+#    ax.set_title('Radial Integrals from Fe3d')
+#    plt.show()
