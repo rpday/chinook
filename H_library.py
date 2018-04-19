@@ -71,7 +71,7 @@ def sk_build(avec,basis,V,cutoff,tol,renorm,offset,so):
     H_raw = []
     o1o2norm = {}
     if so:
-        brange = len(basis)/2
+        brange = int(len(basis)/2)
     else:
         brange = len(basis)
     for o1 in basis[:brange]:

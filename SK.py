@@ -32,6 +32,7 @@ def SK_coeff(o1,o2,R12,Vcoeff,renorm,offset,tol):
         if l12=="00":
 #                    osS = o1.orbital[:3]+o2.orbital[:3]+"S"
             if tmp+"S" in eta:
+                
                 V = eta[tmp+"S"]
 #                        V = eta[tmp+"S"]
             elif tmp2+"S" in eta:

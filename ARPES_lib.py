@@ -208,38 +208,37 @@ class experiment:
         return Mtmp
 
      
-    def write(self,Au,Ad,Evals,X,Y,directory,G):
-        pars = directory+'_params.txt'
-        self.write_params([X[0,:],Y[:,0]],Evals,pars,G)
-
-        for i in range(len(Evals)):   
-            filename_u = directory + '_up_%d.txt'%i
-            self.write_Ik(filename_u,Au[:,:,i])
-#            
-            filename_d = directory + '_down_%d.txt'%i
-            self.write_Ik(filename_d,Ad[:,:,i])
-#            
+    def write_map(self,_map,directory):
+        for i in range(np.shape(_map)[2]):   
+            filename = directory + '_{:d}.txt'.format(i)
+            self.write_Ik(filename,_map[:,:,i])
         return True
 
-    def write_params(self,ks,Erange,parfile,G):
+    def write_params(self,Adict,parfile):
+        
         
         with open(parfile,"w") as params:
-            params.write("Photon Energy: {:0.2f} eV \n".format(self.hv))
-            params.write("Temperature: {:0.2f} K \n".format(self.T))
-            params.write("Polarization: {:0.2f} {:0.2f} {:0.2f}\n".format(self.pol[0],self.pol[1],self.pol[2]))
-            params.write("\n")
-            for k in list(enumerate(ks)):
-                params.write('Momentum axis {:d}: '.format(k[0]+1))
-                kline = " ".join(map(str,k[1]))
-                kline+="\n\n"
-                params.write(kline)
-            params.write("Binding Energy Axis: ")
-            eline = " ".join(map(str,Erange))
-            eline+="\n"
-            params.write(eline)
-            params.write("Energy Resolution: {:0.4f} \n".format(self.dE))
-            params.write("Momentum Resolution: {:0.4f} \n".format(self.dk))
-            params.write("Self Energy: G1 + G2 w^2--{:0.4f} {:0.4f}\n".format(G[0],G[1]))
+            params.write("Photon Energy: {:0.2f} eV \n".format(Adict['hv']))
+            params.write("Temperature: {:0.2f} K \n".format(Adict['T'][1]))
+            params.write("Polarization: {:0.3f}+{:0.3f}j,{:0.3f}+{:0.3f}j,{:0.3f}+{:0.3f}j\n".format(np.real(Adict['pol'][0]),np.imag(Adict['pol'][0]),np.real(Adict['pol'][1]),np.imag(Adict['pol'][1]),np.real(Adict['pol'][2]),np.imag(Adict['pol'][2])))
+            params.write("Energy Range: {:0.6f},{:0.6f},{:0.6f}\n".format(Adict['cube']['E'][0],Adict['cube']['E'][1],Adict['cube']['E'][2]))
+            params.write("Kx Range: {:0.6f},{:0.6f},{:0.6f}\n".format(Adict['cube']['X'][0],Adict['cube']['X'][1],Adict['cube']['X'][2]))
+            params.write("Ky Range: {:0.6f},{:0.6f},{:0.6f}\n".format(Adict['cube']['Y'][0],Adict['cube']['Y'][1],Adict['cube']['Y'][2]))
+            params.write("Kz Value: {:0.6f}\n".format(Adict['cube']['kz']))
+            try:
+                params.write("Azimuthal Rotation: {:0.6f}\n".format(Adict['angle']))
+            except ValueError:
+                pass
+            params.write("Energy Resolution: {:0.4f} \n".format(Adict['resolution']['E']))
+            params.write("Momentum Resolution: {:0.4f} \n".format(Adict['resolution']['k']))
+            
+            params.write("Self Energy: G1 + G2 w^2--{:0.4f} {:0.4f}\n".format(Adict['SE'][0],Adict['SE'][1]))
+            try:
+                params.write("Spin Projection: {:0.4f},{:0.4f},{:0.4f}\n".format(Adict['spin'][0],Adict['spin'][1],Adict['spin'][2]))
+            except TypeError:
+                pass
+            
+        params.close()
     
     def write_Ik(self,filename,mat):
         with open(filename,"w") as destination:

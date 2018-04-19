@@ -10,6 +10,7 @@ import matplotlib
 #matplotlib.use('TkAgg')
 from matplotlib import rc
 from matplotlib import rcParams
+import os
 rcParams.update({'figure.autolayout':True})
 
 
@@ -19,13 +20,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import matplotlib.cm as cm
 
-import sys
 
-
-#if sys.version_info[0]<3:
-#    import Tkinter as Tk
-#    import tkMessageBox as messagebox
-#else:
 import tkinter as Tk
 from tkinter import messagebox
     
@@ -40,6 +35,7 @@ class plot_intensity_interface:
         print('Initializing spectral function...')
         _,self.Imat = self.expmnt.spectral(self.Adict)
         self.Imat_dict = {'I_0':self.Imat}
+        self.meta = {'I_0':self.Adict} #Meta data for use in exporting intensity map to file
         self.x = self.Adict['cube']['X']
         self.y = self.Adict['cube']['Y']
         self.w = self.Adict['cube']['E']
@@ -194,6 +190,7 @@ class plot_intensity_interface:
                 mat_name = mat_nm.get() if mat_nm.get()!="" else "I_{:d}".format(len(self.Imat_dict))
 
                 _,self.Imat_dict[mat_name] = self.expmnt.spectral(tmp_dict)
+                self.meta[mat_name] = tmp_dict #Save the parameters associated with a given calculation for use in export
                 
                 mat_listbox.insert("end",mat_name)            
             
@@ -332,8 +329,70 @@ class plot_intensity_interface:
             
         main_info_button = Tk.Button(master=self.root,text='Info',command=_infobox_main)
         main_info_button.grid(row=5,column=1)
+        
+        def _exp_win():
             
+            ewin = Tk.Toplevel()
+            ewin.wm_title('EXPORT MAPS TO FILE')
+#            List of available Maps
+            list_lab = Tk.Label(master=ewin,text='Available maps: ').grid(row=0,column=0)
+            mat_list = (d for d in self.Imat_dict)
+            mat_listbox = Tk.Listbox(master=ewin)
+            mat_listbox.grid(row=1,column=0,columnspan=4)
+            for d in list(enumerate(self.Imat_dict)):
+                mat_listbox.insert("end",d[1])
+            
+            def _sel_dir():
+                
+                 self.destination = Tk.filedialog.askdirectory()
+                 
+            dir_select =Tk.Button(master=ewin,text='Select Directory',command =_sel_dir)
+            dir_select.grid(row=2,column=0)
+            name_label = Tk.Label(master=ewin,text='File Lead: ').grid(row=3,column=0)
+            name_entry = Tk.Entry(master=ewin,text='UNTITLED')
+            name_entry.grid(row=3,column=1)
+            
+            def _exp_now():
+                
+                if len(name_entry.get())>0:
+                    file_lead=name_entry.get()
+                else:
+                    file_lead = 'UNTITLED'
+                self.meta['directory'] = self.destination +'/'+ file_lead
+                
+                parfile = self.meta['directory'] + '_params.txt'
+                
+                ind_map = mat_listbox.curselection()[0]
+                map_choice = mat_listbox.get(ind_map)
+                self.expmnt.write_params(self.meta[map_choice],parfile)
+                self.expmnt.write_map(self.Imat_dict[map_choice],self.meta['directory'])
+                        
+                
 
+#                try:
+#                    
+#                    self.Imat = self.Imat_dict[mat_listbox.get(selected)]
+                    
+                
+                                
+            exp_button = Tk.Button(master=ewin,text='Export Data',command=_exp_now)
+            exp_button.grid(row=4,column=0)
+            
+            def _quit_ewin():
+                ewin.quit()
+                ewin.destroy()
+            
+            quit_button_exp = Tk.Button(master=ewin,text='Quit',command=_quit_ewin)
+            quit_button_exp.grid(row=4,column=1)
+            ewin.mainloop()
+            
+            
+            
+            
+        
+            
+        export_button = Tk.Button(master=self.root,text="Export",command=_exp_win)
+        export_button.grid(row=5,column=6)
         
         quit_button = Tk.Button(master=self.root,text="Quit",command=_quit_win)
         quit_button.grid(row=5,column=8)
