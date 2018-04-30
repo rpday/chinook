@@ -148,8 +148,8 @@ class TB_model:
         fig=plt.figure()
         ax=fig.add_subplot(111)
         plt.axhline(y=0,color='grey',lw=lw,ls='--')
-        rc('font',**{'family':'serif','serif':['Palatino'],'size':20})
-        rc('text',usetex = False) 
+        rc('font',**{'size':20})
+        rc('text',usetex = True) 
         for b in self.Kobj.kcut_brk:
             plt.axvline(x = b,color = 'grey',ls='--',lw=lw)
         for i in range(len(self.basis)):

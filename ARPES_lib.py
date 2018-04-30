@@ -3,7 +3,30 @@
 """
 Created on Sat Nov 18 21:15:20 2017
 
-@author: ryanday
+@author: rday
+
+MIT License
+
+Copyright (c) 2018 Ryan Patrick Day
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
 """
 
 import numpy as np
@@ -220,10 +243,10 @@ class experiment:
         with open(parfile,"w") as params:
             params.write("Photon Energy: {:0.2f} eV \n".format(Adict['hv']))
             params.write("Temperature: {:0.2f} K \n".format(Adict['T'][1]))
-            params.write("Polarization: {:0.3f}+{:0.3f}j,{:0.3f}+{:0.3f}j,{:0.3f}+{:0.3f}j\n".format(np.real(Adict['pol'][0]),np.imag(Adict['pol'][0]),np.real(Adict['pol'][1]),np.imag(Adict['pol'][1]),np.real(Adict['pol'][2]),np.imag(Adict['pol'][2])))
-            params.write("Energy Range: {:0.6f},{:0.6f},{:0.6f}\n".format(Adict['cube']['E'][0],Adict['cube']['E'][1],Adict['cube']['E'][2]))
-            params.write("Kx Range: {:0.6f},{:0.6f},{:0.6f}\n".format(Adict['cube']['X'][0],Adict['cube']['X'][1],Adict['cube']['X'][2]))
-            params.write("Ky Range: {:0.6f},{:0.6f},{:0.6f}\n".format(Adict['cube']['Y'][0],Adict['cube']['Y'][1],Adict['cube']['Y'][2]))
+            params.write("Polarization: {:0.3f}+{:0.3f}j {:0.3f}+{:0.3f}j {:0.3f}+{:0.3f}j\n".format(np.real(Adict['pol'][0]),np.imag(Adict['pol'][0]),np.real(Adict['pol'][1]),np.imag(Adict['pol'][1]),np.real(Adict['pol'][2]),np.imag(Adict['pol'][2])))
+            params.write("Energy Range: {:0.6f} {:0.6f} {:0.6f}\n".format(Adict['cube']['E'][0],Adict['cube']['E'][1],Adict['cube']['E'][2]))
+            params.write("Kx Range: {:0.6f} {:0.6f} {:0.6f}\n".format(Adict['cube']['X'][0],Adict['cube']['X'][1],Adict['cube']['X'][2]))
+            params.write("Ky Range: {:0.6f} {:0.6f} {:0.6f}\n".format(Adict['cube']['Y'][0],Adict['cube']['Y'][1],Adict['cube']['Y'][2]))
             params.write("Kz Value: {:0.6f}\n".format(Adict['cube']['kz']))
             try:
                 params.write("Azimuthal Rotation: {:0.6f}\n".format(Adict['angle']))
@@ -234,7 +257,7 @@ class experiment:
             
             params.write("Self Energy: G1 + G2 w^2--{:0.4f} {:0.4f}\n".format(Adict['SE'][0],Adict['SE'][1]))
             try:
-                params.write("Spin Projection: {:0.4f},{:0.4f},{:0.4f}\n".format(Adict['spin'][0],Adict['spin'][1],Adict['spin'][2]))
+                params.write("Spin Projection: {:0.4f} {:0.4f} {:0.4f}\n".format(Adict['spin'][0],Adict['spin'][1],Adict['spin'][2]))
             except TypeError:
                 pass
             

@@ -64,13 +64,13 @@ if __name__=="__main__":
     
 #    
 #    
-    ARPES_dict={'cube':{'X':[-0.4,0.4,70],'Y':[-0.4,0.4,70],'kz':0.0,'E':[-0.45,0.05,100]},
+    ARPES_dict={'cube':{'X':[-0.2,0.2,10],'Y':[-0.2,0.2,10],'kz':0.0,'E':[-0.45,0.05,10]},
                 'SE':[0.005,0.01],
                 'directory':'C:\\Users\\rday\\Documents\\TB_ARPES\\2018\\TB_ARPES_2018\\FeSe',
                 'hv': 21.2,
                 'pol':np.array([0,np.sqrt(0.5),-np.sqrt(0.5)]),
                 'mfp':7.0,
-                'resolution':{'E':0.03,'k':0.05},
+                'resolution':{'E':0.01,'k':0.02},
                 'T':[False,10.0],
                 'W':4.0,
                 'angle':np.pi/4,

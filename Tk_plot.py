@@ -3,7 +3,30 @@
 """
 Created on Thu Feb 22 11:34:32 2018
 
-@author: ryanday
+@author: rday
+
+MIT License
+
+Copyright (c) 2018 Ryan Patrick Day
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
 """
 
 import matplotlib
@@ -218,6 +241,8 @@ class plot_intensity_interface:
                 map_nm = mat_nm.get() if (mat_nm.get()!="" or bool(sum([mat_nm==d for d in self.Imat_dict]))) else "I_{:d}".format(len(self.Imat_dict))
                 mat_listbox.insert("end",map_nm)
                 self.Imat_dict[map_nm] = tmp_mat
+                self.meta[map_nm] = tmp_mat #Save the parameters associated with a given calculation for use in export
+
                 
         
             op_label = Tk.Label(master=cwin,text="Operate: ").grid(row=7,column=0)
@@ -367,7 +392,7 @@ class plot_intensity_interface:
                 self.expmnt.write_params(self.meta[map_choice],parfile)
                 self.expmnt.write_map(self.Imat_dict[map_choice],self.meta['directory'])
                         
-                
+                print('Export Complete')
 
 #                try:
 #                    

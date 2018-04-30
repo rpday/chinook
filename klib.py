@@ -49,7 +49,7 @@ class kpath:
         self.kpts = np.array(self.kpts)
         return self.kpts
     
-    
+###ADD MESH GENERATION FOR e.g. DOS type-calculations    
     
 def bvectors(a_vec):
     b_vec = 2*np.pi*np.array([(np.cross(a_vec[1],a_vec[2])/np.dot(a_vec[0],np.cross(a_vec[1],a_vec[2]))),(np.cross(a_vec[2],a_vec[0])/np.dot(a_vec[1],np.cross(a_vec[2],a_vec[0]))),(np.cross(a_vec[0],a_vec[1])/np.dot(a_vec[2],np.cross(a_vec[0],a_vec[1])))])
@@ -57,6 +57,9 @@ def bvectors(a_vec):
 
 
 def kmesh(ang,X,Y,kz):
+    '''
+    Take a mesh of kx and ky with fixed kz and generate a 3xN array of points
+    '''
             
     kp = np.sqrt(X**2+Y**2)
     ph = np.arctan2(Y,X)

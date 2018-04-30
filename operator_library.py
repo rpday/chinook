@@ -11,6 +11,7 @@ import matplotlib.cm as cm
 import H_library as Hlib
 import TB_lib as TBlib
 from matplotlib import rc 
+import klib as K_lib
 
 '''
 Library for different operators of possible interest in calculating, diagnostics, etc for a material of interest
@@ -188,8 +189,8 @@ def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(0,0),degen=False):
     fig = plt.figure()
     ax=fig.add_subplot(111)
     plt.axhline(y=0,color='grey',lw=1,ls='--')
-    rc('font',**{'family':'serif','serif':['Palatino'],'size':20})
-    rc('text',usetex = False)
+    rc('font',**{'size':20})
+    rc('text',usetex = True)
     for b in TB.Kobj.kcut_brk:
         plt.axvline(x = b,color = 'grey',ls='--',lw=1.0)
         
@@ -222,7 +223,29 @@ def LdotS(TB,axis=None,Kobj=None,vlims=(0,0),Elims=(0,0)):
     O = O_path(HSO,TB,Kobj,vlims,Elims)
     return O
     
+
+
+def FS(TB,ktuple,Ef,tol):
+    x,y,z=np.linspace(*ktuple[0]),np.linspace(*ktuple[1]),ktuple[2]
+    X,Y=np.meshgrid(x,y)
+        
+    k_arr,_ = K_lib.kmesh(0.0,X,Y,z)  
+
+    blen = len(TB.basis)    
+
+    TB.Kobj = K_lib.kpath(k_arr)
+    _,_ = TB.solve_H()
+    TB.Eband = np.reshape(TB.Eband,(np.shape(TB.Eband)[-1]*np.shape(X)[0]*np.shape(X)[1])) 
+    pts = []
+    for ei in range(len(TB.Eband)):
+        if abs(TB.Eband[ei]-Ef)<tol: 
+            inds = (int(np.floor(np.floor(ei/blen)/np.shape(X)[1])),int(np.floor(ei/blen)%np.shape(X)[1]))
+            pts.append([X[inds],Y[inds]])
     
+    pts = np.array(pts)
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    plt.scatter(pts[:,0],pts[:,1])
 
 
 
