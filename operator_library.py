@@ -82,6 +82,53 @@ def LSmat(TB,axis=None):
                     if o1.index!=o2.index:
                         HSO[o2.index,o1.index]+=np.conj(LS_val)
     return HSO
+
+
+
+def Lz_mat(TB):
+    '''
+    Generate an arbitary Lz type matrix for a given basis. Uses same Yproj as 
+    the HSO in the H_library, but is otherwise different. 
+    This is generic to all l, except the normal_order, specifically defined for l=1,2...should generalize
+    Otherwise, this structure holds for all l!
+    The user gives an 'axis'--if None, then just compute the L.S matrix. Otherwise, the LiSi matrix is computed
+    with i the axis index. To do this, a linear combination of L+S+,L-S-,L+S-,L-S+,LzSz terms are used to compute
+    In the factos dictionary, the weight of these terms is defined. The keys are tuples of (L+/-/z,S+/-/z) in a bit
+    of a cryptic way. For L, range (0,1,2) ->(-1,0,1) and for S range (-1,0,1) = S1-S2 with S1/2 = +/- 1 here
+    
+    L+,L-,Lz matrices are defined for each l shell in the basis, transformed into the basis of cubic harmonics.
+    The nonzero terms will then just be used along with the spin and weighted by the factor value, and slotted into 
+    a len(basis)xlen(basis) matrix HSO
+    args:
+        TB -- tight-binding object, as defined in TB_lib.py
+    return:
+        HL (len(basis)xlen(basis)) numpy array of complex float
+    '''
+    Md = Hlib.Yproj(TB.basis)
+    normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4}}
+    L,al = {},[]
+    HL = np.zeros((len(TB.basis),len(TB.basis)),dtype=complex)
+    for o in TB.basis:
+        if (o.atom,o.l) not in al:
+            al.append((o.atom,o.l))
+            M = Md[(o.atom,o.l)]
+            Mp = np.linalg.inv(M)
+            L[(o.atom,o.l)] = np.dot(Mp,np.dot(Lz(o.l),M))
+
+    for o1 in TB.basis:
+        for o2 in TB.basis:
+            if o1.index<=o2.index:
+                L_val = 0.0
+                if np.linalg.norm(o1.pos-o2.pos)<0.0001 and o1.l==o2.l and o1.n==o2.n:
+                    inds = (normal_order[o1.l][o1.label[2:]],normal_order[o2.l][o2.label[2:]])
+                    
+                    ds = (o1.spin-o2.spin)/2.
+                    if ds==0:
+                        L_val+=L[(o1.atom,o1.l)][inds]
+                    HL[o1.index,o2.index]+=L_val
+                    if o1.index!=o2.index:
+                        HL[o2.index,o1.index]+=np.conj(L_val)
+    return HL
         
 
 def Lp(l):
@@ -209,7 +256,7 @@ def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(0,0),degen=False):
         
     for p in range(np.shape(O_vals)[1]):
         plt.plot(TB.Kobj.kcut,TB.Eband[:,(2 if degen else 1)*p],color='navy',lw=1.0)
-        O_line=plt.scatter(TB.Kobj.kcut,TB.Eband[:,(2 if degen else 1)*p],c=O_vals[:,p],cmap=cm.Spectral,marker='.',lw=0,s=100,vmin=vlims[0],vmax=vlims[1])
+        O_line=plt.scatter(TB.Kobj.kcut,TB.Eband[:,(2 if degen else 1)*p],c=O_vals[:,p],cmap=cm.Spectral,marker='.',lw=0,s=300,vmin=vlims[0],vmax=vlims[1])
     plt.axis([TB.Kobj.kcut[0],TB.Kobj.kcut[-1],Elims[0],Elims[1]])
     plt.xticks(TB.Kobj.kcut_brk,TB.Kobj.labels)
     plt.colorbar(O_line,ax=ax)
@@ -218,10 +265,37 @@ def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(0,0),degen=False):
     
     return O_vals
 
-def LdotS(TB,axis=None,Kobj=None,vlims=(0,0),Elims=(0,0)):
-    HSO = LSmat(TB,axis)
-    O = O_path(HSO,TB,Kobj,vlims,Elims)
-    return O
+
+def O_surf(O,TB,ktuple,Ef,tol,vlims=(-1,1)):
+    '''Compute and plot the expectation value of an user-defined operator over a surface of constant-binding energy
+        Option of summing over degenerate bands (for e.g. fat bands) with degen boolean flag
+        
+        args: O -- matrix representation of the operator (numpy array len(basis), len(basis) of complex float)
+            TB -- Tight binding object from TB_lib
+            ktuple -- momentum range for mesh: ktuple[0] = (x0,xn,n),ktuple[1]=(y0,yn,n),ktuple[2]=kz
+            vlims -- limits for the colourscale (optional argument)
+
+
+        return -- the numpy array of expectation values
+    
+    '''
+    coords,Eb,Ev=FS(TB,ktuple,Ef,tol)
+    masked_Ev = np.array([Ev[int(coords[ei,2]/len(TB.basis)),:,int(coords[ei,2]%len(TB.basis))] for ei in range(len(coords))])
+    Ovals = np.sum(np.conj(masked_Ev)*np.dot(O,masked_Ev.T).T,1)
+    
+    pts = np.array([[coords[ci,0],coords[ci,1],np.real(Ovals[ci])] for ci in range(len(coords))])
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    plt.scatter(pts[:,0],pts[:,1],c=pts[:,2],cmap=cm.RdBu,s=200,vmin=vlims[0],vmax=vlims[1])
+    plt.scatter(pts[:,0],pts[:,1],c='k',s=5)
+    
+    return pts
+    
+    
+   
+    
+    
     
 
 
@@ -240,12 +314,51 @@ def FS(TB,ktuple,Ef,tol):
     for ei in range(len(TB.Eband)):
         if abs(TB.Eband[ei]-Ef)<tol: 
             inds = (int(np.floor(np.floor(ei/blen)/np.shape(X)[1])),int(np.floor(ei/blen)%np.shape(X)[1]))
-            pts.append([X[inds],Y[inds]])
+            pts.append([X[inds],Y[inds],ei])
     
     pts = np.array(pts)
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    plt.scatter(pts[:,0],pts[:,1])
+    ax.scatter(pts[:,0],pts[:,1])
+    return pts,TB.Eband,TB.Evec
+    
+    
+####################SOME STANDARD OPERATORS FOLLOW HERE: ######################
+    
+    
+
+def LdotS(TB,axis=None,Kobj=None,vlims=(0,0),Elims=(0,0)):
+    HSO = LSmat(TB,axis)
+    O = O_path(HSO,TB,Kobj,vlims,Elims)
+    return O
+
+def Sz(TB,Kobj=None,vlims=(0,0),Elims=(0,0)):
+    Omat = Sz_mat(TB)
+    O = O_path(Omat,TB,Kobj,vlims,Elims)
+    return O
+
+def Lz_path(TB,Kobj=None,vlims=(0,0),Elims=(0,0)):
+    Omat = Lz_mat(TB)
+    O = O_path(Omat,TB,Kobj,vlims,Elims)
+    return O
+
+def LzSz_path(TB,Kobj=None,vlims=(0,0),Elims=(0,0)):
+    Omat = np.dot(Lz_mat(TB),Sz_mat(TB))
+    O = O_path(Omat,TB,Kobj,vlims,Elims)
+    return O
+
+def Jz_path(TB,Kobj=None,vlims=(0,0),Elims=(0,0)):
+    Omat = Lz_mat(TB)+Sz_mat(TB)
+    O = O_path(Omat,TB,Kobj,vlims,Elims)
+    return O
+
+def Sz_mat(TB):
+    M = np.identity(len(TB.basis))
+    els = np.array([-0.5 if j<len(TB.basis)/2 else 0.5 for j in range(len(TB.basis))])
+    M*=els
+    return M
+
+    
 
 
 
