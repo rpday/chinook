@@ -1,0 +1,20 @@
+Thanks for taking the time to have a look at the UBC TB_ARPES repository!
+
+This folder contains the essential files necessary to run a matrix element calculation, as well as a few input files I've generated for a few 
+different systems of interest to me. The graphene_simple.py script is a simple Slater-Koster based pz model for graphene, and FeSe.py is
+an example for a system where the tight-binding model is imported from a text file. Opening FeSe_RD.txt you will see the standard format for
+sending a text-file based Hamiltonian to the code as an input. This weekend (13 April - 15 April) I will try to set up some copies of these
+files with some documentation to make the procedure more transparent. Generally speaking though, I prefer the use of dictionaries to provide
+the necessary inputs for the various functions. We begin by building a basis (list of orbital objects which carry their atomic description
+in terms of spin, and projection onto various spherical harmonics). For diagnostic purposes you can define a k-path for computing the band
+structure, as well as operator expectation values. The operator library has a few predefined operators (L.S and fat-band projections defined), but
+you can also define any other operator of interest, so long as it is a numpy array of NxN dimension (N is orbital basis length).
+
+With the orbital basis defined you can generate a TB object, and then using the ARPES_dict you establish your experimental parameters.
+Polarization and spin projection can be redefined at run time in the Tkinter GUI so don't fuss too much over that. The photon energy is however 
+fixed at time of calculating the matrix elements.
+
+I'll try to get some more comprehensive documentaion together ASAP, but in the mean time I'm happy to sit down and discuss the code and how to
+use it any time! 
+
+--Ryan

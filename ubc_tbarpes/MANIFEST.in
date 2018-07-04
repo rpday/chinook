@@ -1,0 +1,3 @@
+include README.rst
+include electron_configs.txt
+include atomic_mass.txt

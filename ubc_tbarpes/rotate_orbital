@@ -1,0 +1,116 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jun 26 10:01:12 2018
+
+@author: ryanday
+
+WIGNER D-MATRIX -- TO BE INCLUDED IN THE YLM MODULE
+
+
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def F_(n):
+    '''
+    Simple recursive factorial function, valid for positive integers--otherwise returns False
+    arg: n -- input integer
+    return: factorial of n 
+          /    __
+   n! =   |    ||    i        i>0
+          |  1<i<=n
+          |   
+          \     1             i==0
+    '''
+    if n%1==0 and n>-1:
+        if n<1:
+            return 1
+        else:
+            return n*F_(n-1)
+    else:
+        return False
+
+
+def _dmmp_(j,m,mp):
+    '''
+    Matrix elements of the little-Wigner d matrix. These are defined here as lambda functions, with the argument
+    corresponding to the rotation angle. In this way the matrix can be defined simultaneously for a given angle
+    args:
+        j -- int orbital angular momentum quantum number
+        m -- int j_z projection, row index for the little d matrix
+        mp -- int j_z projection, column index for little d matrix
+    return:
+        lambda function of one variable, type float
+    '''
+    return lambda B: N_factor(j,m,mp)*sum([S_factor(s,j,m,mp)*np.sin(B/2)**(mp-m+2*s)*np.cos(B/2)**(2*j+m-mp-2*s) for s in S_range(j,m,mp)])
+
+def N_factor(j,m,mp):
+    '''
+    Prefactor for the matrix element in little-d matrix
+    args:
+        j -- int orbital angular momentum quantum number
+        m -- int j_z projection, row index for the little d matrix
+        mp -- int j_z projection, column index for little d matrix
+    return:
+        float
+        
+    '''
+    return np.sqrt(F_(j+mp)*F_(j-mp)*F_(j+m)*F_(j-m))
+
+def S_factor(s,j,m,mp):
+    '''
+    Prefactor in summation for the little d-matrix
+    args:
+        s -- int, summation index
+        j -- int orbital angular momentum quantum number
+        m -- int j_z projection, row index for the little d matrix
+        mp -- int j_z projection, column index for little d matrix
+    return:
+        float
+    '''
+    return (-1)**s/(F_(j+m-s)*F_(s)*F_(mp-m+s)*F_(j-mp-s))
+
+def S_range(j,m,mp):
+    '''
+    Compute range of valid indices which return non-negative argument for factorial in the S_factor function
+    args:
+        j -- int orbital angular momentum quantum number
+        m -- int j_z projection, row index for the little d matrix
+        mp -- int j_z projection, column index for little d matrix
+    return:
+        list of int
+        '''
+    tmp = [s for s in range(max(0,j+m,j-mp)+1) if (0<=s<=(j+m) and s>=(m-mp) and 0<=s<=(j-mp))]
+    return tmp
+
+
+
+def _big_D_(j,a,B,y):
+    '''
+    Wigner big D matrix for rotation of the basis orbitals of orbital angular momentum j by Euler angles
+    a,B,y -- defined in the z-y-z convention
+    args
+    
+    '''
+    return np.array([[np.exp(-1.0j*mp*a)*_dmmp_(j,mp,m)(B)*np.exp(-1.0j*m*y) for m in range(-j,j+1)] for mp in range(-j,j+1)])
+
+
+
+
+if __name__=="__main__":
+    
+    x = np.linspace(0,np.pi,10)
+    sD = _big_D_(2,0,x,0)
+
+#    tmp = sD(x)
+#    print(np.shape(tmp))
+#    plt.plot(x,sD(x)[0,:])
+#    plt.plot(x,sD(x)[1,:])
+#    
+#    
+    
+    
+
