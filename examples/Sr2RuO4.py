@@ -5,9 +5,13 @@ Created on Sat Nov 18 12:17:01 2017
 
 @author: ryanday
 """
+
+import sys
+sys.path.append('/Users/ryanday/Documents/UBC/TB_python/TB_ARPES/')
+
 import numpy as np
-import build_lib
-import ARPES_lib as ARPES
+import ubc_tbarpes.build_lib as build_lib
+import ubc_tbarpes.ARPES_lib as ARPES
 
 if __name__=="__main__":
 
@@ -51,33 +55,25 @@ if __name__=="__main__":
     TB.solve_H()
     TB.plotting(-1.5,1.0)
       
-    
-    ARPES_dict={'cube':{'X':[-0.805,0.805,200],'Y':[-0.805,0.805,200],'kz':0.0,'E':[-1.5,0.2,320]},
-                'SE':[0.002,0.03],
-                'directory':'C:\\Users\\rday\\Documents\\TB_ARPES\\2018\\TB_ARPES_2018\\FeSe',
-                'hv': 28,
-                'pol':np.array([1,0,0]),
-                'mfp':7.0,
-                'resolution':{'E':0.02,'k':0.02},
-                'T':[True,10.0],
-                'W':4.0,
-                'angle':0.0,
-                'spin':None,
-                'slice':[False,-0.2] 
-                }
-
+#    
+#    ARPES_dict={'cube':{'X':[-0.805,0.805,50],'Y':[-0.805,0.805,50],'kz':0.0,'E':[-1.5,0.2,100]},
+#                'SE':[0.002,0.03],
+#                'directory':'/save/directory/Sr2RuO4',
+#                'hv': 28,
+#                'pol':np.array([1,0,0]),
+#                'mfp':7.0,
+#                'resolution':{'E':0.02,'k':0.02},
+#                'T':[True,10.0],
+#                'W':4.0,
+#                'angle':0.0,
+#                'spin':None,
+#                'slice':[False,-0.2] 
+#                }
 #
-#    
-
-    expmt = ARPES.experiment(TB,ARPES_dict)
-    expmt.datacube(ARPES_dict)
-#    I = np.zeros((70,70,300))
-#    w = np.linspace(*ARPES_dict['cube']['E'])
-#    pol = np.array([0,1,0])
-#    for p in range(len(expmt.pks)):
-#        I[int(np.real(expmt.pks[p,0])),int(np.real(expmt.pks[p,1])),:]+=(abs(np.dot(expmt.Mk[p,0,:],pol))**2 + abs(np.dot(expmt.Mk[p,1,:],pol))**2)*np.imag(-1./(np.pi*(w-expmt.pks[p,2]+0.01j)))
-#    plt.figure()
-#    plt.pcolormesh(I[:,:,265])
-#    
-    expmt.plot_gui(ARPES_dict)
+##
+##    
+#
+#    expmt = ARPES.experiment(TB,ARPES_dict)
+#    expmt.datacube(ARPES_dict)    
+#    expmt.plot_gui(ARPES_dict)
 #    
