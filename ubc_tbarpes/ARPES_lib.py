@@ -318,7 +318,7 @@ class experiment:
             fermi = vf(w/(kb*self.T/q))
         else:
             fermi = np.ones(len(w))
-        I = np.zeros((len(x),len(y),len(w)))
+        I = np.zeros((len(y),len(x),len(w)))
         if ARPES_dict['spin'] is None:
             for p in range(len(self.pks)):
                 if abs(self.Mk[p]).max()>0:
