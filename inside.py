@@ -36,7 +36,7 @@ class parallelepiped:
     def __init__(self,avecs):
         self.points,self.maxlen = self.calc_points(avecs)
         self.planes = self.calc_planes(avecs)
-        self.edges = self.calc_edges()
+        self.edges,self.Rmat = self.calc_edges()
         
         
     def calc_points(self,avec):
@@ -50,6 +50,9 @@ class parallelepiped:
         for i in range(len(avec)):
             for j in range(i+1,len(avec)):
                 tmp = np.cross(avec[i],avec[j])
+                tmp = tmp/np.linalg.norm(tmp)
+                if tmp[2]<0:
+                    tmp = -1*tmp
                 point = int([k for k in range(3) if (k!=i and k!=j)][0])
                 planes.append([*tmp,*np.zeros(3),*avec[i],*(avec[i]+avec[j]),*avec[j]])
                 planes.append([*tmp,*avec[point],*(avec[point]+avec[i]),*(avec[point]+avec[i]+avec[j]),*(avec[point]+avec[j])])
@@ -69,13 +72,15 @@ class parallelepiped:
             edges (numpy array shape 6x4x4 containing origin and end of edge)
         '''
         edges = np.zeros((len(self.planes),4,4))
+        Rmatrices = np.zeros((len(self.planes),3,3))
         for p in range(len(self.planes)):
             Rmat = parallelogram.rotation(self.planes[p,:3])
+
             corners = np.dot(np.array([self.planes[p,3*(j+1):3*(j+2)] for j in range(4)]),Rmat)[:,:2]
             corners = parallelogram.sort_pts(corners)
             edges[p] = np.array([[*corners[np.mod(ii,4)],*corners[np.mod(ii+1,4)]] for ii in range(4)])
-
-        return edges
+            Rmatrices[p] = Rmat
+        return edges,Rmatrices
     
 
 def sign_proj(point,plane):
@@ -107,7 +112,7 @@ def plane_intersect(p1,p2,plane):
     xo = plane[3:6]
     m = p2-p1
     b = p1
-    return np.dot(norm,(xo+b))/np.dot(norm,m)*m - b
+    return b-np.dot(norm,(-xo+b))/np.dot(norm,m)*m 
 
 
 
@@ -132,7 +137,8 @@ def inside_pped(pped,point):
     for pi in range(len(pped.planes)):
         if cross_plane(point,point2,pped.planes[pi]):
             intersect = plane_intersect(point,point2,pped.planes[pi])
-            in_plane = parallelogram.in_pgram(intersect,pped.planes[pi],pped.edges[pi],pped.maxlen)
+            inter_2D = np.dot(intersect,pped.Rmat[pi])[:2]
+            in_plane = parallelogram.in_pgram(inter_2D,pped.edges[pi],pped.maxlen)
             if in_plane:
                 crossings+=1
     if np.mod(crossings,2)==0:
@@ -142,25 +148,26 @@ def inside_pped(pped,point):
 
 
 if __name__=="__main__":
-    avecs = np.array([np.random.random() for i in range(9)]).reshape((3,3))
+    avecs = np.array([1.5*np.random.random() for i in range(9)]).reshape((3,3))
+##    avecs = np.array([[1,1,0],[1,-1,0],[0,0,1]])
     pp = parallelepiped(avecs)
-    
-    points = np.array([[np.random.random()*3-0.5,np.random.random()*3-0.5,np.random.random()*3-0.5] for ii in range(20)])
-#    points = np.array([[1,2,2]])
+#    
+#    points = np.array([[np.random.random()*4-0.5,np.random.random()*4-0.5,np.random.random()*4-0.5] for ii in range(2000)])
+##    points = np.array([[1,2,2]])
     inside =[]
     outside = []
-    for pi in points:
-
+    for ii in range(5000):
+        pi = np.array([np.random.random()*3-0.5,np.random.random()*3-0.5,np.random.random()*3-0.5])
         if inside_pped(pp,pi):
             inside.append(pi)
-        else:
-            outside.append(pi)
+#        else:
+#            outside.append(pi)
     inside = np.array(inside)
-    outside = np.array(outside)
-    
-    fig = plt.figure()
-    ax = fig.add_subplot(111,projection='3d')
-    ax.scatter(pp.points[:,0],pp.points[:,1],pp.points[:,2],s=20,c='k')
-#    ax.scatter(points[:,0],points[:,1],points[:,2])
-    ax.scatter(inside[:,0],inside[:,1],inside[:,2],c='r')
-#    ax.scatter(outside[:,0],outside[:,1],outside[:,2],c='grey',alpha=0.3)
+#    outside = np.array(outside)
+    if len(inside)>0:
+        fig = plt.figure()
+        ax = fig.add_subplot(111,projection='3d')
+        ax.scatter(pp.points[:,0],pp.points[:,1],pp.points[:,2],s=20,c='k')
+    #    ax.scatter(points[:,0],points[:,1],points[:,2])
+        ax.scatter(inside[:,0],inside[:,1],inside[:,2],c='r')
+#        ax.scatter(outside[:,0],outside[:,1],outside[:,2],c='grey',alpha=0.3)

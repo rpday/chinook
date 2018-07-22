@@ -21,7 +21,8 @@ def rotation(norm):
     Rotate the plane so that it is normal to the 001 direction, then strip
     the z-information.
     '''
-    if np.linalg.norm(norm-np.array([0,0,1]))!=0:
+    norm = norm/np.linalg.norm(norm)
+    if abs(norm[2])!=np.linalg.norm(norm):
         x = np.cross(norm,np.array([0,0,1]))
         sin = np.linalg.norm(x)
         x = x/sin
@@ -31,7 +32,7 @@ def rotation(norm):
         R = cos*np.identity(3) + sin*u + (1-cos)*uu
     else:
         R = np.identity(3)
-    return R
+    return R.T
 
 def what_side(point,edge):
     return np.sign(np.cross(point,edge))
@@ -66,11 +67,11 @@ def edge_cross(p1,p2,e2,e1):
     else:
         return False
     
-def in_pgram(point,plane,e2D,maxlen):
-    Rmat = rotation(plane[:3])
-    p_proj = plane_project(point,plane)
-    p2D = np.dot(p_proj,Rmat)[:2]
-    p2D2 = p2D + (e2D[0,:2]-e2D[0,2:])*2*maxlen
+def in_pgram(p2D,e2D,maxlen):
+#    p_proj = plane_project(point,plane)
+#    Rmat = rotation(plane[:3])
+#    p2D = np.dot(p_proj,Rmat)[:2]
+    p2D2 = p2D + np.array([1,1])*2*maxlen
    
     crossings = 0
 
@@ -83,11 +84,12 @@ def in_pgram(point,plane,e2D,maxlen):
     if np.mod(crossings,2)==0:
         return False
     else:
-        plt.figure()
-        tmp = np.array(list(e2D) + [e2D[0]])
-        plt.plot(tmp[:,0],tmp[:,1])
-        plt.scatter(p2D[0],p2D[1])
-        plt.scatter(p2D2[0],p2D[1])
+
+#        plt.figure()
+#        tmp = np.array(list(e2D) + [e2D[0]])
+#        plt.plot(tmp[:,0],tmp[:,1])
+#        plt.scatter(p2D[0],p2D[1])
+#        plt.scatter(p2D2[0],p2D[1])
         return True
     
     
@@ -122,14 +124,14 @@ if __name__ == "__main__":
     pts_o = np.array([np.zeros(2),a,a+b,b])
     pts = sort_pts(pts_o)
     plane = np.array([0,0,1,0,0,0])
-    pts2 = np.array([[np.random.random()*3-.5,np.random.random()*3-0.5,0.0] for ii in range(10)])
+    pts2 = np.array([[np.random.random()*3-.5,np.random.random()*3-0.5] for ii in range(100)])
 #    pts2 = np.array([[0.5,-1.5,0]])
     edges = np.array([[*pts[np.mod(ii,4)],*pts[np.mod(ii+1,4)]] for ii in range(4)])
     inside = []
     outside = []
     for p in pts2:
 #        if in_pgram2D(p,np.array([0,0,1]),edges,5):
-        if in_pgram(p,plane,edges,5):
+        if in_pgram(p,edges,5):
             inside.append([p[0],p[1]])
         else:
             outside.append([p[0],p[1]])
