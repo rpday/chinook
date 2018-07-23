@@ -42,7 +42,7 @@ class parallelepiped:
     def calc_points(self,avec):
         pts = np.array([[int(i/4),int(np.mod(i/2,2)),int(np.mod(i,2))] for i in range(8)])
         vert = np.dot(pts,avec)
-        maxlen = np.array([np.linalg.norm(vert[ii]-vert[jj]) for ii in range(len(vert)) for jj in range(ii+1,len(vert))]).max()
+        maxlen = 100*np.array([np.linalg.norm(vert[ii]-vert[jj]) for ii in range(len(vert)) for jj in range(ii+1,len(vert))]).max()
         return vert,maxlen
     
     def calc_planes(self,avec):
@@ -132,6 +132,9 @@ def inside_pped(pped,point):
     return:
         Boolean True (inside) False (outside)
     '''
+#    if np.linalg.norm(point)==0: 
+#        return True
+#    else:
     crossings = 0
     point2 = point + pped.maxlen*2*np.array([0,0,1])
     for pi in range(len(pped.planes)):
@@ -148,16 +151,17 @@ def inside_pped(pped,point):
 
 
 if __name__=="__main__":
-    avecs = np.array([1.5*np.random.random() for i in range(9)]).reshape((3,3))
+    avecs = np.array([-0.5+1*np.random.random() for i in range(9)]).reshape((3,3))
 ##    avecs = np.array([[1,1,0],[1,-1,0],[0,0,1]])
+#    avecs = av_bad
     pp = parallelepiped(avecs)
 #    
 #    points = np.array([[np.random.random()*4-0.5,np.random.random()*4-0.5,np.random.random()*4-0.5] for ii in range(2000)])
 ##    points = np.array([[1,2,2]])
     inside =[]
     outside = []
-    for ii in range(5000):
-        pi = np.array([np.random.random()*3-0.5,np.random.random()*3-0.5,np.random.random()*3-0.5])
+    for ii in range(1000):
+        pi = np.array([np.random.random()*1-0.2,np.random.random()*1-0.2,np.random.random()*1-0.2])
         if inside_pped(pp,pi):
             inside.append(pi)
 #        else:
