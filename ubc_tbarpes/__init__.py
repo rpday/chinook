@@ -31,4 +31,5 @@ SOFTWARE.
 
 __all__ = ['adaptive_int','ARPES_lib','atomic_mass','build_lib','CG','cub2sph','direct_transition',
            'electron_configs', 'FS','H_library','klib','operator_library','orbital','plt_sph_harm',
-           'PP_radial','rad_int_compare','RPA','SK','slab_gen','TB_lib','Tk_plot','Ylm']
+           'PP_radial','rad_int_compare','RPA','SK','slab_gen','TB_lib','Tk_plot','Ylm','slab','parallelogram',
+           'inside','v3_def']

@@ -14,6 +14,7 @@ sys.path.append('/Users/ryanday/Documents/UBC/TB_python/TB_ARPES-rpday-patch-2/'
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import scipy.ndimage as nd
 import matplotlib.cm as cm
 import ubc_tbarpes.Ylm as Ylm
 import ubc_tbarpes.electron_configs as econ
@@ -167,7 +168,7 @@ def path_dir_op(TB,Kobj,hv,width,T,pol=None):
 
 ######-----------------Direct Transition Operator END--------------------######
 
-def optical_conductivity(TB,avec,N,T,dE,pol=None):
+def optical_conductivity(TB,avec,N,T,pol=None):
     '''
     Compute optical conductivity of sample, over a mesh covering the Brillouin zone.
     This is fairly preliminary, does not perform any interpolation, which is an essential next step.
@@ -199,9 +200,11 @@ def optical_conductivity(TB,avec,N,T,dE,pol=None):
                 
     
     sig = np.array(sorted(sig,key=itemgetter(0)))
-    e,x = resample(sig[:,0],sig[:,1],dE)
-    _,y = resample(sig[:,0],sig[:,2],dE)
-    _,z = resample(sig[:,0],sig[:,3],dE)
+    sample_rate = abs(np.array([[TB.Eband[i+1,j]-TB.Eband[i,j] for i in range(len(TB.Kobj.kpts)-1)] for j in range(np.shape(TB.Eband)[1])])).mean()
+
+    e,x = resample(sig[:,0],sig[:,1],sample_rate)
+    _,y = resample(sig[:,0],sig[:,2],sample_rate)
+    _,z = resample(sig[:,0],sig[:,3],sample_rate)
     sig = np.array([e,x,y,z]).T
     fig = plt.figure()
     ax = fig.add_subplot(131)
@@ -221,6 +224,7 @@ def resample(x,y,dx):
     for i in range(len(x)):
         ind = int((x[i]-xp[0])/dx)
         yp[ind] +=y[i]
+    yp = nd.gaussian_filter(yp,2)
     return xp,yp
     
     
@@ -325,17 +329,17 @@ def k_integrated(Kobj,TB,width,Ij,ylim=None):
     Ijdos = np.sum(Im,0)
     fig = plt.figure()
     
-    K,E = np.meshgrid(Kobj.kpts[:,1],en_dig)
+    K,E = np.meshgrid(Kobj.kcut,en_dig)
     ax = fig.add_subplot(121)
     ax.pcolormesh(K,E,Im.T,cmap=cm.Spectral,vmin = 0,vmax=abs(Im.max()/1))
     for bn in range(np.shape(TB.Eband)[1]):
-        ax.plot(Kobj.kpts[:,1],TB.Eband[:,bn],lw=0.5,c='k')
+        ax.plot(Kobj.kcut,TB.Eband[:,bn],lw=0.5,c='k')
     ax2 = fig.add_subplot(122)
     plt.plot(Ijdos,en_dig)
     if ylim is not None:
         ax.set_ylim(ylim[0],ylim[1])
         ax2.set_ylim(ylim[0],ylim[1])
-    return Im,Ijdos
+    return Im,Ijdos,en_dig
 
 
 

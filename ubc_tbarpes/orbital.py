@@ -141,6 +141,20 @@ def fact(n):
     else:
         return n*fact(n-1)
     
+    
+def slab_basis_copy(basis,new_posns,inds):
+    new_basis = np.empty(len(basis),dtype=orbital)
+    for o in list(enumerate(basis)):
+        tmp = o[1].copy()
+    
+        
+        tmp.slab_index = int(inds[o[0]])
+        tmp.index = o[0]
+        tmp.pos = new_posns[o[0]]
+        new_basis[int(inds[o[0]])] = tmp
+    return new_basis
+    
+    
 def Rmat(n,t):
     '''
     Rodrigues theorem for rotations. 

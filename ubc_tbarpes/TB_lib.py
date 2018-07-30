@@ -126,17 +126,11 @@ class TB_model:
         htmp = sorted(htmp,key=itemgetter(0,1,2,3,4))
 
         
-        H = []
+        H = gen_H_obj(htmp)
+        return H 
+    
         
-        Hnow = H_me(0,0)
         
-        for h in htmp:
-            if h[0]!=Hnow.i or h[1]!=Hnow.j:
-                H.append(Hnow)
-                Hnow = H_me(h[0],h[1]) 
-            Hnow.append_H(h[2],h[3],h[4],h[5])
-        H.append(Hnow)
-        return H  
             
      
         
@@ -186,6 +180,28 @@ class TB_model:
         plt.ylabel("Energy (eV)")
         if svlabel is not None:
             plt.savefig(svlabel)
+            
+            
+            
+def gen_H_obj(htmp):
+        htmp = sorted(htmp,key=itemgetter(0,1,2,3,4))
+
+        
+        H = []
+        
+        Hnow = H_me(0,0)
+        Rij = np.zeros(3)
+        
+        for h in htmp:
+            if h[0]!=Hnow.i or h[1]!=Hnow.j:
+                H.append(Hnow)
+                Hnow = H_me(int(np.real(h[0])),int(np.real(h[1])))
+                Rij = np.real(h[2:5])
+            Hnow.append_H(*Rij,h[5])
+        H.append(Hnow)
+        return H 
+            
+
             
             
             
