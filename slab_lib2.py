@@ -28,14 +28,18 @@ SOFTWARE.
 """
 
 
+import sys
+sys.path.append('C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/')
+
 
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import ubc_tbarpes.v3_def as v3
 import ubc_tbarpes.inside as inside
 import ubc_tbarpes.orbital as olib
-import ubc_tbarpes.TB_lib as TB_lib
-import ubc_tbarpes.vbasis as v3
+#import FeO_basis as FeO
+
 
 
 def GCD(a,b):
@@ -221,7 +225,7 @@ def par(avec):
     ax.scatter(box_pts[:,0],box_pts[:,1],box_pts[:,2],c='r',alpha=0.3)
     return vert,box_pts
 
-def populate_box(box,basis,avec,R):
+def populate_box(box,basis,avec):
     '''
     Populate the bounding box with points from the original lattice basis.
     
@@ -237,7 +241,7 @@ def populate_box(box,basis,avec,R):
     basis_fill = []
     for ri in real_space:
         for b in basis:
-            tmp = np.dot(b.pos,R) + ri
+            tmp = b.pos + ri
             basis_fill.append([*tmp,b.index])
     return np.array(basis_fill)
 
@@ -308,13 +312,12 @@ def cov_transform(basis,indices,avec,vvec):
 #    return basis
 
 def FeSe(avec):
-    fpos = np.array([[0.25,-0.25,0],[-0.25,0.25,0]])
+    fpos = np.array([[0.25,0.75,0.0],[0.75,0.25,0.0],[0.25,0.25,0.2324],[0.75,0.75,0.7676]])
     pos = np.dot(fpos,avec)
-    label = [['32xz','32yz'],['32xz','32yz']]
+    label = ['32xz','32xz','41z','41z']
     basis = []
     for p in list(enumerate(pos)):
-        for l in label[p[0]]:
-            basis.append(olib.orbital(p[0],len(basis),l,p[1],26))
+        basis.append(olib.orbital(int(p[0]/2),len(basis),label[p[0]],p[1],26))
     return basis
 
 
@@ -328,12 +331,11 @@ def gen_surface(avec,miller,basis):
     return:
         new_basis - surface unit cell orbital basis
         vn_b - the surface unit cell primitive lattice vectors
-        R -- rotation matrix, to be used in post-multiplication order numpy array 3x3 of float
     '''
     vn_b,R = basal_plane(v_vecs(miller,avec))
     pipe,box = par(vn_b)
     avec_R = np.dot(avec,R)
-    b_points = populate_box(box,basis,avec_R,R)
+    b_points = populate_box(box,basis,avec_R)
     in_pped,inds = populate_par(b_points,vn_b)
     
     new_basis = np.empty(len(in_pped),dtype=olib.orbital)
@@ -345,7 +347,7 @@ def gen_surface(avec,miller,basis):
         new_basis[ii] = tmp
     
     
-    return new_basis,vn_b,R
+    return new_basis,vn_b
     
 
 
@@ -396,173 +398,44 @@ def gen_slab(basis,vn,mint,minb,term):
         
     return avec,new_basis
 
-
-def region(num):
-    '''
-    Generate a symmetric grid of points in number of lattice vectors. The tacit assumption is a 3 dimensional lattice
-    args: num -- integer--grid will have size 2*num+1 in each direction
-    returns numpy array of size ((2*num+1)**3,3) with centre value of first entry of (-num,-num,-num),...,(0,0,0),...,(num,num,num)
-    '''
-    num_symm = 2*num+1
-    return np.array([[int(i/num_symm**2)-num,int(i/num_symm)%num_symm-num,i%num_symm-num] for i in range((num_symm)**3)])
-
-
-def unpack(H):
-    '''
-    Reduce a Hamiltonian object down to a list of matrix elements. Include the Hermitian conjugate terms
-    args:
-        H -- Hamiltonian object
-    return
-        Hlist -- list of Hamiltonian matrix elements
-    '''
-    Hlist =[]
-    for hij in H:
-        for el in hij.H:
-            Hlist.append([hij.i,hij.j,*el])
-#            if hij.i!=hij.j:
-#                Hlist.append([hij.j,hij.i,-el[0],-el[1],-el[2],np.conj(el[-1])])
-    return Hlist
-#
-#
-def H_surf(surf_basis,avec,H_bulk,Rmat):
-    '''
-    Rewrite the bulk-Hamiltonian in terms of the surface unit cell, with its most likely expanded basis.
-    The idea here is to organize all 'duplicate' orbitals, in terms of their various connecting vectors.
-    Using modular arithmetic, we then create an organized dictionary which categorizes the hopping paths
-    within the new unit cell according to the new basis index designation. For each element in the Hamiltonian
-    then, we can do the same modular definition of the hopping vector, easily determining which orbital in our
-    new basis this hopping path indeed corresponds to. We then make a new list, organizing corresponding to the
-    new basis listing.
-    '''
-    av_i = np.linalg.inv(avec)
-    cv_dict = mod_dict(surf_basis,av_i)
-
-    H_old = unpack(H_bulk)
-
-    Rcv = np.dot(np.array([h[2:5] for h in H_old]),Rmat)
-    H_new = np.empty((len(H_old),6),dtype=complex)
-    H_new = []
-    num_filled  = 0
-    for ii in range(len(H_old)):
-        hi = H_old[ii]
-        R_latt = np.mod(np.around(np.dot(Rcv[ii],av_i),4),1)
-        R_compare = (np.linalg.norm((cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][:,2:]-R_latt),axis=1),np.linalg.norm((cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][:,2:]-(1-R_latt)),axis=1))
-        try: ##basis ordering won't necessarily be the same. 
-            match = np.where(R_compare[0]<1e-4)[0]
-            for mi in match:#find the match
-                H_new.append([*cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][int(mi)][:2],*Rcv[ii],hi[-1]])
-                if H_new[-1][0]>H_new[-1][1]:
-                    H_new[-1] = H_conj(H_new[-1])
-                num_filled +=1
-
-        except IndexError:
-           print('flag')
-           continue
-#        try:
-#            match = np.where(R_compare[1]<1e-4)[0]
-#            for mi in match:
-#                H_new.append([*cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][int(mi)][:2],-Rcv[ii][0],-Rcv[ii][1],-Rcv[ii][2],np.conj(hi[5])])
-#                if H_new[-1][0]>H_new[-1][1]:
-#                    H_new[-1] = H_conj(H_new[-1])
-#                num_filled+=1
-#                
-##        #    H_new[ii] = np.array([*cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][int(match)][:2],-Rcv[ii][0],-Rcv[ii][1],-Rcv[ii][2],np.conj(hi[5])])
-##
-#        except IndexError:
-#            continue
-                #print('flag')#R_compare[0].min(),R_compare[1].min())
-        
-    print('Number of Bulk Hamiltonian Hopping Terms Found: {:d}, Number of Surface Basis Hopping Terms Filled: {:d}'.format(len(H_old),num_filled))
-    Hobj = TB_lib.gen_H_obj(H_new)
-        
-    return Hobj
-
-#def Hobj_to_dict(Hobj):
-#    Hdict = {}
-#    for h in Hobj:
-#        try:
-#            Hdict[h.i] = Hdict[h.i] + [[h.i,h.j,*h.H[i]] for i in range(len(h.H))]
-#        except KeyError:
-#            Hdict[h.i] = [[h.i,h.j,*h.H[i]] for i in range(len(h.H))]
-#    return Hdict
-#
-#def slab_H_gen(Hsurf,svec,basis):
-#    Hdict = Hobj_to_dict(Hsurf)
-#    new_H_list = []
-#    sv_i = np.linalg.inv(svec)
-#    for b in basis:
-#        Htmp = Hdict[b.slab_index]
-#        Rvec = np.array(Htmp[2:5])
-#        R_latt = np.mod(np.around(np.dot(Rvec,sv_i),4),1)
-#        Hi = 
-#        
-           
-
-
-def H_conj(h):
-    return np.array([h[1],h[0],-h[2],-h[3],-h[4],np.conj(h[5])])
-
-def mod_dict(surf_basis,av_i):
-    cv_dict = {}
-    for bi in range(len(surf_basis)):
-        for bj in range(len(surf_basis)):
-            mod_vec = np.mod(np.around(np.dot((surf_basis[bj].pos-surf_basis[bi].pos),av_i),4),1)
-            try:
-                cv_dict['{:d}-{:d}'.format(surf_basis[bi].slab_index,surf_basis[bj].slab_index)].append([bi,bj,*mod_vec])
-            except KeyError:
-                cv_dict['{:d}-{:d}'.format(surf_basis[bi].slab_index,surf_basis[bj].slab_index)] =[[bi,bj,*mod_vec]]
-    for cvi in cv_dict:
-
-        cv_dict[cvi] = np.array(cv_dict[cvi])
-    
-    return cv_dict
-
-
-    
     
     
 
 
 if __name__=="__main__":
-    print('run')
     #alpha-Fe2O3    
-#    avec = np.array([[0,4.736235,0],[4.101698,-2.368118,0],[0,0,13.492372]])
-#    miller = np.array([1,0,4])
-#    #Bi2Se3
-##    alatt = 4.1141#4.1138
-##    clatt = 28.64704#28.64 #using the QL model-
-##    avec = np.array([[alatt/np.sqrt(3.0),0.0,clatt/3.0],[-alatt/(2.0*np.sqrt(3.0)),alatt/2.0,clatt/3.0],[-alatt/(2.0*np.sqrt(3.0)),-alatt/2.0,clatt/3.0]])
-##    miller = np.array([1,1,1])
-##    basis = Bi2Se3(avec)
-#
-#    #FeSe
-    a,c =  3.7734,5.5258 
-    avec = np.around(np.array([[a/np.sqrt(2),a/np.sqrt(2),0.0],[a/np.sqrt(2),-a/np.sqrt(2),0.0],[0.0,0.0,c]]),4)
+    avec = np.array([[0,4.736235,0],[4.101698,-2.368118,0],[0,0,13.492372]])
+    miller = np.array([1,0,4])
+    #Bi2Se3
+#    alatt = 4.1141#4.1138
+#    clatt = 28.64704#28.64 #using the QL model-
+#    avec = np.array([[alatt/np.sqrt(3.0),0.0,clatt/3.0],[-alatt/(2.0*np.sqrt(3.0)),alatt/2.0,clatt/3.0],[-alatt/(2.0*np.sqrt(3.0)),-alatt/2.0,clatt/3.0]])
+#    miller = np.array([1,1,1])
+#    basis = Bi2Se3(avec)
 
-#    avec = np.array([[3,3,0],[-3,3,0],[0,0,5]])
+    #FeSe
+    avec = np.array([[3.25,3.25,0],[3.25,-3.25,0],[0,0,4]])
     miller = np.array([1,0,1])
+#    
+#    vn = v_vecs(miller,avec)
 ##    
-
+#    vn_b,R = basal_plane(vn)
+#
+#    pipe,box = par(vn_b)
+#    avec = np.dot(avec,R)
     basis = FeSe(avec)
-    new_basis,vn_b,R = gen_surface(avec,miller,basis)
-#    H_surf = gen_H_surf(new_basis,H_bulk)
-#    nvec,cull=gen_slab(new_basis,vn_b,50,30,[0,0])
+    new_basis,vn_b = gen_surface(avec,miller,basis)
+    H_surf = gen_H_surf(new_basis,H_bulk)
+    nvec,cull=gen_slab(new_basis,vn_b,50,30,[2,3])
 
 ##    basis = FeO.basis(avec)
 #    b_points = populate_box(box,basis,avec)
-#    pp = inside.parallelepiped(vn_b)
-#    in_pped,inds = populate_par(b_points,vn_b)
-#
 #    fig = plt.figure()
 #    ax = fig.add_subplot(111,projection='3d')
-#    ax.scatter(pipe[:,0],pipe[:,1],pipe[:,2])
-#    ax.scatter(b_points[:,0],b_points[:,1],b_points[:,2],alpha=0.3)
-#    ax.scatter(in_pped[:,0],in_pped[:,1],in_pped[:,2],c='b')
-#
-#    tmp2 = np.array([b_points[114,:3],b_points[186,:3]])
-#   # ax.scatter(tmp2[:,0],tmp2[:,1],tmp2[:,2],s=20,c='k')
-#    inside._draw_lines(ax,pp)
-    
+#    ax.scatter(box[:,0],box[:,1],box[:,2])
+#    ax.scatter(b_points[:,0],b_points[:,1],b_points[:,2])
+#    
+#    in_pped,inds = populate_par(b_points,vn_b)
 #    fig = plt.figure()
 #    ax = fig.add_subplot(111,projection='3d')
 #    ax.scatter(pipe[:,0],pipe[:,1],pipe[:,2])
@@ -570,18 +443,18 @@ if __name__=="__main__":
 #    
 #    build_slab(10,vn_b,in_pped)
 
-    near  = np.array([np.dot([int(np.mod(i,(3)))-1,int(np.mod(i/(3),(3)))-1,int(i/(3)**2)-1],vn_b) for i in range((3)**3)])
-    pts,crs = [],[]
-    for ni in near:
-        for b in list(enumerate(new_basis)):
-            pts.append(ni+b[1].pos)
-        #for b in list(enumerate(in_pped)):
-            #pts.append(ni+b[1])
-    pts = np.array(pts)
-    fig = plt.figure()
-    ax = fig.add_subplot(111,projection='3d')
-    ax.scatter(pts[:,0],pts[:,1],pts[:,2])
-           
+#    near  = np.array([np.dot([int(np.mod(i,(3)))-1,int(np.mod(i/(3),(3)))-1,int(i/(3)**2)-1],vn_b) for i in range((3)**3)])
+#    pts,crs = [],[]
+#    for ni in near:
+#        for b in list(enumerate(in_pped)):
+#            pts.append(ni+b[1])
+#            crs.append(cs[b[0]])
+#    pts = np.array(pts)
+#    crs = np.array(crs)
+#    fig = plt.figure()
+#    ax = fig.add_subplot(111,projection='3d')
+#    ax.scatter(pts[:,0],pts[:,1],pts[:,2],c=inds,cmap=cm.RdBu)
+            
 #    cov_fpos,cov_labels = cov_transform(basis,inds,avec,vn_b)
 #    
     

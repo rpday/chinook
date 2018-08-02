@@ -7,12 +7,11 @@ Created on Sun Jul 15 13:49:17 2018
 Define out-of-plane slab vector
 """
 
-import sys
-sys.path.append('C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/')
+#import sys
+#sys.path.append('C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/')
 
 import numpy as np
 import ubc_tbarpes.build_lib
-import ubc_tbarpes.slab
 
 def ang_v1v2(v1,v2):
     return np.arccos(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)))
