@@ -56,7 +56,19 @@ class H_me:
 
         return lambda x: sum([complex(m[-1])*np.exp(1.0j*np.dot(x,np.array([m[0],m[1],m[2]]))) for m in self.H])
         
-
+    def clean_H(self):
+        tmp = self.H
+        for hi in range(len(tmp)):
+            for hj in range(hi+1,len(tmp)):
+                try:
+                    norm = np.linalg.norm(np.array(tmp[hi])-np.array(tmp[hj]))
+                    if norm<1e-5:
+                        tmp.pop(hj)
+                except IndexError:
+                    continue
+        return tmp
+        
+        
 class TB_model:
     
     
@@ -122,9 +134,6 @@ class TB_model:
 
             so = Hlib.SO(self.basis)
             htmp = htmp + h2+ so
-        
-        htmp = sorted(htmp,key=itemgetter(0,1,2,3,4))
-
         
         H = gen_H_obj(htmp)
         return H 
@@ -196,13 +205,12 @@ def gen_H_obj(htmp):
             if h[0]!=Hnow.i or h[1]!=Hnow.j:
                 H.append(Hnow)
                 Hnow = H_me(int(np.real(h[0])),int(np.real(h[1])))
-                Rij = np.real(h[2:5])
+            Rij = np.real(h[2:5])
             Hnow.append_H(*Rij,h[5])
         H.append(Hnow)
         return H 
             
 
-            
             
             
 

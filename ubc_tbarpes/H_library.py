@@ -291,6 +291,18 @@ def GrahamSchmidt(a,b):
     return tmp/np.linalg.norm(tmp)
 
 
+def region(num):
+    '''
+    Generate a symmetric grid of points in number of lattice vectors. The tacit assumption is a 3 dimensional lattice
+    args: num -- integer--grid will have size 2*num+1 in each direction
+    returns numpy array of size ((2*num+1)**3,3) with centre value of first entry of (-num,-num,-num),...,(0,0,0),...,(num,num,num)
+    '''
+    num_symm = 2*num+1
+    return np.array([[int(i/num_symm**2)-num,int(i/num_symm)%num_symm-num,i%num_symm-num] for i in range((num_symm)**3)])
+
+
+        
+
 
 
     

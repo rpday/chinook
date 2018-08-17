@@ -30,6 +30,7 @@ class parallelepiped:
         self.points,self.maxlen = self.calc_points(avecs)
         self.planes = self.calc_planes(avecs)
         self.edges,self.Rmat = self.calc_edges()
+        self.bounding = self.define_lines()
         
         
     def calc_points(self,avec):
@@ -51,6 +52,17 @@ class parallelepiped:
                 planes.append([*tmp,*avec[point],*(avec[point]+avec[i]),*(avec[point]+avec[i]+avec[j]),*(avec[point]+avec[j])])
                 
         return np.array(planes)
+    
+    def define_lines(self):
+        lines = np.zeros((24,2,3))
+        for ii in range(24):
+            pts = self.planes[int(ii/4)][3:]
+            j = np.mod(ii,4)
+            in1 = np.mod((j)*3,12),np.mod(3*(j+1),12), np.mod((j+1)*3,12),np.mod(3*(j+2),12)
+            inds = [jj if jj>0 else None for jj in in1]
+            tmp=np.array([pts[inds[0]:inds[1]],pts[inds[2]:inds[3]]])
+            lines[ii] = tmp
+        return lines
     
     
 
@@ -77,6 +89,11 @@ class parallelepiped:
             edges[p] = np.array([[*corners[np.mod(ii,4)],*corners[np.mod(ii+1,4)]] for ii in range(4)])
             Rmatrices[p] = Rmat
         return edges,Rmatrices
+    
+    
+def _draw_lines(ax,pp):
+    for i in range(24):
+        ax.plot(pp.bounding[i][:,0],pp.bounding[i][:,1],pp.bounding[i][:,2],c='k')
     
     
 def rotation(norm):
@@ -116,7 +133,7 @@ def sign_proj(point,plane):
     return:
         sign (+/-1,0) corresponding to above, in or below the plane
     '''
-    return np.sign(np.dot(point-plane[3:6],plane[:3]))
+    return np.sign(np.around(np.dot(point-plane[3:6],plane[:3]),3))
 
 def cross_plane(p1,p2,plane):
     '''
@@ -152,10 +169,20 @@ def plane_intersect(p1,p2,plane):
     norm = plane[:3]/np.linalg.norm(plane[:3])
     xo = plane[3:6]
     m = p2-p1
-    b = p1
-    return b-np.dot(norm,(-xo+b))/np.dot(norm,m)*m 
+    return p1-np.dot(norm,(p1-xo))/np.dot(norm,m)*m 
 
+def point_is_intersect(point,intersect):
+    if np.linalg.norm(point-intersect)==0.0:
+        return True
+    else:
+        return False
 
+def origin_plane(pi):
+    if np.mod(pi,2)==0:
+        return 1
+    else:
+        return 0
+        
 
 
 def inside_pped(pped,point):
@@ -180,19 +207,17 @@ def inside_pped(pped,point):
     crossings = 0
     point2 = point + pped.maxlen*2*np.array([149,151,157])
     for pi in range(len(pped.planes)):
+            
         if cross_plane(point,point2,pped.planes[pi]):
             intersect = plane_intersect(point,point2,pped.planes[pi])
             inter_2D = np.dot(intersect,pped.Rmat[pi])[:2]
             in_plane = parallelogram.in_pgram(inter_2D,pped.edges[pi],pped.maxlen)
 
             if in_plane:
-                if np.linalg.norm(point-intersect)==0.0:#IF THE POINT IS CONTAINED IN A PLANE
-                    if np.mod(pi,2)==0: #IF the plane includes the origin, consider point inside the parallelepiped
-                        crossings = 1
-                    else: #If it does not include the origin, exclude. This logic gate based on ordering of plane generation--the origin will be in every other plane-->THIS IS SPECIFIC TO THE PARALLELEPIPED CLASS DEFINED HERE!
-                        crossings = 0
+               if point_is_intersect(point,intersect):#IF THE POINT IS CONTAINED IN A PLANE
+                    crossings = origin_plane(pi)
                     break
-                crossings+=1
+               crossings+=1
     if np.mod(crossings,2)==0:
         return False
     else:
@@ -200,26 +225,27 @@ def inside_pped(pped,point):
 
 
 if __name__=="__main__":
-    avecs = np.array([[  4.101698,  -2.368118,   0.      ],
-       [  0.      , -18.94494 ,  13.492372],
-       [ -4.101698,  -2.368117, -13.492372]])
-
-    pp = parallelepiped(avecs)
-    pts = np.zeros(3)
-    inside =[]
-    outside = []
-    for ii in range(len(pts)):
-        pi = pts[ii]#np.array([np.random.random()*10-5,np.random.random()*30-27,np.random.random()*30-15])
-        if inside_pped(pp,pi):
-            inside.append(pi)
-        else:
-            outside.append(pi)
-    inside = np.array(inside)
-    outside = np.array(outside)
-    if len(inside)>0:
-        fig = plt.figure()
-        ax = fig.add_subplot(111,projection='3d')
-        ax.scatter(pp.points[:,0],pp.points[:,1],pp.points[:,2],s=20,c='k')
-    #    ax.scatter(points[:,0],points[:,1],points[:,2])
-        ax.scatter(inside[:,0],inside[:,1],inside[:,2],c='r')
+    print('run')
+#    avecs = np.array([[  4.101698,  -2.368118,   0.      ],
+#       [  0.      , -18.94494 ,  13.492372],
+#       [ -4.101698,  -2.368117, -13.492372]])
+#
+#    pp = parallelepiped(avecs)
+#    pts = np.zeros((3,10))
+#    inside =[]
+#    outside = []
+#    for ii in range(len(pts)):
+#        pi = np.array([np.random.random()*10-5,np.random.random()*30-27,np.random.random()*30-15])
+#        if inside_pped(pp,pi):
+#            inside.append(pi)
+#        else:
+#            outside.append(pi)
+#    inside = np.array(inside)
+#    outside = np.array(outside)
+#    if len(inside)>0:
+#        fig = plt.figure()
+#        ax = fig.add_subplot(111,projection='3d')
+#        ax.scatter(pp.points[:,0],pp.points[:,1],pp.points[:,2],s=20,c='k')
+#    #    ax.scatter(points[:,0],points[:,1],points[:,2])
+#        ax.scatter(inside[:,0],inside[:,1],inside[:,2],c='r')
 #        ax.scatter(outside[:,0],outside[:,1],outside[:,2],c='grey',alpha=0.3)
