@@ -26,13 +26,13 @@ import ubc_tbarpes.TB_lib as TB_lib
 
 if __name__=="__main__":
     a,c =  3.7734,5.5258 
-    a,c = 5*np.sqrt(2),10
+   # a,c = 5*np.sqrt(2),10
     avec = np.array([[a/np.sqrt(2),a/np.sqrt(2),0.0],[-a/np.sqrt(2),a/np.sqrt(2),0.0],[0.0,0.0,c]])
     
-    filenm = 'garbage.txt'#'FeSe_BMA_mod.txt'
-#    CUT,REN,OFF,TOL=a*3,1/1.4,0.12,0.001
+    filenm ='FeSe_o.txt'#'garbage.txt'# 
+    CUT,REN,OFF,TOL=a*3,1/1.4,0.12,0.001
 #    CUT,REN,OFF,TOL=a*10,1,0.015,0.001
-    CUT,REN,OFF,TOL=a*10,1,0.005,0.001
+#    CUT,REN,OFF,TOL=a*10,1,0.005,0.001
     G,X,M,Z,R,A = np.array([0,0,0]),np.array([0,-0.5,0]),np.array([0.5,-0.5,0]),np.array([0,0,0.5]),np.array([0.5,0,0.5]),np.array([0.5,-0.5,0.5])
 
 #    pt1,pt2,pt3 = np.zeros(3),np.array([0.2119,0.2119,0]),np.array([0.2119,-0.2119,0])
@@ -53,7 +53,7 @@ if __name__=="__main__":
             'slab':slab_dict}
 
     Kd = {'type':'F',
-			'pts':[-M,G,Z],
+			'pts':[M,G,Z],
 			'grain':200,
 			'labels':['M','$\Gamma$','M','X','$\Gamma$']}
 
@@ -92,22 +92,23 @@ if __name__=="__main__":
 #                
     TB.solve_H()
     TB.plotting()
-    
 
 #    
-    miller = np.array([2,0,1])
+    miller = np.array([0,0,1])
+    EV = TB.Evec
+    EB = TB.Eband
     tmp_H = TB.mat_els
     new_basis,vn_b,R = slib.gen_surface(avec,miller,TB.basis)
     H_surf = slib.H_surf(new_basis,vn_b,TB.mat_els,R)
     nvec,cull=slib.gen_slab(new_basis,vn_b,50,30,[2,3])
-
-
+#
+#
     basis = TB.basis
     TB.basis = new_basis
     TB.mat_els = H_surf
     Kr = np.dot(Kobj.pts,R)
     Kd = {'type':'A',
-			'pts':[Kr[0],Kr[1],2*Kr[2]],
+			'pts':[Kr[0],Kr[1],Kr[2]],
 			'grain':200,
 			'labels':['M','$\Gamma$','M','X','$\Gamma$']}
     
@@ -115,8 +116,16 @@ if __name__=="__main__":
     
     TB.solve_H()
     TB.plotting()
+###    
+    mint,minb = 40,15
+    term = (0,0)
+    av_slab,slab_basis = slib.gen_slab(TB.basis,vn_b,mint,minb,term)
+    Hslab = slib.build_slab_H(TB.mat_els,slab_basis,TB.basis,vn_b)
     
-    
+    TB.basis = slab_basis
+    TB.mat_els = Hslab
+    TB.solve_H()
+    TB.plotting()
 #    ktuple = ((1.0,1.5,300),(-.3,0.3,300),0.0)
 #    Ef = 0.01
 #    tol=0.0008
