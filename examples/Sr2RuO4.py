@@ -7,11 +7,12 @@ Created on Sat Nov 18 12:17:01 2017
 """
 
 import sys
-sys.path.append('/Users/ryanday/Documents/UBC/TB_python/TB_ARPES/')
+sys.path.append('C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/')
 
 import numpy as np
 import ubc_tbarpes.build_lib as build_lib
 import ubc_tbarpes.ARPES_lib as ARPES
+import ubc_tbarpes.operator_library as olib
 
 if __name__=="__main__":
 
@@ -32,7 +33,7 @@ if __name__=="__main__":
             'slab':{'bool':False}}
 
     Kd = {'type':'F',
-			'pts':[X,G,M],
+			'pts':[-1*X,G,X],
 			'grain':200,
 			'labels':['X','$\Gamma$','M']}
 
@@ -54,18 +55,19 @@ if __name__=="__main__":
     TB = build_lib.gen_TB(Bd,Hd,Kobj)
     TB.solve_H()
     TB.plotting(-1.5,1.0)
+    O = olib.LdotS(TB,'z',vlims=(-0.5,0.5),Elims=(-1.5,0.1))
       
 #    
-#    ARPES_dict={'cube':{'X':[-0.805,0.805,50],'Y':[-0.805,0.805,50],'kz':0.0,'E':[-1.5,0.2,100]},
+#    ARPES_dict={'cube':{'X':[-0.805,0.805,150],'Y':[-0.805,0.805,150],'kz':0.0,'E':[-1.5,0.2,200]},
 #                'SE':[0.002,0.03],
 #                'directory':'/save/directory/Sr2RuO4',
 #                'hv': 28,
 #                'pol':np.array([1,0,0]),
 #                'mfp':7.0,
-#                'resolution':{'E':0.02,'k':0.02},
+#                'resolution':{'E':0.02,'k':0.04},
 #                'T':[True,10.0],
 #                'W':4.0,
-#                'angle':0.0,
+#                'angle':np.pi/4,
 #                'spin':None,
 #                'slice':[False,-0.2] 
 #                }
