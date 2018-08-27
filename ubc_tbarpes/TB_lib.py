@@ -67,14 +67,16 @@ class H_me:
                 except IndexError:
                     continue
         return tmp
-        
+    
+    
         
 class TB_model:
     
     
-    def __init__(self,basis,H_args,Kobj = None):
+    def __init__(self,basis,avec,H_args = None,Kobj = None):
         '''
         basis -- list of orbital objects
+        avec -- numpy array of 3x3 float indicating the lattice vectors for the material
         H_args: dictionary for Hamiltonian build:
             {'type': "SK" ,"list", or "txt"
              if SK:
@@ -103,7 +105,14 @@ class TB_model:
         '''
         self.basis = basis #is a list of orbital objects
         self.mat_els = self.build_ham(H_args)
+        self.avec = avec
         self.Kobj = Kobj
+        
+    def copy(self):
+        TB_copy = TB_model(self.basis,self.avec,None,self.Kobj)
+        TB_copy.mat_els = self.mat_els
+        return TB_copy
+        
             
     
     def build_ham(self,H_args):
@@ -114,34 +123,46 @@ class TB_model:
             args: Hamiltonian args-->for SK this will be library of Vxyz and list of cutoffs
                                   --> for list, the Hamiltonian should be passed, formatted as a list ready to go
                                   -->for txt it will be a filename and cutoff criterias
-            so: boolean for spin-orbit coupling
-        
+            spin: dictionary for including spin-degrees of freedom:
+                bool: generate spin-duplicates
+                so: boolean for spin-orbit coupling
+                order: string 'NA', 'F' or 'A' for none, Ferromagnetic or antiferromagnetic respectively
         return:
             sorted list of matrix element objects.
             These objects have i,j attributes referencing the orbital basis indices, and a list
             of form [R0,R1,R2,Re(H)+1.0jIm(H)]
         '''
-        htmp = []
-        if H_args['type'] == "SK":
-            htmp = Hlib.sk_build(H_args['avec'],self.basis,H_args['V'],H_args['cutoff'],H_args['tol'],H_args['renorm'],H_args['offset'],H_args['so'])
-        elif H_args['type'] == "txt":
-            htmp = Hlib.txt_build(H_args['filename'],H_args['cutoff'],H_args['renorm'],H_args['offset'],H_args['tol'])
-        elif H_args['type'] == "list":
-            htmp = H_args['list']
-        if H_args['so']:
-            h2 = Hlib.spin_double(htmp,len(self.basis))
-                
-
-            so = Hlib.SO(self.basis)
-            htmp = htmp + h2+ so
-        
-        H = gen_H_obj(htmp)
-        return H 
-    
-        
-        
+        if type(H_args)==dict:
+            try:
+                htmp = []
+                if H_args['type'] == "SK":
+                    htmp = Hlib.sk_build(H_args['avec'],self.basis,H_args['V'],H_args['cutoff'],H_args['tol'],H_args['renorm'],H_args['offset'],H_args['so'])
+                elif H_args['type'] == "txt":
+                    htmp = Hlib.txt_build(H_args['filename'],H_args['cutoff'],H_args['renorm'],H_args['offset'],H_args['tol'])
+                elif H_args['type'] == "list":
+                    htmp = H_args['list']
+                if H_args['spin']['bool']:
+                    h2 = Hlib.spin_double(htmp,len(self.basis))
+                    htmp = htmp + h2   
+                    if H_args['spin']['soc']:
+                        so = Hlib.SO(self.basis)
+                        htmp = htmp + so
+                    if H_args['spin']['order']=='F':
+                        h_FM = Hlib.FM_order(self.basis,H_args['spin']['dS'])
+                        htmp = htmp + h_FM
+                    elif H_args['spin']['order']=='A':
+                        h_AF = Hlib.AFM_order(self.basis,H_args['spin']['dS'],H_args['spin']['p_up'],H_args['spin']['p_dn'])
+                        htmp = htmp + h_AF
+                H = gen_H_obj(htmp)
+                return H 
+            except KeyError:
+                print('Invalid dictionary input for Hamiltonian generation')
+                return None
+        else:
+            return None
             
-     
+
+        
         
     def solve_H(self):
         '''

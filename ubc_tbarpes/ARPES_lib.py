@@ -33,15 +33,11 @@ SOFTWARE.
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-from matplotlib.widgets import Slider
 import ubc_tbarpes.klib as K_lib
-import sympy.physics.wigner as wig
 import ubc_tbarpes.adaptive_int as adint
 from scipy.interpolate import interp1d
-import ubc_tbarpes.orbital as olib
 import ubc_tbarpes.Ylm as Ylm 
 import scipy.ndimage as nd
-import datetime as dt
 import ubc_tbarpes.Tk_plot as Tk_plot
 
 

@@ -32,14 +32,14 @@ import numpy as np
 import ubc_tbarpes.orbital as olib
 import ubc_tbarpes.TB_lib as TBlib
 import ubc_tbarpes.H_library as Hlib
-import ubc_tbarpes.slab_lib as slib
+import ubc_tbarpes.slab as slib
 import ubc_tbarpes.SK as SKlib
 import ubc_tbarpes.klib as klib
 
 
 
 ###Build Basis
-def gen_basis(basis,soc):
+def gen_basis(basis):
 	
     bulk_basis = []
     for a in list(enumerate(basis['atoms'])):
@@ -49,23 +49,17 @@ def gen_basis(basis,soc):
                 bulk_basis.append(olib.orbital(a[1],len(bulk_basis),o[1],basis['pos'][a[0]],basis['Z'][a[1]],orient=basis['orient'][a[0]][o[0]]))
             except KeyError:
                 bulk_basis.append(olib.orbital(a[1],len(bulk_basis),o[1],basis['pos'][a[0]],basis['Z'][a[1]]))
-    if soc['soc'] and not basis['slab']['bool']:
-        bulk_basis = olib.spin_double(bulk_basis,soc['lam'])  
+    if basis['spin']['bool']:
+        bulk_basis = olib.spin_double(bulk_basis,basis['spin']['lam'])  
     basis['bulk'] = bulk_basis
-
-    if basis['slab']['bool']:
-        slab_obj = slib.slab(basis['slab']['hkl'],basis['slab']['cells'],basis['slab']['buff'],basis['slab']['avec'],bulk_basis,basis['slab']['term'])
-        if soc['soc']:        
-            slab_obj.slab_base = olib.spin_double(slab_obj.slab_base,soc['lam'])
-        basis['slab']['obj'] = slab_obj
     
     return basis
 
 ###Generate a Kpath
-def gen_K(Kdic,avec=None):
+def gen_K(Kdic):
 	#
     if Kdic['type']=='F':
-        B = klib.bvectors(avec)
+        B = klib.bvectors(Kdic['avec'])
         klist = [np.dot(k,B) for k in Kdic['pts']]
     elif Kdic['type']=='A':
         klist = [k for k in Kdic['pts']]
@@ -78,21 +72,13 @@ def gen_K(Kdic,avec=None):
 
 
 ###Built Tight Binding Model
-def gen_TB(Bdict,H_args,Kobj):
+def gen_TB(Bdict,H_args,Kobj,slab_dict=None):
     
-    if not Bdict['slab']['bool']:
-        TB = TBlib.TB_model(Bdict['bulk'],H_args,Kobj)
-    else:
-        if H_args['so']:
-            H_args['so'] = False
-            TB_o = TBlib.TB_model(Bdict['bulk'][:int(len(Bdict['bulk'])/2)],H_args,Kobj)
-            H_args['so'] = True
-        else:
-            TB_o = TBlib.TB_model(Bdict['bulk'],H_args,Kobj)
-        
-        H_slab = Bdict['slab']['obj'].slab_TB(TB_o.mat_els,H_args,Kobj)
-        Hnew_args = {'type':'list','list':H_slab,'cutoff':H_args['cutoff'],'renorm':H_args['renorm'],'offset':H_args['offset'],'tol':H_args['tol'],'so':H_args['so']}
-        TB = TBlib.TB_model(Bdict['slab']['obj'].slab_base,Hnew_args,Kobj) 
+    TB = TBlib.TB_model(Bdict['bulk'],H_args['avec'],H_args,Kobj)
+    
+    if type(slab_dict)==dict:
+        slab_dict['TB'] = TB
+        TB = slib.bulk_to_slab(slab_dict)    
 
     return TB
 

@@ -30,6 +30,7 @@ SOFTWARE.
 
 
 import numpy as np
+from operator import itemgetter
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import ubc_tbarpes.inside as inside
@@ -215,10 +216,6 @@ def par(avec):
     box = np.identity(3)*(omega-alpha)
     box_pts = np.dot(pts,box)
     box_pts = np.array([c+alpha for c in box_pts])
-    fig = plt.figure()
-    ax = fig.add_subplot(111,projection='3d')
-    ax.scatter(vert[:,0],vert[:,1],vert[:,2])
-    ax.scatter(box_pts[:,0],box_pts[:,1],box_pts[:,2],c='r',alpha=0.3)
     return vert,box_pts
 
 def populate_box(box,basis,avec,R):
@@ -294,31 +291,6 @@ def cov_transform(basis,indices,avec,vvec):
     return new_coords[:,:3],new_coords[:,-1]
 
 
-
-
-
-#def Bi2Se3(a_vec):
-#    nu = 0.792 #relative coordinates of the Bi-layers in the QL +/- (mu,mu,mu)
-#    mu = 0.399 #same for Se1 -- +/-(nu,nu,nu)
-#    atoms = [1,0,2,0,1] #list of atoms in unit cell--0 == Bismuth, 1 == Selenium(1), 2 == Selenium(2)
-#    basis = []
-#    pos = [-nu*(a_vec[0]+a_vec[1]+a_vec[2]),-mu*(a_vec[0]+a_vec[1]+a_vec[2]),np.array([0.0,0.0,0.0]),mu*(a_vec[0]+a_vec[1]+a_vec[2]),nu*(a_vec[0]+a_vec[1]+a_vec[2])] #orbital positions relative to origin
-#    for p in list(enumerate(pos)):
-#        basis.append(olib.orbital(p[1],atoms[p[0]],len(basis)))
-#    return basis
-
-def FeSe(avec):
-    fpos = np.array([[0.25,-0.25,0],[-0.25,0.25,0]])
-    pos = np.dot(fpos,avec)
-    print(pos)
-    label = [['32xz','32yz'],['32xz','32yz']]
-    basis = []
-    for p in list(enumerate(pos)):
-        for l in label[p[0]]:
-            basis.append(olib.orbital(p[0],len(basis),l,p[1],26))
-    return basis
-
-
 def gen_surface(avec,miller,basis):
     '''
     Construct the surface unit cell, to then be propagated along the 001 direction to form a slab
@@ -375,7 +347,11 @@ def gen_slab(basis,vn,mint,minb,term):
         for bi in basis:
             pts.append([*(i*vn[-1]+bi.pos),bi.slab_index])
     pts = np.array(pts)
-    pts = pts[pts[:,2].argsort()]
+    z_order = pts[:,2].argsort()
+    pts = pts[z_order]
+    
+    pts = np.array(sorted(pts,key=itemgetter(2,3)))
+    
     term_1set = pts[pts[:,3]==term[1]]
     term_0set = pts[pts[:,3]==term[0]]
     surf = pts[:,2].max()-minb
@@ -393,6 +369,7 @@ def gen_slab(basis,vn,mint,minb,term):
         tmp.slab_index = int(cull[ii,-1])
         tmp.index = ii
         tmp.pos = cull[ii,:3]
+        tmp.depth = tmp.pos[2]
         new_basis[ii] = tmp
         
     return avec,new_basis
@@ -420,8 +397,6 @@ def unpack(H):
     for hij in H:
         for el in hij.H:
             Hlist.append([hij.i,hij.j,*el])
-#            if hij.i!=hij.j:
-#                Hlist.append(H_conj(Hlist[-1]))
     return Hlist
 #
 #
@@ -471,7 +446,7 @@ def H_surf(surf_basis,avec,H_bulk,Rmat):
         
     return Hobj
 
-def Hobj_to_dict(Hobj,basis,svec):
+def Hobj_to_dict(Hobj,basis):
     '''
     Associate a list of matrix elements with each orbital in the original basis. 
     Try something a little wien2k-style here. The hopping paths are given not as direct units, 
@@ -483,12 +458,11 @@ def Hobj_to_dict(Hobj,basis,svec):
     If the path goes into the vacuum buffer don't add it to the new list!
     '''
     Hdict = {}
-    si = np.linalg.inv(svec)
     for h in Hobj:
         try:
-            Hdict[h.i] = Hdict[h.i] + [[h.i,h.j,*np.around(np.dot(h.H[i][:3]-(basis[h.j].pos-basis[h.i].pos),si)),h.H[i][-1]] for i in range(len(h.H))]
+            Hdict[h.i] = Hdict[h.i] + [[h.i,h.j,*h.H[i]] for i in range(len(h.H))]
         except KeyError:
-            Hdict[h.i] = [[h.i,h.j,*np.around(np.dot(h.H[i][:3]-(basis[h.j].pos-basis[h.i].pos),si)),h.H[i][-1]] for i in range(len(h.H))]
+            Hdict[h.i] = [[h.i,h.j,*h.H[i]] for i in range(len(h.H))]
     return Hdict
 
 
@@ -516,25 +490,62 @@ def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
     heights = np.array([o.pos[2] for o in slab_basis])
     limits = (heights.min(),heights.max())
     Hnew = []
-    Hdict = Hobj_to_dict(Hsurf,surf_basis,svec)
+    Hdict = Hobj_to_dict(Hsurf,surf_basis)
+    si = np.linalg.inv(svec)
     for oi in slab_basis:
         Htmp = Hdict[oi.slab_index]
         for hi in Htmp:
-            hi[0] = int(slab_basis.index)
-            hi[1] = int(len(surf_basis)*hi[2]+hi[1])
-            hi[2:5] = np.dot(hi[2:5],svec) + surf_basis[hi[1]].pos-surf_basis[hi[0]].pos
-            if hi[1]>hi[0]:
-                hi = H_conj(hi)
-            if hi[0]>=len(slab_basis) or hi[1]>=len(slab_basis) or limits[0]<=(surf_basis[hi[0]].pos+hi[2:5])[2]<=limits[1]:
-                Hnew.append(hi)
-                
+            ncells = np.floor(np.dot(hi[2:5],si))[2]
+            Htmp_2 = [0]*6
+
+            Htmp_2[0] = int(oi.index)
+            Htmp_2[1] = int(oi.index/len(surf_basis))*len(surf_basis) + int(len(surf_basis)*ncells+hi[1])
+
+            Htmp_2[5] = hi[5]
+            
+            try:
+                Htmp_2[2:5] = hi[2:5]
+
+                if 0<=Htmp_2[1]<len(slab_basis) and 0<=Htmp_2[0]<len(slab_basis):
+                    if limits[0]<=(slab_basis[hi[0]].pos+Htmp_2[2:5])[2]<=limits[1]:
+                        Hnew.append(Htmp_2)
+            except IndexError:
+
+                continue
     Hobj = TB_lib.gen_H_obj(Hnew)
     for h in Hobj:
         h.H = h.clean_H()
         
     return Hobj
                 
-                
+
+
+def bulk_to_slab(slab_dict):
+    '''
+    Wrapper function for generating a slab tight-binding model, having established a bulk model.
+    args:
+        slab_dict -- dictionary containing all essential information regarding the slab construction:
+            'miller' -- miller indices as a numpy array len 3 of int
+            'TB' -- Tight-binding model corresponding to the bulk model
+            'thick' -- minimum thickness of the slab structure (int)
+            'vac' -- minimum thickness of the slab vacuum buffer to properly generate a surface with possible surface states (int)
+            'termination' -- tuple of integers specifying the basis indices for the top and bottom of the slab structure
+    return:
+        tight-binding TB object containing the slab basis, slab Hamiltonian
+    '''
+    
+    surf_basis,nvec,Rmat = gen_surface(slab_dict['TB'].avec,slab_dict['miller'],slab_dict['TB'].basis)
+    surf_ham = H_surf(surf_basis,nvec,slab_dict['TB'].mat_els,Rmat)
+    slab_vec,slab_basis = gen_slab(surf_basis,nvec,slab_dict['thick'],slab_dict['vac'],slab_dict['termination'])
+    slab_ham = build_slab_H(surf_ham,slab_basis,surf_basis,nvec)
+    
+    slab_TB = slab_dict['TB'].copy()
+    slab_TB.avec = slab_vec
+    slab_TB.basis = slab_basis
+    slab_TB.mat_els = slab_ham
+    slab_TB.Kobj.kpts = np.dot(slab_dict['TB'].Kobj.kpts,Rmat)
+    return slab_TB
+
            
 
 
@@ -557,75 +568,6 @@ def mod_dict(surf_basis,av_i):
     return cv_dict
 
 
-    
-    
-    
-
-
-if __name__=="__main__":
-    print('run')
-    #alpha-Fe2O3    
-#    avec = np.array([[0,4.736235,0],[4.101698,-2.368118,0],[0,0,13.492372]])
-#    miller = np.array([1,0,4])
-#    #Bi2Se3
-##    alatt = 4.1141#4.1138
-##    clatt = 28.64704#28.64 #using the QL model-
-##    avec = np.array([[alatt/np.sqrt(3.0),0.0,clatt/3.0],[-alatt/(2.0*np.sqrt(3.0)),alatt/2.0,clatt/3.0],[-alatt/(2.0*np.sqrt(3.0)),-alatt/2.0,clatt/3.0]])
-##    miller = np.array([1,1,1])
-##    basis = Bi2Se3(avec)
-#
-#    #FeSe
-    a,c =  3.7734,5.5258 
-   # a,c = 5*np.sqrt(2),10
-    avec = np.array([[a/np.sqrt(2),a/np.sqrt(2),0.0],[-a/np.sqrt(2),a/np.sqrt(2),0.0],[0.0,0.0,c]])
-
-#    avec = np.array([[3,3,0],[-3,3,0],[0,0,5]])
-    miller = np.array([2,0,1])
-##    
-
-    basis = FeSe(avec)
-    new_basis,vn_b,R = gen_surface(avec,miller,basis)
-    par,box = par(vn_b)
-#    H_surf = gen_H_surf(new_basis,H_bulk)
-#    nvec,cull=gen_slab(new_basis,vn_b,50,30,[0,0])
-
-##    basis = FeO.basis(avec)
-    b_points = populate_box(box,basis,np.dot(avec,R),R)
-    pp = inside.parallelepiped(vn_b)
-    in_pped,inds = populate_par(b_points,vn_b)
-#
-    fig = plt.figure()
-    ax = fig.add_subplot(111,projection='3d')
-   # ax.scatter(pipe[:,0],pipe[:,1],pipe[:,2])
-    ax.scatter(b_points[:,0],b_points[:,1],b_points[:,2],alpha=0.3)
-    ax.scatter(in_pped[:,0],in_pped[:,1],in_pped[:,2],c='b')
-
-  #  tmp2 = np.array([b_points[114,:3],b_points[186,:3]])
-   # ax.scatter(tmp2[:,0],tmp2[:,1],tmp2[:,2],s=20,c='k')
-    inside._draw_lines(ax,pp)
-    
-#    fig = plt.figure()
-#    ax = fig.add_subplot(111,projection='3d')
-#    ax.scatter(pipe[:,0],pipe[:,1],pipe[:,2])
-#    ax.scatter(in_pped[:,0],in_pped[:,1],in_pped[:,2],c=inds,cmap=cm.Spectral)
-#    
-#    build_slab(10,vn_b,in_pped)
-
-    near  = np.array([np.dot([int(np.mod(i,(3)))-1,int(np.mod(i/(3),(3)))-1,int(i/(3)**2)-1],vn_b) for i in range((3)**3)])
-    pts,crs = [],[]
-    for ni in near:
-        for b in list(enumerate(new_basis)):
-            pts.append(ni+b[1].pos)
-        #for b in list(enumerate(in_pped)):
-            #pts.append(ni+b[1])
-    pts = np.array(pts)
-    fig = plt.figure()
-    ax = fig.add_subplot(111,projection='3d')
-    ax.scatter(pts[:,0],pts[:,1],pts[:,2])
-           
-#    cov_fpos,cov_labels = cov_transform(basis,inds,avec,vn_b)
-#    
-    
 
 
 

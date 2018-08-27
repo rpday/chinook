@@ -522,19 +522,13 @@ def make_Ham(args):
     Hlist3D = fillH(Hpp3,Hpm3,tdic)
     Htrans_d=transform(Hlist)
     H3Dtrans_d=transform(Hlist3D) #convert to real orbitals since this model uses idxz and idyz
-#    Htrans_u = spin_copy(Hlist,10)
-#    H3Dtrans_u = spin_copy(Hlist3D,10) 
-#    for i in range(11):
-#    H_SOC=spin_orbit(olist,0.011*f)
-    filename = "FeSe_RD.txt"
-#    writefile(Hlist,filename,'w')
-#    writefile(Hlist3D,filename,'a')
+
+    filename = "FeSe_2D.txt"
+
 
     writefile(Htrans_d,filename,"w")
-    writefile(H3Dtrans_d,filename,"a")
-    #writefile(Htrans_u,filename,"a")
-    #writefile(H3Dtrans_u,filename,"a")
-    #writefile(H_SOC,filename,"a")
+#    writefile(H3Dtrans_d,filename,"a")
+
     print('complete')
     return filename
     

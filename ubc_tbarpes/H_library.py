@@ -281,6 +281,44 @@ def fillin(M,l):
     return M
 
 
+
+def AFM_order(basis,dS,p_up,p_dn):
+  '''
+  Add antiferromagnetism to the tight-binding model, by adding a different on-site energy to 
+  orbitals of different spin character, on the designated sites. 
+  args:
+      basis -- list of orbital objects
+      dS -- size of spin-splitting (eV) float
+      p_up,p_dn -- numpy array of float indicating the orbital positions for the AFM order
+  return: list of matrix elements, as conventionally arranged
+  '''
+  h_AF = []
+  for bi in basis:
+      if np.linalg.norm(bi.pos-p_up)==0:
+          if bi.spin<0:
+              h_AF.append([bi.index,bi.index,0,0,0,dS])
+          else:
+              h_AF.append([bi.index,bi.index,0,0,0,-dS])
+      elif np.linalg.norm(bi.pos-p_dn)==0:
+          if bi.spin<0:
+              h_AF.append([bi.index,bi.index,0,0,0,-dS])
+          else:
+              h_AF.append([bi.index,bi.index,0,0,0,dS])
+  return h_AF
+    
+    
+def FM_order(basis,dS):
+    '''
+     Add ferromagnetism to the system. Take dS to assume that the splitting puts spin-up lower in energy by dS,
+     and viceversa for spin-down. This directly modifies the TB_model's mat_els attribute
+     args:
+         basis -- list of orbital objects in basis
+         dS -- float: energy of the spin splitting (eV)
+    retun: list of matrix elements
+     '''
+    return [[bi.index,bi.index,0,0,0,-np.sign(bi.spin)*dS] for bi in basis]
+
+
 def GrahamSchmidt(a,b):
     '''
     Simple orthogonalization of two vectors, returns orthonormalized vector

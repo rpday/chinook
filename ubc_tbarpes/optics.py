@@ -247,7 +247,7 @@ def resample(x,y,dx):
     
 
 
-######-------------Direct Transition SLOWWWWW VERSION--------------------######    
+######-------------Direct Transition--------------------######    
 
 def build_state(psi,X,Y,Z,basis):
     state = np.zeros(np.shape(X),dtype=complex)
@@ -313,7 +313,7 @@ def path_direct(TB,Kobj,hv,width,T,pol=None):
         plot_jdos(Kobj,TB,dip_jdos,pol)
     return dip_jdos
 
-def plot_jdos(Kobj,TB,dip_jdos,pol):
+def jdos_map_gen(Kobj,TB,dip_jdos,pol):
     '''
     Plot the joint density of states as calculated in path_direct function.
     args:
@@ -357,6 +357,42 @@ def k_integrated(Kobj,TB,width,Ij,ylim=None):
         ax2.set_ylim(ylim[0],ylim[1])
     return Im,Ijdos,en_dig
 
+
+class optical_experiment:
+    
+    def __init__(self,TB,Od):
+        self.TB = TB
+        self.exp_args = Od
+        
+    def conductivity(self):
+        return optical_conductivity(self.TB,self.exp_args['mesh'],self.exp_args['T'])
+    
+    def kpath_optical_jdos(self):
+        return path_dir_op(self.TB,self.TB.Kobj,self.exp_args['hv'],self.exp_args['linewidth'],self.exp_args['T'])
+
+    def jdos_map_gen(self):
+        try:
+            jdos = self.jdos
+        except AttributeError:
+            print('JDOS does not exist. Computing now...')
+            jdos = self.kpath_optical_jdos()
+            self.jdos = jdos
+            print('JDOS calculation complete.')
+        return jdos_map_gen(self.TB.Kobj,self.TB,jdos,self.exp_args['pol'])
+        
+    def integrate_jdos(self):
+        try:
+            jdos_map = self.jdos_map()
+        except AttributeError:
+            print('JDOS map does not exist. Computing now...')
+            jdos_map = self.jdos_map_gen()
+            self.jdos_map = jdos_map
+            print('JDOS map calculation complete.')
+        return k_integrated(self.TB.Kobj,self.TB,self.exp_args['lifetime'],self.jdos_map)
+    
+    
+        
+    
 
 
 

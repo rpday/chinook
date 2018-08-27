@@ -86,3 +86,23 @@ if __name__=="__main__":
     n = 40
     for ki in range(len(k)):
         sz = gen_psi(n,psi[:,ki],psi_dict)
+        
+#    d1d,d1u = {o.index:o.proj for o in TB.basis[:5]},{(o.index-5):o.proj for o in TB.basis[10:15]}
+#    d2d,d2u = {(o.index-5):o.proj for o in TB.basis[5:10]},{(o.index-10):o.proj for o in TB.basis[15:]}
+#    d1 = {**d1d,**d1u}
+#    d2 = {**d2d,**d2u}
+#    ind =11
+##    for oind in range(7,13):
+##        ind = oind
+#    psi_11 = np.array([list(TB.Evec[i,:5,ind])+list(TB.Evec[i,10:15,ind]) for i in range(len(Kobj.kpts))])
+#    
+#    psi_12 = np.array([list(TB.Evec[i,5:10,ind])+list(TB.Evec[i,15:,ind]) for i in range(len(Kobj.kpts))])
+#       
+#    #    psi_1 = np.array([list(TB.Evec[i,:,ind+2]) for i in range(len(Kobj.kpts))])
+#    #    df = {o.index:o.proj for o in TB.basis}
+#    #    psi_11 = np.array([list(TB.Evec[i,:5,ind:ind+2])+list(TB.Evec[i,10:15,ind:ind+2]) for i in range(len(Kobj.kpts))])
+#        
+#    for ki in range(len(Kobj.kpts)):
+#        tmp =ki
+##        strnm = 'C:\\Users\\rday\\Documents\\TB_ARPES\\2018\\TB_ARPES_2018\\plots\\FeSe_kz\\no_SO_{:d}_{:0.1f}Z.png'.format(ind,tmp)
+#        sph.gen_psi(30,psi_11[ki],d1)#strnm)
