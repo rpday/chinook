@@ -104,8 +104,9 @@ class TB_model:
         
         '''
         self.basis = basis #is a list of orbital objects
-        self.mat_els = self.build_ham(H_args)
         self.avec = avec
+
+        self.mat_els = self.build_ham(H_args)
         self.Kobj = Kobj
         
     def copy(self):
@@ -147,12 +148,13 @@ class TB_model:
                     if H_args['spin']['soc']:
                         so = Hlib.SO(self.basis)
                         htmp = htmp + so
-                    if H_args['spin']['order']=='F':
-                        h_FM = Hlib.FM_order(self.basis,H_args['spin']['dS'])
-                        htmp = htmp + h_FM
-                    elif H_args['spin']['order']=='A':
-                        h_AF = Hlib.AFM_order(self.basis,H_args['spin']['dS'],H_args['spin']['p_up'],H_args['spin']['p_dn'])
-                        htmp = htmp + h_AF
+                    if 'order' in H_args['spin']:
+                        if H_args['spin']['order']=='F':
+                            h_FM = Hlib.FM_order(self.basis,H_args['spin']['dS'])
+                            htmp = htmp + h_FM
+                        elif H_args['spin']['order']=='A':
+                            h_AF = Hlib.AFM_order(self.basis,H_args['spin']['dS'],H_args['spin']['p_up'],H_args['spin']['p_dn'])
+                            htmp = htmp + h_AF
                 H = gen_H_obj(htmp)
                 return H 
             except KeyError:
