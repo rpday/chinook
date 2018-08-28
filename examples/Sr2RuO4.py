@@ -24,15 +24,16 @@ if __name__=="__main__":
 	
     avec = np.identity(3)*np.array([a,a,c])
 
-    spin = {'soc':True,'lam':{0:0.18}}
+    spin = {'bool':True,'soc':True,'lam':{0:0.18}}
 
     Bd={'atoms':[0],
 			'Z':{0:44},
 			'orbs':[['42xz','42yz','42xy']],
 			'pos':[np.zeros(3)],
-            'slab':{'bool':False}}
+            'spin':spin}
 
     Kd = {'type':'F',
+          'avec':avec,
 			'pts':[-1*X,G,X],
 			'grain':200,
 			'labels':['X','$\Gamma$','M']}
@@ -44,14 +45,15 @@ if __name__=="__main__":
 			'renorm':r,
 			'offset':o,
 			'tol':t,
-			'so':spin['soc']}
+			'spin':spin,
+            'avec':avec}
     
   	#####
 
 
 
-    Bd = build_lib.gen_basis(Bd,spin)
-    Kobj = build_lib.gen_K(Kd,avec)
+    Bd = build_lib.gen_basis(Bd)
+    Kobj = build_lib.gen_K(Kd)
     TB = build_lib.gen_TB(Bd,Hd,Kobj)
     TB.solve_H()
     TB.plotting(-1.5,1.0)
