@@ -60,7 +60,7 @@ def build_TB():
     G,M,K,H,L,A=np.zeros(3),np.array([0.5,0.5,0.0]),np.array([1./3,-1./3,0]),np.array([1./3,-1./3,0.5]),np.array([0.5,0.5,0.5]),np.array([0,0,0.5])
     G2,K2 = np.array([0,0,0.212]),np.array([1./3,-1./3,0.275])
 #    G2 = np.array([0,0,3.783])
-    spin = {'soc':False,'lam':{0:0.0}}
+    spin = {'bool':False,'soc':False,'lam':{0:0.0}}
     
     slab_dict = {'bool':False,
                 'hkl':np.array([0,0,1]),
@@ -73,10 +73,11 @@ def build_TB():
 			'Z':{0:6},
 			'orbs':[["21z"],["21z"],["21z"],["21z"]],
 			'pos':[np.array([0,0,0]),np.array([-a/np.sqrt(3.0),0,0]),np.array([0,0,c]),np.array([-a/(2*np.sqrt(3)),a/2,c])], #OK, consistent with model
-            'slab':slab_dict}
+           'spin':spin }
     #2.61 for original calculation 1.55,1.85
     kz = 2.7
     Kd = {'type':'A',
+          'avec':avec,
 			'pts':[np.array([0,1.702,kz]),np.array([0,1.5,kz])],#[np.array([0,1.702,2.1]),np.array([0,1.702,3.68]),np.array([0,1.702,4.75])],
 			'grain':200,
 			'labels':['$\Gamma$','49.9','84']}
@@ -88,13 +89,14 @@ def build_TB():
 			'renorm':REN,
 			'offset':OFF,
 			'tol':TOL,
-			'so':spin['soc']}
+			'spin':spin,
+             'avec':avec}
  
     	#####
-    Bd = build_lib.gen_basis(Bd,spin)
+    Bd = build_lib.gen_basis(Bd)
     
-    Kobj = build_lib.gen_K(Kd,avec)
-    TB = build_lib.gen_TB(Bd,Hd,Kobj)
+    Kobj = build_lib.gen_K(Kd)
+    TB = TB = build_lib.gen_TB(Bd,Hd,Kobj)
     return TB
 
 

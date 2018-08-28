@@ -31,7 +31,7 @@ def build_TB(Kobj):
     filenm = 'graphite.txt'
     CUT,REN,OFF,TOL=a*5,1,0.0,0.001
 
-    spin = {'soc':False,'lam':{0:0.0}}
+    spin = {'bool':False,'soc':False,'lam':{0:0.0}}
     
     slab_dict = {'bool':False,
                 'hkl':np.array([0,0,1]),
@@ -44,7 +44,8 @@ def build_TB(Kobj):
 			'Z':{0:6},
 			'orbs':[["21z"],["21z"],["21z"],["21z"]],
 			'pos':[np.array([0,0,0]),np.array([-a/np.sqrt(3.0),0,0]),np.array([0,0,c]),np.array([-a/(2*np.sqrt(3)),a/2,c])], #OK, consistent with model
-            'slab':slab_dict}
+            'slab':slab_dict,
+            'spin':spin}
 
     Hd = {'type':'txt',
 			'filename':filenm,
@@ -52,9 +53,11 @@ def build_TB(Kobj):
 			'renorm':REN,
 			'offset':OFF,
 			'tol':TOL,
-			'so':spin['soc']}
+			'so':spin,
+            'avec':avec,
+            'spin':spin}
  
-    Bd = build_lib.gen_basis(Bd,spin)
+    Bd = build_lib.gen_basis(Bd)
 
     TB = build_lib.gen_TB(Bd,Hd,Kobj)
     
