@@ -3,28 +3,6 @@
 Created on Tue Apr  3 09:39:22 2018
 
 @author: rday
-MIT License 
-
-Copyright (c) 2018 Ryan Patrick Day
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
 """
 
 '''
@@ -49,6 +27,7 @@ And from A.Del:
    \/  
 
 '''
+
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -81,19 +60,23 @@ class orb:
 
 def hydrogenic(r,Z,n,l,au):
     '''
-    Schiff 1968, p.93 shows derivation of normalization constant. Wikipedia gives incorrect form
+    HYDROGENIC WAVEFUNCTION, SCALED TO TAKE R over ORDER 10 units (i.e. scaled to have r in units of Angstrom!)
     '''
     return (np.sqrt((2*Z/(n*au))**3*fact(n-l-1)/(2*n*fact(n+l)))*np.exp(-Z*r*A/(n*au))*(2*Z*r*A/(n*au))**l*sc.genlaguerre(n-l-1,l*2+1)(2*Z*r*A/(n*au)))
 
 def d_hyd_r2(r,arglist):
     '''
-    Derivative of hydrogenic above, multiplied by (A*r)^2
+    Derivative of HYDROGENIC WAVEFUNCTION. SINCE THIS IS FOR ONLY INTEGRAL PURPOSES, MULTIPLY BY R^2 to CIRCUMVENT OVERFLOW as R->0. IN ANY INTEGRAL,
+    WE WILL HAVE THE R^2 FACTOR WHICH SAVES US from 1/R in the actual derivative on its own.
+    NOTE R in units of ANGSTROM!
+    The principal argument of the gen. Laguerre polynomial must be non-negative, so this term vanishes when n-l<2 and the derivative of the gen. Laguerre would otherwise have alpha<0
+    
     '''
     n,l,Z,au = arglist[0],arglist[1],arglist[2],arglist[3]
     if (n-l<2):
-        return (l*(A*r)-(A*r)**2*Z/(n*au))*hydrogenic(r,Z,n,l,au)
+        return (l*(A*r)-(A*r)**2*Z/(n*au))*hydrogenic(r,Z,n,l,au) 
     else:
-        return (l*(A*r)-(A*r)**2*Z/(n*au))*hydrogenic(r,Z,n,l,au) - (A*r)**(2+l)*np.sqrt((2*Z/(n*au))**3*fact(n-l-1)/(2*n*fact(n+l)))*np.exp(-Z*r*A/(n*au))*(2*Z/(n*au))**(l+1)*sc.genlaguerre(n-l-2,l*2+2)(2*Z*r*A/(n*au))
+        return (l*(A*r)-(A*r)**2*Z/(n*au))*hydrogenic(r,Z,n,l,au) - (A*r)**(2+l)*np.sqrt((2*Z/(n*au))**3*fact(n-l-1)/(2*n*fact(n+l)))*np.exp(-Z*(A*r)/(n*au))*(2*Z/(n*au))**(l+1)*sc.genlaguerre(n-l-2,l*2+2)(2*Z*A*r/(n*au))
 
 '''
 ##################UTILITY FUNCTIONS############################################
@@ -132,7 +115,7 @@ def e_dot_r(r,arglist):
     For precision I have divided final result by A^3--just need to divide out same constant from both integrands to ensure numerical stability!
     '''
     n,l,Z,au,lp,k = arglist[0],arglist[1],arglist[2],arglist[3],arglist[4],arglist[5]
-    return A**4*hydrogenic(r,Z,n,l,au)*r**3*(-1.0j)**lp*sc.spherical_jn(lp,k*r)
+    return A*hydrogenic(r,Z,n,l,au)*r**3*(-1.0j)**lp*sc.spherical_jn(lp,k*r)
 
 
 
@@ -154,11 +137,28 @@ def e_dot_del(r,arglist):
     '''
     
     n,l,Z,au,lp,k = arglist[0],arglist[1],arglist[2],arglist[3],arglist[4],arglist[5]
-    return A*(-1.0j)**lp*sc.spherical_jn(lp,k*r)*(d_hyd_r2(r,arglist)-((2*l-(2*l+1)*(lp-(l+1)))/2)*hydrogenic(r,Z,n,l,au)*r**2)
+    return (-1.0j)**lp*sc.spherical_jn(lp,k*r)*(d_hyd_r2(r,arglist)-(l if lp==l+1 else -(l+1))*hydrogenic(r,Z,n,l,au)*(A*r))
     
     
+def e_dot_k(r,arglist):
+    '''   
+    Integrand for the A.DEL evaluation of the matrix element
+    args:
+        arglist -- list of [n,l,Z,au,lp,k]
+        k -- float wavenumber
+        r -- numpy float
+        Z -- int atomic number
+        n -- int prinicpal quantum number
+        l -- int orbital quantum number
+        au -- scaling factor for Hydrogenic orbital
+        lp -- int final state orbital angular momentum (0,1,2,3)
+    return -- numpy float
 
-
+    For precision I have divided final result by A^3--just need to divide out same constant from both integrands to ensure numerical stability!
+    '''
+    n,l,Z,au,_,k = arglist[0],arglist[1],arglist[2],arglist[3],arglist[4],arglist[5]
+    return A*(-1.0j)**l*(sc.spherical_jn(l,k*r))*hydrogenic(r,Z,n,l,au)*(r)**2
+    
 def _plt_vals(x,y):
     '''
     Simple plot routine for comparing a set of 1D arrays. Can pass:
@@ -188,38 +188,52 @@ def _plt_vals(x,y):
 
 if __name__=="__main__":
     
-    Z,n,l=26,3,2
+    Z,n,l=26,3,1
     
     Fe_3d = orb(Z,n,l)
     
+    r0,rf,tol = 0,2,1e-2
     
-    hv = np.linspace(10,200,2)
+    
+    hv = np.linspace(0,10,20)
     ks = hv_2_k(hv)
-    arglist = [Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,1,ks[0]]
+    arglist = [Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,1,0]
     edr = np.zeros((len(hv),2),dtype=complex)
     edd = np.zeros((len(hv),2),dtype=complex)
+    edk = np.zeros((len(hv),2),dtype=complex)
     for i in range(len(hv)):
         arglist[-1]=ks[i]
         
-        edr[i,0] = me*hv[i]*1.0j*q/hb*(adint.integrate(e_dot_r,0,3,10**-8,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,1,ks[i]]))
-        edd[i,0] = adint.integrate(e_dot_del,0,3,10**-8,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,1,ks[i]])
+        edr[i,0] = me*hv[i]*1.0j*q/hb*(adint.integrate(e_dot_r,r0,rf,tol,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,l-1,ks[i]]))
+        edd[i,0] = adint.integrate(e_dot_del,r0,rf,tol,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,l-1,ks[i]])
+        edk[i,0] = abs(ks[i])*adint.integrate(e_dot_k,r0,rf,tol,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,l-1,ks[i]])
         
-        edr[i,1] = me*hv[i]*1.0j*q/hb*(adint.integrate(e_dot_r,0,3,10**-8,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,3,ks[i]]))
-        edd[i,1] = adint.integrate(e_dot_del,0,3,10**-8,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,3,ks[i]])
+        edr[i,1] = A**4*me*hv[i]*1.0j*q/hb*(adint.integrate(e_dot_r,r0,rf,tol,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,l+1,ks[i]]))
+        edd[i,1] = adint.integrate(e_dot_del,r0,rf,tol,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,l+1,ks[i]])
+        edk[i,1] = edk[i,0]
         
+        
+    edr[:,0]/=abs(edr[:,0]).max()
+    edr[:,1]/=abs(edr[:,1]).max()
+    edd[:,0]/=abs(edd[:,0]).max()
+    edd[:,1]/=abs(edd[:,1]).max()
+    edk[:,0]/=abs(edk[:,0]).max()
+    edk[:,1]/=abs(edk[:,1]).max()
     
     fig = plt.figure()
     ax = fig.add_subplot(111)
-#    ax2 = ax.twinx()
-    plt.plot(hv[1:],abs(np.real(edr[1:,0])))
-    plt.plot(hv[1:],abs(np.imag(edd[1:,0])))
-    plt.savefig('Fe d to p.png')
+    ax2 = ax.twinx()
+    plt.plot(hv[1:],abs((edr[1:,0])))
+    plt.plot(hv[1:],abs((edd[1:,0])))
+    plt.plot(hv[1:],abs(edk[1:,0]))
+    plt.savefig('allforms.png')
     fig2 = plt.figure()
     
     ax = fig2.add_subplot(111)
-#    ax2 = ax.twinx()
-    plt.plot(hv[1:],abs(np.real(edr[1:,1])))
-    plt.plot(hv[1:],abs(np.imag(edd[1:,1])))
-    plt.savefig('Fe d to f.png')
-        
-
+    ax2 = ax.twinx()
+    plt.plot(hv[1:],abs((edr[1:,1])))
+    plt.plot(hv[1:],abs((edd[1:,1])))
+    plt.plot(hv[1:],abs(edk[1:,1]))
+    plt.savefig('allforms.png')
+#        
+#

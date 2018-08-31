@@ -13,7 +13,8 @@ from a mesh of k-points
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-import symmetry as symm_tools
+import ubc_tbarpes.symmetry as symm_tools
+import ubc_tbarpes.klib as klib
 
 
 def _gen_pts(N,lims):
@@ -84,6 +85,11 @@ def _plt_pts(pt_arr,lims):
     ax.set_xlim(-abs(lims),abs(lims))
     ax.set_ylim(-abs(lims),abs(lims))
     ax.set_zlim(-abs(lims),abs(lims))
+    
+    
+def BZ_mesh(avecs):
+    
+    
     
 
 if __name__=="__main__":
