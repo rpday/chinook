@@ -271,10 +271,13 @@ if __name__=="__main__":
         
 
 def rot_spin(projection,angle,spin):
+    '''
+    Map the effect of spin-rotation ABOUT z axis only, onto the orbital projection definition
+    '''
     for i in range(len(projection)):
         tmp_coeff = complex(projection[i,0]+1.0j*projection[i,1])
         tmp_coeff*=np.exp(-1.0j*angle/2*spin)  
-        projection[:2] = np.array([np.real(tmp_coeff),np.imag(tmp_coeff)])
+        projection[i,:2] = np.array([np.real(tmp_coeff),np.imag(tmp_coeff)])
     return projection
 
 
