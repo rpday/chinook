@@ -10,9 +10,12 @@ import sys
 sys.path.append('C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/')
 
 import numpy as np
+import matplotlib.pyplot as plt
 import ubc_tbarpes.build_lib as build_lib
 import ubc_tbarpes.ARPES_lib as ARPES
 import ubc_tbarpes.operator_library as olib
+import ubc_tbarpes.dos as dos_lib
+import ubc_tbarpes.dos_Tk as dtk
 
 if __name__=="__main__":
 
@@ -56,8 +59,15 @@ if __name__=="__main__":
     Kobj = build_lib.gen_K(Kd)
     TB = build_lib.gen_TB(Bd,Hd,Kobj)
     TB.solve_H()
-    TB.plotting(-1.5,1.0)
-    O = olib.LdotS(TB,'z',vlims=(-0.5,0.5),Elims=(-1.5,0.1))
+    TB.plotting()
+#    EB,G,T,tetra = dos_lib.dos_tetra(TB,400,30)
+#    de = dos_lib.dos_env(TB,sigma=0.05)
+#    de.do_dos(40)
+#    fig = plt.figure()
+#    plt.plot(de.hi[1][:-1],de.hi[0])
+#    O = olib.LdotS(TB,'z',vlims=(-0.5,0.5),Elims=(-1.5,0.1))
+    
+#    DO = dos_TK.dos_interface(TB,0.02)
       
 #    
 #    ARPES_dict={'cube':{'X':[-0.805,0.805,150],'Y':[-0.805,0.805,150],'kz':0.0,'E':[-1.5,0.2,200]},

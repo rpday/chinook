@@ -34,22 +34,16 @@ if __name__=="__main__":
     G,M,K=np.zeros(3),np.array([0.5,0.5,0.0]),np.array([1./3,2./3,0.0])
 	
 
-    spin = {'soc':False,'lam':{0:0.0,1:0.0}}
-    
-    slab_dict = {'bool':False,
-                'hkl':np.array([0,0,1]),
-                'cells':20,
-                'buff':8,
-                'term':0,
-                'avec':avec}
+    spin = {'bool':False,'soc':True,'lam':{0:0}}
 
     Bd = {'atoms':[0,1],
 			'Z':{0:6,1:6},
 			'orbs':[["20","21x","21y","21z"],["20","21x","21y","21z"]],
 			'pos':[np.zeros(3),np.array([0.0,a/np.sqrt(3.0),0.0])],
-            'slab':slab_dict}
+            'spin':spin}
 
     Kd = {'type':'F',
+          'avec':avec,
 			'pts':[K,G,M,K],
 			'grain':81,
 			'labels':['K','$\Gamma$','M','K']}
@@ -62,14 +56,15 @@ if __name__=="__main__":
 			'renorm':REN,
 			'offset':OFF,
 			'tol':TOL,
-			'so':spin['soc']}
+			'spin':spin}
  
     	#####
-    Bd = build_lib.gen_basis(Bd,spin)
-    Kobj = build_lib.gen_K(Kd,avec)
+        
+    Bd = build_lib.gen_basis(Bd)
+    Kobj = build_lib.gen_K(Kd)
     TB = build_lib.gen_TB(Bd,Hd,Kobj)
     TB.solve_H()
-    TB.plotting(-6,3)
+    TB.plotting()
 #    sig = integral.optical_conductivity(TB,avec,40,300,0.1)
 
 #    O = ops.LdotS(TB,axis=None,vlims=(-0.5,0.5),Elims=(-0.5,0.5))

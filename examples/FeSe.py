@@ -7,14 +7,14 @@ Created on Sat Nov 18 12:17:01 2017
 """
 import numpy as np
 import sys
-sys.path.append('/Users/ryanday/Documents/UBC/TB_ARPES/')
+sys.path.append('C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/')
 
 import ubc_tbarpes.build_lib as build_lib
 import ubc_tbarpes.ARPES_lib as ARPES
 import ubc_tbarpes.optics as optics
 import ubc_tbarpes.operator_library as oper
 import ubc_tbarpes.dos_Tk as dos_TK
-#import ubc_tbarpes.dos as dos
+import ubc_tbarpes.dos as dos
 
 #if __name__=="__main__":
     
@@ -32,9 +32,9 @@ CUT,REN,OFF,TOL=a*3,1/1.4,0.12,0.001
 
 ######################### MODEL GENERATION PARAMETERS ##########################
 
-spin_dict = {'bool':False,
-        'soc':False,
-        'lam':{0:0.03},
+spin_dict = {'bool':True,
+        'soc':True,
+        'lam':{0:0.05},
         'order':'N',
         'dS':0.0,
         'p_up':Fe1,
@@ -64,7 +64,8 @@ ham_dict = {'type':'txt',
 
 slab_dict = {'avec':avec,
       'miller':np.array([0,0,1]),
-      'thick':20,
+      'fine':(0,0),
+      'thick':50,
       'vac':30,
       'termination':(0,0)}
 
@@ -81,7 +82,7 @@ optics_dict = {'hv':0.36,
 ######################### ARPES EXPERIMENT PARAMETERS #########################
 
 
-ARPES_dict={'cube':{'X':[-0.25,0.25,20],'Y':[-0.25,0.25,20],'kz':0.0,'E':[-0.1,0.05,60]},
+ARPES_dict={'cube':{'X':[-0.25,0.25,40],'Y':[-0.25,0.25,40],'kz':0.0,'E':[-0.1,0.05,90]},
         'SE':[0.002],
         'directory':'/Users/ryanday/Documents/UBC/TB_ARPES-082018/examples/FeSe',
         'hv': 37,
@@ -92,7 +93,7 @@ ARPES_dict={'cube':{'X':[-0.25,0.25,20],'Y':[-0.25,0.25,20],'kz':0.0,'E':[-0.1,0
         'W':4.0,
         'angle':0,
         'spin':None,
-        'slice':[False,-0.005]}
+        'slice':[True,-0.005]}
  
 ################################# BUILD MODEL #################################
 
@@ -105,8 +106,10 @@ def build_TB():
 
 if __name__ == "__main__":
     TB = build_TB()
-    DO = dos_TK.dos_interface(TB)
-#    DO = dos.dos_env(TB)
+    TB.solve_H()
+    TB.plotting()
+#    DO = dos_TK.dos_interface(TB,0.005)
+##    DO = dos.dos_env(TB)
 #    DO.do_dos((20,20,20))
     
 ############################## CHARACTERIZE MODEL ##############################
