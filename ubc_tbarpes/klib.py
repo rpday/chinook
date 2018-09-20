@@ -146,24 +146,27 @@ def raw_mesh(blatt,N):
         print('Invalid K division type. Pass only integer or list/tuple/array of 3 integer values')
         return []
     x,y,z = np.arange(limits[0,0],limits[0,1]+dk[0],dk[0]),np.arange(limits[1,0],limits[1,1]+dk[1],dk[1]),np.arange(limits[2,0],limits[2,1]+dk[2],dk[2])
-    X,Y,Z = np.meshgrid(x,y,z)
+    Y,Z,X = np.meshgrid(y,z,x) #This ordering for the meshgrid allows us to define 1D array with register looping over x, then y, then z. Not sure why this order gives that output...
     X,Y,Z = X.flatten(),Y.flatten(),Z.flatten()
     Kpts = np.array([[X[i],Y[i],Z[i]] for i in range(len(X))])
     return Kpts
 
-def mesh_reduce(blatt,mesh):
+def mesh_reduce(blatt,mesh,inds=False):
     '''
     Determine and select only k-points corresponding to the first Brillouin zone, by simply classifying points on the basis
     of whether or not the closest lattice point is the origin. By construction, the origin is index 13 of the blatt. If for some reason
-    it is not, return error
+    it is not, return error. Option to take only the indices of the mesh which we want, rather than the acual array points--this is relevant
+    for tetrahedral interpolation methods
     '''
     if np.linalg.norm(blatt[13])>0:
         print('FORMAT ERROR: invalid Reciprocal Lattice Point array passed. Please use _b_lattice_() to generate these points')
         return []
     else:
         dv = np.array([np.linalg.norm(m-blatt,axis=1) for m in mesh])
-
-        bz_pts = np.array([mesh[i] for i in range(len(dv)) if (13 in np.where(dv[i]==dv[i].min())[0]) ])
+        if not inds:
+            bz_pts = np.array([mesh[i] for i in range(len(dv)) if (13 in np.where(dv[i]==dv[i].min())[0]) ])
+        else:
+            bz_pts = np.array([i for i in range(len(dv)) if (13 in np.where(dv[i]==dv[i].min())[0]) ])
         return bz_pts
     
 

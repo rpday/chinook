@@ -48,7 +48,7 @@ def LSmat(TB,axis=None):
     Otherwise, this structure holds for all l!
     The user gives an 'axis'--if None, then just compute the L.S matrix. Otherwise, the LiSi matrix is computed
     with i the axis index. To do this, a linear combination of L+S+,L-S-,L+S-,L-S+,LzSz terms are used to compute
-    In the factos dictionary, the weight of these terms is defined. The keys are tuples of (L+/-/z,S+/-/z) in a bit
+    In the factors dictionary, the weight of these terms is defined. The keys are tuples of (L+/-/z,S+/-/z) in a bit
     of a cryptic way. For L, range (0,1,2) ->(-1,0,1) and for S range (-1,0,1) = S1-S2 with S1/2 = +/- 1 here
     
     L+,L-,Lz matrices are defined for each l shell in the basis, transformed into the basis of cubic harmonics.

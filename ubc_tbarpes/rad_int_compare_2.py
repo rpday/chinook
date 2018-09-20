@@ -195,7 +195,7 @@ if __name__=="__main__":
     r0,rf,tol = 0,2,1e-2
     
     
-    hv = np.linspace(0,10,20)
+    hv = np.linspace(1,200,80)
     ks = hv_2_k(hv)
     arglist = [Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,1,0]
     edr = np.zeros((len(hv),2),dtype=complex)

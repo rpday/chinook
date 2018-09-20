@@ -98,8 +98,9 @@ class orbital:
             self.proj = projdict[self.label[1:]]
             
     def copy(self):
-        
-        return orbital(self.atom,self.index,self.label,self.pos,self.Z,self.orient,self.spin,self.lam,self.sigma,self.slab_index)
+        t_orbital = orbital(self.atom,self.index,self.label,self.pos,self.Z,self.orient,self.spin,self.lam,self.sigma,self.slab_index)
+#        t_orbital.proj,t_orbital.Dmat = self.proj,self.Dmat
+        return t_orbital
 #    
 #    def copyslab(self):    
 #        return orbital(self.atom,self.index,self.label,self.pos,self.Z,self.orient,self.spin,self.lam,self.sigma,self.slab_index)
@@ -197,9 +198,9 @@ def Euler(n,t):
     return a,b,y
 
 def Dmatrix(l,A,B,y):
-    Dmat = np.zeros((2*l+1,2*l+1),dtype=complex)
-    for m_i in range(2*l+1):
-        for mp_i in range(2*l+1):
+    Dmat = np.zeros((int(2*l+1),int(2*l+1)),dtype=complex)
+    for m_i in range(int(2*l+1)):
+        for mp_i in range(int(2*l+1)):
             m = m_i-l
             mp = mp_i-l
             Dmat[mp_i,m_i] = np.conj(Rotation.D(l,mp,m,y,B,A).doit())
@@ -243,8 +244,8 @@ def spin_double(basis,lamdict):
         spin_up.spin = 1
         spin_up.index = basis[ind].index+LB
         if type(basis[ind].orient)==list:
-            spin_up.proj = rot_spin(basis[ind].proj,2*basis[ind].orient[0],basis[ind].spin)
-        
+            spin_up.proj = rot_spin(basis[ind].proj,2*basis[ind].orient[0],1)
+            basis[ind].proj = rot_spin(basis[ind].proj,2*basis[ind].orient[0],-1)
         b_2.append(spin_up)
     return basis + b_2
         

@@ -193,7 +193,7 @@ if __name__=="__main__":
     Fe_3d = orb(Z,n,l)
     
     
-    hv = np.linspace(10,200,2)
+    hv = np.linspace(10,200,10)
     ks = hv_2_k(hv)
     arglist = [Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,1,ks[0]]
     edr = np.zeros((len(hv),2),dtype=complex)

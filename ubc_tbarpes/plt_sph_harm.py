@@ -39,7 +39,6 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import ubc_tbarpes.Ylm as Ylm
 import matplotlib.tri as mtri
-from mpl_toolkits.mplot3d import Axes3D
 
 def gen_psi(n,psi,psi_dict,str_nm=None):
     th = np.linspace(0,np.pi,2*n)
@@ -75,17 +74,38 @@ def gen_psi(n,psi,psi_dict,str_nm=None):
     return sz
 
 
-if __name__=="__main__":
-    psi_dict = {0:np.array([[-np.sqrt(0.5),0,2,1],[np.sqrt(0.5),0,2,-1]]),1:np.array([[0,np.sqrt(0.5),2,1],[0,np.sqrt(0.5),2,-1]]),
-             2:np.array([[-np.sqrt(0.5),0,2,1],[np.sqrt(0.5),0,2,-1]]),3:np.array([[0,np.sqrt(0.5),2,1],[0,np.sqrt(0.5),2,-1]])}
-    k = np.linspace(0,1,2)
-#    k = 0
+def plot_orbital(n,proj):
+    th = np.linspace(0,np.pi,2*n)
+    ph = np.linspace(0,2*np.pi,2*n)
+    th,ph = np.meshgrid(th,ph)
+    th,ph = th.flatten(),ph.flatten()
+    r = np.real(np.sum(np.array([Ylm.Y(pi[2],pi[3],th,ph)*(pi[0]+1.0j*pi[1]) for pi in proj]),axis=0))
+    x = abs(r)**2*np.cos(ph)*np.sin(th)
+    y = abs(r)**2*np.sin(ph)*np.sin(th)
+    z = abs(r)**2*np.cos(th)
+    tri = mtri.Triangulation(th,ph)
+    cols = r[tri.triangles][:,1]
+    fig = plt.figure(figsize=plt.figaspect(1)*2)
+    ax = fig.add_subplot(111,projection='3d')
+    p = ax.plot_trisurf(x,y,z,triangles=tri.triangles,cmap=cm.RdBu,shade=True,antialiased=True,edgecolors='k')
+    p.set_array(cols)
+    p.set_clim(-0.7,0.7)
     
-    psi = np.array([k/2,np.sqrt(1-k**2)*1.0j/2,-np.sqrt(1-k**2)*1.0j/2,k/2])
+    
+    
+
+
+#if __name__=="__main__":
+#    psi_dict = {0:np.array([[-np.sqrt(0.5),0,2,1],[np.sqrt(0.5),0,2,-1]]),1:np.array([[0,np.sqrt(0.5),2,1],[0,np.sqrt(0.5),2,-1]]),
+#             2:np.array([[-np.sqrt(0.5),0,2,1],[np.sqrt(0.5),0,2,-1]]),3:np.array([[0,np.sqrt(0.5),2,1],[0,np.sqrt(0.5),2,-1]])}
+#    k = np.linspace(0,1,2)
+##    k = 0
 #    
-    n = 40
-    for ki in range(len(k)):
-        sz = gen_psi(n,psi[:,ki],psi_dict)
+#    psi = np.array([k/2,np.sqrt(1-k**2)*1.0j/2,-np.sqrt(1-k**2)*1.0j/2,k/2])
+##    
+#    n = 40
+#    for ki in range(len(k)):
+#        sz = gen_psi(n,psi[:,ki],psi_dict)
         
 #    d1d,d1u = {o.index:o.proj for o in TB.basis[:5]},{(o.index-5):o.proj for o in TB.basis[10:15]}
 #    d2d,d2u = {(o.index-5):o.proj for o in TB.basis[5:10]},{(o.index-10):o.proj for o in TB.basis[15:]}

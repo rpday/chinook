@@ -8,11 +8,10 @@ Define out-of-plane slab vector
 """
 
 import numpy as np
-import ubc_tbarpes.build_lib
-import ubc_tbarpes.slab
 
 def ang_v1v2(v1,v2):
-    return np.arccos(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)))
+    
+    return np.arccos(np.around(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)),15))
 
 def are_parallel(v1,v2):
     
@@ -61,7 +60,10 @@ def refine_search(v3i,v1,v2,avec,maxlen):
     for qi in range(1,50):
         tmp_v = qi*v3i
         ang_to_norm = ang_v1v2(tmp_v,nv)
-        ok = False
+        if abs(ang_to_norm)<atol:
+            ok = True
+        else:
+            ok = False
         counter = 1
         while not ok:
             v_opt = tmp_v + counter*v_add
@@ -95,8 +97,11 @@ def score(vlist,v1,v2,avec):
 
 def find_v3(v1,v2,avec,maxlen):
     v3i = initialize_search(v1,v2,avec)
+#    if ang_v1v2(np.cross(v1,v2),v3i)>0.0:
     v3f = refine_search(v3i,v1,v2,avec,maxlen)
     v3_choice = score(v3f,v1,v2,avec)
+#    else:
+#        v3_choice = v3i
     return v3_choice
                     
             
@@ -105,13 +110,13 @@ def find_v3(v1,v2,avec,maxlen):
     
 
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
 #    avec = np.array([[0,4.736235,0],[4.101698,-2.368118,0],[0,0,13.492372]])
 #    miller = np.array([1,0,4])
     
-    a =  3.52
-    avec = np.array([[a/2,a/2,0],[0,a/2,a/2],[a/2,0,a/2]])
-    miller = np.array([1,1,1])
-    v12 = slab.v_vecs(miller,avec)
-    maxlen = 40
-    v3 = find_v3(v12[0],v12[1],avec,maxlen)
+#    a =  3.52
+#    avec = np.array([[a/2,a/2,0],[0,a/2,a/2],[a/2,0,a/2]])
+#    miller = np.array([1,1,1])
+#    v12 = v_vecs(miller,avec)
+#    maxlen = 40
+#    v3 = find_v3(v12[0],v12[1],avec,maxlen)

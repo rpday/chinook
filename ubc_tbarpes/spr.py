@@ -49,7 +49,7 @@ def gen_spr(basis,H,spr,avec):
             
         for hij in H_new:
             Rij = np.array([hij[2:5]])
-            NR = np.dot(Rij,avec[s[0]])/np.not(avec[s[0]],avec[s[0]])
+            NR = np.dot(Rij,avec[s[0]])/np.dot(avec[s[0]],avec[s[0]])
             
         base_new += tmp_base
 

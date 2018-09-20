@@ -29,17 +29,20 @@ class parallelepiped:
         self.avecs = avecs
         self.points,self.maxlen = self.calc_points(avecs)
         self.planes = self.calc_planes(avecs)
-        self.edges,self.Rmat = self.calc_edges()
+        self.edges,self.Rmat,self.edge_zeros = self.calc_edges()
         self.bounding = self.define_lines()
         
         
     def calc_points(self,avec):
         pts = np.array([[int(i/4),int(np.mod(i/2,2)),int(np.mod(i,2))] for i in range(8)])
         vert = np.dot(pts,avec)
-        maxlen = 1e6*np.array([np.linalg.norm(vert[ii]-vert[jj]) for ii in range(len(vert)) for jj in range(ii+1,len(vert))]).max()
+        maxlen = 1e3*np.array([np.linalg.norm(vert[ii]-vert[jj]) for ii in range(len(vert)) for jj in range(ii+1,len(vert))]).max()
         return vert,maxlen
     
     def calc_planes(self,avec):
+        '''
+        Define the planes. They are stored as an array of 15 float: 0-2: normal 3-5 corner #1,...etc for the four corners
+        '''
         planes = []
         for i in range(len(avec)):
             for j in range(i+1,len(avec)):
@@ -81,6 +84,7 @@ class parallelepiped:
         '''
         edges = np.zeros((len(self.planes),4,4))
         Rmatrices = np.zeros((len(self.planes),3,3))
+        edge_origins = np.zeros((len(self.planes),2))
         for p in range(len(self.planes)):
             Rmat = rotation(self.planes[p,:3])
 
@@ -88,7 +92,13 @@ class parallelepiped:
             corners = parallelogram.sort_pts(corners)
             edges[p] = np.array([[*corners[np.mod(ii,4)],*corners[np.mod(ii+1,4)]] for ii in range(4)])
             Rmatrices[p] = Rmat
-        return edges,Rmatrices
+            try:
+                origin_ind = np.where(np.linalg.norm(corners,axis=1)==0)[0][0]
+                edge_origins[p] = np.array([origin_ind,np.mod(origin_ind-1,4)])
+            except IndexError:
+                edge_origins[p] = np.array([-1,-1])
+            
+        return edges,Rmatrices,edge_origins
     
     
 def _draw_lines(ax,pp):
@@ -172,7 +182,7 @@ def plane_intersect(p1,p2,plane):
     return p1-np.dot(norm,(p1-xo))/np.dot(norm,m)*m 
 
 def point_is_intersect(point,intersect):
-    if np.linalg.norm(point-intersect)==0.0:
+    if np.linalg.norm(point-intersect)<1e-4:
         return True
     else:
         return False
@@ -206,26 +216,40 @@ def inside_pped(pped,point):
     point = np.around(point,4)
     crossings = 0
     point2 = point + pped.maxlen*2*np.array([149,151,157])
+    avi = np.linalg.inv(pped.avecs)
     for pi in range(len(pped.planes)):
-            
-        if cross_plane(point,point2,pped.planes[pi]):
-            intersect = plane_intersect(point,point2,pped.planes[pi])
-            inter_2D = np.dot(intersect,pped.Rmat[pi])[:2]
-            in_plane = parallelogram.in_pgram(inter_2D,pped.edges[pi],pped.maxlen)
-
-            if in_plane:
-               if point_is_intersect(point,intersect):#IF THE POINT IS CONTAINED IN A PLANE
-                    crossings = origin_plane(pi)
-                    break
-               crossings+=1
+        if is_lattice(point,avi):
+            return False
+        else:
+            if cross_plane(point,point2,pped.planes[pi]):
+                intersect = plane_intersect(point,point2,pped.planes[pi])
+                inter_2D = np.dot(intersect,pped.Rmat[pi])[:2]
+                in_plane = parallelogram.in_pgram(inter_2D,pped.edges[pi],pped.edge_zeros[pi],pped.maxlen)
+    
+                if in_plane:
+                   if point_is_intersect(point,intersect):#IF THE POINT IS CONTAINED IN A PLANE
+                        crossings = origin_plane(pi)
+                        break
+                   crossings+=1
     if np.mod(crossings,2)==0:
         return False
     else:
         return True
+    
+
+def is_lattice(p,ai):
+    '''
+    A quick check to see if a point is in fact a lattice point. Then it should be excluded.
+    '''
+    tmp = np.around(np.dot(p,ai),4)
+    if np.linalg.norm(tmp.astype(int)-tmp)==0 and np.linalg.norm(p)>0:
+        return True
+    else:
+        return False
 
 
-if __name__=="__main__":
-    print('run')
+#if __name__=="__main__":
+#    print('run')
 #    avecs = np.array([[  4.101698,  -2.368118,   0.      ],
 #       [  0.      , -18.94494 ,  13.492372],
 #       [ -4.101698,  -2.368117, -13.492372]])

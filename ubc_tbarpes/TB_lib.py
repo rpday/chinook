@@ -73,10 +73,9 @@ class H_me:
 class TB_model:
     
     
-    def __init__(self,basis,avec,H_args = None,Kobj = None):
+    def __init__(self,basis,H_args = None,Kobj = None):
         '''
         basis -- list of orbital objects
-        avec -- numpy array of 3x3 float indicating the lattice vectors for the material
         H_args: dictionary for Hamiltonian build:
             {'type': "SK" ,"list", or "txt"
              if SK:
@@ -104,14 +103,17 @@ class TB_model:
         
         '''
         self.basis = basis #is a list of orbital objects
-        self.avec = avec
+        if H_args is not None:
+            self.avec = H_args['avec']
 
         self.mat_els = self.build_ham(H_args)
         self.Kobj = Kobj
         
     def copy(self):
-        TB_copy = TB_model(self.basis,self.avec,None,self.Kobj)
+        TB_copy = TB_model(self.basis,None,self.Kobj)
+        TB_copy.avec = self.avec
         TB_copy.mat_els = self.mat_els
+        
         return TB_copy
         
             
@@ -137,7 +139,7 @@ class TB_model:
             try:
                 htmp = []
                 if H_args['type'] == "SK":
-                    htmp = Hlib.sk_build(H_args['avec'],self.basis,H_args['V'],H_args['cutoff'],H_args['tol'],H_args['renorm'],H_args['offset'],H_args['so'])
+                    htmp = Hlib.sk_build(H_args['avec'],self.basis,H_args['V'],H_args['cutoff'],H_args['tol'],H_args['renorm'],H_args['offset'],H_args['spin']['bool'])
                 elif H_args['type'] == "txt":
                     htmp = Hlib.txt_build(H_args['filename'],H_args['cutoff'],H_args['renorm'],H_args['offset'],H_args['tol'])
                 elif H_args['type'] == "list":

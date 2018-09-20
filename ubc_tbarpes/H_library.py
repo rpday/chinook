@@ -75,23 +75,24 @@ def txt_build(filename,cutoff,renorm,offset,tol):
 
                 
 
-def sk_build(avec,basis,V,cutoff,tol,renorm,offset,so):
+def sk_build(avec,basis,V,cutoff,tol,renorm,offset,spin):
     '''
     Would like to find a better way of doing this, or at least getting around the whole cluster thing...
     '''
-    if type(cutoff)==list:
-        reg_cut = [0.0]+cutoff
+    try:
+        reg_cut = [0.0]+list(cutoff)
         reg_cut = np.array(reg_cut)
-    elif type(cutoff)==float:
-        reg_cut = np.array([cutoff])
-    else:
-        print('Invalid cutoff-format')
-        return None
+    except TypeError:
+        try:
+            reg_cut = np.array([cutoff])
+        except TypeError:
+            print('Invalid cutoff-format')
+            return None
     pt_max = np.ceil(np.array([(reg_cut).max()/np.linalg.norm(avec[i]) for i in range(len(avec))]).max())
     pts = region(int(pt_max)+1)
     H_raw = []
     o1o2norm = {}
-    if so:
+    if spin:
         brange = int(len(basis)/2)
     else:
         brange = len(basis)
@@ -123,12 +124,10 @@ def sk_build(avec,basis,V,cutoff,tol,renorm,offset,so):
                                     mat_el = SK.SK_coeff(o1,o2,Rij,tmp_V,renorm,offset,tol)  #then matrix element is computed using the SK function
                         elif isinstance(V,dict): #if the SK matrix elements brought in NOT as a list of dictionaries...                               
                             mat_el = SK.SK_coeff(o1,o2,Rij,V,renorm,offset,tol)
-                            
 
                             
                     if abs(mat_el)>tol: 
-                        H_raw.append([o1.index,o2.index,Rij[0],Rij[1],Rij[2],mat_el])
-                            
+                        H_raw.append([o1.index,o2.index,Rij[0],Rij[1],Rij[2],mat_el])                            
                     o1o2norm[orb_label] = True #now that the pair has been calculated, disqualify from subsequent calculations
     return H_raw
 

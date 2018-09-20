@@ -36,7 +36,7 @@ import matplotlib.cm as cm
 import ubc_tbarpes.inside as inside
 import ubc_tbarpes.orbital as olib
 import ubc_tbarpes.TB_lib as TB_lib
-import ubc_tbarpes.vbasis as v3
+import ubc_tbarpes.v3find as v3
 
 
 def GCD(a,b):
@@ -190,9 +190,15 @@ def basal_plane(v):
     uu = np.array([x[0]*x,x[1]*x,x[2]*x])
     R = cos*np.identity(3) + sin*u + (1-cos)*uu
     R = R.T
-    vp = np.around(np.dot(v,R),4)
+    vp = np.dot(v,R)
     
-    
+    # Now perform one more rotation, taking vp[0] onto the [100] Cartesian axis
+    phi = np.arccos(vp[0,0]/np.linalg.norm(vp[0]))
+    Rp = np.array([[np.cos(phi),-np.sin(phi),0],[np.sin(phi),np.cos(phi),0],[0,0,1]]).T
+    vp = np.dot(vp,Rp)
+    R = np.dot(R,Rp)
+    vp = np.around(vp,4)
+    R = np.around(R,15)
     return vp,R
 
 
@@ -306,23 +312,45 @@ def gen_surface(avec,miller,basis):
     vn_b,R = basal_plane(v_vecs(miller,avec))
     pipe,box = par(vn_b)
     avec_R = np.dot(avec,R)
+    uv,gamma = rot_vector(R.T)
+    
     b_points = populate_box(box,basis,avec_R,R)
     in_pped,inds = populate_par(b_points,vn_b)
-    
     new_basis = np.empty(len(in_pped),dtype=olib.orbital)
+    ordering = sorted_basis(in_pped,inds)
     for ii in range(len(in_pped)):
-        tmp = basis[int(inds[ii])].copy()
-        tmp.slab_index = int(inds[ii])
+        tmp = basis[int(ordering[ii][3])].copy()
+        tmp.slab_index = int(ordering[ii][3])
         tmp.index = ii
-        tmp.pos = in_pped[ii]
+        tmp.pos = ordering[ii][:3]
+        tmp.proj,tmp.Dmat = tmp.rot_projection(-gamma,uv)
         new_basis[ii] = tmp
     
     
     return new_basis,vn_b,R
+
+def rot_vector(Rmat):
+    L,u=np.linalg.eig(Rmat)
+    uv = np.real(u[:,np.where(abs(L-1)<1e-10)[0][0]])
+    th = np.arccos((np.trace(Rmat)-1)/2)
+    R_tmp = olib.Rmat(uv,th)
+    if np.linalg.norm(R_tmp-Rmat)<1e-10:
+        return uv,th
+    else:
+        R_tmp = olib.Rmat(uv,-th)
+        if np.linalg.norm(R_tmp-Rmat)<1e-10:
+            return uv,-th
+        else:
+            print('ERROR: COULD NOT DEFINE ROTATION MATRIX FOR SUGGESTED BASIS TRANSFORMATION!')
+            return None
     
+def sorted_basis(pts,inds):
+    labels = np.array([[*pts[ii],inds[ii]] for ii in range(len(inds))])
+    labels_sorted = np.array(sorted(labels,key=itemgetter(2,3)))
+    return labels_sorted
 
 
-def gen_slab(basis,vn,mint,minb,term):
+def gen_slab(basis,vn,mint,minb,term,fine=(0,0)):
     '''
     Using the new basis defined for the surface unit cell, generate a slab
     of at least mint (minimum thickness), minb (minimum buffer) and terminated
@@ -336,6 +364,7 @@ def gen_slab(basis,vn,mint,minb,term):
         mint - minimum thickness of the slab float
         minb - minimum thickness of the vacuum buffer float
         term - termination of the slab tuple (term[0] = top termination, term[1] = bottom termination)
+        fine - fine adjustment of the termination to precisely specify terminating atoms: a tuple of 2 float indicating shift from the otherwise defined slab relative to its limits
     return:
         avec - updated lattice vector for the SLAB unit cell, numpy array of float (3x3)
         cull - array of new orbital basis objects, with slab-index corresponding to the original basis indexing
@@ -345,18 +374,22 @@ def gen_slab(basis,vn,mint,minb,term):
     
     for i in range(Nmin):
         for bi in basis:
-            pts.append([*(i*vn[-1]+bi.pos),bi.slab_index])
+#            pts.append([*(i*vn[-1]+bi.pos),bi.slab_index])
+            pts.append([*(i*vn[-1]+bi.pos),bi.atom,bi.slab_index,bi.index])
     pts = np.array(pts)
     z_order = pts[:,2].argsort()
     pts = pts[z_order]
     
-    pts = np.array(sorted(pts,key=itemgetter(2,3)))
-    
+    pts = np.array(sorted(pts,key=itemgetter(2,5)))
+    #termination organized by ATOM
     term_1set = pts[pts[:,3]==term[1]]
     term_0set = pts[pts[:,3]==term[0]]
     surf = pts[:,2].max()-minb
-    base = term_1set[:,2].min()
-    top = term_0set[np.where(abs(term_0set[:,2]-surf)==abs(term_0set[:,2]-surf).min())[0][0],2]
+
+#    base = term_1set[:,2].min()
+    base = term_1set[term_1set[:,2]>=(term_1set[:,2].min()+fine[1]),2].min()
+#    top = term_0set[np.where(abs(term_0set[:,2]-surf)==abs(term_0set[:,2]-surf).min())[0][0],2]
+    top = term_0set[np.where(abs(term_0set[(term_0set[:,2]-surf)<fine[0],2]-surf)==abs(term_0set[(term_0set[:,2]-surf)<fine[0],2]-surf).min())[0][0],2]
 
     cull = np.array([pts[p] for p in range(len(pts)) if base<=pts[p,2]<=top])
     cull[:,2]-=top
@@ -368,7 +401,7 @@ def gen_slab(basis,vn,mint,minb,term):
         tmp = basis[int(cull[ii,-1])].copy()
         tmp.slab_index = int(cull[ii,-1])
         tmp.index = ii
-        tmp.pos = cull[ii,:3]
+        tmp.pos = cull[ii,:3]-np.array([cull[-1,0],cull[-1,1],0])
         tmp.depth = tmp.pos[2]
         new_basis[ii] = tmp
         
@@ -402,7 +435,7 @@ def unpack(H):
 #
 def H_surf(surf_basis,avec,H_bulk,Rmat):
     '''
-    Rewrite the bulk-Hamiltonian in terms of the surface unit cell, with its most likely expanded basis.
+    Rewrite the bulk-Hamiltonian in terms of the surface unit cell, with its (most likely expanded) basis.
     The idea here is to organize all 'duplicate' orbitals, in terms of their various connecting vectors.
     Using modular arithmetic, we then create an organized dictionary which categorizes the hopping paths
     within the new unit cell according to the new basis index designation. For each element in the Hamiltonian
@@ -416,30 +449,29 @@ def H_surf(surf_basis,avec,H_bulk,Rmat):
     H_old = unpack(H_bulk)
 
     Rcv = np.dot(np.array([h[2:5] for h in H_old]),Rmat)
-    H_new = np.empty((len(H_old),6),dtype=complex)
     H_new = []
-    num_filled  = 0
     for ii in range(len(H_old)):
         hi = H_old[ii]
         R_latt = np.mod(np.around(np.dot(Rcv[ii],av_i),4),1)
+#        R_latt = np.around(np.dot(Rcv[ii],av_i),4)
         R_compare = (np.linalg.norm((cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][:,2:]-R_latt),axis=1),np.linalg.norm((cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][:,2:]-(1-R_latt)),axis=1))
         try: ##basis ordering won't necessarily be the same. 
-            match = np.where(R_compare[0]<1e-4)[0]
+            match = np.where(R_compare[0]<1e-4)[0] #only considering the first option--do I need the other?
             for mi in match:#find the match
-                tmp_H = [*cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][int(mi)][:2],*Rcv[ii],hi[-1]]
+                tmp_H = [*cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][int(mi)][:2],*np.around(Rcv[ii],4),hi[-1]]
 
                 H_new.append(tmp_H)
 
                 if H_new[-1][0]>H_new[-1][1]:
                     H_new[-1] = H_conj(tmp_H)
-                num_filled +=2
 
         except IndexError:
            print('flag')
            continue
 
         
-    print('Number of Bulk Hamiltonian Hopping Terms Found: {:d}, Number of Surface Basis Hopping Terms Filled: {:d}'.format(len(H_old),num_filled))
+    print('Number of Bulk Hamiltonian Hopping Terms Found: {:d}, Number of Surface Basis Hopping Terms Filled: {:d}'.format(len(H_old),len(H_new)))
+    
     Hobj = TB_lib.gen_H_obj(H_new)
     for h in Hobj:
         h.H = h.clean_H()
@@ -493,7 +525,7 @@ def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
     Hdict = Hobj_to_dict(Hsurf,surf_basis)
     si = np.linalg.inv(svec)
     for oi in slab_basis:
-        Htmp = Hdict[oi.slab_index]
+        Htmp = Hdict[oi.slab_index] ##### OK PROBLEM HERE!
         for hi in Htmp:
             ncells = np.floor(np.dot(hi[2:5],si))[2]
             Htmp_2 = [0]*6
@@ -516,7 +548,7 @@ def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
     for h in Hobj:
         h.H = h.clean_H()
         
-    return Hobj
+    return unpack(Hobj) #Modify to have function return list of H-elements
                 
 
 
@@ -527,6 +559,7 @@ def bulk_to_slab(slab_dict):
         slab_dict -- dictionary containing all essential information regarding the slab construction:
             'miller' -- miller indices as a numpy array len 3 of int
             'TB' -- Tight-binding model corresponding to the bulk model
+            'fine' -- Fine adjustment of the slab limits, beyond the termination to precisely indicate the termination. float, units of Angstrom, relative to the bottom, and top surface generated
             'thick' -- minimum thickness of the slab structure (int)
             'vac' -- minimum thickness of the slab vacuum buffer to properly generate a surface with possible surface states (int)
             'termination' -- tuple of integers specifying the basis indices for the top and bottom of the slab structure
@@ -536,15 +569,15 @@ def bulk_to_slab(slab_dict):
     
     surf_basis,nvec,Rmat = gen_surface(slab_dict['TB'].avec,slab_dict['miller'],slab_dict['TB'].basis)
     surf_ham = H_surf(surf_basis,nvec,slab_dict['TB'].mat_els,Rmat)
-    slab_vec,slab_basis = gen_slab(surf_basis,nvec,slab_dict['thick'],slab_dict['vac'],slab_dict['termination'])
+    slab_vec,slab_basis = gen_slab(surf_basis,nvec,slab_dict['thick'],slab_dict['vac'],slab_dict['termination'],slab_dict['fine'])
     slab_ham = build_slab_H(surf_ham,slab_basis,surf_basis,nvec)
     
     slab_TB = slab_dict['TB'].copy()
     slab_TB.avec = slab_vec
     slab_TB.basis = slab_basis
-    slab_TB.mat_els = slab_ham
+ #   slab_TB.mat_els = slab_ham
     slab_TB.Kobj.kpts = np.dot(slab_dict['TB'].Kobj.kpts,Rmat)
-    return slab_TB
+    return slab_TB,slab_ham
 
            
 
@@ -557,6 +590,7 @@ def mod_dict(surf_basis,av_i):
     for bi in range(len(surf_basis)):
         for bj in range(len(surf_basis)):
             mod_vec = np.mod(np.around(np.dot((surf_basis[bj].pos-surf_basis[bi].pos),av_i),4),1)
+#            mod_vec = np.around(np.dot(surf_basis[bj].pos-surf_basis[bi].pos,av_i),4)
             try:
                 cv_dict['{:d}-{:d}'.format(surf_basis[bi].slab_index,surf_basis[bj].slab_index)].append([bi,bj,*mod_vec])
             except KeyError:
@@ -568,7 +602,12 @@ def mod_dict(surf_basis,av_i):
     return cv_dict
 
 
-
-
+if __name__ == "__main__":
+    a = 3.606
+    miller = np.array([1,1,1])
+    avec = np.array([[a/2,a/2,0],[a/2,0,a/2],[0,a/2,a/2]]) 
+    
+    vn_b,R = basal_plane(v_vecs(miller,avec))
+    
 
     
