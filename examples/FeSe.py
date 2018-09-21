@@ -100,7 +100,7 @@ ARPES_dict={'cube':{'X':[-0.25,0.25,40],'Y':[-0.25,0.25,40],'kz':0.0,'E':[-0.1,0
 def build_TB():
     BD = build_lib.gen_basis(basis_dict)
     Kobj = build_lib.gen_K(K_dict)
-    TB = build_lib.gen_TB(BD,ham_dict,Kobj)
+    TB = build_lib.gen_TB(BD,ham_dict,Kobj,slab_dict)
     return TB
 
 

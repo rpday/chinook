@@ -43,7 +43,7 @@ if __name__=="__main__":
     REN,OFF,TOL=1,0.4,0.001
 
 
-    spin = {'bool':True,'soc':True,'lam':{0:2.066*2./3,1:0.3197*2./3,2:0.3632*2./3}}
+    spin = {'bool':False,'soc':True,'lam':{0:2.066*2./3,1:0.3197*2./3,2:0.3632*2./3}}
     
 #    slab_dict = {'bool':False,
 #                'hkl':np.array([0,0,1]),
@@ -88,7 +88,7 @@ if __name__=="__main__":
 #    print('length of slab basis: ',len(slab.slab_base))
 #    slab.plot_lattice(np.array([b.pos for b in slab.slab_base]))
     Kobj = build_lib.gen_K(Kd)
-    TB = build_lib.gen_TB(Bd,Hd,Kobj,slab_dict)
+    TB = build_lib.gen_TB(Bd,Hd,Kobj)
 #
     TB.solve_H()
     TB.plotting(-1.5,1.5)

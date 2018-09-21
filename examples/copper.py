@@ -61,7 +61,7 @@ if __name__=="__main__":
 #          "003322P":0.0033741803350209204,"003322D":-0.0012785070616424799}
 #    txtfile = 'C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/examples/Cu.txt'
 
-    spin = {'bool':True,'soc':True,'lam':{0:0.1}}
+    spin = {'bool':False,'soc':True,'lam':{0:0.1}}
 
     Bd = {'atoms':[0],
 			'Z':{0:29},
@@ -95,7 +95,7 @@ if __name__=="__main__":
     
     Bd = build_lib.gen_basis(Bd)
     Kobj = build_lib.gen_K(Kd)
-    TB = build_lib.gen_TB(Bd,Hd,Kobj)
+    TB = build_lib.gen_TB(Bd,Hd,Kobj,slab_dict)
     G,M,K=np.zeros(3),np.array([0.5,0.5,0.0]),np.array([1./3,2./3,0.0])
     Kd['type']='F'
     Kd['avec']=TB.avec
