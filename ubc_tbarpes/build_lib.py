@@ -73,7 +73,6 @@ def gen_K(Kdic):
 
 ###Built Tight Binding Model
 def gen_TB(Bdict,H_args,Kobj,slab_dict=None):
-    
     if type(slab_dict)==dict:
         if H_args['spin']['bool']:
             Bdict['bulk'] = Bdict['bulk'][:int(len(Bdict['bulk'])/2)]
@@ -82,20 +81,21 @@ def gen_TB(Bdict,H_args,Kobj,slab_dict=None):
         else:
             Hspin=False
     TB = TBlib.TB_model(Bdict['bulk'],H_args,Kobj)
-    
     if type(slab_dict)==dict:
         slab_dict['TB'] = TB
         TB,slab_H = slib.bulk_to_slab(slab_dict) 
         if Hspin:
             TB.basis = olib.spin_double(list(TB.basis),Bdict['spin']['lam']) 
-        if H_args['type']!='SK': #to be overwritten once the Hamiltonian generation for slabs is fixed.
-            H_args['type']='list'
-            H_args['list'] = slab_H
+##        if H_args['type']!='SK': #to be overwritten once the Hamiltonian generation for slabs is fixed.
+#            H_args['type']='list'
+#            H_args['list'] = slab_H
+#    
+        H_args['type']='list'
+        H_args['list'] = slab_H
         H_args['avec'] = TB.avec
         H_args['spin']['bool']=Hspin
 
         TB.mat_els = TB.build_ham(H_args)
-#        
     return TB
 
 

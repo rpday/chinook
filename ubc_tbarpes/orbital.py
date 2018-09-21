@@ -46,10 +46,12 @@ The latter 2 will be the output of some Hamiltonian, of any form supported by th
 
 import numpy as np
 
-from sympy.physics.quantum.spin import Rotation
+#from sympy.physics.quantum.spin import Rotation
 import ubc_tbarpes.electron_configs as econ
 import ubc_tbarpes.atomic_mass as am
+from ubc_tbarpes.wigner import WignerD
 from operator import itemgetter
+
 
 
 projdict={"0":np.array([[1.0,0.0,0.0,0.0]]),
@@ -114,16 +116,18 @@ class orbital:
         Define Euler angles in the z-y-z convention
         THIS WILL BE A COUNTERCLOCKWISE ROTATION ABOUT vector BY gamma
         '''
-        vector = np.array([0,0,1])# for now only accept z-rotations vector/np.linalg.norm(vector)
+        #vector = np.array([0,0,1])# for now only accept z-rotations vector/np.linalg.norm(vector)
         Ylm_vec = np.zeros((2*self.l+1),dtype=complex)
         for a in range(len(self.proj)):
             Ylm_vec[int(self.proj[a,-1]+self.l)] +=self.proj[a,0]+1.0j*self.proj[a,1]
         
         A,B,y = Euler(vector,gamma)
-        Dmat = Dmatrix(self.l,A,B,y)
+        Dmat = WignerD(self.l,y,B,A)
         
-        
-        Ynew = np.dot(np.conj(Dmat),Ylm_vec)
+        Ynew = np.dot(Dmat,Ylm_vec)
+#        Dmat = Dmatrix(self.l,A,B,y)
+
+#        Ynew = np.dot(np.conj(Dmat),Ylm_vec)
         proj = []
 
         for a in range(2*self.l+1):
@@ -196,16 +200,16 @@ def Euler(n,t):
             a = np.arctan2(R[1,0],-R[0,0])
 
     return a,b,y
-
-def Dmatrix(l,A,B,y):
-    Dmat = np.zeros((int(2*l+1),int(2*l+1)),dtype=complex)
-    for m_i in range(int(2*l+1)):
-        for mp_i in range(int(2*l+1)):
-            m = m_i-l
-            mp = mp_i-l
-            Dmat[mp_i,m_i] = np.conj(Rotation.D(l,mp,m,y,B,A).doit())
-    return Dmat
-
+#
+#def Dmatrix(l,A,B,y):
+#    Dmat = np.zeros((int(2*l+1),int(2*l+1)),dtype=complex)
+#    for m_i in range(int(2*l+1)):
+#        for mp_i in range(int(2*l+1)):
+#            m = m_i-l
+#            mp = mp_i-l
+#            Dmat[mp_i,m_i] = np.conj(Rotation.D(l,mp,m,y,B,A).doit())
+#    return Dmat
+#
 
 def sort_basis(base,slab):
     '''
@@ -244,6 +248,7 @@ def spin_double(basis,lamdict):
         spin_up.spin = 1
         spin_up.index = basis[ind].index+LB
         if type(basis[ind].orient)==list:
+            print(basis[ind].proj,2*basis[ind].orient[0],1)
             spin_up.proj = rot_spin(basis[ind].proj,2*basis[ind].orient[0],1)
             basis[ind].proj = rot_spin(basis[ind].proj,2*basis[ind].orient[0],-1)
         b_2.append(spin_up)
@@ -272,7 +277,8 @@ if __name__=="__main__":
 
 def rot_spin(projection,angle,spin):
     '''
-    Map the effect of spin-rotation ABOUT z axis only, onto the orbital projection definition
+    Map the rotation of the spin direction onto the orbital projection. 
+    This ONLY works for rotation about Z AXIS!
     '''
     for i in range(len(projection)):
         tmp_coeff = complex(projection[i,0]+1.0j*projection[i,1])

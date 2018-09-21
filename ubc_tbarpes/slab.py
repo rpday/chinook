@@ -442,21 +442,28 @@ def H_surf(surf_basis,avec,H_bulk,Rmat):
     then, we can do the same modular definition of the hopping vector, easily determining which orbital in our
     new basis this hopping path indeed corresponds to. We then make a new list, organizing corresponding to the
     new basis listing.
+    args:
+        surf_basis: list of orbitals in the surface unit cell
+        avec: numpy array 3x3 of flat, surface unit cell vectors
+        H_bulk: the bulk-Hamiltonian, as a mat_els object(defined in TB_lib.py)
+        Rmat: rotation matrix (pre-multiply vectors) 3x3 numpy array of flat for rotating the coordinate system from bulk to surface unit cell axes
+    return:
+        Hamiltonian object, written in the basis of the surface unit cell, and its coordinate frame, rather than those of the bulk system
     '''
-    av_i = np.linalg.inv(avec)
-    cv_dict = mod_dict(surf_basis,av_i)
+    av_i = np.linalg.inv(avec) #inverse lattice vectors
+    cv_dict = mod_dict(surf_basis,av_i) #generate dictionary of connecting vectors between each of the relevant orbitals, according to their definition in the bulk lattice.
 
-    H_old = unpack(H_bulk)
+    H_old = unpack(H_bulk) #transform Hamiltonian object to list of hopping terms
 
-    Rcv = np.dot(np.array([h[2:5] for h in H_old]),Rmat)
-    H_new = []
-    for ii in range(len(H_old)):
-        hi = H_old[ii]
-        R_latt = np.mod(np.around(np.dot(Rcv[ii],av_i),4),1)
+    Rcv = np.dot(np.array([h[2:5] for h in H_old]),Rmat) #rotate all hopping paths into the coordinate frame of the surface unit cell
+    H_new = [] #initialize the new Hamiltonian list
+    for ii in range(len(H_old)): #iterate over all original Hamiltonian hopping paths
+        hi = H_old[ii] #temporary Hamiltonian matrix element to consider
+        R_latt = np.mod(np.around(np.dot(Rcv[ii],av_i),4),1) #what is the hopping path, in new coordinate frame, in terms of modular vector (mod lattice vector)
 #        R_latt = np.around(np.dot(Rcv[ii],av_i),4)
-        R_compare = (np.linalg.norm((cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][:,2:]-R_latt),axis=1),np.linalg.norm((cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][:,2:]-(1-R_latt)),axis=1))
-        try: ##basis ordering won't necessarily be the same. 
-            match = np.where(R_compare[0]<1e-4)[0] #only considering the first option--do I need the other?
+        R_compare = np.linalg.norm((cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][:,2:]-R_latt),axis=1)#,np.linalg.norm((cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][:,2:]-(1-R_latt)),axis=1)) #two possible choices: 
+        try:
+            match = np.where(R_compare<1e-4)[0] #only considering the first option--do I need the other?
             for mi in match:#find the match
                 tmp_H = [*cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][int(mi)][:2],*np.around(Rcv[ii],4),hi[-1]]
 
@@ -466,15 +473,15 @@ def H_surf(surf_basis,avec,H_bulk,Rmat):
                     H_new[-1] = H_conj(tmp_H)
 
         except IndexError:
-           print('flag')
+           print('ERROR: no valid hopping path found relating original Hamiltonian to surface unit cell.')
            continue
 
         
     print('Number of Bulk Hamiltonian Hopping Terms Found: {:d}, Number of Surface Basis Hopping Terms Filled: {:d}'.format(len(H_old),len(H_new)))
     
     Hobj = TB_lib.gen_H_obj(H_new)
-    for h in Hobj:
-        h.H = h.clean_H()
+#    for h in Hobj:
+#        h.H = h.clean_H()
         
     return Hobj
 
@@ -489,13 +496,26 @@ def Hobj_to_dict(Hobj,basis):
     for a given element, we just take [i, len(basis)*(R_2)+j, (np.dot((R_0,R_1,R_2),svec)+pos[j]-pos[i]),H]
     If the path goes into the vacuum buffer don't add it to the new list!
     '''
-    Hdict = {}
-    for h in Hobj:
-        try:
-            Hdict[h.i] = Hdict[h.i] + [[h.i,h.j,*h.H[i]] for i in range(len(h.H))]
-        except KeyError:
-            Hdict[h.i] = [[h.i,h.j,*h.H[i]] for i in range(len(h.H))]
+    Hdict = {ii:[] for ii in range(len(basis))}
+    Hlist = unpack(Hobj)
+    
+    for hi in Hlist:
+        Hdict[hi[0]].append([*hi])
+        Hdict[hi[1]].append([*H_conj(hi)])
+    
     return Hdict
+    
+#    
+#    for h in Hobj:
+#        try:
+#            Hdict[h.i] = Hdict[h.i] + [[h.i,h.j,*h.H[i]] for i in range(len(h.H))]
+#        except KeyError:
+#            Hdict[h.i] = [[h.i,h.j,*h.H[i]] for i in range(len(h.H))]
+##        try:
+##            Hdict[h.j] = Hdict[h.j] + [[h.j,h.i,*np.conj(h.H[i])]]
+##        except KeyError:
+##            Hdict[h.j] = [[h.j,h.i,-np.conj()]]
+#    return Hdict
 
 
 def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
@@ -522,16 +542,16 @@ def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
     heights = np.array([o.pos[2] for o in slab_basis])
     limits = (heights.min(),heights.max())
     Hnew = []
-    Hdict = Hobj_to_dict(Hsurf,surf_basis)
+    Hdict = Hobj_to_dict(Hsurf,surf_basis) #dictionary of hoppings. keys correspond to the slab_index, values the relative hoppings elements
     si = np.linalg.inv(svec)
     for oi in slab_basis:
-        Htmp = Hdict[oi.slab_index] ##### OK PROBLEM HERE!
-        for hi in Htmp:
-            ncells = np.floor(np.dot(hi[2:5],si))[2]
-            Htmp_2 = [0]*6
+        Htmp = Hdict[oi.slab_index] #access relevant hopping paths for the orbital in question
+        for hi in Htmp: #iterate over all relevant hoppings
+            ncells = np.floor(np.dot(hi[2:5],si))[2] #how many unit cells -- in the surface unit cell basis are jumped during this hopping--specifically, cells along the normal direction
+            Htmp_2 = [0]*6 #create empty hopping element, to be filled
 
-            Htmp_2[0] = int(oi.index)
-            Htmp_2[1] = int(oi.index/len(surf_basis))*len(surf_basis) + int(len(surf_basis)*ncells+hi[1])
+            Htmp_2[0] = int(oi.index) #matrix row should be the SLAB BASIS INDEX
+            Htmp_2[1] = int(oi.index/len(surf_basis))*len(surf_basis) + int(len(surf_basis)*ncells+hi[1]) #matrix column is
 
             Htmp_2[5] = hi[5]
             
@@ -545,8 +565,8 @@ def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
 
                 continue
     Hobj = TB_lib.gen_H_obj(Hnew)
-    for h in Hobj:
-        h.H = h.clean_H()
+#    for h in Hobj:
+#        h.H = h.clean_H()
         
     return unpack(Hobj) #Modify to have function return list of H-elements
                 
