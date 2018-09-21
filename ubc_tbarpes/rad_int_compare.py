@@ -3,7 +3,7 @@
 Created on Tue Apr  3 09:39:22 2018
 
 @author: rday
-MIT License
+MIT License 
 
 Copyright (c) 2018 Ryan Patrick Day
 
@@ -80,14 +80,20 @@ class orb:
 '''        
 
 def hydrogenic(r,Z,n,l,au):
+    '''
+    Schiff 1968, p.93 shows derivation of normalization constant. Wikipedia gives incorrect form
+    '''
     return (np.sqrt((2*Z/(n*au))**3*fact(n-l-1)/(2*n*fact(n+l)))*np.exp(-Z*r*A/(n*au))*(2*Z*r*A/(n*au))**l*sc.genlaguerre(n-l-1,l*2+1)(2*Z*r*A/(n*au)))
 
 def d_hyd_r2(r,arglist):
+    '''
+    Derivative of hydrogenic above, multiplied by (A*r)^2
+    '''
     n,l,Z,au = arglist[0],arglist[1],arglist[2],arglist[3]
     if (n-l<2):
-        return 0
+        return (l*(A*r)-(A*r)**2*Z/(n*au))*hydrogenic(r,Z,n,l,au)
     else:
-        return (l*r-r**2*Z/(n*au))*hydrogenic(r,Z,n,l,au) - r**2*np.sqrt((2*Z/(n*au))**3*fact(n-l-1)/(2*n*fact(n+l)))*np.exp(-Z*r/(n*au))*(2*Z*r/(n*au))**l*sc.genlaguerre(n-l-2,l*2+2)(2*Z*r/(n*au))
+        return (l*(A*r)-(A*r)**2*Z/(n*au))*hydrogenic(r,Z,n,l,au) - (A*r)**(2+l)*np.sqrt((2*Z/(n*au))**3*fact(n-l-1)/(2*n*fact(n+l)))*np.exp(-Z*r*A/(n*au))*(2*Z/(n*au))**(l+1)*sc.genlaguerre(n-l-2,l*2+2)(2*Z*r*A/(n*au))
 
 '''
 ##################UTILITY FUNCTIONS############################################
@@ -126,7 +132,7 @@ def e_dot_r(r,arglist):
     For precision I have divided final result by A^3--just need to divide out same constant from both integrands to ensure numerical stability!
     '''
     n,l,Z,au,lp,k = arglist[0],arglist[1],arglist[2],arglist[3],arglist[4],arglist[5]
-    return A*hydrogenic(r,Z,n,l,au)*r**3*(-1.0j)**lp*sc.spherical_jn(lp,k*r)
+    return A**4*hydrogenic(r,Z,n,l,au)*r**3*(-1.0j)**lp*sc.spherical_jn(lp,k*r)
 
 
 
@@ -187,7 +193,7 @@ if __name__=="__main__":
     Fe_3d = orb(Z,n,l)
     
     
-    hv = np.linspace(10,200,20)
+    hv = np.linspace(10,200,10)
     ks = hv_2_k(hv)
     arglist = [Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,1,ks[0]]
     edr = np.zeros((len(hv),2),dtype=complex)
@@ -195,23 +201,23 @@ if __name__=="__main__":
     for i in range(len(hv)):
         arglist[-1]=ks[i]
         
-        edr[i,0] = A**3*me*hv[i]*1.0j*q/hb*(adint.integrate(e_dot_r,0,3,10**-8,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,1,ks[i]]))
-        edd[i,0] = A*adint.integrate(e_dot_del,0,3,10**-8,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,1,ks[i]])
+        edr[i,0] = me*hv[i]*1.0j*q/hb*(adint.integrate(e_dot_r,0,3,10**-8,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,1,ks[i]]))
+        edd[i,0] = adint.integrate(e_dot_del,0,3,10**-8,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,1,ks[i]])
         
-        edr[i,1] = A**3*me*hv[i]*1.0j*q/hb*(adint.integrate(e_dot_r,0,3,10**-8,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,3,ks[i]]))
-        edd[i,1] = A*adint.integrate(e_dot_del,0,3,10**-8,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,3,ks[i]])
+        edr[i,1] = me*hv[i]*1.0j*q/hb*(adint.integrate(e_dot_r,0,3,10**-8,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,3,ks[i]]))
+        edd[i,1] = adint.integrate(e_dot_del,0,3,10**-8,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,3,ks[i]])
         
     
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    ax2 = ax.twinx()
+#    ax2 = ax.twinx()
     plt.plot(hv[1:],abs(np.real(edr[1:,0])))
     plt.plot(hv[1:],abs(np.imag(edd[1:,0])))
     plt.savefig('Fe d to p.png')
     fig2 = plt.figure()
     
     ax = fig2.add_subplot(111)
-    ax2 = ax.twinx()
+#    ax2 = ax.twinx()
     plt.plot(hv[1:],abs(np.real(edr[1:,1])))
     plt.plot(hv[1:],abs(np.imag(edd[1:,1])))
     plt.savefig('Fe d to f.png')

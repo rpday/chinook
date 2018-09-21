@@ -56,11 +56,24 @@ class H_me:
 
         return lambda x: sum([complex(m[-1])*np.exp(1.0j*np.dot(x,np.array([m[0],m[1],m[2]]))) for m in self.H])
         
-
+    def clean_H(self):
+        tmp = self.H
+        for hi in range(len(tmp)):
+            for hj in range(hi+1,len(tmp)):
+                try:
+                    norm = np.linalg.norm(np.array(tmp[hi])-np.array(tmp[hj]))
+                    if norm<1e-5:
+                        tmp.pop(hj)
+                except IndexError:
+                    continue
+        return tmp
+    
+    
+        
 class TB_model:
     
     
-    def __init__(self,basis,H_args,Kobj = None):
+    def __init__(self,basis,H_args = None,Kobj = None):
         '''
         basis -- list of orbital objects
         H_args: dictionary for Hamiltonian build:
@@ -90,8 +103,19 @@ class TB_model:
         
         '''
         self.basis = basis #is a list of orbital objects
+        if H_args is not None:
+            self.avec = H_args['avec']
+
         self.mat_els = self.build_ham(H_args)
         self.Kobj = Kobj
+        
+    def copy(self):
+        TB_copy = TB_model(self.basis,None,self.Kobj)
+        TB_copy.avec = self.avec
+        TB_copy.mat_els = self.mat_els
+        
+        return TB_copy
+        
             
     
     def build_ham(self,H_args):
@@ -102,43 +126,47 @@ class TB_model:
             args: Hamiltonian args-->for SK this will be library of Vxyz and list of cutoffs
                                   --> for list, the Hamiltonian should be passed, formatted as a list ready to go
                                   -->for txt it will be a filename and cutoff criterias
-            so: boolean for spin-orbit coupling
-        
+            spin: dictionary for including spin-degrees of freedom:
+                bool: generate spin-duplicates
+                so: boolean for spin-orbit coupling
+                order: string 'NA', 'F' or 'A' for none, Ferromagnetic or antiferromagnetic respectively
         return:
             sorted list of matrix element objects.
             These objects have i,j attributes referencing the orbital basis indices, and a list
             of form [R0,R1,R2,Re(H)+1.0jIm(H)]
         '''
-        htmp = []
-        if H_args['type'] == "SK":
-            htmp = Hlib.sk_build(H_args['avec'],self.basis,H_args['V'],H_args['cutoff'],H_args['tol'],H_args['renorm'],H_args['offset'],H_args['so'])
-        elif H_args['type'] == "txt":
-            htmp = Hlib.txt_build(H_args['filename'],H_args['cutoff'],H_args['renorm'],H_args['offset'],H_args['tol'])
-        elif H_args['type'] == "list":
-            htmp = H_args['list']
-        if H_args['so']:
-            h2 = Hlib.spin_double(htmp,len(self.basis))
-                
-
-            so = Hlib.SO(self.basis)
-            htmp = htmp + h2+ so
-        
-        htmp = sorted(htmp,key=itemgetter(0,1,2,3,4))
-
-        
-        H = []
-        
-        Hnow = H_me(0,0)
-        
-        for h in htmp:
-            if h[0]!=Hnow.i or h[1]!=Hnow.j:
-                H.append(Hnow)
-                Hnow = H_me(h[0],h[1]) 
-            Hnow.append_H(h[2],h[3],h[4],h[5])
-        H.append(Hnow)
-        return H  
+        if type(H_args)==dict:
+            try:
+                htmp = []
+                if H_args['type'] == "SK":
+                    htmp = Hlib.sk_build(H_args['avec'],self.basis,H_args['V'],H_args['cutoff'],H_args['tol'],H_args['renorm'],H_args['offset'],H_args['spin']['bool'])
+                elif H_args['type'] == "txt":
+                    htmp = Hlib.txt_build(H_args['filename'],H_args['cutoff'],H_args['renorm'],H_args['offset'],H_args['tol'])
+                elif H_args['type'] == "list":
+                    htmp = H_args['list']
+                if H_args['spin']['bool']:
+                    h2 = Hlib.spin_double(htmp,len(self.basis))
+                    htmp = htmp + h2   
+                    if H_args['spin']['soc']:
+                        so = Hlib.SO(self.basis)
+                        htmp = htmp + so
+                    if 'order' in H_args['spin']:
+                        if H_args['spin']['order']=='F':
+                            h_FM = Hlib.FM_order(self.basis,H_args['spin']['dS'])
+                            htmp = htmp + h_FM
+                        elif H_args['spin']['order']=='A':
+                            h_AF = Hlib.AFM_order(self.basis,H_args['spin']['dS'],H_args['spin']['p_up'],H_args['spin']['p_dn'])
+                            htmp = htmp + h_AF
+                H = gen_H_obj(htmp)
+                return H 
+            except KeyError:
+                print('Invalid dictionary input for Hamiltonian generation')
+                return None
+        else:
+            return None
             
-     
+
+        
         
     def solve_H(self):
         '''
@@ -187,6 +215,27 @@ class TB_model:
         if svlabel is not None:
             plt.savefig(svlabel)
             
+            
+            
+def gen_H_obj(htmp):
+        htmp = sorted(htmp,key=itemgetter(0,1,2,3,4))
+
+        
+        H = []
+        
+        Hnow = H_me(0,0)
+        Rij = np.zeros(3)
+        
+        for h in htmp:
+            if h[0]!=Hnow.i or h[1]!=Hnow.j:
+                H.append(Hnow)
+                Hnow = H_me(int(np.real(h[0])),int(np.real(h[1])))
+            Rij = np.real(h[2:5])
+            Hnow.append_H(*Rij,h[5])
+        H.append(Hnow)
+        return H 
+            
+
             
             
 

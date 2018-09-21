@@ -56,7 +56,13 @@ class plot_intensity_interface:
         self.expmnt = expmnt
         self.Adict = Adict
         print('Initializing spectral function...')
-        _,self.Imat = self.expmnt.spectral(self.Adict)
+        try:
+            _,self.Imat = self.expmnt.spectral(self.Adict)
+        except AttributeError:
+            print('Matrix elements have not yet been computed. Initializing matrix elements now...')
+            self.expmnt.datacube(self.Adict)
+            print('Matrix element calculation complete.')
+            _,self.Imat = self.expmnt.spectral(self.Adict)
         self.Imat_dict = {'I_0':self.Imat}
         self.meta = {'I_0':self.Adict} #Meta data for use in exporting intensity map to file
         self.x = self.Adict['cube']['X']

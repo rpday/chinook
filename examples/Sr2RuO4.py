@@ -7,11 +7,15 @@ Created on Sat Nov 18 12:17:01 2017
 """
 
 import sys
-sys.path.append('/Users/ryanday/Documents/UBC/TB_python/TB_ARPES/')
+sys.path.append('C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/')
 
 import numpy as np
+import matplotlib.pyplot as plt
 import ubc_tbarpes.build_lib as build_lib
 import ubc_tbarpes.ARPES_lib as ARPES
+import ubc_tbarpes.operator_library as olib
+import ubc_tbarpes.dos as dos_lib
+import ubc_tbarpes.dos_Tk as dtk
 
 if __name__=="__main__":
 
@@ -23,16 +27,17 @@ if __name__=="__main__":
 	
     avec = np.identity(3)*np.array([a,a,c])
 
-    spin = {'soc':True,'lam':{0:0.18}}
+    spin = {'bool':True,'soc':True,'lam':{0:0.18}}
 
     Bd={'atoms':[0],
 			'Z':{0:44},
 			'orbs':[['42xz','42yz','42xy']],
 			'pos':[np.zeros(3)],
-            'slab':{'bool':False}}
+            'spin':spin}
 
     Kd = {'type':'F',
-			'pts':[X,G,M],
+          'avec':avec,
+			'pts':[-1*X,G,X],
 			'grain':200,
 			'labels':['X','$\Gamma$','M']}
 
@@ -43,29 +48,38 @@ if __name__=="__main__":
 			'renorm':r,
 			'offset':o,
 			'tol':t,
-			'so':spin['soc']}
+			'spin':spin,
+            'avec':avec}
     
   	#####
 
 
 
-    Bd = build_lib.gen_basis(Bd,spin)
-    Kobj = build_lib.gen_K(Kd,avec)
+    Bd = build_lib.gen_basis(Bd)
+    Kobj = build_lib.gen_K(Kd)
     TB = build_lib.gen_TB(Bd,Hd,Kobj)
     TB.solve_H()
-    TB.plotting(-1.5,1.0)
+    TB.plotting()
+#    EB,G,T,tetra = dos_lib.dos_tetra(TB,400,30)
+#    de = dos_lib.dos_env(TB,sigma=0.05)
+#    de.do_dos(40)
+#    fig = plt.figure()
+#    plt.plot(de.hi[1][:-1],de.hi[0])
+#    O = olib.LdotS(TB,'z',vlims=(-0.5,0.5),Elims=(-1.5,0.1))
+    
+#    DO = dos_TK.dos_interface(TB,0.02)
       
 #    
-#    ARPES_dict={'cube':{'X':[-0.805,0.805,50],'Y':[-0.805,0.805,50],'kz':0.0,'E':[-1.5,0.2,100]},
+#    ARPES_dict={'cube':{'X':[-0.805,0.805,150],'Y':[-0.805,0.805,150],'kz':0.0,'E':[-1.5,0.2,200]},
 #                'SE':[0.002,0.03],
 #                'directory':'/save/directory/Sr2RuO4',
 #                'hv': 28,
 #                'pol':np.array([1,0,0]),
 #                'mfp':7.0,
-#                'resolution':{'E':0.02,'k':0.02},
+#                'resolution':{'E':0.02,'k':0.04},
 #                'T':[True,10.0],
 #                'W':4.0,
-#                'angle':0.0,
+#                'angle':np.pi/4,
 #                'spin':None,
 #                'slice':[False,-0.2] 
 #                }

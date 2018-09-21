@@ -6,14 +6,32 @@ Created on Tue Jun  5 18:06:00 2018
 
 Explicit integration of the wavefunctions in graphite
 
-"""
-import sys
-sys.path.append('/Users/ryanday/Documents/UBC/TB_python/TB_ARPES-rpday-patch-2/')
 
+Copyright (c) 2018 Ryan Patrick Day
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
 
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import scipy.ndimage as nd
 import matplotlib.cm as cm
 import ubc_tbarpes.Ylm as Ylm
 import ubc_tbarpes.electron_configs as econ
@@ -69,9 +87,9 @@ def plt_map(psi,x,y,z,inds):
     ax = fig.add_subplot(131)
     ax2 = fig.add_subplot(132)
     ax3 = fig.add_subplot(133)
-    p = ax3.pcolormesh(Xxy,Yxy,psi[:,:,inds[2]],cmap=cm.RdBu,vmin = -abs(psi).max(),vmax=abs(psi).max())
-    p2 = ax2.pcolormesh(Xxz,Yxz,psi[:,inds[1],:],cmap=cm.RdBu,vmin = -abs(psi).max(),vmax=abs(psi).max())
-    p3 = ax.pcolormesh(Xyz,Yyz,psi[inds[0],:,:],cmap=cm.RdBu,vmin = -abs(psi).max(),vmax=abs(psi).max())
+    ax3.pcolormesh(Xxy,Yxy,psi[:,:,inds[2]],cmap=cm.RdBu,vmin = -abs(psi).max(),vmax=abs(psi).max())
+    ax2.pcolormesh(Xxz,Yxz,psi[:,inds[1],:],cmap=cm.RdBu,vmin = -abs(psi).max(),vmax=abs(psi).max())
+    ax.pcolormesh(Xyz,Yyz,psi[inds[0],:,:],cmap=cm.RdBu,vmin = -abs(psi).max(),vmax=abs(psi).max())
     
     
 def plt_3d(X,Y,Z,P,tol):
@@ -167,17 +185,16 @@ def path_dir_op(TB,Kobj,hv,width,T,pol=None):
 
 ######-----------------Direct Transition Operator END--------------------######
 
-def optical_conductivity(TB,avec,N,T,dE,pol=None):
+def optical_conductivity(TB,N,T,pol=None):
     '''
     Compute optical conductivity of sample, over a mesh covering the Brillouin zone.
     This is fairly preliminary, does not perform any interpolation, which is an essential next step.
     args:
         TB  -- instance of the TB class from ubc_tbarpes library
-        avec -- numpy array of size 3x3 of float corresponding to row matrix of lattice vectors
         N -- mesh density, the BZ will have ~(2N+1)^3 points
         T -- temperature
     '''
-    TB.Kobj = klib.kpath(klib.b_zone(avec,N))
+    TB.Kobj = klib.kpath(klib.b_zone(TB.avec,N))
     _,_ = TB.solve_H()
     sig = []
     thermal = vf(TB.Eband/(kb*T/q))
@@ -199,9 +216,11 @@ def optical_conductivity(TB,avec,N,T,dE,pol=None):
                 
     
     sig = np.array(sorted(sig,key=itemgetter(0)))
-    e,x = resample(sig[:,0],sig[:,1],dE)
-    _,y = resample(sig[:,0],sig[:,2],dE)
-    _,z = resample(sig[:,0],sig[:,3],dE)
+    sample_rate = abs(np.array([[TB.Eband[i+1,j]-TB.Eband[i,j] for i in range(len(TB.Kobj.kpts)-1)] for j in range(np.shape(TB.Eband)[1])])).mean()
+
+    e,x = resample(sig[:,0],sig[:,1],sample_rate)
+    _,y = resample(sig[:,0],sig[:,2],sample_rate)
+    _,z = resample(sig[:,0],sig[:,3],sample_rate)
     sig = np.array([e,x,y,z]).T
     fig = plt.figure()
     ax = fig.add_subplot(131)
@@ -221,6 +240,7 @@ def resample(x,y,dx):
     for i in range(len(x)):
         ind = int((x[i]-xp[0])/dx)
         yp[ind] +=y[i]
+    yp = nd.gaussian_filter(yp,2)
     return xp,yp
     
     
@@ -325,17 +345,17 @@ def k_integrated(Kobj,TB,width,Ij,ylim=None):
     Ijdos = np.sum(Im,0)
     fig = plt.figure()
     
-    K,E = np.meshgrid(Kobj.kpts[:,1],en_dig)
+    K,E = np.meshgrid(Kobj.kcut,en_dig)
     ax = fig.add_subplot(121)
     ax.pcolormesh(K,E,Im.T,cmap=cm.Spectral,vmin = 0,vmax=abs(Im.max()/1))
     for bn in range(np.shape(TB.Eband)[1]):
-        ax.plot(Kobj.kpts[:,1],TB.Eband[:,bn],lw=0.5,c='k')
+        ax.plot(Kobj.kcut,TB.Eband[:,bn],lw=0.5,c='k')
     ax2 = fig.add_subplot(122)
     plt.plot(Ijdos,en_dig)
     if ylim is not None:
         ax.set_ylim(ylim[0],ylim[1])
         ax2.set_ylim(ylim[0],ylim[1])
-    return Im,Ijdos
+    return Im,Ijdos,en_dig
 
 
 

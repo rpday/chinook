@@ -37,6 +37,7 @@ def SK_coeff(o1,o2,R12,Vcoeff,renorm,offset,tol):
     if Vcoeff is not None:
         tmp = str(o1.atom)+str(o2.atom)+str(o1.label[0])+str(o2.label[0])+str(o1.label[1])+str(o2.label[1])
         tmp2 = str(o2.atom)+str(o1.atom)+str(o2.label[0])+str(o1.label[0])+str(o2.label[1])+str(o1.label[1])
+#        print(tmp,tmp2)
         eta = Vcoeff
         
     E = {}
@@ -109,9 +110,9 @@ def SK_coeff(o1,o2,R12,Vcoeff,renorm,offset,tol):
                     
             E["0-2xy"],E["2xy-0"] = [np.sqrt(3)*l*m*V]*2
             E["0-2yz"],E["2yz-0"] = [np.sqrt(3)*m*n*V]*2
-            E["0-2zx"],E["2zx-0"] = [np.sqrt(3)*l*n*V]*2
+            E["0-2xz"],E["2xz-0"] = [np.sqrt(3)*l*n*V]*2
             E["0-2XY"],E["2XY-0"] = [np.sqrt(3)/2.0*(l**2-m**2)*V]*2
-            E["0-2ZR"],E["2ZR-0"] = [(n**2-(l**2+m**2))*V]*2
+            E["0-2ZR"],E["2ZR-0"] = [(n**2-(l**2+m**2)/2.0)*V]*2
                                 
         elif l12== ("12") or l12 == "21":
 #                    osS = o1.orbital[:3]+o2.orbital[:3]+"S"
@@ -126,10 +127,12 @@ def SK_coeff(o1,o2,R12,Vcoeff,renorm,offset,tol):
                     
             E["1x-2xy"],E["2xy-1x"] = [np.sqrt(3)*l**2*m*V[0]+m*(1-2*l**2)*V[1]]*2
             E["1x-2yz"],E["2yz-1x"] = [np.sqrt(3)*l*m*n*V[0]-2*l*m*n*V[1]]*2
-            E["1x-2xz"],E["2xz-1x"] = [np.sqrt(3)*l**2*n*V[0]+n*(1-2*m**2)*V[1]]*2          
+            E["1x-2xz"],E["2xz-1x"] = [np.sqrt(3)*l**2*n*V[0]+n*(1-2*l**2)*V[1]]*2
+            
             E["1y-2xy"],E["2xy-1y"] = [np.sqrt(3)*m**2*l*V[0]+l*(1-2*m**2)*V[1]]*2
             E["1y-2xz"],E["2xz-1y"] = [np.sqrt(3)*l*m*n*V[0]-2*l*m*n*V[1]]*2
             E["1y-2yz"],E["2yz-1y"] = [np.sqrt(3)*m**2*n*V[0]+n*(1-2*m**2)*V[1]]*2                    
+            
             E["1z-2yz"],E["2yz-1z"] = [np.sqrt(3)*n**2*m*V[0]+m*(1-2*n**2)*V[1]]*2
             E["1z-2xy"],E["2xy-1z"] = [np.sqrt(3)*l*m*n*V[0]-2*l*m*n*V[1]]*2
             E["1z-2xz"],E["2xz-1z"] = [np.sqrt(3)*n**2*l*V[0]+l*(1-2*n**2)*V[1]]*2
@@ -138,9 +141,9 @@ def SK_coeff(o1,o2,R12,Vcoeff,renorm,offset,tol):
             E["1y-2XY"],E["2XY-1y"] = [np.sqrt(3)/2*m*(l**2-m**2)*V[0]-m*(1-m**2+l**2)*V[1]]*2
             E["1z-2XY"],E["2XY-1z"] = [np.sqrt(3)/2*n*(l**2-m**2)*V[0] - n*(l**2-m**2)*V[1]]*2
                 
-            E["1x-2ZR"],E["2ZR-1x"] = [l*(n**2-(l**2+m**2)/2)*V[0]-np.sqrt(3)*l*n**2*V[1]]*2
-            E["1y-2ZR"],E["2ZR-1y"] = [m*(n**2-(l**2+m**2)/2)*V[0]-np.sqrt(3)*m*n**2*V[1]]*2
-            E["1z-2ZR"],E["2ZR-1z"] = [n*(n**2-(l**2+m**2)/2)*V[0]+np.sqrt(3)*n*(l**2+m**2)*V[1]]*2
+            E["1x-2ZR"],E["2ZR-1x"] = [l*(n**2-(l**2+m**2)/2.0)*V[0]-np.sqrt(3)*l*n**2*V[1]]*2
+            E["1y-2ZR"],E["2ZR-1y"] = [m*(n**2-(l**2+m**2)/2.0)*V[0]-np.sqrt(3)*m*n**2*V[1]]*2
+            E["1z-2ZR"],E["2ZR-1z"] = [n*(n**2-(l**2+m**2)/2.0)*V[0]+np.sqrt(3)*n*(l**2+m**2)*V[1]]*2
             
                 
         elif l12== "22":
@@ -159,16 +162,18 @@ def SK_coeff(o1,o2,R12,Vcoeff,renorm,offset,tol):
             E["2xy-2xz"],E["2xz-2xy"] = [3*m*l**2*n*V[0]+m*n*(1-4*l**2)*V[1]+m*n*(l**2-1)*V[2]]*2
             E["2yz-2xz"],E["2xz-2yz"] = [3*l*n**2*m*V[0]+l*m*(1-4*n**2)*V[1]+l*m*(n**2-1)*V[2]]*2
                 
-            E["2xy-2XY"],E["2XY-2xy"] = [1.5*l*m*(l**2-m**2)*V[0]+2*l*m*(m**2-l**2)*V[1]+(l*m*(l**2-m**2)/2)*V[2]]*2
-            E["2xy-2ZR"],E["2ZR-2xy"] = [np.sqrt(3)*((l*m*(n**2-(l**2+m**2)/2))*V[0]-2*l*m*n**2*V[1]-(l*m*(1+n**2)/2)*V[2])]*2
-            E["2yz-2XY"],E["2XY-2yz"] = [1.5*m*n*(l**2-m**2)*V[0]-m*n*(1+2*(l**2-m**2))*V[1]+(m*n*(1+(l**2-m**2)/2))*V[2]]*2
-            E["2yz-2ZR"],E["2ZR-2yz"] = [np.sqrt(3)*((m*n*(n**2-(l**2+m**2)/2))*V[0]+m*n*(l**2+m**2-n**2)*V[1]-(m*n*(l**2+m**2)/2)*V[2])]*2     
-            E["2xz-2XY"],E["2XY-2xz"] = [1.5*n*l*(l**2-m**2)*V[0]+n*l*(1-2*(l**2-m**2))*V[1]-(n*l*(1-(l**2-m**2)/2))*V[2]]*2
-            E["2xz-2ZR"],E["2ZR-2xz"] = [np.sqrt(3)*((l*n*(n**2-(l**2+m**2)/2))*V[0]+l*n*(l**2+m**2-n**2)*V[1]-(l*n*(l**2+m**2)/2)*V[2])]*2
+            E["2xy-2XY"],E["2XY-2xy"] = [1.5*l*m*(l**2-m**2)*V[0]+2*l*m*(m**2-l**2)*V[1]+(l*m*(l**2-m**2)/2.0)*V[2]]*2
+            E["2xy-2ZR"],E["2ZR-2xy"] = [np.sqrt(3)*((l*m*(n**2-(l**2+m**2)/2.0))*V[0]-2*l*m*n**2*V[1]+(l*m*(1+n**2)/2)*V[2])]*2
+            
+            E["2yz-2XY"],E["2XY-2yz"] = [1.5*m*n*(l**2-m**2)*V[0]-m*n*(1+2*(l**2-m**2))*V[1]+(m*n*(1+(l**2-m**2)/2.0))*V[2]]*2
+            E["2yz-2ZR"],E["2ZR-2yz"] = [np.sqrt(3)*((m*n*(n**2-(l**2+m**2)/2.0))*V[0]+m*n*(l**2+m**2-n**2)*V[1]-(m*n*(l**2+m**2)/2)*V[2])]*2     
+            
+            E["2xz-2XY"],E["2XY-2xz"] = [1.5*n*l*(l**2-m**2)*V[0]+n*l*(1-2*(l**2-m**2))*V[1]-(n*l*(1-(l**2-m**2)/2.0))*V[2]]*2
+            E["2xz-2ZR"],E["2ZR-2xz"] = [np.sqrt(3)*((l*n*(n**2-(l**2+m**2)/2.0))*V[0]+l*n*(l**2+m**2-n**2)*V[1]-(l*n*(l**2+m**2)/2)*V[2])]*2
                 
-            E["2XY-2XY"] = 0.75*(l**2-m**2)*V[0]+(l**2+m**2-(l**2-m**2)**2)*V[1]+(n**2+(l**2-m**2)**2/4)*V[2]
-            E["2ZR-2ZR"] = (n**2-(l**2+m**2)/2)**2*V[0]+3*n**2*(l**2+m**2)*V[1]+0.75*(l**2+m**2)**2*V[2]
-            E["2XY-2ZR"],E["2ZR-2XY"] = [np.sqrt(3)*((l**2-m**2)*(n**2-(l**2+m**2)/2)*V[0]/2.0+n**2*(m**2-l**2)*V[1]+((1+n**2)*(l**2-m**2)/4.0)*V[2])]*2
+            E["2XY-2XY"] = 0.75*(l**2-m**2)**2*V[0]+(l**2+m**2-(l**2-m**2)**2)*V[1]+(n**2+(l**2-m**2)**2/4.0)*V[2]
+            E["2ZR-2ZR"] = (n**2-(l**2+m**2)/2.0)**2*V[0]+3*n**2*(l**2+m**2)*V[1]+0.75*(l**2+m**2)**2*V[2]
+            E["2XY-2ZR"],E["2ZR-2XY"] = [np.sqrt(3)*((l**2-m**2)*(n**2-(l**2+m**2)/2.0)*V[0]/2.0+n**2*(m**2-l**2)*V[1]+((1+n**2)*(l**2-m**2)/4.0)*V[2])]*2
 
            ####DISTORTION NOT WORKING CORRECTLY YET!
 #           if type(o1.Dmat)==np.ndarray or type(o2.Dmat)==np.ndarray:
@@ -206,6 +211,29 @@ def SK_coeff(o1,o2,R12,Vcoeff,renorm,offset,tol):
     return SK_co#,E
 
 
+def eta_SK(eta,d,l,lp,rd):
+    hb2m = 7.62
+    if lp==2:
+        if l==2:
+            return eta*hb2m*rd**3/d**5
+        else:
+            return eta*hb2m*rd**1.5/d**3.5
+    else:
+        return eta*hb2m/d**2
+    
+def eta_dict_to_SK(eta_dict,rd,d):
+    VSK = {}
+    for di in eta_dict:
+        try:
+            l = int(di[4])
+            lp = int(di[5])
+            VSK[di] = eta_SK(eta_dict[di],d,l,lp,rd)
+        except IndexError:
+            VSK[di] = eta_dict[di]
+    return VSK
+
+
+
     
 
 
@@ -225,7 +253,7 @@ if __name__=="__main__":
     yz2 = olib.orbital(1,4,"52yz",pos2,77)#,orient=[np.array([0,0,1]),-90*np.pi/180.])
     xy2 = olib.orbital(1,5,"52xy",pos2,77)#,orient=[np.array([0,0,1]),-90*np.pi/180.])
     
-    V,E = SK_coeff(xz1,yz2,SK)
+#    V,E = SK_coeff(xz1,yz2,SK)
 #    os = [xz1,yz1,xy1,xz2,yz2,xy2]
 #    for o in os:
 #        for o2 in os:

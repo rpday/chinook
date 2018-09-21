@@ -46,10 +46,12 @@ The latter 2 will be the output of some Hamiltonian, of any form supported by th
 
 import numpy as np
 
-from sympy.physics.quantum.spin import Rotation
+#from sympy.physics.quantum.spin import Rotation
 import ubc_tbarpes.electron_configs as econ
 import ubc_tbarpes.atomic_mass as am
+from ubc_tbarpes.wigner import WignerD
 from operator import itemgetter
+
 
 
 projdict={"0":np.array([[1.0,0.0,0.0,0.0]]),
@@ -98,8 +100,9 @@ class orbital:
             self.proj = projdict[self.label[1:]]
             
     def copy(self):
-        
-        return orbital(self.atom,self.index,self.label,self.pos,self.Z,self.orient,self.spin,self.lam,self.sigma,self.slab_index)
+        t_orbital = orbital(self.atom,self.index,self.label,self.pos,self.Z,self.orient,self.spin,self.lam,self.sigma,self.slab_index)
+#        t_orbital.proj,t_orbital.Dmat = self.proj,self.Dmat
+        return t_orbital
 #    
 #    def copyslab(self):    
 #        return orbital(self.atom,self.index,self.label,self.pos,self.Z,self.orient,self.spin,self.lam,self.sigma,self.slab_index)
@@ -113,16 +116,18 @@ class orbital:
         Define Euler angles in the z-y-z convention
         THIS WILL BE A COUNTERCLOCKWISE ROTATION ABOUT vector BY gamma
         '''
-        vector = np.array([0,0,1])# for now only accept z-rotations vector/np.linalg.norm(vector)
+        #vector = np.array([0,0,1])# for now only accept z-rotations vector/np.linalg.norm(vector)
         Ylm_vec = np.zeros((2*self.l+1),dtype=complex)
         for a in range(len(self.proj)):
             Ylm_vec[int(self.proj[a,-1]+self.l)] +=self.proj[a,0]+1.0j*self.proj[a,1]
         
         A,B,y = Euler(vector,gamma)
-        Dmat = Dmatrix(self.l,A,B,y)
+        Dmat = WignerD(self.l,y,B,A)
         
-        
-        Ynew = np.dot(np.conj(Dmat),Ylm_vec)
+        Ynew = np.dot(Dmat,Ylm_vec)
+#        Dmat = Dmatrix(self.l,A,B,y)
+
+#        Ynew = np.dot(np.conj(Dmat),Ylm_vec)
         proj = []
 
         for a in range(2*self.l+1):
@@ -140,6 +145,20 @@ def fact(n):
         return 1
     else:
         return n*fact(n-1)
+    
+    
+def slab_basis_copy(basis,new_posns,inds):
+    new_basis = np.empty(len(basis),dtype=orbital)
+    for o in list(enumerate(basis)):
+        tmp = o[1].copy()
+    
+        
+        tmp.slab_index = int(inds[o[0]])
+        tmp.index = o[0]
+        tmp.pos = new_posns[o[0]]
+        new_basis[int(inds[o[0]])] = tmp
+    return new_basis
+    
     
 def Rmat(n,t):
     '''
@@ -181,16 +200,16 @@ def Euler(n,t):
             a = np.arctan2(R[1,0],-R[0,0])
 
     return a,b,y
-
-def Dmatrix(l,A,B,y):
-    Dmat = np.zeros((2*l+1,2*l+1),dtype=complex)
-    for m_i in range(2*l+1):
-        for mp_i in range(2*l+1):
-            m = m_i-l
-            mp = mp_i-l
-            Dmat[mp_i,m_i] = np.conj(Rotation.D(l,mp,m,y,B,A).doit())
-    return Dmat
-
+#
+#def Dmatrix(l,A,B,y):
+#    Dmat = np.zeros((int(2*l+1),int(2*l+1)),dtype=complex)
+#    for m_i in range(int(2*l+1)):
+#        for mp_i in range(int(2*l+1)):
+#            m = m_i-l
+#            mp = mp_i-l
+#            Dmat[mp_i,m_i] = np.conj(Rotation.D(l,mp,m,y,B,A).doit())
+#    return Dmat
+#
 
 def sort_basis(base,slab):
     '''
@@ -229,8 +248,9 @@ def spin_double(basis,lamdict):
         spin_up.spin = 1
         spin_up.index = basis[ind].index+LB
         if type(basis[ind].orient)==list:
-            spin_up.proj = rot_spin(basis[ind].proj,2*basis[ind].orient[0],basis[ind].spin)
-        
+            print(basis[ind].proj,2*basis[ind].orient[0],1)
+            spin_up.proj = rot_spin(basis[ind].proj,2*basis[ind].orient[0],1)
+            basis[ind].proj = rot_spin(basis[ind].proj,2*basis[ind].orient[0],-1)
         b_2.append(spin_up)
     return basis + b_2
         
@@ -256,10 +276,14 @@ if __name__=="__main__":
         
 
 def rot_spin(projection,angle,spin):
+    '''
+    Map the rotation of the spin direction onto the orbital projection. 
+    This ONLY works for rotation about Z AXIS!
+    '''
     for i in range(len(projection)):
         tmp_coeff = complex(projection[i,0]+1.0j*projection[i,1])
         tmp_coeff*=np.exp(-1.0j*angle/2*spin)  
-        projection[:2] = np.array([np.real(tmp_coeff),np.imag(tmp_coeff)])
+        projection[i,:2] = np.array([np.real(tmp_coeff),np.imag(tmp_coeff)])
     return projection
 
 

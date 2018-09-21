@@ -48,7 +48,7 @@ def LSmat(TB,axis=None):
     Otherwise, this structure holds for all l!
     The user gives an 'axis'--if None, then just compute the L.S matrix. Otherwise, the LiSi matrix is computed
     with i the axis index. To do this, a linear combination of L+S+,L-S-,L+S-,L-S+,LzSz terms are used to compute
-    In the factos dictionary, the weight of these terms is defined. The keys are tuples of (L+/-/z,S+/-/z) in a bit
+    In the factors dictionary, the weight of these terms is defined. The keys are tuples of (L+/-/z,S+/-/z) in a bit
     of a cryptic way. For L, range (0,1,2) ->(-1,0,1) and for S range (-1,0,1) = S1-S2 with S1/2 = +/- 1 here
     
     L+,L-,Lz matrices are defined for each l shell in the basis, transformed into the basis of cubic harmonics.
@@ -235,7 +235,6 @@ def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(0,0),degen=False):
     
     '''
     
-    
     if np.shape(O)!=(len(TB.basis),len(TB.basis)):
         print('ERROR! Ensure your operator has the same dimension as the basis.')
         return None
@@ -257,7 +256,7 @@ def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(0,0),degen=False):
 
     fig = plt.figure()
     ax=fig.add_subplot(111)
-    plt.axhline(y=0,color='grey',lw=1,ls='--')
+#    plt.axhline(y=0,color='grey',lw=1,ls='--')
 #    rc('font',**{'size':20})
 #    rc('text',usetex = True)
     for b in TB.Kobj.kcut_brk:
@@ -277,8 +276,8 @@ def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(0,0),degen=False):
         Elims = (TB.Eband.min()-(TB.Eband.max()-TB.Eband.min())/10.0,TB.Eband.max()+(TB.Eband.max()-TB.Eband.min())/10.0)
         
     for p in range(np.shape(O_vals)[1]):
-        plt.plot(TB.Kobj.kcut,TB.Eband[:,(2 if degen else 1)*p],color='navy',lw=1.0)
-        O_line=plt.scatter(TB.Kobj.kcut,TB.Eband[:,(2 if degen else 1)*p],c=O_vals[:,p],cmap=cm.Spectral,marker='.',lw=0,s=100,vmin=vlims[0],vmax=vlims[1])
+        plt.plot(TB.Kobj.kcut,TB.Eband[:,(2 if degen else 1)*p],color='navy',lw=0.1)
+        O_line=plt.scatter(TB.Kobj.kcut,TB.Eband[:,(2 if degen else 1)*p],c=O_vals[:,p],cmap=cm.RdBu,marker='.',lw=0,s=50,vmin=vlims[0],vmax=vlims[1])
     plt.axis([TB.Kobj.kcut[0],TB.Kobj.kcut[-1],Elims[0],Elims[1]])
     plt.xticks(TB.Kobj.kcut_brk,TB.Kobj.labels)
     plt.colorbar(O_line,ax=ax)
@@ -313,7 +312,14 @@ def O_surf(O,TB,ktuple,Ef,tol,vlims=(-1,1)):
     plt.scatter(pts[:,0],pts[:,1],c='k',s=5)
     
     return pts
+
+
+def surface_projection(TB,cutoff):
     
+    M = np.identity(len(TB.basis))
+    projs = np.array([np.exp(bi.depth/cutoff) for bi in TB.basis])
+    M = M*projs
+    return M
     
    
     

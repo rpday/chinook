@@ -75,23 +75,24 @@ def txt_build(filename,cutoff,renorm,offset,tol):
 
                 
 
-def sk_build(avec,basis,V,cutoff,tol,renorm,offset,so):
+def sk_build(avec,basis,V,cutoff,tol,renorm,offset,spin):
     '''
     Would like to find a better way of doing this, or at least getting around the whole cluster thing...
     '''
-    if type(cutoff)==list:
-        reg_cut = [0.0]+cutoff
+    try:
+        reg_cut = [0.0]+list(cutoff)
         reg_cut = np.array(reg_cut)
-    elif type(cutoff)==float:
-        reg_cut = np.array([cutoff])
-    else:
-        print('Invalid cutoff-format')
-        return None
+    except TypeError:
+        try:
+            reg_cut = np.array([cutoff])
+        except TypeError:
+            print('Invalid cutoff-format')
+            return None
     pt_max = np.ceil(np.array([(reg_cut).max()/np.linalg.norm(avec[i]) for i in range(len(avec))]).max())
     pts = region(int(pt_max)+1)
     H_raw = []
     o1o2norm = {}
-    if so:
+    if spin:
         brange = int(len(basis)/2)
     else:
         brange = len(basis)
@@ -123,12 +124,10 @@ def sk_build(avec,basis,V,cutoff,tol,renorm,offset,so):
                                     mat_el = SK.SK_coeff(o1,o2,Rij,tmp_V,renorm,offset,tol)  #then matrix element is computed using the SK function
                         elif isinstance(V,dict): #if the SK matrix elements brought in NOT as a list of dictionaries...                               
                             mat_el = SK.SK_coeff(o1,o2,Rij,V,renorm,offset,tol)
-                            
 
                             
                     if abs(mat_el)>tol: 
-                        H_raw.append([o1.index,o2.index,Rij[0],Rij[1],Rij[2],mat_el])
-                            
+                        H_raw.append([o1.index,o2.index,Rij[0],Rij[1],Rij[2],mat_el])                            
                     o1o2norm[orb_label] = True #now that the pair has been calculated, disqualify from subsequent calculations
     return H_raw
 
@@ -281,6 +280,44 @@ def fillin(M,l):
     return M
 
 
+
+def AFM_order(basis,dS,p_up,p_dn):
+  '''
+  Add antiferromagnetism to the tight-binding model, by adding a different on-site energy to 
+  orbitals of different spin character, on the designated sites. 
+  args:
+      basis -- list of orbital objects
+      dS -- size of spin-splitting (eV) float
+      p_up,p_dn -- numpy array of float indicating the orbital positions for the AFM order
+  return: list of matrix elements, as conventionally arranged
+  '''
+  h_AF = []
+  for bi in basis:
+      if np.linalg.norm(bi.pos-p_up)==0:
+          if bi.spin<0:
+              h_AF.append([bi.index,bi.index,0,0,0,dS])
+          else:
+              h_AF.append([bi.index,bi.index,0,0,0,-dS])
+      elif np.linalg.norm(bi.pos-p_dn)==0:
+          if bi.spin<0:
+              h_AF.append([bi.index,bi.index,0,0,0,-dS])
+          else:
+              h_AF.append([bi.index,bi.index,0,0,0,dS])
+  return h_AF
+    
+    
+def FM_order(basis,dS):
+    '''
+     Add ferromagnetism to the system. Take dS to assume that the splitting puts spin-up lower in energy by dS,
+     and viceversa for spin-down. This directly modifies the TB_model's mat_els attribute
+     args:
+         basis -- list of orbital objects in basis
+         dS -- float: energy of the spin splitting (eV)
+    retun: list of matrix elements
+     '''
+    return [[bi.index,bi.index,0,0,0,-np.sign(bi.spin)*dS] for bi in basis]
+
+
 def GrahamSchmidt(a,b):
     '''
     Simple orthogonalization of two vectors, returns orthonormalized vector
@@ -302,9 +339,8 @@ def region(num):
 
 
         
-        
-        
-    
+
+
 
     
 
