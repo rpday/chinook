@@ -5,7 +5,7 @@ Created on Thu Sep 13 11:47:18 2018
 @author: rday
 """
 import sys
-sys.path.append('C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/')
+sys.path.append('/Users/ryanday/Documents/UBC/TB_ARPES/TB_ARPES-master 4/')
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -49,13 +49,13 @@ if __name__=="__main__":
 #    d = a/np.sqrt(2)
 #    SK = SKlib.eta_dict_to_SK(eta,0.67,np.sqrt(0.5)*a)
 #    CUT,SK = SK_extend(SK,avec,6./d,d)
-    fnm = 'C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/examples/cu_params_pan.txt'
+    fnm = '/Users/ryanday/Documents/UBC/TB_ARPES/TB_ARPES-master 4/examples/cu_params_pan.txt'
     tol = 0.0001
     SK,CUT = CuTB.gen_Cu_SK(avec,fnm,tol)
     OFF = CuTB.pair_pot(fnm,avec)/(-18)#-18#
 #    SK = SK[0]
 #    CUT = 2.7#float(CUT[0])
-#    
+    
 #    SK = {"040":-2.408,"031":4.00,"032":-5.00,"004400S":-0.05652552534871882,"003410S":0.10235422439959821,"004302S":-0.036994370838375354,
 #          "003311S": 0.21924434953910618,"003311P":0.0,"003312S":-0.053580360262257626,"003312P":0.013802597521248922,"003322S":-0.012755569410002986,
 #          "003322P":0.0033741803350209204,"003322D":-0.0012785070616424799}
@@ -87,21 +87,24 @@ if __name__=="__main__":
     
     slab_dict = {'avec':avec,
       'miller':np.array([1,1,1]),
-      'fine':(0,0),
-      'thick':20,
+      'thick':21,
       'vac':10,
-      'fine':(0,1),
+      'fine':(0,-4),
       'termination':(0,0)}
     
     Bd = build_lib.gen_basis(Bd)
     Kobj = build_lib.gen_K(Kd)
     TB = build_lib.gen_TB(Bd,Hd,Kobj,slab_dict)
+    
+
+    
+    
     G,M,K=np.zeros(3),np.array([0.5,0.5,0.0]),np.array([1./3,2./3,0.0])
     Kd['type']='F'
     Kd['avec']=TB.avec
     Kd['pts'] = [G,M,K,G]
     TB.Kobj = build_lib.gen_K(Kd)
     Hd['avec'] = TB.avec
-    TB.mat_els = TB.build_ham(Hd)
+
     TB.solve_H()
-    TB.plotting(-10,2.5)
+    TB.plotting()
