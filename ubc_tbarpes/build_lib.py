@@ -86,10 +86,7 @@ def gen_TB(Bdict,H_args,Kobj,slab_dict=None):
         TB,slab_H = slib.bulk_to_slab(slab_dict) 
         if Hspin:
             TB.basis = olib.spin_double(list(TB.basis),Bdict['spin']['lam']) 
-#        if H_args['type']!='SK': #to be overwritten once the Hamiltonian generation for slabs is fixed.
-#            H_args['type']='list'
-#            H_args['list'] = slab_H
-#    
+
         H_args['type']='list'
         H_args['list'] = slab_H
         
