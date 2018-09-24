@@ -459,18 +459,47 @@ def H_surf(surf_basis,avec,H_bulk,Rmat):
     H_new = [] #initialize the new Hamiltonian list
     for ii in range(len(H_old)): #iterate over all original Hamiltonian hopping paths
         hi = H_old[ii] #temporary Hamiltonian matrix element to consider
+<<<<<<< HEAD
+        R_latt = np.mod(np.around(np.dot(Rcv[ii],av_i),3),1) #what is the hopping path, in new coordinate frame, in terms of modular vector (mod lattice vector)
+#        R_latt = np.mod(np.around(np.dot(Rcv[ii],av_i),4),1.0)#no rounding: what is the hopping path, in new coordinate frame, in terms of modular vector (mod lattice vector)
+        R_compare = np.linalg.norm(R_latt-(cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][:,2:5]),axis=1)#,np.linalg.norm((cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][:,2:]-(1-R_latt)),axis=1)) #two possible choices: 
+#        if ii==33:
+#            print('Rl',R_latt)
+#
+#            tmp = cv_dict['{:d}-{:d}'.format(hi[0],hi[1])]
+#            for ti in list(enumerate(tmp)):
+#                print('CV: ',np.array(ti[1][2:5]))
+#                print('Rlatt: ',R_latt)
+#                print('Difference: ',R_latt-np.array(ti[1][2:5]))
+#                print('Norm Difference: ',np.linalg.norm(R_latt-np.array(ti[1][2:5])))
+#                print('Rcompare: ',R_compare[ti[0]])
+#                print('----------------------------')
+#            print('inds',R_compare<5e-4)
+        try:
+            
+            match = np.where(R_compare<5e-4)[0]
+#            if len(match)!=3:
+#                print(R_compare)
+#                print(ii,match)
+=======
         R_latt = np.mod(np.around(np.dot(Rcv[ii],av_i),4),1) #what is the hopping path, in new coordinate frame, in terms of modular vector (mod lattice vector)
 #        R_latt = np.around(np.dot(Rcv[ii],av_i),4)
         R_compare = np.linalg.norm((cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][:,2:]-R_latt),axis=1)#,np.linalg.norm((cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][:,2:]-(1-R_latt)),axis=1)) #two possible choices: 
         try:
             match = np.where(R_compare<1e-4)[0] #only considering the first option--do I need the other?
+>>>>>>> f9d4c6a2ca9dc4b7596f30a9735b15fcdaca8eea
             for mi in match:#find the match
                 tmp_H = [*cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][int(mi)][:2],*np.around(Rcv[ii],4),hi[-1]]
 
                 H_new.append(tmp_H)
 
+<<<<<<< HEAD
+#                if H_new[-1][0]>H_new[-1][1]:
+#                    H_new[-1] = H_conj(tmp_H)
+=======
                 if H_new[-1][0]>H_new[-1][1]:
                     H_new[-1] = H_conj(tmp_H)
+>>>>>>> f9d4c6a2ca9dc4b7596f30a9735b15fcdaca8eea
 
         except IndexError:
            print('ERROR: no valid hopping path found relating original Hamiltonian to surface unit cell.')
@@ -478,7 +507,13 @@ def H_surf(surf_basis,avec,H_bulk,Rmat):
 
         
     print('Number of Bulk Hamiltonian Hopping Terms Found: {:d}, Number of Surface Basis Hopping Terms Filled: {:d}'.format(len(H_old),len(H_new)))
+<<<<<<< HEAD
+    if (len(H_new)/len(H_old))!=(len(surf_basis)/(H_bulk[-1].i+1)):
+        print('Invalid HAMILTONIAN! Missing hopping paths.')
+        return []
+=======
     
+>>>>>>> f9d4c6a2ca9dc4b7596f30a9735b15fcdaca8eea
     Hobj = TB_lib.gen_H_obj(H_new)
 #    for h in Hobj:
 #        h.H = h.clean_H()
@@ -544,6 +579,22 @@ def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
     Hnew = []
     Hdict = Hobj_to_dict(Hsurf,surf_basis) #dictionary of hoppings. keys correspond to the slab_index, values the relative hoppings elements
     si = np.linalg.inv(svec)
+<<<<<<< HEAD
+    D = slab_basis[0].slab_index
+    for oi in slab_basis:
+        Htmp = Hdict[oi.slab_index] #access relevant hopping paths for the orbital in question
+        for hi in Htmp: #iterate over all relevant hoppings
+#            ncells = np.floor(np.dot(hi[2:5],si))[2] + (1 if hi[1]<hi[0] else 0)
+           # ncells = np.floor(np.dot(hi[2:5],si))[2]
+            ncells = np.floor(np.dot(hi[2:5]+surf_basis[hi[0]].pos,si))[2] #how many unit cells -- in the surface unit cell basis are jumped during this hopping--specifically, cells along the normal direction
+            Htmp_2 = [0]*6 #create empty hopping element, to be filled
+
+            Htmp_2[0] = int(oi.index) #matrix row should be the SLAB BASIS INDEX
+            Htmp_2[1] = int((D+oi.index)/len(surf_basis))*len(surf_basis) + int(len(surf_basis)*ncells+hi[1]-D) #matrix column is
+
+            Htmp_2[5] = hi[5]
+    
+=======
     for oi in slab_basis:
         Htmp = Hdict[oi.slab_index] #access relevant hopping paths for the orbital in question
         for hi in Htmp: #iterate over all relevant hoppings
@@ -554,19 +605,30 @@ def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
             Htmp_2[1] = int(oi.index/len(surf_basis))*len(surf_basis) + int(len(surf_basis)*ncells+hi[1]) #matrix column is
 
             Htmp_2[5] = hi[5]
+>>>>>>> f9d4c6a2ca9dc4b7596f30a9735b15fcdaca8eea
             
             try:
                 Htmp_2[2:5] = hi[2:5]
 
                 if 0<=Htmp_2[1]<len(slab_basis) and 0<=Htmp_2[0]<len(slab_basis):
                     if limits[0]<=(slab_basis[hi[0]].pos+Htmp_2[2:5])[2]<=limits[1]:
+<<<<<<< HEAD
+                        if Htmp_2[1]<Htmp_2[0]:
+                            Htmp_2 = H_conj(Htmp_2)
+=======
+>>>>>>> f9d4c6a2ca9dc4b7596f30a9735b15fcdaca8eea
                         Hnew.append(Htmp_2)
             except IndexError:
 
                 continue
     Hobj = TB_lib.gen_H_obj(Hnew)
+<<<<<<< HEAD
+    for h in Hobj:
+        h.H = h.clean_H()
+=======
 #    for h in Hobj:
 #        h.H = h.clean_H()
+>>>>>>> f9d4c6a2ca9dc4b7596f30a9735b15fcdaca8eea
         
     return unpack(Hobj) #Modify to have function return list of H-elements
                 
@@ -609,8 +671,15 @@ def mod_dict(surf_basis,av_i):
     cv_dict = {}
     for bi in range(len(surf_basis)):
         for bj in range(len(surf_basis)):
+<<<<<<< HEAD
+#            mod_vec = np.mod(np.dot((surf_basis[bj].pos-surf_basis[bi].pos),av_i),1) #no rounding!
+            mod_vec = np.mod(np.around(np.dot((surf_basis[bj].pos-surf_basis[bi].pos),av_i),3),1)
+
+#            mod_vec = np.around(np.mod(np.dot((surf_basis[bj].pos-surf_basis[bi].pos),av_i),1),4)
+=======
             mod_vec = np.mod(np.around(np.dot((surf_basis[bj].pos-surf_basis[bi].pos),av_i),4),1)
 #            mod_vec = np.around(np.dot(surf_basis[bj].pos-surf_basis[bi].pos,av_i),4)
+>>>>>>> f9d4c6a2ca9dc4b7596f30a9735b15fcdaca8eea
             try:
                 cv_dict['{:d}-{:d}'.format(surf_basis[bi].slab_index,surf_basis[bj].slab_index)].append([bi,bj,*mod_vec])
             except KeyError:

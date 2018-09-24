@@ -229,11 +229,13 @@ class experiment:
 
     def write_params(self,Adict,parfile):
         
-        
+        RE_pol = list(np.real(Adict['pol']))
+        IM_pol = list(np.imag(Adict['pol']))
         with open(parfile,"w") as params:
             params.write("Photon Energy: {:0.2f} eV \n".format(Adict['hv']))
             params.write("Temperature: {:0.2f} K \n".format(Adict['T'][1]))
-            params.write("Polarization: {:0.3f}+{:0.3f}j {:0.3f}+{:0.3f}j {:0.3f}+{:0.3f}j\n".format(np.real(Adict['pol'][0]),np.imag(Adict['pol'][0]),np.real(Adict['pol'][1]),np.imag(Adict['pol'][1]),np.real(Adict['pol'][2]),np.imag(Adict['pol'][2])))
+            params.write("Polarization: {:0.3f}+{:0.3f}j {:0.3f}+{:0.3f}j {:0.3f}+{:0.3f}j\n".format(RE_pol[0],IM_pol[0],RE_pol[1],IM_pol[1],RE_pol[2],IM_pol[2]))
+
             params.write("Energy Range: {:0.6f} {:0.6f} {:0.6f}\n".format(Adict['cube']['E'][0],Adict['cube']['E'][1],Adict['cube']['E'][2]))
             params.write("Kx Range: {:0.6f} {:0.6f} {:0.6f}\n".format(Adict['cube']['X'][0],Adict['cube']['X'][1],Adict['cube']['X'][2]))
             params.write("Ky Range: {:0.6f} {:0.6f} {:0.6f}\n".format(Adict['cube']['Y'][0],Adict['cube']['Y'][1],Adict['cube']['Y'][2]))
@@ -242,10 +244,9 @@ class experiment:
                 params.write("Azimuthal Rotation: {:0.6f}\n".format(Adict['angle']))
             except ValueError:
                 pass
-            params.write("Energy Resolution: {:0.4f} \n".format(Adict['resolution']['E']))
-            params.write("Momentum Resolution: {:0.4f} \n".format(Adict['resolution']['k']))
-            
-            params.write("Self Energy: G1 + G2 w^2--{:0.4f} {:0.4f}\n".format(Adict['SE'][0],Adict['SE'][1]))
+            params.write("Energy Resolution: {:0.4f} eV\n".format(Adict['resolution']['E']))
+            params.write("Momentum Resolution: {:0.4f} eV\n".format(Adict['resolution']['k']))
+            params.write('Self Energy: '+'+'.join(['{:0.04f}w^{:d}'.format(Adict['SE'][i],i) for i in range(len(Adict['SE']))])+'\n')
             try:
                 params.write("Spin Projection ({:s}): {:0.4f} {:0.4f} {:0.4f}\n".format(('up' if Adict['spin'][0]==1 else 'down'),Adict['spin'][1][0],Adict['spin'][1][1],Adict['spin'][1][2]))
             except TypeError:
