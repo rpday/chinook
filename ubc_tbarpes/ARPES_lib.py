@@ -309,8 +309,7 @@ class experiment:
                 
         
         
-#        SE = [-1.0j*(ARPES_dict['SE'][0]+p[2]**2*ARPES_dict['SE'][1]) for p in self.pks]
-        SE = -1.0j*poly(self.pks[:,2],ARPES_dict['SE'])
+        SE = abs(poly(self.pks[:,2],ARPES_dict['SE'])) #absolute value mandates that self energy be particle-hole symmetric, i.e. SE*(k,w) = -SE(k,-w). Here we define the imaginary part explicitly only!
         if T_eval:
             fermi = vf(w/(kb*self.T/q))
         else:
@@ -319,7 +318,7 @@ class experiment:
         if ARPES_dict['spin'] is None:
             for p in range(len(self.pks)):
                 if abs(self.Mk[p]).max()>0:
-                    I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= (abs(np.dot(self.Mk[p,0,:],pol))**2 + abs(np.dot(self.Mk[p,1,:],pol))**2)*np.imag(-1./(np.pi*(w-self.pks[p,2]-SE[p]+0.01j)))*fermi
+                    I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= (abs(np.dot(self.Mk[p,0,:],pol))**2 + abs(np.dot(self.Mk[p,1,:],pol))**2)*np.imag(-1./(np.pi*(w-self.pks[p,2]+1.0j*(SE[p]+0.0005))))*fermi
         else:
             for p in range(len(self.pks)):
                 if abs(Mspin[p]).max()>0:
