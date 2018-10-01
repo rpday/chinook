@@ -132,6 +132,78 @@ def sk_build(avec,basis,V,cutoff,tol,renorm,offset,spin):
     return H_raw
 
 
+def sk_build_2(avec,basis,V,cutoff,tol,renorm,offset,spin):
+    '''
+    Testing a function to build SK model from using D-matrices, rather than the list of SK terms from table
+    '''
+    normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
+    reg_cut,pts = cluster_build(cutoff,avec)
+    H_raw = []
+    o1o2norm = {}
+    if spin:
+        brange = int(len(basis)/2)
+    else:
+        brange = len(basis)
+    
+    pair_channels = orbital_pair_channels(basis[:brange])
+    SK_matrices = SK.SK_full(basis[:brange])
+    for pc in pair_channels:
+        
+        Vmat = SK_matrices[pc[:4]]
+            
+        for p in pts:
+            Rij = np.array(pc[-3:])+np.dot(p,avec)
+            Rijn = np.linalg.norm(Rij)
+            if Rijn<max(reg_cut):
+                A,B = np.arctan2(Rij[1],Rij[0]),np.arccos(Rij[2]/Rijn)
+                V = [0.1]*(2*(min(pc[1],pc[3]))+1)
+                SKmat = Vmat(A,B,V)
+                H_raw = H_raw + mat_els(Rij,SKmat)
+                    
+                
+                
+def mat_els(Rij,SKmat):
+    return None
+                    
+    
+            
+
+
+
+
+def orbital_pair_channels(basis):
+    '''
+    Define the set of viable atom, orbital channels which can be connected via hopping. These determine the hopping matrices which need be defined.
+    '''
+    orb_chann = []
+    for o in basis:
+        if (o.atom,o.l) not in orb_chann:
+            orb_chann.append((o.atom,o.l,*o.pos))
+    pair_chann = [(orb_chann[yi][0],orb_chann[yi][1],orb_chann[yj][0],orb_chann[yj][1],*(orb_chann[yj][2:5]-orb_chann[yi][2:5])) for yi in range(len(orb_chann)) for yj in range(yi,len(orb_chann))]
+    
+    return pair_chann
+
+
+def cluster_build(cutoff,avec):
+    '''
+    Generate a safe cluster of neighbouring lattice points to use in defining the hopping paths
+    Return an array of lattice points which go safely to the edge of the cutoff range.
+    
+    '''
+    try:
+        reg_cut = [0.0]+list(cutoff)
+        reg_cut = np.array(reg_cut)
+    except TypeError:
+        try:
+            reg_cut = np.array([cutoff])
+        except TypeError:
+            print('Invalid cutoff-format')
+            return None
+    pt_max = np.ceil(np.array([(reg_cut).max()/np.linalg.norm(avec[i]) for i in range(len(avec))]).max())
+    pts = region(int(pt_max)+1)
+    return reg_cut,pts
+
+
 def spin_double(H,lb):
     lenb = int(lb/2)
     h2 = []
@@ -158,16 +230,24 @@ def SO(basis):
         HSO list of matrix elements in standard format [i,j,0,0,0,HSO[i,j]]
     '''
     Md = Yproj(basis)
-    normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4}}
+    normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
     factors = {(2,-1):0.5,(0,1):0.5,(1,0):1.0}
     L,al = {},[]
     HSO = []
-    for o in basis:
+    for o in basis[:int(len(basis)/2)]:
         if (o.atom,o.l) not in al:
             al.append((o.atom,o.l))
-            M = Md[(o.atom,o.l)]
-            Mp = np.linalg.inv(M)
-            L[(o.atom,o.l)] = [np.dot(Mp,np.dot(Lm(o.l),M)),np.dot(Mp,np.dot(Lz(o.l),M)),np.dot(Mp,np.dot(Lp(o.l),M))]
+            Mdn = Md[(o.atom,o.l,-1)]
+            Mup = Md[(o.atom,o.l,1)]
+            Mdnp = np.linalg.inv(Mdn)
+            Mupp = np.linalg.inv(Mup)
+            L[(o.atom,o.l)] = [np.dot(Mupp,np.dot(Lm(o.l),Mdn)),np.dot(Mdnp,np.dot(Lz(o.l),Mdn)),np.dot(Mdnp,np.dot(Lp(o.l),Mup))]
+
+#        if (o.atom,o.l) not in al:
+#            al.append((o.atom,o.l))
+#            M = Md[(o.atom,o.l)]
+#            Mp = np.linalg.inv(M)
+#            L[(o.atom,o.l)] = [np.dot(Mp,np.dot(Lm(o.l),M)),np.dot(Mp,np.dot(Lz(o.l),M)),np.dot(Mp,np.dot(Lp(o.l),M))]
 
     for o1 in basis:
         for o2 in basis:
@@ -238,15 +318,19 @@ def Yproj(basis):
     
     Note this works only on p and d type orbitals, s is irrelevant, not currently supporting f orbitals
     
+    29/09/2018 added reference to the spin character 'sp' to handle rotated systems effectively
+    
     '''
     normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
     a = basis[0].atom
     l = basis[0].l
+    sp = basis[0].spin
     M = {}
     M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
     for b in basis:
-        if b.atom==a and b.l==l:
-            label = b.label[2:]
+        label = b.label[2:]
+
+        if b.atom==a and b.l==l and b.spin==sp:
             for p in b.proj:
                 M_tmp[l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
                 
@@ -254,14 +338,17 @@ def Yproj(basis):
                 #If we are using a reduced basis, fill in orthonormalized projections for other states in the shell
                 #which have been ignored in our basis choice--these will still be relevant to the definition of the LS operator
             M_tmp = fillin(M_tmp,l)            
-            M[(a,l)] = M_tmp
+            M[(a,l,sp)] = M_tmp
                 ##Initialize the next M matrix               
             a = b.atom
             l = b.l
+            sp = b.spin
             M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
+            for p in b.proj:
+                M_tmp[l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
     
     M_tmp = fillin(M_tmp,l)
-    M[(a,l)] = M_tmp
+    M[(a,l,sp)] = M_tmp
     
     return M
 
@@ -341,6 +428,6 @@ def region(num):
         
 
 
-
+# 
     
 

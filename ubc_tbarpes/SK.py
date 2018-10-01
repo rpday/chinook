@@ -30,7 +30,9 @@ SOFTWARE.
 """
 
 import numpy as np
+import ubc_tbarpes.wigner as Wlib
 import ubc_tbarpes.orbital as olib
+import ubc_tbarpes.operator_library as oplib
 
 
 def SK_coeff(o1,o2,R12,Vcoeff,renorm,offset,tol):
@@ -121,7 +123,7 @@ def SK_coeff(o1,o2,R12,Vcoeff,renorm,offset,tol):
             if tmp+"S" in eta:
                 V = [eta[tmp+"S"],eta[tmp+"P"]]
             elif tmp2+"S" in eta:
-                V = [eta[tmp2+"S"],eta[tmp2+"P"]]
+                V = -1*[eta[tmp2+"S"],eta[tmp2+"P"]]
             else:
                 V = [0.0,0.0]
                     
@@ -233,25 +235,96 @@ def eta_dict_to_SK(eta_dict,rd,d):
     return VSK
 
 
+def Vmat(l1,l2,V):
+    '''
+    For Slater-Koster matrix element generation, a potential matrix is sandwiched in between the
+    two bond-rotating Dmatrices. It should be of the shape 2*l1+1 x 2*l2+1, and have the Vl,l',D
+    terms along the 'diagonal'-- a concept that is only well defined for a square matrix. For mismatched
+    angular momentum channels, this turns into a diagonal square matrix of dimension min(2*l1+1,2*l2+1) 
+    centred  along the larger axis. For channels where the orbital angular momentum change involves a change
+    in parity, the potential should change sign, as per Slater Koster's original definition from 1954. 
+    args:
+        l1,l2: int orbital angular momentum of initial and final states
+        V: numpy array of float -- length should be min(l1,l2)*2+1
+    return:
+        Vm: numpy array of float, shape 2*l1+1 x 2*l2+1
+    '''
+    if l1==0 or l2==0:
+        Vm = np.zeros(max(2*l1+1,2*l2+1))
+        Vm[int(len(Vm)/2)] = V[0]
+    else:
+        Vm = np.zeros((2*l1+1,2*l2+1))
+        lmin = min(l1,l2)
+        lmax = max(l1,l2)
+        Vvals = np.identity(2*lmin+1)*np.array([V[abs(i-lmin)] for i in range(2*lmin+1)])
+        if l2>l1:
+            Vm[:,lmax-lmin:lmax-lmin+2*lmin+1] = Vvals
+        else:
+            Vm[lmax-lmin:lmax-lmin+2*lmin+1,:] = Vvals
+    if l1>l2 and (np.mod(l2-l1,2)!=0):
+        Vm*=-1
+    return Vm
+
+def SK_Wig_Y(l1,l2):
+    '''
+    Generate a matrix function that can be applied to any hopping-combination of the orbitals labelled by
+    l1,l2. The output, a lambda function can then be addressed with a given bond and potential, generating
+    the hoppings. Right now, this is still in the basis of spherical harmonics. Need to prepend by the local
+    projection array on either side. Then to implement in generating a Hamiltonian, one would generate the relevant
+    lambda functions for the different angular momentum channels involved, then evaluate the matrix for a specific
+    choice of hopping. In principal, this means we could just iterate over atomic sites rather than all combinations
+    of orbitals, and then just pull all the matrix elements from the arrays evaluated at these points and fill them
+    in. This could be very efficient method, and more importantly, generic for all angular momentum channels!
+    To be completed 26/9/2018
+    '''
+    
+
+    return lambda A,B,V: np.dot(np.conj(Wlib.WignerD(l1,A,B,0).T),np.atleast_2d(np.dot(Vmat(l1,l2,V),Wlib.WignerD(l2,A,B,0))))
+
+
+def SK_cub(Ymats,l1,l2):
+    def SK_build(A,B,V):
+    
+        return np.dot(np.dot(np.conj(Ymats[0].T),np.conj(Wlib.WignerD(l1,A,B,0).T)),np.atleast_2d(np.dot(Vmat(l1,l2,V),np.dot(Wlib.WignerD(l2,A,B,0),Ymats[1]))))
+    return lambda A,B,V:SK_build(A,B,V)
+
+def SK_full(basis):
+    
+    '''
+    Generate a dictionary of lambda functions which take as keys the atom,orbital for both first and second element 
+    '''
+    SK_funcs = {}
+    Ymats = oplib.Yproj(basis)
+    for yi in Ymats:
+        for yj in Ymats:
+            Y = [Ymats[yi],Ymats[yj]]
+            SK_funcs[(yi[0],yi[1],yj[0],yj[1])] = SK_cub(Y,yi[1],yj[1])
+    return SK_funcs
+
+
+        
+    
+
+
 
     
 
 
-if __name__=="__main__":
-    Vo=1./6.25
-    off = 0.5#1.1722
-    scale = np.sqrt(2)*5.48
-    dxy = -0.0
-    
-    SK = {"052xy":-off+dxy,"152xy":-off+dxy,"052xz":-off,"152xz":-off,"052yz":-off,"152yz":-off,"052XY":-off-3,"152XY":-off-3,"052ZR":-off-3,"152ZR":-off-3,"015522S":1.5*Vo,"015522P":-1.0*Vo,"015522D":0.25*Vo,"115522S":1.5*Vo/scale,"115522P":-1.0*Vo/scale,"115522D":0.25*Vo/scale,"005522S":1.5*Vo/scale,"005522P":-1.0*Vo/scale,"005522D":0.25*Vo/scale}
-    pos1 = np.zeros(3)
-    pos2 = np.array([3.875,0,0])
-    xz1 = olib.orbital(0,0,"52xz",pos1,77)#,orient=[np.array([0,0,1]),90*np.pi/180.])
-    yz1 = olib.orbital(0,1,"52yz",pos1,77)#,orient=[np.array([0,0,1]),90*np.pi/180.])
-    xy1 = olib.orbital(0,2,"52xy",pos1,77)#,orient=[np.array([0,0,1]),90*np.pi/180.])
-    xz2 = olib.orbital(1,3,"52xz",pos2,77)#,orient=[np.array([0,0,1]),-90*np.pi/180.])
-    yz2 = olib.orbital(1,4,"52yz",pos2,77)#,orient=[np.array([0,0,1]),-90*np.pi/180.])
-    xy2 = olib.orbital(1,5,"52xy",pos2,77)#,orient=[np.array([0,0,1]),-90*np.pi/180.])
+#if __name__=="__main__":
+#    Vo=1./6.25
+#    off = 0.5#1.1722
+#    scale = np.sqrt(2)*5.48
+#    dxy = -0.0
+#    
+#    SK = {"052xy":-off+dxy,"152xy":-off+dxy,"052xz":-off,"152xz":-off,"052yz":-off,"152yz":-off,"052XY":-off-3,"152XY":-off-3,"052ZR":-off-3,"152ZR":-off-3,"015522S":1.5*Vo,"015522P":-1.0*Vo,"015522D":0.25*Vo,"115522S":1.5*Vo/scale,"115522P":-1.0*Vo/scale,"115522D":0.25*Vo/scale,"005522S":1.5*Vo/scale,"005522P":-1.0*Vo/scale,"005522D":0.25*Vo/scale}
+#    pos1 = np.zeros(3)
+#    pos2 = np.array([3.875,0,0])
+#    xz1 = olib.orbital(0,0,"52xz",pos1,77)#,orient=[np.array([0,0,1]),90*np.pi/180.])
+#    yz1 = olib.orbital(0,1,"52yz",pos1,77)#,orient=[np.array([0,0,1]),90*np.pi/180.])
+#    xy1 = olib.orbital(0,2,"52xy",pos1,77)#,orient=[np.array([0,0,1]),90*np.pi/180.])
+#    xz2 = olib.orbital(1,3,"52xz",pos2,77)#,orient=[np.array([0,0,1]),-90*np.pi/180.])
+#    yz2 = olib.orbital(1,4,"52yz",pos2,77)#,orient=[np.array([0,0,1]),-90*np.pi/180.])
+#    xy2 = olib.orbital(1,5,"52xy",pos2,77)#,orient=[np.array([0,0,1]),-90*np.pi/180.])
     
 #    V,E = SK_coeff(xz1,yz2,SK)
 #    os = [xz1,yz1,xy1,xz2,yz2,xy2]

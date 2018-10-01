@@ -57,7 +57,12 @@ from operator import itemgetter
 projdict={"0":np.array([[1.0,0.0,0.0,0.0]]),
                "1x":np.array([[-np.sqrt(0.5),0.0,1,1],[np.sqrt(0.5),0.0,1,-1]]),"1y":np.array([[0.0,np.sqrt(0.5),1,1],[0,np.sqrt(0.5),1,-1]]),"1z":np.array([[1,0,1,0]]),
                 "2xy":np.array([[0.0,-np.sqrt(0.5),2,2],[0.0,np.sqrt(0.5),2,-2]]),"2yz":np.array([[0.0,np.sqrt(0.5),2,1],[0.0,np.sqrt(0.5),2,-1]]),
-                "2xz":np.array([[-np.sqrt(0.5),0,2,1],[np.sqrt(0.5),0,2,-1]]),"2ZR":np.array([[1.0,0.0,2,0]]),"2XY":np.array([[np.sqrt(0.5),0,2,2],[np.sqrt(0.5),0,2,-2]])}
+                "2xz":np.array([[-np.sqrt(0.5),0,2,1],[np.sqrt(0.5),0,2,-1]]),"2ZR":np.array([[1.0,0.0,2,0]]),"2XY":np.array([[np.sqrt(0.5),0,2,2],[np.sqrt(0.5),0,2,-2]]),
+                "3z3":np.array([[1.0,0.0,3,0]]),"3xz2":np.array([[np.sqrt(0.5),0,3,-1],[-np.sqrt(0.5),0,3,1]]),
+                "3yz2":np.array([[0,np.sqrt(0.5),3,-1],[0,np.sqrt(0.5),3,1]]),"3xzy":np.array([[0,-np.sqrt(0.5),3,2],[0,np.sqrt(0.5),3,-2]]),
+                "3zXY":np.array([[np.sqrt(0.5),0,3,2],[np.sqrt(0.5),0,3,-2]]),"3xXY":np.array([[-np.sqrt(0.5),0,3,3],[np.sqrt(0.5),0,3,-3]]),
+                "3yXY":np.array([[0,np.sqrt(0.5),3,3],[0,np.sqrt(0.5),3,-3]])}
+                
 
 
 hb = 6.626*10**-34/(2*np.pi)
@@ -81,7 +86,7 @@ class orbital:
         self.spin = spin
         self.Dmat = None
         self.lam = lam
-        self.sigma = 1.0
+        self.sigma = sigma
         self.n,self.l = int(self.label[0]),int(self.label[1])
         if slab_index is None:
             self.slab_index = index #this is redundant for bulk calc, but index in slab is distinct from lattice index
@@ -101,6 +106,7 @@ class orbital:
             
     def copy(self):
         t_orbital = orbital(self.atom,self.index,self.label,self.pos,self.Z,self.orient,self.spin,self.lam,self.sigma,self.slab_index)
+        t_orbital.proj = np.array([[self.proj[ii,jj] for jj in range(4)] for ii in range(len(self.proj))])
 #        t_orbital.proj,t_orbital.Dmat = self.proj,self.Dmat
         return t_orbital
 #    
@@ -108,7 +114,7 @@ class orbital:
 #        return orbital(self.atom,self.index,self.label,self.pos,self.Z,self.orient,self.spin,self.lam,self.sigma,self.slab_index)
 
         
-    def rot_projection(self,gamma,vector=None):
+    def rot_projection(self,gamma,vector=np.array([0,0,1])):
         
         '''
         Go through the projection array, and apply the correct transformation to
@@ -160,7 +166,7 @@ def slab_basis_copy(basis,new_posns,inds):
     return new_basis
     
     
-def Rmat(n,t):
+def Rodrigues_Rmat(n,t):
     '''
     Rodrigues theorem for rotations. 
     args:
@@ -182,7 +188,7 @@ def Euler(n,t):
         t --> float radian angle of rotation counter clockwise for t>0
     Has special case for B = +/- Z*pi where conventional approach doesn't work due to division by zero
     '''
-    R = Rmat(n,t)
+    R = Rodrigues_Rmat(n,t)
 
     b = np.arccos(R[2,2])
     sb = np.sin(b)
@@ -200,16 +206,22 @@ def Euler(n,t):
             a = np.arctan2(R[1,0],-R[0,0])
 
     return a,b,y
-#
-#def Dmatrix(l,A,B,y):
-#    Dmat = np.zeros((int(2*l+1),int(2*l+1)),dtype=complex)
-#    for m_i in range(int(2*l+1)):
-#        for mp_i in range(int(2*l+1)):
-#            m = m_i-l
-#            mp = mp_i-l
-#            Dmat[mp_i,m_i] = np.conj(Rotation.D(l,mp,m,y,B,A).doit())
-#    return Dmat
-#
+
+
+def rot_vector(Rmatrix):
+    L,u=np.linalg.eig(Rmatrix)
+    uv = np.real(u[:,np.where(abs(L-1)<1e-10)[0][0]])
+    th = np.arccos((np.trace(Rmatrix)-1)/2)
+    R_tmp = Rodrigues_Rmat(uv,th)
+    if np.linalg.norm(R_tmp-Rmatrix)<1e-10:
+        return uv,th
+    else:
+        R_tmp = Rodrigues_Rmat(uv,-th)
+        if np.linalg.norm(R_tmp-Rmatrix)<1e-10:
+            return uv,-th
+        else:
+            print('ERROR: COULD NOT DEFINE ROTATION MATRIX FOR SUGGESTED BASIS TRANSFORMATION!')
+            return None
 
 def sort_basis(base,slab):
     '''
@@ -228,7 +240,7 @@ def sort_basis(base,slab):
     
     return orb_base
     
-def spin_double(basis,lamdict):
+def spin_double(basis,lamdict,Rvec=None):
     '''
     Double the size of a basis to introduce spin to the problem.
     Go through the basis and create an identical copy with opposite spin and 
@@ -241,16 +253,26 @@ def spin_double(basis,lamdict):
     '''
     LB = len(basis)
     b_2 = []
+    if Rvec is not None:
+        if np.linalg.norm(np.cross(Rvec[0],np.array([0,0,1])))>1e-5:
+            print('WARNING! CAN NOT SUPPORT ROTATION OF SPIN ABOUT AXES OTHER THAN Z')
+            do_rot_spin=False
+        else:
+            do_rot_spin = True
+    else:
+        do_rot_spin = False
     for ind in range(LB):
         basis[ind].spin = -1
         basis[ind].lam = lamdict[basis[ind].atom]
         spin_up = basis[ind].copy()
         spin_up.spin = 1
         spin_up.index = basis[ind].index+LB
-        if type(basis[ind].orient)==list:
-            print(basis[ind].proj,2*basis[ind].orient[0],1)
-            spin_up.proj = rot_spin(basis[ind].proj,2*basis[ind].orient[0],1)
-            basis[ind].proj = rot_spin(basis[ind].proj,2*basis[ind].orient[0],-1)
+        if do_rot_spin:
+            spin_up.proj = rot_spin(spin_up.proj.astype(float),-float(Rvec[1]),1.0)
+            basis[ind].proj = rot_spin((basis[ind].proj).astype(float),float(Rvec[1]),-1.0)
+        elif type(basis[ind].orient)==list:
+            spin_up.proj = rot_spin(spin_up.proj.astype(float),float(basis[ind].orient[0]),1.0)
+            basis[ind].proj = rot_spin((basis[ind].proj).astype(float),float(basis[ind].orient[0]),-1.0)
         b_2.append(spin_up)
     return basis + b_2
         
@@ -273,18 +295,23 @@ if __name__=="__main__":
 #    proj_x = dxz.rot_projection(v,a)
 #    print(proj_x)
   
-        
 
-def rot_spin(projection,angle,spin):
+def rot_spin(proj_array,angle,spin):
     '''
     Map the rotation of the spin direction onto the orbital projection. 
     This ONLY works for rotation about Z AXIS!
     '''
-    for i in range(len(projection)):
-        tmp_coeff = complex(projection[i,0]+1.0j*projection[i,1])
-        tmp_coeff*=np.exp(-1.0j*angle/2*spin)  
-        projection[i,:2] = np.array([np.real(tmp_coeff),np.imag(tmp_coeff)])
-    return projection
+#    print('proj before: ',np.around(proj_array,3))
+
+#    print('rotation angle: ',angle)
+#    print('spin: ',spin)
+    for i in range(len(proj_array)):
+        tmp_coeff = complex(proj_array[i,0]+1.0j*proj_array[i,1])
+        tmp_coeff*=np.exp(-1.0j*angle/(2.0)*spin)  
+        proj_array[i,:2] = np.array([np.real(tmp_coeff),np.imag(tmp_coeff)])
+#    print('proj_after: ',np.around(proj_array,3))
+#    print('\n')
+    return proj_array
 
 
 def rotate_util(proj,phi):

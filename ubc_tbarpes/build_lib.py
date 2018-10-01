@@ -83,9 +83,11 @@ def gen_TB(Bdict,H_args,Kobj,slab_dict=None):
     TB = TBlib.TB_model(Bdict['bulk'],H_args,Kobj)
     if type(slab_dict)==dict:
         slab_dict['TB'] = TB
-        TB,slab_H = slib.bulk_to_slab(slab_dict) 
+        print('running bulk_to_slab now')
+        TB,slab_H,Rmat = slib.bulk_to_slab(slab_dict) 
         if Hspin:
-            TB.basis = olib.spin_double(list(TB.basis),Bdict['spin']['lam']) 
+            uv,gamma = olib.rot_vector(Rmat.T)
+            TB.basis = olib.spin_double(list(TB.basis),Bdict['spin']['lam'],Rvec=(uv,-gamma)) 
 
         H_args['type']='list'
         H_args['list'] = slab_H

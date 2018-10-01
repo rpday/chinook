@@ -318,11 +318,13 @@ def gen_surface(avec,miller,basis):
     in_pped,inds = populate_par(b_points,vn_b)
     new_basis = np.empty(len(in_pped),dtype=olib.orbital)
     ordering = sorted_basis(in_pped,inds)
+
     for ii in range(len(in_pped)):
         tmp = basis[int(ordering[ii][3])].copy()
         tmp.slab_index = int(ordering[ii][3])
         tmp.index = ii
         tmp.pos = ordering[ii][:3]
+
         tmp.proj,tmp.Dmat = tmp.rot_projection(-gamma,uv)
         new_basis[ii] = tmp
     
@@ -333,11 +335,11 @@ def rot_vector(Rmat):
     L,u=np.linalg.eig(Rmat)
     uv = np.real(u[:,np.where(abs(L-1)<1e-10)[0][0]])
     th = np.arccos((np.trace(Rmat)-1)/2)
-    R_tmp = olib.Rmat(uv,th)
+    R_tmp = olib.Rodrigues_Rmat(uv,th)
     if np.linalg.norm(R_tmp-Rmat)<1e-10:
         return uv,th
     else:
-        R_tmp = olib.Rmat(uv,-th)
+        R_tmp = olib.Rodrigues_Rmat(uv,-th)
         if np.linalg.norm(R_tmp-Rmat)<1e-10:
             return uv,-th
         else:
@@ -462,24 +464,11 @@ def H_surf(surf_basis,avec,H_bulk,Rmat):
         R_latt = np.mod(np.around(np.dot(Rcv[ii],av_i),3),1) #what is the hopping path, in new coordinate frame, in terms of modular vector (mod lattice vector)
 #        R_latt = np.mod(np.around(np.dot(Rcv[ii],av_i),4),1.0)#no rounding: what is the hopping path, in new coordinate frame, in terms of modular vector (mod lattice vector)
         R_compare = np.linalg.norm(R_latt-(cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][:,2:5]),axis=1)#,np.linalg.norm((cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][:,2:]-(1-R_latt)),axis=1)) #two possible choices: 
-#        if ii==33:
-#            print('Rl',R_latt)
-#
-#            tmp = cv_dict['{:d}-{:d}'.format(hi[0],hi[1])]
-#            for ti in list(enumerate(tmp)):
-#                print('CV: ',np.array(ti[1][2:5]))
-#                print('Rlatt: ',R_latt)
-#                print('Difference: ',R_latt-np.array(ti[1][2:5]))
-#                print('Norm Difference: ',np.linalg.norm(R_latt-np.array(ti[1][2:5])))
-#                print('Rcompare: ',R_compare[ti[0]])
-#                print('----------------------------')
-#            print('inds',R_compare<5e-4)
+
         try:
             
             match = np.where(R_compare<5e-4)[0]
-#            if len(match)!=3:
-#                print(R_compare)
-#                print(ii,match)
+
 
             for mi in match:#find the match
                 tmp_H = [*cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][int(mi)][:2],*np.around(Rcv[ii],4),hi[-1]]
@@ -570,8 +559,7 @@ def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
     for oi in slab_basis:
         Htmp = Hdict[oi.slab_index] #access relevant hopping paths for the orbital in question
         for hi in Htmp: #iterate over all relevant hoppings
-#            ncells = np.floor(np.dot(hi[2:5],si))[2] + (1 if hi[1]<hi[0] else 0)
-           # ncells = np.floor(np.dot(hi[2:5],si))[2]
+
             ncells = np.floor(np.dot(hi[2:5]+surf_basis[hi[0]].pos,si))[2] #how many unit cells -- in the surface unit cell basis are jumped during this hopping--specifically, cells along the normal direction
             Htmp_2 = [0]*6 #create empty hopping element, to be filled
 
@@ -627,7 +615,7 @@ def bulk_to_slab(slab_dict):
     slab_TB.basis = slab_basis
  #   slab_TB.mat_els = slab_ham
     slab_TB.Kobj.kpts = np.dot(slab_dict['TB'].Kobj.kpts,Rmat)
-    return slab_TB,slab_ham
+    return slab_TB,slab_ham,Rmat
 
            
 

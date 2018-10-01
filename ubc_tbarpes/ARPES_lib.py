@@ -67,7 +67,10 @@ class experiment:
         self.ang = ARPES_dict['angle']
         self.T = ARPES_dict['T'][1]
         self.W = ARPES_dict['W']
-    
+        try:
+            self.truncate = ARPES_dict['slab']
+        except KeyError:
+            self.truncate = False
     
     
     def diagonalize(self,X,Y,kz):
@@ -80,6 +83,39 @@ class experiment:
         self.TB.Kobj = K_lib.kpath(k_arr)
         self.Eb,self.Ev = self.TB.solve_H()
         self.Eb = np.reshape(self.Eb,(np.shape(self.Eb)[-1]*np.shape(self.X)[0]*np.shape(self.X)[1])) 
+        
+        
+        
+    def truncate_model(self):
+        '''
+        For slab calculations, the number of basis states becomes a significant memory load, as well as a time bottleneck.
+        In reality, an ARPES calculation only needs the small number of basis states near the surface. Then for slab-calculations,
+        we can truncate the basis and eigenvectors used in the calculation to dramatically improve our capacity to perform such calculations
+        We keep all eigenvectors, but retain only the projection of the basis states within 2*the mean free path of the surface. The states associated
+        with this projection are retained, while remainders are not
+        
+        '''
+        depths = np.array([abs(oi.depth) for oi in self.TB.basis])
+        i_start = np.where(depths<2*self.mfp)[0][0]
+
+        tmp_basis = []
+        #CASE 1: BASIS INCLUDES BOTH SPIN DOF
+        if self.TB.basis[0].spin!=self.TB.basis[int(len(self.TB.basis)/2)].spin:
+            
+            switch = (int(len(self.TB.basis)/2))
+            tmp_basis = self.TB.basis[i_start:switch] + self.TB.basis[(switch+i_start):]
+            
+            Evec = np.zeros((np.shape(self.Ev)[0],len(tmp_basis),np.shape(self.Ev)[-1]),dtype=complex)
+            
+            Evec[:,:(switch-i_start),:] =self.Ev[:,i_start:switch,:]
+            Evec[:,(switch-i_start):,:] = self.Ev[:,(switch+i_start):,:]
+        #CASE 2: BASIS IS SPINLESS
+        else:
+            
+            tmp_basis = self.TB.basis[i_start:]
+            Evec=self.Ev[:,i_start:,:]
+        return tmp_basis,Evec
+        
         
         
         
@@ -110,11 +146,15 @@ class experiment:
         tmp_basis = self.rot_basis()
         print('Initiate diagonalization: ')
         self.diagonalize(X,Y,kz)
+        nstates = len(tmp_basis)
 
-        blen = len(tmp_basis)
+        if self.truncate:
+
+            tmp_basis,self.Ev = self.truncate_model()
+
         
         dE = Eb[1]-Eb[0]
-        self.Eb-Ef #offset energies by the Fermi energy
+#        self.Eb-Ef #offset energies by the Fermi energy
         
         dig_range = np.arange(self.Eb.min()-5*dE,self.Eb.max()+dE*5,dE)
                 
@@ -133,21 +173,23 @@ class experiment:
             
         self.pks = np.zeros((len(cube_indx),3),dtype=float)
         self.Mk = np.zeros((len(cube_indx),2,3),dtype=complex)
-        self.pks = np.array([np.floor(np.floor(cube_indx[:,0]/blen)/np.shape(X)[1]),np.floor(cube_indx[:,0]/blen)%np.shape(X)[1],cube_indx[:,1]]).T
+        self.pks = np.array([np.floor(np.floor(cube_indx[:,0]/nstates)/np.shape(X)[1]),np.floor(cube_indx[:,0]/nstates)%np.shape(X)[1],cube_indx[:,1]]).T
         kn = np.sqrt(2.*me/hb**2*(self.hv+cube_indx[:,1]-self.W)*q)*A
         
         self.th = np.array([np.arccos(np.sqrt(kn[int(cube_indx[i,0])]**2-self.X[int(self.pks[i,0]),int(self.pks[i,1])]**2-self.Y[int(self.pks[i,0]),int(self.pks[i,1])]**2)/kn[int(cube_indx[i,0])]) for i in range(len(cube_indx))])
-        blen = len(self.TB.basis)
+        nstates = len(self.TB.basis)
 
 
-        
+        Emin,Emax=Eb.min()-5*dE,Eb.max()+5*dE
         tol = 0.01
         strmats = Gstrings()
         print('Begin computing matrix elements: ')
         for i in range(len(cube_indx)):
             if not ARPES_dict['slice'][0]:
-
-                tmp_M = self.M_compute(Gvals,self.Bvals,i,cube_indx[i],kn[i],tmp_basis,tol,strmats) ###
+                if Emin<=cube_indx[i][1]<=Emax:
+                    tmp_M = self.M_compute(Gvals,self.Bvals,i,cube_indx[i],kn[i],tmp_basis,tol,strmats) ###
+                else:
+                    tmp_M=0.0
             elif abs(cube_indx[i][1]-ARPES_dict['slice'][1])<self.dE:
                 tmp_M = self.M_compute(Gvals,self.Bvals,i,cube_indx[i],kn[i],tmp_basis,tol,strmats)*np.exp(-(cube_indx[i][1]-ARPES_dict['slice'][1])**2/(2*self.dE)) ####
             else:
@@ -195,12 +237,12 @@ class experiment:
     
     def M_compute(self,G,B,i,cube,kn,basis,tol,strmats):
         
-
-        phi = self.ph[int(cube[0]/len(basis))]
+        nstates = len(self.TB.basis)
+        phi = self.ph[int(cube[0]/nstates)]
         th = self.th[i]
         Mtmp = np.zeros((2,3),dtype=complex)
         
-        psi = self.Ev[int(cube[0]/len(basis)),:,int(cube[0]%len(basis))]
+        psi = self.Ev[int(cube[0]/nstates),:,int(cube[0]%nstates)]
         
         for coeff in list(enumerate(psi)):
 
@@ -208,7 +250,7 @@ class experiment:
                 o = basis[coeff[0]]
 
                 L = [lp for lp in ([o.l-1,o.l+1] if (o.l-1)>=0 else [o.l+1])]
-                pref = o.sigma*coeff[1]*np.exp(-self.mfp*abs(o.depth))#*np.exp(1.0j*(-self.kz*o.pos[2]-self.X[int(self.pks[i,0]),int(self.pks[i,1])]*o.pos[0]-self.Y[int(self.pks[i,0]),int(self.pks[i,1])]*o.pos[1]))
+                pref = o.sigma*coeff[1]*np.exp((-self.mfp+1.0j*6.0)*abs(o.depth))#*np.exp(1.0j*(-self.kz*o.pos[2]-self.X[int(self.pks[i,0]),int(self.pks[i,1])]*o.pos[0]-self.Y[int(self.pks[i,0]),int(self.pks[i,1])]*o.pos[1]))
                 for lp in L:
 
                     tmp_B = B['{:d}-{:d}-{:d}-{:d}'.format(o.atom,o.n,o.l,lp)](cube[1])

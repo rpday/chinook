@@ -30,15 +30,70 @@ SOFTWARE.
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import ubc_tbarpes.H_library as Hlib
-import ubc_tbarpes.TB_lib as TBlib
+#import ubc_tbarpes.H_library as Hlib
+#import ubc_tbarpes.TB_lib as TBlib
 #from matplotlib import rc 
+import ubc_tbarpes.orbital as orb
 import ubc_tbarpes.klib as K_lib
 
 '''
 Library for different operators of possible interest in calculating, diagnostics, etc for a material of interest
 
 '''
+
+
+def Yproj(basis):
+    '''
+    Define the unitary transformation rotating the basis of different inequivalent atoms in the
+    basis to the basis of spherical harmonics for sake of defining L.S operator in basis of user
+    args: basis--list of orbital objects
+    
+    returns: dictionary of matrices for the different atoms and l-shells--keys are tuples of (atom,l)
+    
+    Note this works only on p and d type orbitals, s is irrelevant, not currently supporting f orbitals
+    
+    '''
+    normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
+    a = basis[0].atom
+    l = basis[0].l
+    M = {}
+    M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
+    for b in basis:
+        if b.atom==a and b.l==l:
+            label = b.label[2:]
+            for p in b.proj:
+                M_tmp[l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
+                
+        else:
+                #If we are using a reduced basis, fill in orthonormalized projections for other states in the shell
+                #which have been ignored in our basis choice--these will still be relevant to the definition of the LS operator
+            M_tmp = fillin(M_tmp,l)            
+            M[(a,l)] = M_tmp
+                ##Initialize the next M matrix               
+            a = b.atom
+            l = b.l
+            M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
+    
+    M_tmp = fillin(M_tmp,l)
+    M[(a,l)] = M_tmp
+    
+    return M
+
+def fillin(M,l):
+    normal_order_rev = {0:{0:''},1:{0:'x',1:'y',2:'z'},2:{0:'xz',1:'yz',2:'xy',3:'ZR',4:'XY'},3:{0:'z3',1:'xz2',2:'yz2',3:'xzy',4:'zXY',5:'xXY',6:'yXY'}}
+
+    for m in range(2*l+1):
+        if np.linalg.norm(M[:,m])==0: #if column is empty (i.e. user-defined projection does not exist)
+            proj = np.zeros(2*l+1,dtype=complex) 
+            for pi in orb.projdict[str(l)+normal_order_rev[l][m]]: 
+                proj[l-int(pi[-1])] = pi[0]+1.0j*pi[1] #fill the column with generic projection for this orbital (this will be a dummy)
+            for mp in range(2*l+1): #Orthogonalize against the user-defined projections
+                if np.linalg.norm(M[:,mp])!=0:
+                    proj = GrahamSchmidt(proj,M[:,mp])
+            M[:,m] = proj            
+    return M
+
+
 
 def LSmat(TB,axis=None):
     '''
@@ -60,8 +115,8 @@ def LSmat(TB,axis=None):
     return:
         HSO (len(basis)xlen(basis)) numpy array of complex float
     '''
-    Md = Hlib.Yproj(TB.basis)
-    normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4}}
+    Md = Yproj(TB.basis)
+    normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
     factors = {(2,-1):0.5,(0,1):0.5,(1,0):1.0}
     L,al = {},[]
     HSO = np.zeros((len(TB.basis),len(TB.basis)),dtype=complex)
@@ -126,7 +181,7 @@ def Lz_mat(TB):
     return:
         HL (len(basis)xlen(basis)) numpy array of complex float
     '''
-    Md = Hlib.Yproj(TB.basis)
+    Md = Yproj(TB.basis)
     normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4}}
     L,al = {},[]
     HL = np.zeros((len(TB.basis),len(TB.basis)),dtype=complex)
@@ -256,9 +311,7 @@ def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(0,0),degen=False):
 
     fig = plt.figure()
     ax=fig.add_subplot(111)
-#    plt.axhline(y=0,color='grey',lw=1,ls='--')
-#    rc('font',**{'size':20})
-#    rc('text',usetex = True)
+
     for b in TB.Kobj.kcut_brk:
         plt.axvline(x = b,color = 'grey',ls='--',lw=1.0)
         
@@ -386,10 +439,39 @@ def Sz_mat(TB):
     M*=els
     return M
 
+
+def S_vec(LB,vec):
+    '''
+    Spin operator along an arbitrary direction can be written as cos(th/2)
+    '''
+    numstates = int(LB/2)
+    Si = 0.5*np.identity(numstates,dtype=complex)
+    
+    Smats = np.zeros((3,LB,LB),dtype=complex)
+    Smats[2,:numstates,:numstates]+=-Si
+    Smats[2,numstates:,numstates:]+=Si
+    Smats[0,:numstates,numstates:] +=Si
+    Smats[0,numstates:,:numstates]+=Si
+    Smats[1,:numstates,numstates:]+=1.0j*Si
+    Smats[1,numstates:,:numstates]+=-1.0j*Si
+    
+    return vec[0]*Smats[0]+vec[1]*Smats[1]+vec[2]*Smats[2]
     
 
 
 
+    
+
+
+
+def GrahamSchmidt(a,b):
+    '''
+    Simple orthogonalization of two vectors, returns orthonormalized vector
+    args: a,b -- np.array of same length
+    returns: tmp -- numpy array of same size, orthonormalized to the b vector
+    '''
+    tmp = a - np.dot(a,b)/np.dot(b,b)*b
+    return tmp/np.linalg.norm(tmp)
 
 def is_numeric(a):
     '''
