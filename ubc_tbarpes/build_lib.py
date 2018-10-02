@@ -30,6 +30,7 @@ SOFTWARE.
 
 import numpy as np
 import ubc_tbarpes.orbital as olib
+import ubc_tbarpes.rotation_lib as rotlib
 import ubc_tbarpes.TB_lib as TBlib
 import ubc_tbarpes.H_library as Hlib
 import ubc_tbarpes.slab as slib
@@ -86,8 +87,7 @@ def gen_TB(Bdict,H_args,Kobj,slab_dict=None):
         print('running bulk_to_slab now')
         TB,slab_H,Rmat = slib.bulk_to_slab(slab_dict) 
         if Hspin:
-            uv,gamma = olib.rot_vector(Rmat.T)
-            TB.basis = olib.spin_double(list(TB.basis),Bdict['spin']['lam'],Rvec=(uv,-gamma)) 
+            TB.basis = olib.spin_double(list(TB.basis),Bdict['spin']['lam']) 
 
         H_args['type']='list'
         H_args['list'] = slab_H

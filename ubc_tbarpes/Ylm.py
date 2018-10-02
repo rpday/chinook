@@ -31,6 +31,17 @@ import numpy as np
 import scipy.special as sc
 from math import factorial
 
+
+projdict={"0":np.array([[1.0,0.0,0.0,0.0]]),
+               "1x":np.array([[-np.sqrt(0.5),0.0,1,1],[np.sqrt(0.5),0.0,1,-1]]),"1y":np.array([[0.0,np.sqrt(0.5),1,1],[0,np.sqrt(0.5),1,-1]]),"1z":np.array([[1,0,1,0]]),
+                "2xy":np.array([[0.0,-np.sqrt(0.5),2,2],[0.0,np.sqrt(0.5),2,-2]]),"2yz":np.array([[0.0,np.sqrt(0.5),2,1],[0.0,np.sqrt(0.5),2,-1]]),
+                "2xz":np.array([[-np.sqrt(0.5),0,2,1],[np.sqrt(0.5),0,2,-1]]),"2ZR":np.array([[1.0,0.0,2,0]]),"2XY":np.array([[np.sqrt(0.5),0,2,2],[np.sqrt(0.5),0,2,-2]]),
+                "3z3":np.array([[1.0,0.0,3,0]]),"3xz2":np.array([[np.sqrt(0.5),0,3,-1],[-np.sqrt(0.5),0,3,1]]),
+                "3yz2":np.array([[0,np.sqrt(0.5),3,-1],[0,np.sqrt(0.5),3,1]]),"3xzy":np.array([[0,-np.sqrt(0.5),3,2],[0,np.sqrt(0.5),3,-2]]),
+                "3zXY":np.array([[np.sqrt(0.5),0,3,2],[np.sqrt(0.5),0,3,-2]]),"3xXY":np.array([[-np.sqrt(0.5),0,3,3],[np.sqrt(0.5),0,3,-3]]),
+                "3yXY":np.array([[0,np.sqrt(0.5),3,3],[0,np.sqrt(0.5),3,-3]])}
+          
+
 def Y(l,m,theta,phi):
     if l == 0:
         if m==0:
@@ -140,6 +151,75 @@ def gaunt(l,m,dl,dm):
         print('l = {:0.4f}, m = {:0.4f}, dl = {:0.4f}, dm = {:0.4f}'.format(l,m,dl,dm))
         return 0.0
     
+    
+def Yproj(basis):
+    '''
+    Define the unitary transformation rotating the basis of different inequivalent atoms in the
+    basis to the basis of spherical harmonics for sake of defining L.S operator in basis of user
+    args: basis--list of orbital objects
+    
+    returns: dictionary of matrices for the different atoms and l-shells--keys are tuples of (atom,l)
+    
+    Note this works only on p and d type orbitals, s is irrelevant, not currently supporting f orbitals
+    
+    29/09/2018 added reference to the spin character 'sp' to handle rotated systems effectively
+    
+    '''
+    normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
+    a = basis[0].atom
+    l = basis[0].l
+    sp = basis[0].spin
+    M = {}
+    M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
+    for b in basis:
+        label = b.label[2:]
+
+        if b.atom==a and b.l==l and b.spin==sp:
+            for p in b.proj:
+                M_tmp[l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
+                
+        else:
+                #If we are using a reduced basis, fill in orthonormalized projections for other states in the shell
+                #which have been ignored in our basis choice--these will still be relevant to the definition of the LS operator
+            M_tmp = fillin(M_tmp,l)            
+            M[(a,l,sp)] = M_tmp
+                ##Initialize the next M matrix               
+            a = b.atom
+            l = b.l
+            sp = b.spin
+            M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
+            for p in b.proj:
+                M_tmp[l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
+    
+    M_tmp = fillin(M_tmp,l)
+    M[(a,l,sp)] = M_tmp
+    
+    return M
+
+def fillin(M,l):
+    normal_order_rev = {0:{0:''},1:{0:'x',1:'y',2:'z'},2:{0:'xz',1:'yz',2:'xy',3:'ZR',4:'XY'},3:{0:'z3',1:'xz2',2:'yz2',3:'xzy',4:'zXY',5:'xXY',6:'yXY'}}
+
+    for m in range(2*l+1):
+        if np.linalg.norm(M[:,m])==0: #if column is empty (i.e. user-defined projection does not exist)
+            proj = np.zeros(2*l+1,dtype=complex) 
+            for pi in projdict[str(l)+normal_order_rev[l][m]]: 
+                proj[l-int(pi[-1])] = pi[0]+1.0j*pi[1] #fill the column with generic projection for this orbital (this will be a dummy)
+            for mp in range(2*l+1): #Orthogonalize against the user-defined projections
+                if np.linalg.norm(M[:,mp])!=0:
+                    proj = GrahamSchmidt(proj,M[:,mp])
+            M[:,m] = proj            
+    return M
+    
+
+def GrahamSchmidt(a,b):
+    '''
+    Simple orthogonalization of two vectors, returns orthonormalized vector
+    args: a,b -- np.array of same length
+    returns: tmp -- numpy array of same size, orthonormalized to the b vector
+    '''
+    tmp = a - np.dot(a,b)/np.dot(b,b)*b
+    return tmp/np.linalg.norm(tmp)
+
     
 
     

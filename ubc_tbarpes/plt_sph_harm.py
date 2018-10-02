@@ -74,23 +74,50 @@ def gen_psi(n,psi,psi_dict,str_nm=None):
     return sz
 
 
-def plot_orbital(n,proj):
+def plot_orbital(n,proj):#basis,vec):
     th = np.linspace(0,np.pi,2*n)
     ph = np.linspace(0,2*np.pi,2*n)
     th,ph = np.meshgrid(th,ph)
     th,ph = th.flatten(),ph.flatten()
+#    r = np.zeros((len(basis),len(th)))
+#    x = np.zeros((len(basis),len(th)))
+#    y = np.zeros((len(basis),len(th)))
+#    z = np.zeros((len(basis),len(th)))
+#    tri = mtri.Triangulation(th,ph)
+#    cols = []
+#    for ov in list(enumerate(vec)):
+#        r[ov[0]] = np.real(ov[1]*np.sum(np.array([Ylm.Y(pi[2],pi[3],th,ph)*(pi[0]+1.0j*pi[1]) for pi in basis[ov[0]].proj]),axis=0))
+#        x[ov[0]] = abs(r[ov[0]])**2*np.cos(ph)*np.sin(th)+basis[ov[0]].pos[0]
+#        y[ov[0]] = abs(r[ov[0]])**2*np.sin(ph)*np.sin(th)+basis[ov[0]].pos[1]
+#        z[ov[0]] = abs(r[ov[0]])**2*np.cos(th)+basis[ov[0]].pos[2]
+#        cols.append(r[ov[0]][tri.triangles][:,1])
+#    
+#    fig = plt.figure()
+#    ax = fig.add_subplot(111,projection='3d')
+#    for pi in range(len(basis)):
+#        pplt = ax.plot_trisurf(x[pi],y[pi],z[pi],triangles=tri.triangles,cmap=cm.RdBu,shade=True,lw=0)
+#        pplt.set_array(cols[pi])
+#        pplt.set_clim(-0.4,0.4)
+#        
+#    
+    
+        
     r = np.real(np.sum(np.array([Ylm.Y(pi[2],pi[3],th,ph)*(pi[0]+1.0j*pi[1]) for pi in proj]),axis=0))
     x = abs(r)**2*np.cos(ph)*np.sin(th)
     y = abs(r)**2*np.sin(ph)*np.sin(th)
     z = abs(r)**2*np.cos(th)
     tri = mtri.Triangulation(th,ph)
     cols = r[tri.triangles][:,1]
-    fig = plt.figure(figsize=plt.figaspect(1)*2)
-    ax = fig.add_subplot(111,projection='3d')
-    p = ax.plot_trisurf(x,y,z,triangles=tri.triangles,cmap=cm.RdBu,shade=True,antialiased=True,edgecolors='k')
-    p.set_array(cols)
-    p.set_clim(-0.7,0.7)
+#    fig = plt.figure(figsize=plt.figaspect(1)*2)
+#    ax = fig.add_subplot(111,projection='3d')
+#    p = ax.plot_trisurf(x,y,z,triangles=tri.triangles,cmap=cm.RdBu,shade=True,antialiased=True,edgecolors='k')
+#    ax.set_xlabel('X')
+#    ax.set_ylabel('Y')
+#    ax.set_zlabel('Z')
+#    p.set_array(cols)
+#    p.set_clim(-0.7,0.7)
     
+    return x,y,z,tri.triangles,cols
     
     
 

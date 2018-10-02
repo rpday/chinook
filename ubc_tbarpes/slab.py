@@ -312,8 +312,7 @@ def gen_surface(avec,miller,basis):
     vn_b,R = basal_plane(v_vecs(miller,avec))
     pipe,box = par(vn_b)
     avec_R = np.dot(avec,R)
-    uv,gamma = rot_vector(R.T)
-    
+
     b_points = populate_box(box,basis,avec_R,R)
     in_pped,inds = populate_par(b_points,vn_b)
     new_basis = np.empty(len(in_pped),dtype=olib.orbital)
@@ -325,26 +324,13 @@ def gen_surface(avec,miller,basis):
         tmp.index = ii
         tmp.pos = ordering[ii][:3]
 
-        tmp.proj,tmp.Dmat = tmp.rot_projection(-gamma,uv)
+#        tmp.proj,tmp.Dmat = tmp.rot_projection(-gamma,uv)
+        tmp.proj,tmp.Dmat = tmp.rot_projection(R)
+
         new_basis[ii] = tmp
     
     
     return new_basis,vn_b,R
-
-def rot_vector(Rmat):
-    L,u=np.linalg.eig(Rmat)
-    uv = np.real(u[:,np.where(abs(L-1)<1e-10)[0][0]])
-    th = np.arccos((np.trace(Rmat)-1)/2)
-    R_tmp = olib.Rodrigues_Rmat(uv,th)
-    if np.linalg.norm(R_tmp-Rmat)<1e-10:
-        return uv,th
-    else:
-        R_tmp = olib.Rodrigues_Rmat(uv,-th)
-        if np.linalg.norm(R_tmp-Rmat)<1e-10:
-            return uv,-th
-        else:
-            print('ERROR: COULD NOT DEFINE ROTATION MATRIX FOR SUGGESTED BASIS TRANSFORMATION!')
-            return None
     
 def sorted_basis(pts,inds):
     labels = np.array([[*pts[ii],inds[ii]] for ii in range(len(inds))])

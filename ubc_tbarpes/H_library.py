@@ -32,6 +32,7 @@ SOFTWARE.
 import numpy as np
 import ubc_tbarpes.orbital as orb
 import ubc_tbarpes.SK as SK
+import ubc_tbarpes.Ylm as Ylm
 
 hb = 6.626*10**-34/(2*np.pi)
 c  = 3.0*10**8
@@ -229,7 +230,7 @@ def SO(basis):
     return:
         HSO list of matrix elements in standard format [i,j,0,0,0,HSO[i,j]]
     '''
-    Md = Yproj(basis)
+    Md = Ylm.Yproj(basis)
     normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
     factors = {(2,-1):0.5,(0,1):0.5,(1,0):1.0}
     L,al = {},[]
@@ -243,11 +244,6 @@ def SO(basis):
             Mupp = np.linalg.inv(Mup)
             L[(o.atom,o.l)] = [np.dot(Mupp,np.dot(Lm(o.l),Mdn)),np.dot(Mdnp,np.dot(Lz(o.l),Mdn)),np.dot(Mdnp,np.dot(Lp(o.l),Mup))]
 
-#        if (o.atom,o.l) not in al:
-#            al.append((o.atom,o.l))
-#            M = Md[(o.atom,o.l)]
-#            Mp = np.linalg.inv(M)
-#            L[(o.atom,o.l)] = [np.dot(Mp,np.dot(Lm(o.l),M)),np.dot(Mp,np.dot(Lz(o.l),M)),np.dot(Mp,np.dot(Lp(o.l),M))]
 
     for o1 in basis:
         for o2 in basis:
@@ -307,67 +303,6 @@ def Lz(l):
 
 
 
-
-def Yproj(basis):
-    '''
-    Define the unitary transformation rotating the basis of different inequivalent atoms in the
-    basis to the basis of spherical harmonics for sake of defining L.S operator in basis of user
-    args: basis--list of orbital objects
-    
-    returns: dictionary of matrices for the different atoms and l-shells--keys are tuples of (atom,l)
-    
-    Note this works only on p and d type orbitals, s is irrelevant, not currently supporting f orbitals
-    
-    29/09/2018 added reference to the spin character 'sp' to handle rotated systems effectively
-    
-    '''
-    normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
-    a = basis[0].atom
-    l = basis[0].l
-    sp = basis[0].spin
-    M = {}
-    M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
-    for b in basis:
-        label = b.label[2:]
-
-        if b.atom==a and b.l==l and b.spin==sp:
-            for p in b.proj:
-                M_tmp[l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
-                
-        else:
-                #If we are using a reduced basis, fill in orthonormalized projections for other states in the shell
-                #which have been ignored in our basis choice--these will still be relevant to the definition of the LS operator
-            M_tmp = fillin(M_tmp,l)            
-            M[(a,l,sp)] = M_tmp
-                ##Initialize the next M matrix               
-            a = b.atom
-            l = b.l
-            sp = b.spin
-            M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
-            for p in b.proj:
-                M_tmp[l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
-    
-    M_tmp = fillin(M_tmp,l)
-    M[(a,l,sp)] = M_tmp
-    
-    return M
-
-def fillin(M,l):
-    normal_order_rev = {0:{0:''},1:{0:'x',1:'y',2:'z'},2:{0:'xz',1:'yz',2:'xy',3:'ZR',4:'XY'},3:{0:'z3',1:'xz2',2:'yz2',3:'xzy',4:'zXY',5:'xXY',6:'yXY'}}
-
-    for m in range(2*l+1):
-        if np.linalg.norm(M[:,m])==0: #if column is empty (i.e. user-defined projection does not exist)
-            proj = np.zeros(2*l+1,dtype=complex) 
-            for pi in orb.projdict[str(l)+normal_order_rev[l][m]]: 
-                proj[l-int(pi[-1])] = pi[0]+1.0j*pi[1] #fill the column with generic projection for this orbital (this will be a dummy)
-            for mp in range(2*l+1): #Orthogonalize against the user-defined projections
-                if np.linalg.norm(M[:,mp])!=0:
-                    proj = GrahamSchmidt(proj,M[:,mp])
-            M[:,m] = proj            
-    return M
-
-
-
 def AFM_order(basis,dS,p_up,p_dn):
   '''
   Add antiferromagnetism to the tight-binding model, by adding a different on-site energy to 
@@ -404,15 +339,6 @@ def FM_order(basis,dS):
      '''
     return [[bi.index,bi.index,0,0,0,-np.sign(bi.spin)*dS] for bi in basis]
 
-
-def GrahamSchmidt(a,b):
-    '''
-    Simple orthogonalization of two vectors, returns orthonormalized vector
-    args: a,b -- np.array of same length
-    returns: tmp -- numpy array of same size, orthonormalized to the b vector
-    '''
-    tmp = a - np.dot(a,b)/np.dot(b,b)*b
-    return tmp/np.linalg.norm(tmp)
 
 
 def region(num):

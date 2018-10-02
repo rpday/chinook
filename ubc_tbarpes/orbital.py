@@ -50,6 +50,7 @@ import numpy as np
 import ubc_tbarpes.electron_configs as econ
 import ubc_tbarpes.atomic_mass as am
 from ubc_tbarpes.wigner import WignerD
+import ubc_tbarpes.rotation_lib as rotlib
 from operator import itemgetter
 
 
@@ -114,7 +115,7 @@ class orbital:
 #        return orbital(self.atom,self.index,self.label,self.pos,self.Z,self.orient,self.spin,self.lam,self.sigma,self.slab_index)
 
         
-    def rot_projection(self,gamma,vector=np.array([0,0,1])):
+    def rot_projection(self,rotation):#gamma,vector=np.array([0,0,1])):
         
         '''
         Go through the projection array, and apply the correct transformation to
@@ -122,15 +123,17 @@ class orbital:
         Define Euler angles in the z-y-z convention
         THIS WILL BE A COUNTERCLOCKWISE ROTATION ABOUT vector BY gamma
         '''
+            
         #vector = np.array([0,0,1])# for now only accept z-rotations vector/np.linalg.norm(vector)
         Ylm_vec = np.zeros((2*self.l+1),dtype=complex)
         for a in range(len(self.proj)):
             Ylm_vec[int(self.proj[a,-1]+self.l)] +=self.proj[a,0]+1.0j*self.proj[a,1]
         
-        A,B,y = Euler(vector,gamma)
-        Dmat = WignerD(self.l,y,B,A)
-        
+        A,B,y = rotlib.Euler(rotation)
+        Dmat = WignerD(self.l,A,B,y)
         Ynew = np.dot(Dmat,Ylm_vec)
+#        Dmat = WignerD(self.l,y,B,A)
+
 #        Dmat = Dmatrix(self.l,A,B,y)
 
 #        Ynew = np.dot(np.conj(Dmat),Ylm_vec)
@@ -165,63 +168,6 @@ def slab_basis_copy(basis,new_posns,inds):
         new_basis[int(inds[o[0]])] = tmp
     return new_basis
     
-    
-def Rodrigues_Rmat(n,t):
-    '''
-    Rodrigues theorem for rotations. 
-    args:
-        n --> np.array x 3 axis of rotation
-        t --> float radian angle of rotation counter clockwise for t>0
-    return:
-        R --> np.array (3x3) of float rotation matrix
-    '''
-    n = n/np.linalg.norm(n)
-    K = np.array([[0,-n[2],n[1]],[n[2],0,-n[0]],[-n[1],n[0],0]])
-    R = np.identity(3)+np.sin(t)*K+(1-np.cos(t))*np.dot(K,K)
-    return R   
-    
-def Euler(n,t):
-    '''
-    Extract the Euler angles for a ZYZ rotation around n by t
-    args: 
-        n --> np.array x3 float for axis
-        t --> float radian angle of rotation counter clockwise for t>0
-    Has special case for B = +/- Z*pi where conventional approach doesn't work due to division by zero
-    '''
-    R = Rodrigues_Rmat(n,t)
-
-    b = np.arccos(R[2,2])
-    sb = np.sin(b)
-    a,y=0.0,0.0
-    if abs(sb)>10.0**-6:
-        a = np.arctan2(R[2,1]/sb,-R[2,0]/sb)
-        y = np.arctan2(R[1,2]/sb,R[0,2]/sb)
-    else:
-        a=[np.arctan2(R[1,0],R[0,0]),np.arctan2(R[1,0],-R[0,0])]
-
-        if R[2,2]<0:
-            a = np.arctan2(R[1,0],R[0,0])
-
-        else:
-            a = np.arctan2(R[1,0],-R[0,0])
-
-    return a,b,y
-
-
-def rot_vector(Rmatrix):
-    L,u=np.linalg.eig(Rmatrix)
-    uv = np.real(u[:,np.where(abs(L-1)<1e-10)[0][0]])
-    th = np.arccos((np.trace(Rmatrix)-1)/2)
-    R_tmp = Rodrigues_Rmat(uv,th)
-    if np.linalg.norm(R_tmp-Rmatrix)<1e-10:
-        return uv,th
-    else:
-        R_tmp = Rodrigues_Rmat(uv,-th)
-        if np.linalg.norm(R_tmp-Rmatrix)<1e-10:
-            return uv,-th
-        else:
-            print('ERROR: COULD NOT DEFINE ROTATION MATRIX FOR SUGGESTED BASIS TRANSFORMATION!')
-            return None
 
 def sort_basis(base,slab):
     '''
@@ -233,14 +179,12 @@ def sort_basis(base,slab):
     inds = [[b[0],b[1].index] for b in list(enumerate(base))]
     
     ind_sort = sorted(inds,key=itemgetter(1))
-#    if slab:
-#        orb_base = [base[i[0]].copyslab() for i in ind_sort]
-#    else:
+
     orb_base = [base[i[0]].copy() for i in ind_sort]
     
     return orb_base
     
-def spin_double(basis,lamdict,Rvec=None):
+def spin_double(basis,lamdict):
     '''
     Double the size of a basis to introduce spin to the problem.
     Go through the basis and create an identical copy with opposite spin and 
@@ -253,24 +197,15 @@ def spin_double(basis,lamdict,Rvec=None):
     '''
     LB = len(basis)
     b_2 = []
-    if Rvec is not None:
-        if np.linalg.norm(np.cross(Rvec[0],np.array([0,0,1])))>1e-5:
-            print('WARNING! CAN NOT SUPPORT ROTATION OF SPIN ABOUT AXES OTHER THAN Z')
-            do_rot_spin=False
-        else:
-            do_rot_spin = True
-    else:
-        do_rot_spin = False
+
     for ind in range(LB):
         basis[ind].spin = -1
         basis[ind].lam = lamdict[basis[ind].atom]
         spin_up = basis[ind].copy()
         spin_up.spin = 1
         spin_up.index = basis[ind].index+LB
-        if do_rot_spin:
-            spin_up.proj = rot_spin(spin_up.proj.astype(float),-float(Rvec[1]),1.0)
-            basis[ind].proj = rot_spin((basis[ind].proj).astype(float),float(Rvec[1]),-1.0)
-        elif type(basis[ind].orient)==list:
+
+        if type(basis[ind].orient)==list:
             spin_up.proj = rot_spin(spin_up.proj.astype(float),float(basis[ind].orient[0]),1.0)
             basis[ind].proj = rot_spin((basis[ind].proj).astype(float),float(basis[ind].orient[0]),-1.0)
         b_2.append(spin_up)
@@ -301,16 +236,12 @@ def rot_spin(proj_array,angle,spin):
     Map the rotation of the spin direction onto the orbital projection. 
     This ONLY works for rotation about Z AXIS!
     '''
-#    print('proj before: ',np.around(proj_array,3))
 
-#    print('rotation angle: ',angle)
-#    print('spin: ',spin)
     for i in range(len(proj_array)):
         tmp_coeff = complex(proj_array[i,0]+1.0j*proj_array[i,1])
         tmp_coeff*=np.exp(-1.0j*angle/(2.0)*spin)  
         proj_array[i,:2] = np.array([np.real(tmp_coeff),np.imag(tmp_coeff)])
-#    print('proj_after: ',np.around(proj_array,3))
-#    print('\n')
+
     return proj_array
 
 

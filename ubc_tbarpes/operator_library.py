@@ -30,70 +30,13 @@ SOFTWARE.
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-#import ubc_tbarpes.H_library as Hlib
-#import ubc_tbarpes.TB_lib as TBlib
-#from matplotlib import rc 
-import ubc_tbarpes.orbital as orb
 import ubc_tbarpes.klib as K_lib
+import ubc_tbarpes.Ylm as Ylm
 
 '''
 Library for different operators of possible interest in calculating, diagnostics, etc for a material of interest
 
 '''
-
-
-def Yproj(basis):
-    '''
-    Define the unitary transformation rotating the basis of different inequivalent atoms in the
-    basis to the basis of spherical harmonics for sake of defining L.S operator in basis of user
-    args: basis--list of orbital objects
-    
-    returns: dictionary of matrices for the different atoms and l-shells--keys are tuples of (atom,l)
-    
-    Note this works only on p and d type orbitals, s is irrelevant, not currently supporting f orbitals
-    
-    '''
-    normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
-    a = basis[0].atom
-    l = basis[0].l
-    M = {}
-    M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
-    for b in basis:
-        if b.atom==a and b.l==l:
-            label = b.label[2:]
-            for p in b.proj:
-                M_tmp[l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
-                
-        else:
-                #If we are using a reduced basis, fill in orthonormalized projections for other states in the shell
-                #which have been ignored in our basis choice--these will still be relevant to the definition of the LS operator
-            M_tmp = fillin(M_tmp,l)            
-            M[(a,l)] = M_tmp
-                ##Initialize the next M matrix               
-            a = b.atom
-            l = b.l
-            M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
-    
-    M_tmp = fillin(M_tmp,l)
-    M[(a,l)] = M_tmp
-    
-    return M
-
-def fillin(M,l):
-    normal_order_rev = {0:{0:''},1:{0:'x',1:'y',2:'z'},2:{0:'xz',1:'yz',2:'xy',3:'ZR',4:'XY'},3:{0:'z3',1:'xz2',2:'yz2',3:'xzy',4:'zXY',5:'xXY',6:'yXY'}}
-
-    for m in range(2*l+1):
-        if np.linalg.norm(M[:,m])==0: #if column is empty (i.e. user-defined projection does not exist)
-            proj = np.zeros(2*l+1,dtype=complex) 
-            for pi in orb.projdict[str(l)+normal_order_rev[l][m]]: 
-                proj[l-int(pi[-1])] = pi[0]+1.0j*pi[1] #fill the column with generic projection for this orbital (this will be a dummy)
-            for mp in range(2*l+1): #Orthogonalize against the user-defined projections
-                if np.linalg.norm(M[:,mp])!=0:
-                    proj = GrahamSchmidt(proj,M[:,mp])
-            M[:,m] = proj            
-    return M
-
-
 
 def LSmat(TB,axis=None):
     '''
@@ -115,7 +58,7 @@ def LSmat(TB,axis=None):
     return:
         HSO (len(basis)xlen(basis)) numpy array of complex float
     '''
-    Md = Yproj(TB.basis)
+    Md = Ylm.Yproj(TB.basis)
     normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
     factors = {(2,-1):0.5,(0,1):0.5,(1,0):1.0}
     L,al = {},[]
@@ -123,9 +66,11 @@ def LSmat(TB,axis=None):
     for o in TB.basis:
         if (o.atom,o.l) not in al:
             al.append((o.atom,o.l))
-            M = Md[(o.atom,o.l)]
-            Mp = np.linalg.inv(M)
-            L[(o.atom,o.l)] = [np.dot(Mp,np.dot(Lm(o.l),M)),np.dot(Mp,np.dot(Lz(o.l),M)),np.dot(Mp,np.dot(Lp(o.l),M))]
+            Mdn = Md[(o.atom,o.l,-1)]
+            Mup = Md[(o.atom,o.l,1)]
+            Mdnp = np.linalg.inv(Mdn)
+            Mupp = np.linalg.inv(Mup)
+            L[(o.atom,o.l)] = [np.dot(Mupp,np.dot(Lm(o.l),Mdn)),np.dot(Mdnp,np.dot(Lz(o.l),Mdn)),np.dot(Mdnp,np.dot(Lp(o.l),Mup))]
     if axis is not None:
         try:
             ax = float(axis)
@@ -181,14 +126,14 @@ def Lz_mat(TB):
     return:
         HL (len(basis)xlen(basis)) numpy array of complex float
     '''
-    Md = Yproj(TB.basis)
+    Md = Ylm.Yproj(TB.basis)
     normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4}}
     L,al = {},[]
     HL = np.zeros((len(TB.basis),len(TB.basis)),dtype=complex)
     for o in TB.basis:
         if (o.atom,o.l) not in al:
             al.append((o.atom,o.l))
-            M = Md[(o.atom,o.l)]
+            M = Md[(o.atom,o.l,1)]
             Mp = np.linalg.inv(M)
             L[(o.atom,o.l)] = np.dot(Mp,np.dot(Lz(o.l),M))
 
@@ -361,8 +306,8 @@ def O_surf(O,TB,ktuple,Ef,tol,vlims=(-1,1)):
     
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    plt.scatter(pts[:,0],pts[:,1],c=pts[:,2],cmap=cm.RdBu,s=200,vmin=vlims[0],vmax=vlims[1])
-    plt.scatter(pts[:,0],pts[:,1],c='k',s=5)
+    ax.scatter(pts[:,0],pts[:,1],c=pts[:,2],cmap=cm.RdBu,s=200,vmin=vlims[0],vmax=vlims[1])
+    ax.scatter(pts[:,0],pts[:,1],c='k',s=5)
     
     return pts
 
@@ -408,37 +353,53 @@ def FS(TB,ktuple,Ef,tol):
     
     
 
-def LdotS(TB,axis=None,Kobj=None,vlims=(0,0),Elims=(0,0)):
+def LdotS(TB,axis=None,Kobj=None,vlims=(-1,1),Elims=(-10,10)):
     HSO = LSmat(TB,axis)
     O = O_path(HSO,TB,Kobj,vlims,Elims)
     return O
 
-def Sz(TB,Kobj=None,vlims=(0,0),Elims=(0,0)):
-    Omat = Sz_mat(TB)
+def Sz(TB,Kobj=None,vlims=(-1,1),Elims=(-10,10)):
+    Omat = S_vec(len(TB.basis),np.array([0,0,1]))
     O = O_path(Omat,TB,Kobj,vlims,Elims)
     return O
 
-def Lz_path(TB,Kobj=None,vlims=(0,0),Elims=(0,0)):
+def Lz_path(TB,Kobj=None,vlims=(-1,1),Elims=(-10,10)):
     Omat = Lz_mat(TB)
     O = O_path(Omat,TB,Kobj,vlims,Elims)
     return O
 
-def LzSz_path(TB,Kobj=None,vlims=(0,0),Elims=(0,0)):
-    Omat = np.dot(Lz_mat(TB),Sz_mat(TB))
+def LzSz_path(TB,Kobj=None,vlims=(-1,1),Elims=(-10,10)):
+    Omat = np.dot(Lz_mat(TB),S_vec(len(TB.basis),np.array([0,0,1])))
     O = O_path(Omat,TB,Kobj,vlims,Elims)
     return O
 
-def Jz_path(TB,Kobj=None,vlims=(0,0),Elims=(0,0)):
-    Omat = Lz_mat(TB)+Sz_mat(TB)
+def Jz_path(TB,Kobj=None,vlims=(-1,1),Elims=(-10,10)):
+    Omat = Lz_mat(TB)+S_vec(len(TB.basis),np.array([0,0,1]))
     O = O_path(Omat,TB,Kobj,vlims,Elims)
     return O
 
-def Sz_mat(TB):
-    M = np.identity(len(TB.basis))
-    els = np.array([-0.5 if j<len(TB.basis)/2 else 0.5 for j in range(len(TB.basis))])
-    M*=els
-    return M
 
+
+
+
+def surface_proj(basis,length):
+    '''
+    Operator for computing surface-projection of eigenstates. User passes the orbital basis
+    and an extinction length (1/e) length for the 'projection onto surface'. The operator 
+    is diagonal with exponenential suppression based on depth.
+    
+    For use with SLAB geometry only
+    
+    args: 
+        basis -- list of orbital objects
+        length -- extinction length defining the projection onto surface
+    return:
+        numpy array size (len (basis) x len(basis)) of float
+    '''
+    Omat = np.identity(len(basis))
+    attenuation = np.exp(np.array([-abs(o.depth)/length for o in basis]))
+    return Omat*attenuation
+    
 
 def S_vec(LB,vec):
     '''
@@ -458,20 +419,6 @@ def S_vec(LB,vec):
     return vec[0]*Smats[0]+vec[1]*Smats[1]+vec[2]*Smats[2]
     
 
-
-
-    
-
-
-
-def GrahamSchmidt(a,b):
-    '''
-    Simple orthogonalization of two vectors, returns orthonormalized vector
-    args: a,b -- np.array of same length
-    returns: tmp -- numpy array of same size, orthonormalized to the b vector
-    '''
-    tmp = a - np.dot(a,b)/np.dot(b,b)*b
-    return tmp/np.linalg.norm(tmp)
 
 def is_numeric(a):
     '''
