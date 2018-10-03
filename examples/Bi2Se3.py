@@ -18,6 +18,7 @@ import ubc_tbarpes.operator_library as ops
 if __name__=="__main__":
     a,c =  4.1141,28.64704 
     avec = np.array([[0,a/np.sqrt(3),c/3.],[-a/2.,-a/np.sqrt(12),c/3.],[a/2.,-a/np.sqrt(12),c/3.]])
+    
 
     G,Z,F,L = np.array([0,0,0]),np.array([0.5,0.5,0.5]),np.array([0.5,0.5,0]),np.array([0,0,0.5])
 
@@ -43,27 +44,19 @@ if __name__=="__main__":
     REN,OFF,TOL=1,0.4,0.001
 
 
-    spin = {'bool':False,'soc':True,'lam':{0:2.066*2./3,1:0.3197*2./3,2:0.3632*2./3}}
-    
-#    slab_dict = {'bool':False,
-#                'hkl':np.array([0,0,1]),
-#                'cells':4,
-#                'buff':1,
-#                'term':2,
-#                'avec':avec}
+    spin = {'bool':True,'soc':True,'lam':{0:2.066*2./3,1:0.3197*2./3,2:0.3632*2./3}}
 
     Bd = {'atoms':[1,0,2,0,1],
 			'Z':{0:83,1:34,2:34},
 			'orbs':[["40","41x","41y","41z"],["60","61x","61y","61z"],["40","41x","41y","41z"],["60","61x","61y","61z"],["40","41x","41y","41z"]],
-			'pos':[-nu*(avec[0]+avec[1]+avec[2]),-mu*(avec[0]+avec[1]+avec[2]),np.array([0.0,0.0,0.0]),mu*(avec[0]+avec[1]+avec[2]),nu*(avec[0]+avec[1]+avec[2])] #orbital positions relative to origin
-,
+			'pos':[-nu*(avec[0]+avec[1]+avec[2]),-mu*(avec[0]+avec[1]+avec[2]),np.array([0.0,0.0,0.0]),mu*(avec[0]+avec[1]+avec[2]),nu*(avec[0]+avec[1]+avec[2])], #orbital positions relative to origin
             'spin':spin}
 
     Kd = {'type':'A',
           'avec':avec,
 			'pts':[K,G,M],
 			'grain':30,
-			'labels':['K','$\Gamma$','Z','F','$\Gamma$','L']}
+			'labels':['K','$\Gamma$','M']}
 
 
     Hd = {'type':'SK',
@@ -82,42 +75,100 @@ if __name__=="__main__":
       'fine':(-2,2),
       'termination':(1,1)}
  
+
+    ARPES_dict={'cube':{'X':[-0.08,0.08,60],'Y':[-0.08,0.08,60],'kz':0.0,'E':[-0.55,0.05,100]},
+                'SE':[0.005,0.0],
+                'directory':'C:\\Users\\rday\\Documents\\TB_ARPES\\2018\\TB_ARPES_2018\\FeSe',
+                'hv': 21.2,
+                'pol':np.array([0,1,0]),
+                'mfp':10.0,
+                'slab':True,
+                'resolution':{'E':0.01,'k':0.01},
+                'T':[True,10.0],
+                'W':4.0,
+                'angle':0.0,
+                'spin':None,
+                'slice':[False,0.0]}
+
+
+
     	#####
     Bd = build_lib.gen_basis(Bd)
-#    slab = Bd['slab']['obj']
-#    print('length of slab basis: ',len(slab.slab_base))
-#    slab.plot_lattice(np.array([b.pos for b in slab.slab_base]))
+
     Kobj = build_lib.gen_K(Kd)
-    TB = build_lib.gen_TB(Bd,Hd,Kobj)
-#
-    TB.solve_H()
+    TB = build_lib.gen_TB(Bd,Hd,Kobj,slab_dict)
+    
+    
+     TB.solve_H()
     TB.plotting(-1.5,1.5)
-##    O = ops.LdotS(TB,axis=None,vlims=(-0.5,0.5),Elims=(-0.5,0.5))
-##    
-##    
-#    ARPES_dict={'cube':{'X':[-0.4,0.4,80],'Y':[-0.4,0.4,80],'kz':0.0,'E':[-0.3,0.05,35]},
-#                'SE':[0.015,0.01],
-#                'directory':'C:\\Users\\rday\\Documents\\TB_ARPES\\2018\\TB_ARPES_2018\\FeSe',
-#                'hv': 21.2,
-#                'pol':np.array([0,1,0]),
-#                'mfp':7.0,
-#                'resolution':{'E':0.05,'k':0.05},
-#                'T':[True,10.0],
-#                'W':4.0,
-#                'angle':0.0,
-#                'spin':None}
-#
-#
 #    
+ ###    
+##    sigma = {(0,1):2.7,(1,1):8.0,(2,1):8.0,(0,0):1.0,(1,0):1.0,(2,0):1.0}
+##    for bi in TB.basis:
+##        bi.sigma = sigma[(bi.atom,bi.l)]
+#    
+##    
+
+
+        
+    ARPES_expmt = ARPES.experiment(TB,ARPES_dict)
+    ARPES_expmt.plot_gui(ARPES_dict)
+###
+###
 ##
-#    exp = ARPES.experiment(TB,ARPES_dict)
-#    exp.datacube(ARPES_dict)
-#    exp.plot_slice(ARPES_dict)
-#    X,Y,E,I = exp.spectral(ARPES_dict)
-
-
-    
-
-    
-    
-	#####
+##    
+##
+##    
+##    
+#    
+#    
+##TB_og = TB.copy()
+##TBn = TB_og.copy()
+##tmpH = TBn.mat_els.copy()
+##vfK=np.zeros(10)
+##vfM = np.zeros(10)
+##DP=np.zeros(10)
+##zvals = np.zeros(10)
+##for i in range(10):
+##    print(TBn.avec)
+##    zf = 1.+0.005*i
+##    zvals[i]=zf
+##    TBn.avec[:,2]=zf*TB_og.avec[:,2]
+##
+##    for p in TBn.basis:
+##        p.pos[2]*=zf
+##
+##
+##    for ti in tmpH:
+##        for hi in ti.H:
+##            nz = hi[2]*zf
+##            nR = np.linalg.norm(np.array([hi[0],hi[1],nz]))
+##            oR = np.linalg.norm(np.array(hi[0:3]))
+##            nH = hi[3]*np.exp(-abs(nR-oR)/5)
+##            hi[2]=nz
+##            hi[3]=nH
+##
+##
+##    TBn.mat_els = tmpH
+##    
+##    _=TBn.solve_H()
+##    DP[i]=TBn.Eband[30,222]
+##    dispM = TBn.Eband[30:40,222]
+##    dispK = TBn.Eband[20:30,222]
+##    kvals = klin[30:40]
+#    p0 = (5,DP[i])
+#    c,_ = curve_fit(lin,kvals,dispM,p0=p0)
+#    vfM[i]=c[0]
+#    p0 = (-5,DP[i])
+#    c,_=curve_fit(lin,kvals,dispK,p0=p0)
+#    vfK[i]=c[0]
+#    TBn.plotting(-0.75,0.75)
+#    plt.savefig('Bi2Se3_z_{:0.04f}.jpg'.format(TBn.avec[2,2]))
+#    TBn = TB_og.copy()
+#    tmpH = TBn.mat_els.copy()
+#fig = plt.figure()
+#plt.plot(zvals,DP)
+#plt.figure()
+#plt.plot(zvals,vfM)
+#plt.plot(zvals,abs(vfK))
+#	#####

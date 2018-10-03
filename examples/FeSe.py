@@ -12,9 +12,10 @@ sys.path.append('C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-ma
 import ubc_tbarpes.build_lib as build_lib
 import ubc_tbarpes.ARPES_lib as ARPES
 import ubc_tbarpes.optics as optics
-import ubc_tbarpes.operator_library as oper
+import ubc_tbarpes.operator_library as ops
 import ubc_tbarpes.dos_Tk as dos_TK
 import ubc_tbarpes.dos as dos
+
 
 #if __name__=="__main__":
     
@@ -24,6 +25,7 @@ a,c =  3.7734,5.5258
 avec = np.array([[a/np.sqrt(2),a/np.sqrt(2),0.0],[-a/np.sqrt(2),a/np.sqrt(2),0.0],[0.0,0.0,c]])
 Fe1,Fe2 = np.array([-a/np.sqrt(8),0,0]),np.array([a/np.sqrt(8),0,0])
 G,X,M,Z,R,A = np.array([0,0,0]),np.array([0,-0.5,0]),np.array([0.5,0.5,0]),np.array([0,0,0.5]),np.array([0.5,0,0.5]),np.array([0.5,-0.5,0.5])
+Mx = np.array([0.5,-.5,0.0])
 
 ############################ HAMILTONIAN PARAMETERS ############################
 
@@ -48,9 +50,9 @@ basis_dict = {'atoms':[0,0],
 
 K_dict = {'type':'F',
           'avec':avec,
-			'pts':[-M,G,M],
+			'pts':[Mx,G,M],
 			'grain':200,
-			'labels':['M','$\Gamma$','M','X','$\Gamma$']}
+			'labels':['Mx','$\Gamma$','My','X','$\Gamma$']}
 
 
 ham_dict = {'type':'txt',
@@ -65,7 +67,7 @@ ham_dict = {'type':'txt',
 slab_dict = {'avec':avec,
       'miller':np.array([0,0,1]),
       'fine':(0,0),
-      'thick':50,
+      'thick':30,
       'vac':30,
       'termination':(0,0)}
 
@@ -82,25 +84,26 @@ optics_dict = {'hv':0.36,
 ######################### ARPES EXPERIMENT PARAMETERS #########################
 
 
-ARPES_dict={'cube':{'X':[-0.25,0.25,40],'Y':[-0.25,0.25,40],'kz':0.0,'E':[-0.1,0.05,90]},
+ARPES_dict={'cube':{'X':[-0.25,0.25,40],'Y':[-0.25,0.25,40],'kz':0.0,'E':[-0.2,0.05,150]},
         'SE':[0.002],
         'directory':'/Users/ryanday/Documents/UBC/TB_ARPES-082018/examples/FeSe',
         'hv': 37,
         'pol':np.array([0,1,0]),
         'mfp':7.0,
+        'slab':True,
         'resolution':{'E':0.005,'k':0.01},
         'T':[True,10.0],
         'W':4.0,
         'angle':0,
         'spin':None,
-        'slice':[True,-0.005]}
+        'slice':[False,-0.005]}
  
 ################################# BUILD MODEL #################################
 
 def build_TB():
     BD = build_lib.gen_basis(basis_dict)
     Kobj = build_lib.gen_K(K_dict)
-    TB = build_lib.gen_TB(BD,ham_dict,Kobj,slab_dict)
+    TB = build_lib.gen_TB(BD,ham_dict,Kobj)
     return TB
 
 
@@ -108,6 +111,14 @@ if __name__ == "__main__":
     TB = build_TB()
     TB.solve_H()
     TB.plotting()
+#    Svx = ops.S_vec(len(TB.basis),np.array([1,0,0]))
+#    Svy = ops.S_vec(len(TB.basis),np.array([0,1,0]))
+#    Dsurf = np.identity(len(TB.basis))*np.array([np.exp(bi.depth/10) for bi in TB.basis])
+#    Sxs = np.dot(Svx,Dsurf)
+#    Sys = np.dot(Svy,Dsurf)
+#    SX = ops.O_path(Sxs,TB,Kobj=TB.Kobj,vlims=(-0.25,0.25),Elims=(-1.5,1.5),degen=True)
+#    LS = ops.LdotS(TB,None)
+#    SY = ops.O_path(Sys,TB,Kobj=TB.Kobj,vlims=(-0.25,0.25),Elims=(-1.5,1.5),degen=True)
 #    DO = dos_TK.dos_interface(TB,0.005)
 ##    DO = dos.dos_env(TB)
 #    DO.do_dos((20,20,20))
@@ -125,5 +136,5 @@ if __name__ == "__main__":
 #    optics_exp = optics.optical_experiment(TB,optics_dict)
 #    optics_exp.integrate_jdos()
 #
-#    ARPES_expmt = ARPES.experiment(TB,ARPES_dict)
-#    ARPES_expmt.plot_gui(ARPES_dict)
+    ARPES_expmt = ARPES.experiment(TB,ARPES_dict)
+    ARPES_expmt.plot_gui(ARPES_dict)
