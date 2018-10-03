@@ -74,6 +74,9 @@ def gen_K(Kdic):
 
 ###Built Tight Binding Model
 def gen_TB(Bdict,H_args,Kobj,slab_dict=None):
+    '''
+    Build a Tight-Binding Model: user passes a basis dictionary
+    '''
     if type(slab_dict)==dict:
         if H_args['spin']['bool']:
             Bdict['bulk'] = Bdict['bulk'][:int(len(Bdict['bulk'])/2)]

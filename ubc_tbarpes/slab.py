@@ -374,9 +374,8 @@ def gen_slab(basis,vn,mint,minb,term,fine=(0,0)):
     term_0set = pts[pts[:,3]==term[0]]
     surf = pts[:,2].max()-minb
 
-#    base = term_1set[:,2].min()
     base = term_1set[term_1set[:,2]>=(term_1set[:,2].min()+fine[1]),2].min()
-#    top = term_0set[np.where(abs(term_0set[:,2]-surf)==abs(term_0set[:,2]-surf).min())[0][0],2]
+
     top = term_0set[np.where(abs(term_0set[(term_0set[:,2]-surf)<fine[0],2]-surf)==abs(term_0set[(term_0set[:,2]-surf)<fine[0],2]-surf).min())[0][0],2]
 
     cull = np.array([pts[p] for p in range(len(pts)) if base<=pts[p,2]<=top])
@@ -448,7 +447,6 @@ def H_surf(surf_basis,avec,H_bulk,Rmat):
     for ii in range(len(H_old)): #iterate over all original Hamiltonian hopping paths
         hi = H_old[ii] #temporary Hamiltonian matrix element to consider
         R_latt = np.mod(np.around(np.dot(Rcv[ii],av_i),3),1) #what is the hopping path, in new coordinate frame, in terms of modular vector (mod lattice vector)
-#        R_latt = np.mod(np.around(np.dot(Rcv[ii],av_i),4),1.0)#no rounding: what is the hopping path, in new coordinate frame, in terms of modular vector (mod lattice vector)
         R_compare = np.linalg.norm(R_latt-(cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][:,2:5]),axis=1)#,np.linalg.norm((cv_dict['{:d}-{:d}'.format(hi[0],hi[1])][:,2:]-(1-R_latt)),axis=1)) #two possible choices: 
 
         try:
@@ -461,8 +459,6 @@ def H_surf(surf_basis,avec,H_bulk,Rmat):
 
                 H_new.append(tmp_H)
 
-#                if H_new[-1][0]>H_new[-1][1]:
-#                    H_new[-1] = H_conj(tmp_H)
                 if H_new[-1][0]>H_new[-1][1]:
                     H_new[-1] = H_conj(tmp_H)
 
@@ -477,8 +473,7 @@ def H_surf(surf_basis,avec,H_bulk,Rmat):
         return []
     
     Hobj = TB_lib.gen_H_obj(H_new)
-#    for h in Hobj:
-#        h.H = h.clean_H()
+
         
     return Hobj
 
@@ -502,18 +497,6 @@ def Hobj_to_dict(Hobj,basis):
     
     return Hdict
     
-#    
-#    for h in Hobj:
-#        try:
-#            Hdict[h.i] = Hdict[h.i] + [[h.i,h.j,*h.H[i]] for i in range(len(h.H))]
-#        except KeyError:
-#            Hdict[h.i] = [[h.i,h.j,*h.H[i]] for i in range(len(h.H))]
-##        try:
-##            Hdict[h.j] = Hdict[h.j] + [[h.j,h.i,*np.conj(h.H[i])]]
-##        except KeyError:
-##            Hdict[h.j] = [[h.j,h.i,-np.conj()]]
-#    return Hdict
-
 
 def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
     '''
@@ -599,7 +582,6 @@ def bulk_to_slab(slab_dict):
     slab_TB = slab_dict['TB'].copy()
     slab_TB.avec = slab_vec
     slab_TB.basis = slab_basis
- #   slab_TB.mat_els = slab_ham
     slab_TB.Kobj.kpts = np.dot(slab_dict['TB'].Kobj.kpts,Rmat)
     return slab_TB,slab_ham,Rmat
 
