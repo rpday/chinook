@@ -111,8 +111,8 @@ class TB_model:
         
     def copy(self):
         TB_copy = TB_model(self.basis,None,self.Kobj)
-        TB_copy.avec = self.avec
-        TB_copy.mat_els = self.mat_els
+        TB_copy.avec = self.avec.copy()
+        TB_copy.mat_els = self.mat_els.copy()
         
         return TB_copy
         

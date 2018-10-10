@@ -40,6 +40,8 @@ import ubc_tbarpes.Ylm as Ylm
 import scipy.ndimage as nd
 import ubc_tbarpes.Tk_plot as Tk_plot
 
+import datetime as dt
+
 
 
 hb = 6.626*10**-34/(2*np.pi)
@@ -157,36 +159,34 @@ class experiment:
         self.diagonalize()
         print('Diagonalization Complete.')
         nstates = len(tmp_basis)
-
         if self.truncate:
 
             tmp_basis,self.Ev = self.truncate_model()
+        
         dE = (self.cube[2][1]-self.cube[2][0])/self.cube[2][2]
         
-        dig_range = np.arange(self.Eb.min()-5*dE,self.Eb.max()+dE*5,dE)
+#        dig_range = np.arange(self.Eb.min()-5*dE,self.Eb.max()+dE*5,dE)
         
         dig_range = np.arange(self.cube[2][0]-5*dE,self.cube[2][1]+5*dE,dE)
                 
         ##cube_indx is the position in the 3d cube of K and energy where this band is
         cube_indx = np.array([[i,self.Eb[i]] for i in range(len(self.Eb)) if dig_range[0]<=self.Eb[i]<=dig_range[-1]])
-        
         Gvals = G_dic()
+        
         try:
             self.Bvals = {}
             for bkey in ARPES_dict['Brads']:
                 self.Bvals[bkey] = lambda_gen(ARPES_dict['Brads'][bkey])
         except KeyError:
             self.Bvals = self.Bdic(dig_range,tmp_basis)
-
 #        GB = self.matel_matrix(Bvals,Gvals,tmp_basis)
         
-            
+           
         self.pks = np.zeros((len(cube_indx),3),dtype=float)
         self.Mk = np.zeros((len(cube_indx),2,3),dtype=complex)
-    
         self.pks = np.array([np.floor(np.floor(cube_indx[:,0]/nstates)/np.shape(self.X)[1]),np.floor(cube_indx[:,0]/nstates)%np.shape(self.X)[1],cube_indx[:,1]]).T
+
         kn = np.sqrt(2.*me/hb**2*(self.hv+self.Eb-self.W)*q)*A
-        
         self.th = np.array([np.arccos(np.sqrt(kn[int(cube_indx[i,0])]**2-self.X[int(self.pks[i,0]),int(self.pks[i,1])]**2-self.Y[int(self.pks[i,0]),int(self.pks[i,1])]**2)/kn[int(cube_indx[i,0])]) for i in range(len(cube_indx))])
         nstates = len(self.TB.basis)
 
@@ -304,9 +304,9 @@ class experiment:
             for p in range(len(self.pks)):
                 if abs(Mspin[p]).max()>0:
                     I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= abs(np.dot(Mspin[p,int((ARPES_dict['spin'][0]+1)/2),:],pol))**2*np.imag(-1./(np.pi*(w-self.pks[p,2]-SE[p]+0.01j)))*fermi
-        kxg = self.dk/(self.cube[0][1]-self.cube[0][0])
-        kyg = self.dk/(self.cube[1][1]-self.cube[1][0])
-        wg = self.dE/(self.cube[2][1]-self.cube[2][0])
+        kxg = (self.dk/(self.cube[0][1]-self.cube[0][0]) if abs(self.cube[0][1]-self.cube[0][0])>0 else 0)
+        kyg = (self.dk/(self.cube[1][1]-self.cube[1][0]) if abs(self.cube[1][1]-self.cube[1][0])>0 else 0)
+        wg = (self.dE/(self.cube[2][1]-self.cube[2][0]) if abs(self.cube[2][1]-self.cube[2][0]) else 0)
         
         Ig = nd.gaussian_filter(I,(kxg,kyg,wg))
         

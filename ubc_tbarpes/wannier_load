@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Oct  7 11:08:31 2018
+
+@author: ryanday
+
+This script builds a UBC_TBARPES model from a Wannier90 calculation. The requisite inputs
+are:
+    
+    seedname_hr.dat -- W90 Output File: Hamiltonian matrix
+    seedname.win -- W90 Input File
+    seedname.inwf -- W90 Input File, Input Wavefunctions with projections in Spherical Harmonics
+
+
+"""
+
+class wannier:
+    
+    def __init__(self,hr_file,win_file,inwf_file):
+        
+        self.read_winfile()
+        self.read_inwfile()
+        self.read_hrfile()
+        
+
+
