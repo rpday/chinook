@@ -55,6 +55,8 @@ def small_D(j,mp,m,B):
     s = s_lims(j,m,mp)
     s_sum = sum([(-1.0)**(mp-m+sp)/den(j,m,mp,sp)*cos**(2*j+m-mp-2*sp)*sin**(mp-m+2*sp) for sp in s])
     return pref*s_sum
+    
+    
 
 def den(j,m,mp,sp):
     '''
@@ -101,7 +103,7 @@ def WignerD(l,A,B,y):
         for mp_i in range(int(2*l+1)):
             m=m_i-l
             mp=mp_i-l
-            Dmat[int(mp_i),int(m_i)] = big_D(l,mp,m,A,B,y) 
+            Dmat[int(m_i),int(mp_i)] = big_D(l,mp,m,A,B,y) 
     return Dmat
 
 def symm_D(l,A,B,y):

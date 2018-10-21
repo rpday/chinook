@@ -155,19 +155,21 @@ def mesh_reduce(blatt,mesh,inds=False):
     '''
     Determine and select only k-points corresponding to the first Brillouin zone, by simply classifying points on the basis
     of whether or not the closest lattice point is the origin. By construction, the origin is index 13 of the blatt. If for some reason
-    it is not, return error. Option to take only the indices of the mesh which we want, rather than the acual array points--this is relevant
+    it is not, return error. Option to take only the indices of the mesh which we want, rather than the actual array points--this is relevant
     for tetrahedral interpolation methods
     '''
-    if np.linalg.norm(blatt[13])>0:
-        print('FORMAT ERROR: invalid Reciprocal Lattice Point array passed. Please use _b_lattice_() to generate these points')
+    bz_pts = []
+    if np.linalg.norm(blatt[13])>0:       
+        print('FORMAT ERROR: invalid Reciprocal Lattice Point array passed. Please use np.dot(region(1),b_vec) to generate these points')
         return []
     else:
-        dv = np.array([np.linalg.norm(m-blatt,axis=1) for m in mesh])
-        if not inds:
-            bz_pts = np.array([mesh[i] for i in range(len(dv)) if (13 in np.where(dv[i]==dv[i].min())[0]) ])
-        else:
-            bz_pts = np.array([i for i in range(len(dv)) if (13 in np.where(dv[i]==dv[i].min())[0]) ])
-        return bz_pts
+        for m in list(enumerate(mesh)):
+            dv = np.linalg.norm(np.around(m[1]-blatt,6),axis=1)
+            if (13 in np.where(dv==dv.min())[0]):
+                bz_pts.append(m[not inds])
+
+
+        return np.array(bz_pts)
     
 
 def plt_pts(pts):
@@ -209,8 +211,8 @@ def kz_kpt(hv,kpt,W,V):
     return kz
 
 if __name__=="__main__":
-    a,c=2.46,3.35
+    a = 1.78
     av = np.array([[a,0,a],[0,a,a],[a,a,0]])
 #    av = np.array([[np.sqrt(3)*a/2,a/2,0],[np.sqrt(3)*a/2,-a/2,0],[0,0,2*c]])
-    N = 50
+    N = 15
     bz = b_zone(av,N,True)

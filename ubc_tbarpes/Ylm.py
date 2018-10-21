@@ -167,6 +167,7 @@ def Yproj(basis):
     '''
     normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
     a = basis[0].atom
+    n = basis[0].n
     l = basis[0].l
     sp = basis[0].spin
     M = {}
@@ -174,7 +175,7 @@ def Yproj(basis):
     for b in basis:
         label = b.label[2:]
 
-        if b.atom==a and b.l==l and b.spin==sp:
+        if b.atom==a and b.n==n and b.l==l and b.spin==sp:
             for p in b.proj:
                 M_tmp[l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
                 
@@ -182,9 +183,10 @@ def Yproj(basis):
                 #If we are using a reduced basis, fill in orthonormalized projections for other states in the shell
                 #which have been ignored in our basis choice--these will still be relevant to the definition of the LS operator
             M_tmp = fillin(M_tmp,l)            
-            M[(a,l,sp)] = M_tmp
+            M[(a,n,l,sp)] = M_tmp
                 ##Initialize the next M matrix               
             a = b.atom
+            n = b.n
             l = b.l
             sp = b.spin
             M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
@@ -192,7 +194,7 @@ def Yproj(basis):
                 M_tmp[l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
     
     M_tmp = fillin(M_tmp,l)
-    M[(a,l,sp)] = M_tmp
+    M[(a,n,l,sp)] = M_tmp
     
     return M
 
@@ -219,6 +221,8 @@ def GrahamSchmidt(a,b):
     '''
     tmp = a - np.dot(a,b)/np.dot(b,b)*b
     return tmp/np.linalg.norm(tmp)
+
+
 
     
 

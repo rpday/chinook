@@ -32,6 +32,7 @@ SOFTWARE.
 import numpy as np
 import ubc_tbarpes.orbital as orb
 import ubc_tbarpes.SK as SK
+import ubc_tbarpes.rotation_lib as rot_lib
 import ubc_tbarpes.Ylm as Ylm
 
 hb = 6.626*10**-34/(2*np.pi)
@@ -101,10 +102,9 @@ def sk_build(avec,basis,V,cutoff,tol,renorm,offset,spin):
         for o2 in basis[:brange]:
             if o1.index<=o2.index:
                 for p in pts:
-                    Rij = o2.pos-o1.pos+np.dot(p,avec)
-            
+                    Rij = o2.pos-o1.pos+np.dot(p,avec) #Testing 18/10/2018
+#                    Rij = o1.pos - o2.pos + np.dot(p,avec)
                     Rijn = np.linalg.norm(Rij)
- 
 
                     orb_label = "{:d}-{:d}-{:0.3f}-{:0.3f}-{:0.3f}".format(o1.index,o2.index,Rij[0],Rij[1],Rij[2])
                     if Rijn>max(reg_cut):
@@ -133,77 +133,190 @@ def sk_build(avec,basis,V,cutoff,tol,renorm,offset,spin):
     return H_raw
 
 
-def sk_build_2(avec,basis,V,cutoff,tol,renorm,offset,spin):
+def sk_build_2(avec,basis,Vdict,cutoff,tol,renorm,offset):
     '''
-    Testing a function to build SK model from using D-matrices, rather than the list of SK terms from table
+    Testing a function to build SK model from using D-matrices, rather than the list of SK terms from table.
+    This can handle orbitals of arbitrary orbital angular momentum in principal, but right now implemented for up
+    to and including f-electrons. Still need to test the f-hoppings more thoroughly
+    args:
+        avec -- numpy array 3x3 float of lattice vectors
+        basis -- tight-binding basis: list of orbital objects
+        Vdict -- hopping dictionary, or list of dictionaries, if different parameters at different hopping distances
+        cutoff -- cutoff distance, or list of distances (float) for which the Vdict are applicable
+        tol -- threshold value below which hoppings are neglected (float)
+        offset -- offset for Fermi level (float)
+    return:
+        H_raw -- list of Hamiltonian matrix elements. 
+   
+    
     '''
-    normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
-    reg_cut,pts = cluster_build(cutoff,avec)
-    H_raw = []
-    o1o2norm = {}
-    if spin:
+        
+    Vdict,cutoff,pts = cluster_init(Vdict,cutoff,avec) #build region of lattice points, containing at least the cutoff distance
+    V = Vdict[0]
+    if basis[0].spin!=basis[-1].spin: #only calculate explicitly for a single spin species
         brange = int(len(basis)/2)
     else:
         brange = len(basis)
+
+    SK_matrices = SK.SK_full(basis[:brange]) #generate the generalized Slater-Koster matrices, as functions of R and potential V
+    index_orbitals = index_ordering(basis[:brange]) #define the indices associated with the various orbital shells in the basis,
+    H_raw = on_site(basis[:brange],V,offset) #fill in the on-site energies
+
     
-    pair_channels = orbital_pair_channels(basis[:brange])
-    SK_matrices = SK.SK_full(basis[:brange])
-    for pc in pair_channels:
+    for i1 in index_orbitals:
+        for i2 in index_orbitals:
+            if index_orbitals[i1][index_orbitals[i1]>-1].min()<=index_orbitals[i2][index_orbitals[i2]>-1].min():
+                o1o2 = (i1[0],i2[0],i1[1],i2[1],i1[2],i2[2])
+                R12 = np.array(i2[3:6])-np.array(i1[3:6])
+                SKmat = SK_matrices[o1o2]
         
-        Vmat = SK_matrices[pc[:4]]
+                for p in pts: #iterate over the points in the cluster
+                    Rij = R12 + np.dot(p,avec)
+                    Rijn = np.linalg.norm(Rij) #compute norm of the vector
+#                    
+                    if 0<Rijn<cutoff[-1]: #only proceed if within the cutoff distance
+                        V = Vdict[np.where(Rijn>=cutoff)[0][-1]]
+                    
+                        Vlist = Vlist_gen(V,o1o2)
+                        if len(Vlist)==0:
+                            continue
+                        A,B,y = rot_lib.Euler(rot_lib.rotate_v1v2(Rij,np.array([0,0,1])))
+                    
+                        SKvals = mirror_SK([vi for vi in Vlist])
+                        SKmat_num = SKmat(A,B,y,SKvals) #explicitly compute the relevant Hopping matrix for this vector and these shells
+                        if abs(SKmat_num).max()>tol:
+
+                            append = mat_els(Rij,SKmat_num,tol,index_orbitals[i1],index_orbitals[i2])
+                            H_raw = H_raw + append
+    return H_raw #finally return the list of Hamiltonian matrix elements
+
+
+
+
+def on_site(basis,V,offset):
+    '''
+    Simple on-site matrix element calculation. Try both anl and a**label formats, if neither
+    is defined, default the onsite energy to 0.0 eV
+    args:
+        basis -- list of orbitals defining the tight-binding basis
+        V -- Slater Koster dictionary
+        offset -- EF shift
+    return:
+        Ho, list of Hamiltonian matrix elements
+    '''
+    Ho = []
+    for oi in basis:
+        try:
+            H = V['{:d}{:d}{:d}'.format(oi.atom,oi.n,oi.l)]
+        except KeyError:
+            try:
+                H = V['{:d}{:s}'.format(oi.atom,oi.label)]
+            except KeyError:
+                H = 0.0
+        Ho.append([oi.index,oi.index,0.0,0.0,0.0,float(H-offset)])
+    return Ho
+    
+                
+def mat_els(Rij,SKmat,tol,i1,i2):
+    '''
+    Extract the pertinent, and non-zero elements of the Slater-Koster matrix and transform to the conventional form
+    of Hamiltonian list entries (o1,o2,Rij0,Rij1,Rij2,H12(Rij))
+    args:
+        Rij -- relevant connecting vector (numpy array of 3 float)
+        SKmat -- matrix of hopping elements for the coupling of two orbital shells (numpy array of float)
+        tol -- float--minimum hopping included in model
+        i1,i2 -- proper index ordering for the relevant instance of the orbital shells involved in hopping
+        
+    '''
+    inds = np.where(abs(SKmat)>tol)
+    out = []
+    for ii in range(len(inds[0])):
+        i_1 = i1[inds[0][ii]]
+        i_2 = i2[inds[1][ii]]
+        
+        if -1<i_1<=i_2:
+            out.append([i_1,i_2,*Rij,SKmat[inds[0][ii],inds[1][ii]]])
+
+    return out
+                    
+
+def index_ordering(basis):
+    normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
+    indexing = {}
+    for b in basis:
+        anl = (b.atom,b.n,b.l,*np.around(b.pos,4))
+        if anl not in indexing.keys():
+            indexing[anl] = -1*np.ones(2*b.l+1)
+        indexing[anl][normal_order[b.l][b.label[2:]]] = b.index
+        
+    return indexing
+
+
+def match_indices(basis):
+    normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
+    return [normal_order[b.l][b.label[2:]] for b in basis]
+
             
-        for p in pts:
-            Rij = np.array(pc[-3:])+np.dot(p,avec)
-            Rijn = np.linalg.norm(Rij)
-            if Rijn<max(reg_cut):
-                A,B = np.arctan2(Rij[1],Rij[0]),np.arccos(Rij[2]/Rijn)
-                V = [0.1]*(2*(min(pc[1],pc[3]))+1)
-                SKmat = Vmat(A,B,V)
-                H_raw = H_raw + mat_els(Rij,SKmat)
-                    
-                
-                
-def mat_els(Rij,SKmat):
-    return None
-                    
+
+def Vlist_gen(V,pair):
+    order = {'S':0,'P':1,'D':2,'F':3}
+    vstring = '{:d}{:d}{:d}{:d}{:d}{:d}'.format(*pair[:6])
+    l = max(pair[4],pair[5])
+    try:
+        Vkeys = np.array(sorted([[l-order[vi[-1]],vi] for vi in V if vi[:-1]==vstring]))[:,1]
+        Vvals = np.array([V[vk] for vk in Vkeys])
+    except IndexError:
+        vstring = '{:d}{:d}{:d}{:d}{:d}{:d}'.format(pair[1],pair[0],pair[3],pair[2],pair[5],pair[4])
+        try: 
+            Vkeys = np.array(sorted([[l-order[vi[-1]],vi] for vi in V if vi[:-1]==vstring]))[:,1]
+            pre = (-1)**(pair[4]+pair[5])
+            Vvals = pre*np.array([V[vk] for vk in Vkeys])
+        except IndexError:
+            return None
+    return Vvals
+    
     
             
-
-
-
-
-def orbital_pair_channels(basis):
+def mirror_SK(SK_in):
     '''
-    Define the set of viable atom, orbital channels which can be connected via hopping. These determine the hopping matrices which need be defined.
+    Generate a list of values which is the input appended with its mirror reflection. The mirror boundary condition suppresses 
+    the duplicate of the last value. e.g. [0,1,2,3,4] --> [0,1,2,3,4,3,2,1,0], ['r','a','c','e','c','a','r'] --> ['r','a','c','e','c','a','r','a','c','e','c','a','r']
+    args:
+        SK_in -- list-like input of arbitrary length and data-type
+    return:
+         list of values with same data-type as input, reflecting the original list about its value
     '''
-    orb_chann = []
-    for o in basis:
-        if (o.atom,o.l) not in orb_chann:
-            orb_chann.append((o.atom,o.l,*o.pos))
-    pair_chann = [(orb_chann[yi][0],orb_chann[yi][1],orb_chann[yj][0],orb_chann[yj][1],*(orb_chann[yj][2:5]-orb_chann[yi][2:5])) for yi in range(len(orb_chann)) for yj in range(yi,len(orb_chann))]
-    
-    return pair_chann
+    return list(SK_in) + (SK_in[-2::-1])
 
 
-def cluster_build(cutoff,avec):
+
+def cluster_init(Vdict,cutoff,avec):
     '''
     Generate a safe cluster of neighbouring lattice points to use in defining the hopping paths
     Return an array of lattice points which go safely to the edge of the cutoff range.
     
     '''
-    try:
-        reg_cut = [0.0]+list(cutoff)
-        reg_cut = np.array(reg_cut)
-    except TypeError:
-        try:
-            reg_cut = np.array([cutoff])
-        except TypeError:
-            print('Invalid cutoff-format')
-            return None
-    pt_max = np.ceil(np.array([(reg_cut).max()/np.linalg.norm(avec[i]) for i in range(len(avec))]).max())
-    pts = region(int(pt_max)+1)
-    return reg_cut,pts
+    if type(cutoff)==float:
+            cutoff = np.array([0.0,cutoff])
+            Vdict = [Vdict]
+        
+    else:
+        if cutoff[0]>0:
+            cutoff =np.array([0.0]+[c for c in cutoff])
+        else:
+            cutoff = np.array(cutoff)
+        
 
+    pt_max = np.ceil(np.array([(cutoff).max()/np.linalg.norm(avec[i]) for i in range(len(avec))]).max())
+    pts = region(int(pt_max)+1)
+    return Vdict,cutoff,pts
+
+
+
+###############################################################################
+#########################Spin Orbit Coupling###################################
+###############################################################################
+    
 
 def spin_double(H,lb):
     lenb = int(lb/2)
@@ -236,14 +349,13 @@ def SO(basis):
     L,al = {},[]
     HSO = []
     for o in basis[:int(len(basis)/2)]:
-        if (o.atom,o.l) not in al:
-            al.append((o.atom,o.l))
-            Mdn = Md[(o.atom,o.l,-1)]
-            Mup = Md[(o.atom,o.l,1)]
+        if (o.atom,o.n,o.l) not in al:
+            al.append((o.atom,o.n,o.l))
+            Mdn = Md[(o.atom,o.n,o.l,-1)]
+            Mup = Md[(o.atom,o.n,o.l,1)]
             Mdnp = np.linalg.inv(Mdn)
             Mupp = np.linalg.inv(Mup)
-            L[(o.atom,o.l)] = [np.dot(Mupp,np.dot(Lm(o.l),Mdn)),np.dot(Mdnp,np.dot(Lz(o.l),Mdn)),np.dot(Mdnp,np.dot(Lp(o.l),Mup))]
-
+            L[(o.atom,o.n,o.l)] = [np.dot(Mupp,np.dot(Lm(o.l),Mdn)),np.dot(Mdnp,np.dot(Lz(o.l),Mdn)),np.dot(Mdnp,np.dot(Lp(o.l),Mup))]
 
     for o1 in basis:
         for o2 in basis:
@@ -259,7 +371,7 @@ def SO(basis):
                         s=1.0
                     for f in factors:
                         if f[1]==ds:
-                            LS_val+=o1.lam*factors[f]*L[(o1.atom,o1.l)][f[0]][inds]*s
+                            LS_val+=o1.lam*factors[f]*L[(o1.atom,o1.n,o1.l)][f[0]][inds]*s
                     HSO.append([o1.index,o2.index,0.,0.,0.,LS_val])
 
     return HSO
@@ -352,7 +464,34 @@ def region(num):
 
 
         
-
+#    index = match_indices(basis)
+#    for pc in pair_channels: #iterate over all orbital shells paired
+#    for o1 in basis[:brange]:
+#        for o2 in basis[o1.index:brange]:
+#
+#            o1o2 = (o1.atom,o2.atom,o1.n,o2.n,o1.l,o2.l)
+#            R12 = o2.pos-o1.pos
+#            SKmat = SK_matrices[o1o2]
+#            for p in pts:
+#                Rij = R12+np.dot(p,avec)
+#                Rijn = np.linalg.norm(Rij)
+#                if 0<Rijn<cutoff[-1]:
+#
+#                    V = Vdict[np.where(Rijn>=cutoff)[0][-1]]
+#                    
+#                    Vlist = Vlist_gen(V,o1o2)
+#                    if len(Vlist)==0:
+#                        continue
+#                    A,B,y = rot_lib.Euler(rot_lib.rotate_v1v2(Rij,np.array([0,0,1])))
+#                    
+##                    SKvals = mirror_SK([V[vi] for vi in Vlist])
+#                    SKvals = mirror_SK([vi for vi in Vlist])
+#                    SKmat_num = SKmat(A,B,y,SKvals)
+#                    if abs(SKmat_num[index[o1.index],index[o2.index]])>tol:
+#                        add_now= [o1.index,o2.index,Rij[0],Rij[1],Rij[2],np.real(SKmat_num[index[o1.index],index[o2.index]])]
+#
+#                        H_raw.append(add_now)
+#    return H_raw
 
 # 
     

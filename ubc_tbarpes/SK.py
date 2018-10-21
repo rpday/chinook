@@ -32,8 +32,7 @@ SOFTWARE.
 import numpy as np
 import ubc_tbarpes.wigner as Wlib
 import ubc_tbarpes.orbital as olib
-import ubc_tbarpes.operator_library as oplib
-
+import ubc_tbarpes.Ylm as Ylm
 
 def SK_coeff(o1,o2,R12,Vcoeff,renorm,offset,tol):
     if Vcoeff is not None:
@@ -238,7 +237,7 @@ def eta_dict_to_SK(eta_dict,rd,d):
 def Vmat(l1,l2,V):
     '''
     For Slater-Koster matrix element generation, a potential matrix is sandwiched in between the
-    two bond-rotating Dmatrices. It should be of the shape 2*l1+1 x 2*l2+1, and have the Vl,l',D
+    two bond-rotating Dmatrices. It should be of the shape 2*l1+1 x 2*l2+1, and have the V_l,l',D
     terms along the 'diagonal'-- a concept that is only well defined for a square matrix. For mismatched
     angular momentum channels, this turns into a diagonal square matrix of dimension min(2*l1+1,2*l2+1) 
     centred  along the larger axis. For channels where the orbital angular momentum change involves a change
@@ -256,14 +255,17 @@ def Vmat(l1,l2,V):
         Vm = np.zeros((2*l1+1,2*l2+1))
         lmin = min(l1,l2)
         lmax = max(l1,l2)
-        Vvals = np.identity(2*lmin+1)*np.array([V[abs(i-lmin)] for i in range(2*lmin+1)])
+#        Vvals = np.identity(2*lmin+1)*np.array([V[abs(i-lmin)] for i in range(2*lmin+1)])
+        Vvals = np.identity(2*lmin+1)*np.array(V)
+
         if l2>l1:
             Vm[:,lmax-lmin:lmax-lmin+2*lmin+1] = Vvals
         else:
             Vm[lmax-lmin:lmax-lmin+2*lmin+1,:] = Vvals
-    if l1>l2 and (np.mod(l2-l1,2)!=0):
-        Vm*=-1
-    return Vm
+#    if l1>l2 and (np.mod(l2-l1,2)!=0):
+#        Vm*=-1
+#        Vm*=1
+    return np.atleast_2d(Vm)
 
 def SK_Wig_Y(l1,l2):
     '''
@@ -279,26 +281,38 @@ def SK_Wig_Y(l1,l2):
     '''
     
 
-    return lambda A,B,V: np.dot(np.conj(Wlib.WignerD(l1,A,B,0).T),np.atleast_2d(np.dot(Vmat(l1,l2,V),Wlib.WignerD(l2,A,B,0))))
+    return lambda A,B,y,V: np.dot(np.conj(Wlib.WignerD(l1,A,B,y).T),np.atleast_2d(np.dot(Vmat(l1,l2,V),Wlib.WignerD(l2,A,B,y))))
+
+    
 
 
 def SK_cub(Ymats,l1,l2):
-    def SK_build(A,B,V):
-    
-        return np.dot(np.dot(np.conj(Ymats[0].T),np.conj(Wlib.WignerD(l1,A,B,0).T)),np.atleast_2d(np.dot(Vmat(l1,l2,V),np.dot(Wlib.WignerD(l2,A,B,0),Ymats[1]))))
-    return lambda A,B,V:SK_build(A,B,V)
+    def SK_build(A,B,y,V):
+        o1rot = np.dot(Wlib.WignerD(l1,A,B,y),Ymats[0])
+        o2rot = np.dot(Wlib.WignerD(l2,A,B,y),Ymats[1])
+        try:
+            return np.dot(np.conj(o1rot).T,np.atleast_2d(np.dot(Vmat(l1,l2,V),o2rot)))
+        except ValueError:
+            return np.dot(np.conj(o1rot).T,np.atleast_2d(np.dot(Vmat(l1,l2,V).T,o2rot)))
+#        try:
+#            return np.dot(np.dot(np.conj(Ymats[0].T),np.conj(Wlib.WignerD(l1,0,B,A).T)),np.atleast_2d(np.dot(Vmat(l1,l2,V),np.dot(Wlib.WignerD(l2,0,B,A),Ymats[1]))))
+#        except ValueError:
+#            return np.dot(np.dot(np.conj(Ymats[0].T),np.conj(Wlib.WignerD(l1,0,B,A).T)),np.atleast_2d(np.dot(Vmat(l1,l2,V).T,np.dot(Wlib.WignerD(l2,0,B,A),Ymats[1]))))
+    return lambda A,B,y,V:SK_build(A,B,y,V)
 
 def SK_full(basis):
     
     '''
     Generate a dictionary of lambda functions which take as keys the atom,orbital for both first and second element 
+    Formatting is a1a2n1n2l1l2, same as for SK dictionary entries
     '''
     SK_funcs = {}
-    Ymats = oplib.Yproj(basis)
+    Ymats = Ylm.Yproj(basis)
     for yi in Ymats:
         for yj in Ymats:
-            Y = [Ymats[yi],Ymats[yj]]
-            SK_funcs[(yi[0],yi[1],yj[0],yj[1])] = SK_cub(Y,yi[1],yj[1])
+            if (yi[0],yj[0],yi[1],yj[1],yi[2],yj[2]) not in SK_funcs.keys():
+                Y = [Ymats[yi],Ymats[yj]]
+                SK_funcs[(yi[0],yj[0],yi[1],yj[1],yi[2],yj[2])] = SK_cub(Y,yi[2],yj[2])
     return SK_funcs
 
 

@@ -64,13 +64,13 @@ def LSmat(TB,axis=None):
     L,al = {},[]
     HSO = np.zeros((len(TB.basis),len(TB.basis)),dtype=complex)
     for o in TB.basis:
-        if (o.atom,o.l) not in al:
-            al.append((o.atom,o.l))
-            Mdn = Md[(o.atom,o.l,-1)]
-            Mup = Md[(o.atom,o.l,1)]
+        if (o.atom,o.n,o.l) not in al:
+            al.append((o.atom,o.n,o.l))
+            Mdn = Md[(o.atom,o.n,o.l,-1)]
+            Mup = Md[(o.atom,o.n,o.l,1)]
             Mdnp = np.linalg.inv(Mdn)
             Mupp = np.linalg.inv(Mup)
-            L[(o.atom,o.l)] = [np.dot(Mupp,np.dot(Lm(o.l),Mdn)),np.dot(Mdnp,np.dot(Lz(o.l),Mdn)),np.dot(Mdnp,np.dot(Lp(o.l),Mup))]
+            L[(o.atom,o.n,o.l)] = [np.dot(Mupp,np.dot(Lm(o.l),Mdn)),np.dot(Mdnp,np.dot(Lz(o.l),Mdn)),np.dot(Mdnp,np.dot(Lp(o.l),Mup))]
     if axis is not None:
         try:
             ax = float(axis)
@@ -99,7 +99,7 @@ def LSmat(TB,axis=None):
                         s=1.0
                     for f in factors:
                         if f[1]==ds:
-                            LS_val+=factors[f]*L[(o1.atom,o1.l)][f[0]][inds]*s
+                            LS_val+=factors[f]*L[(o1.atom,o1.n,o1.l)][f[0]][inds]*s
                     HSO[o1.index,o2.index]+=LS_val
                     if o1.index!=o2.index:
                         HSO[o2.index,o1.index]+=np.conj(LS_val)
@@ -131,11 +131,11 @@ def Lz_mat(TB):
     L,al = {},[]
     HL = np.zeros((len(TB.basis),len(TB.basis)),dtype=complex)
     for o in TB.basis:
-        if (o.atom,o.l) not in al:
-            al.append((o.atom,o.l))
-            M = Md[(o.atom,o.l,1)]
+        if (o.atom,o.n,o.l) not in al:
+            al.append((o.atom,o.n,o.l))
+            M = Md[(o.atom,o.n,o.l,1)]
             Mp = np.linalg.inv(M)
-            L[(o.atom,o.l)] = np.dot(Mp,np.dot(Lz(o.l),M))
+            L[(o.atom,o.n,o.l)] = np.dot(Mp,np.dot(Lz(o.l),M))
 
     for o1 in TB.basis:
         for o2 in TB.basis:
@@ -146,7 +146,7 @@ def Lz_mat(TB):
                     
                     ds = (o1.spin-o2.spin)/2.
                     if ds==0:
-                        L_val+=L[(o1.atom,o1.l)][inds]
+                        L_val+=L[(o1.atom,o1.n,o1.l)][inds]
                     HL[o1.index,o2.index]+=L_val
                     if o1.index!=o2.index:
                         HL[o2.index,o1.index]+=np.conj(L_val)
@@ -193,6 +193,9 @@ def Lz(l):
 def fatbs(proj,TB,Kobj=None,vlims=(0,0),Elims=(0,0),degen=False):
     '''
     Fat band projections. User denotes which orbital index projection is of interest
+    Projection passed either as an Nx1 or Nx2 array of float. If Nx2, first column is
+    the indices of the desired orbitals, the second column is the weight. If Nx1, then
+    the weights are all taken to be eqaul
     
     '''
     proj = np.array(proj)

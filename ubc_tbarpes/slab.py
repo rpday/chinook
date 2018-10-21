@@ -325,7 +325,7 @@ def gen_surface(avec,miller,basis):
         tmp.pos = ordering[ii][:3]
 
 #        tmp.proj,tmp.Dmat = tmp.rot_projection(-gamma,uv)
-        tmp.proj,tmp.Dmat = tmp.rot_projection(R)
+        tmp.proj,tmp.Dmat = tmp.rot_projection(R.T)
 
         new_basis[ii] = tmp
     

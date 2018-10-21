@@ -69,7 +69,7 @@ def tet_inds():
     tetra_inds = np.array([[corn_dict['{:d}{:d}{:d}'.format(*ti)] for ti in tetra_vec[j]] for j in range(6)])
     return tetra_inds
 
-def mesh_tetra(avec,N):
+def mesh_tetra(avec,N,bz_on=True):
     '''
     Generate a mesh of points spanning several lattice points in reciprocal space: bz_mesh_raw
     From this mesh, reduce to simply a set of points which define the first Brillouin zone.
@@ -90,28 +90,34 @@ def mesh_tetra(avec,N):
     b_vec = klib.bvectors(avec)
     rlpts = np.dot(klib.region(1),b_vec)    
     raw_mesh = klib.raw_mesh(rlpts,N)
-    bz = klib.mesh_reduce(rlpts,raw_mesh,inds=True)
-    points = raw_mesh[bz]
-    Nx = len(set(points[:,0]))
-    Ny = len(set(points[:,1]))
+    if bz_on:
+        bz = klib.mesh_reduce(rlpts,raw_mesh,inds=True) #get indices of k-points associated with the BZ
+    
+        
+    else:
+        bz = np.linspace(0,len(raw_mesh)-1,len(raw_mesh)).astype(int)
+    bzd = {bz[i]:i for i in range(len(bz))}    
+    Nx0 = len(set(raw_mesh[:,0])) #number of X in raw mesh
+    Ny0 = len(set(raw_mesh[:,1])) #number of Y in raw_mesh
+
     ti = tet_inds()
     
     mesh_tet = []
-    for ii in range(len(bz)):
-        try:
-            mesh_tet.append(bz[propagate(ii,Nx,Nx*Ny)[ti]])
-        except IndexError:
-            continue
+    for ii in range(len(raw_mesh)):
+        test_tetra = propagate(ii,Nx0,Nx0*Ny0)[ti]
+        for t in test_tetra:
+            try:
+                mesh_tet.append([bzd[t[0]],bzd[t[1]],bzd[t[2]],bzd[t[3]]])
+            except KeyError:
+                continue
+                
+
+            
     mesh_tet = np.array(mesh_tet)
     
-    shp = np.shape(mesh_tet)
-    try:
-        mesh_tet = mesh_tet.reshape((shp[0]*shp[1],shp[2]))
-        for i in range(len(bz)):
-            mesh_tet[np.where(mesh_tet==bz[i])]=i    
+    if len(mesh_tet)>0:
         return raw_mesh[bz],mesh_tet
-#   
-    except IndexError:
+    else:
         print('WARNING: NO K-POINTS FOUND, CHOOSE A FINER K-POINT GRID')
         return None,None
 #   
@@ -122,12 +128,24 @@ def propagate(i,Nr,Nc):
     
 
 
+def ainb(a,b):
+    if a in b:
+        return True
+    else:
+        return False
+    
+def list_product(lin):
+    if len(lin)==1:
+        return lin[0]
+    else:
+        return lin[0]*list_product(lin[1:])
+
 
 if __name__ == "__main__":
     
 #    a = tetrahedra()
 #    ti = tet_inds()
-    avec = np.array([[5,0,0],[0,5,0],[0,0,5]])
+    avec = np.array([[5,0,5],[0,5,5],[5,5,0]])
 #    bz = klib.b_zone(avec,4)
     
     bz,mtet = mesh_tetra(avec,8)

@@ -31,7 +31,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import ubc_tbarpes.H_library as Hlib
 from operator import itemgetter
-from matplotlib import rc 
+import datetime as dt
 
 
 
@@ -60,9 +60,10 @@ class H_me:
         tmp = self.H
         for hi in range(len(tmp)):
             for hj in range(hi+1,len(tmp)):
+                
                 try:
                     norm = np.linalg.norm(np.array(tmp[hi])-np.array(tmp[hj]))
-                    if norm<1e-5:
+                    if abs(norm)<1e-5:
                         tmp.pop(hj)
                 except IndexError:
                     continue
@@ -107,6 +108,8 @@ class TB_model:
             self.avec = H_args['avec']
 
         self.mat_els = self.build_ham(H_args)
+#        for ti in range(len(self.mat_els)):
+#            self.mat_els[ti].H = self.mat_els[ti].clean_H()
         self.Kobj = Kobj
         
     def copy(self):
@@ -139,7 +142,8 @@ class TB_model:
             try:
                 htmp = []
                 if H_args['type'] == "SK":
-                    htmp = Hlib.sk_build(H_args['avec'],self.basis,H_args['V'],H_args['cutoff'],H_args['tol'],H_args['renorm'],H_args['offset'],H_args['spin']['bool'])
+                    htmp = Hlib.sk_build_2(H_args['avec'],self.basis,H_args['V'],H_args['cutoff'],H_args['tol'],H_args['renorm'],H_args['offset'])
+#                    htmp = Hlib.sk_build(H_args['avec'],self.basis,H_args['V'],H_args['cutoff'],H_args['tol'],H_args['renorm'],H_args['offset'],H_args['spin']['bool'])
                 elif H_args['type'] == "txt":
                     htmp = Hlib.txt_build(H_args['filename'],H_args['cutoff'],H_args['renorm'],H_args['offset'],H_args['tol'])
                 elif H_args['type'] == "list":
