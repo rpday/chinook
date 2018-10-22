@@ -101,7 +101,14 @@ class orbital:
             self.proj = orient #projection into Ylm of form in projdict--array: [Real,Imag,l,ml]
         elif type(self.orient)==list: #can also pass a rotation from the conventional orientation
             self.proj = projdict[self.label[1:]]
-            self.proj,self.Dmat = self.rot_projection(self.orient[0])#,self.orient[1])
+            print(self.orient)
+            if len(self.orient)==1: #if the rotation is just an angle, assumed around z-axis
+                self.proj,self.Dmat = self.rot_projection((np.array([0,0,1]),self.orient[0]))
+            else:
+                print(self.orient[0],self.orient[1],'\n')
+                self.proj,self.Dmat = self.rot_projection((self.orient[0],self.orient[1]))
+            
+#            self.proj,self.Dmat = self.rot_projection(self.orient[0])#,self.orient[1])
         else:
             self.proj = projdict[self.label[1:]]
             

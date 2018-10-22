@@ -47,7 +47,7 @@ def gen_basis(basis):
         for o in list(enumerate(basis['orbs'][a[0]])):
             try:
                 
-                bulk_basis.append(olib.orbital(a[1],len(bulk_basis),o[1],basis['pos'][a[0]],basis['Z'][a[1]],orient=basis['orient'][a[0]][o[0]]))
+                bulk_basis.append(olib.orbital(a[1],len(bulk_basis),o[1],basis['pos'][a[0]],basis['Z'][a[1]],orient=basis['orient'][a[0]]))
             except KeyError:
                 bulk_basis.append(olib.orbital(a[1],len(bulk_basis),o[1],basis['pos'][a[0]],basis['Z'][a[1]]))
     if basis['spin']['bool']:
