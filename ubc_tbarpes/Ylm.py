@@ -218,12 +218,12 @@ def fillin(M,l,Dmat=None):
                 if mp!=m:
                     if np.linalg.norm(M[:,mp])!=0:
                         if np.dot(M[:,m],M[:,mp])>1e-10:
-                            proj = GrahamSchmidt(proj,M[:,mp])
+                            proj = GramSchmidt(proj,M[:,mp])
             M[:,m] = proj            
     return M
     
 
-def GrahamSchmidt(a,b):
+def GramSchmidt(a,b):
     '''
     Simple orthogonalization of two vectors, returns orthonormalized vector
     args: a,b -- np.array of same length
@@ -233,7 +233,6 @@ def GrahamSchmidt(a,b):
     return tmp/np.linalg.norm(tmp)
 
 
-    return Ynew
 
 
     
