@@ -355,7 +355,7 @@ def SO(basis):
             Mup = Md[(o.atom,o.n,o.l,1)]
             Mdnp = np.linalg.inv(Mdn)
             Mupp = np.linalg.inv(Mup)
-            L[(o.atom,o.n,o.l)] = [np.dot(Mupp,np.dot(Lm(o.l),Mdn)),np.dot(Mdnp,np.dot(Lz(o.l),Mdn)),np.dot(Mdnp,np.dot(Lp(o.l),Mup))]
+            L[(o.atom,o.n,o.l)] = [np.dot(Mupp,np.dot(Lm(o.l),Mdn)),np.dot(Mupp,np.dot(Lz(o.l),Mup)),np.dot(Mdnp,np.dot(Lp(o.l),Mup))]
 
     for o1 in basis:
         for o2 in basis:

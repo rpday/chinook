@@ -215,8 +215,10 @@ def fillin(M,l,Dmat=None):
             if type(Dmat)==np.ndarray:
                 proj = np.dot(Dmat,proj)
             for mp in range(2*l+1): #Orthogonalize against the user-defined projections
-                if np.linalg.norm(M[:,mp])!=0:
-                    proj = GrahamSchmidt(proj,M[:,mp])
+                if mp!=m:
+                    if np.linalg.norm(M[:,mp])!=0:
+                        if np.dot(M[:,m],M[:,mp])>1e-10:
+                            proj = GrahamSchmidt(proj,M[:,mp])
             M[:,m] = proj            
     return M
     
@@ -231,13 +233,6 @@ def GrahamSchmidt(a,b):
     return tmp/np.linalg.norm(tmp)
 
 
-
-#    proj_n = []
-#    for a in range(2*l+1):
-#        if abs(Ynew[a])>10**-10:
-#            proj_n.append([np.around(np.real(Ynew[a]),10),np.around(np.imag(Ynew[a]),10),l,a-l])
-#            
-#    proj_n = np.array(proj_n)
     return Ynew
 
 

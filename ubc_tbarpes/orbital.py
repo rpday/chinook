@@ -216,31 +216,12 @@ def spin_double(basis,lamdict):
     return basis + b_2
         
 
-if __name__=="__main__":
-    
-    Z = 26
-    i = 0
-    label = ["32xz","32yz","32xy"]
-    pos = np.zeros(3)
-    
-    dxz = orbital(0,i,label[0],pos,Z)
-    dyz = orbital(0,i+1,label[1],pos,Z)
-    dxy = orbital(0,i+2,label[2],pos,Z)
-    
-#    v = np.array([1,0,0]) #### STILL NOT QUITE RIGHT, GIVING DIFFERENT CHIRALITIES FOR  x AND z rotation
-#    a = np.pi/2
-#    print('x')
-#    print(dxz.proj)
-#    proj_x = dxz.rot_projection(v,a)
-#    print(proj_x)
-  
 
 def rot_spin(proj_array,angle,spin):
     '''
     Map the rotation of the spin direction onto the orbital projection. 
     This ONLY works for rotation about Z AXIS!
     '''
-
     for i in range(len(proj_array)):
         tmp_coeff = complex(proj_array[i,0]+1.0j*proj_array[i,1])
         tmp_coeff*=np.exp(-1.0j*angle/(2.0)*spin)  
@@ -265,4 +246,22 @@ def rotate_util(proj,phi):
         
 
             
+if __name__=="__main__":
+    
+    Z = 26
+    i = 0
+    label = ["32xz","32yz","32xy"]
+    pos = np.zeros(3)
+    
+    dxz = orbital(0,i,label[0],pos,Z)
+    dyz = orbital(0,i+1,label[1],pos,Z)
+    dxy = orbital(0,i+2,label[2],pos,Z)
+    
+#    v = np.array([1,0,0]) #### STILL NOT QUITE RIGHT, GIVING DIFFERENT CHIRALITIES FOR  x AND z rotation
+#    a = np.pi/2
+#    print('x')
+#    print(dxz.proj)
+#    proj_x = dxz.rot_projection(v,a)
+#    print(proj_x)
+  
         
