@@ -74,12 +74,12 @@ def LSmat(TB,axis=None):
     if axis is not None:
         try:
             ax = float(axis)
-            factors = {(0,1):0.5,(2,-1):0.5,(2,1):0.5*np.exp(-1.0j*2*ax),(0,-1):0.5*np.exp(1.0j*2*ax)}
+            factors = {(0,1):0.25,(2,-1):0.25,(2,1):0.25*np.exp(-1.0j*2*ax),(0,-1):0.25*np.exp(1.0j*2*ax)}
         except ValueError:
             if axis=='x':
                 factors = {(0,1):0.25,(2,-1):0.25,(2,1):0.25,(0,-1):0.25}
             elif axis=='y':
-                factors = {(0,1):-0.25,(2,-1):-0.25,(2,1):0.25,(0,-1):0.25}
+                factors = {(0,1):0.25,(2,-1):0.25,(2,1):-0.25,(0,-1):-0.25}
             elif axis=='z':
                 factors = {(1,0):1.0}
             else:
