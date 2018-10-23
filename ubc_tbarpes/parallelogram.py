@@ -22,7 +22,7 @@ def what_side(point,edge):
     '''
     return np.sign(np.around(np.cross(point,edge),3))
 
-def crossing(p1,p2,e,ezero):
+def crossing(p1,p2,ed,ezero):
     '''
     Find if the line defined by the points p1 and p2 cross the line e. If the 'side' of e changes between p1 and p2, then there is a crossing point of e
     between p1 and p2/
@@ -30,24 +30,25 @@ def crossing(p1,p2,e,ezero):
         p1,p2 -- numpy array of 2 float
         e -- numpy array of 4 float
     return:
-        Boolean: if sign changes, True, else False
+        +/-1,0: if sign changes, 1, else -1, and if we are on an unwanted edge, throw the point away, flag as outside
     '''
     
-    s1 = what_side((p1-e[:2]),e[:2]-e[2:])
-    s2 = what_side((p2-e[:2]),e[:2]-e[2:])
+    s1 = what_side((p1-ed[:2]),ed[2:]-ed[:2])
+    s2 = what_side((p2-ed[:2]),ed[2:]-ed[:2])
     if s1!=s2:
         
         if s1==0 or s2==0:
             if ezero:
-                return True
+
+                return 1
             else:
-                return False
+                return -1
         else:
-            return True
+            return 1
     elif s1==s2 and s1!=0:
-        return False
+        return 0
     elif s1==s2 and s1==0:
-        return False
+        return 0
     
 def edge_cross(p1,p2,e2,e1):
     '''
@@ -68,7 +69,7 @@ def edge_cross(p1,p2,e2,e1):
     except ZeroDivisionError:
         print('Help--division by zero!')
         return False
-    if 0<=np.dot(inter-e1,me)<np.dot(e2-e1,me):
+    if 0<=np.dot(inter-e1,me)<np.linalg.norm(e2-e1):#np.dot(e2-e1,me):
         return True
     else:
         return False
@@ -84,11 +85,11 @@ def in_pgram(p2D,e2D,ezero,maxlen):
         ezero -- numpy array of 2 integers, indicating which edges are the origin edges -- any points on an edge not in this set is outside!
         maxlen -- length of the line-segment -- must be larger than the region of interest!
     return:
-        Boolean True if p2D is inside e2D, else False
+        1 if p2D is inside e2D, 0 False, -1 if it is on a bad edge (terminate the search)
     '''
-    
-    p2D2 = p2D + np.array([277,331])*maxlen
+    p2D2 = np.around(p2D + np.array([277,331])*maxlen,4)    
     p2D = np.around(p2D,4)
+
     crossings = 0
     for e in list(enumerate(e2D)):
         if (float(e[0]) in ezero):
@@ -96,14 +97,16 @@ def in_pgram(p2D,e2D,ezero,maxlen):
         else:
             origin_edge = False
         cross_edge = crossing(p2D,p2D2,e[1],origin_edge)
-        if cross_edge:
+        if cross_edge<0:
+            return -1
+        elif cross_edge>0:
             boolc = edge_cross(p2D,p2D2,e[1][:2],e[1][2:])
             if boolc:
                 crossings+=1
     if np.mod(crossings,2)==0:
-        return False
+        return 0
     else:
-        return True
+        return 1
     
 def plot(pts,inside_pt,outside_pt,edges):
     '''

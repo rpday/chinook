@@ -193,7 +193,7 @@ def basal_plane(v):
     vp = np.dot(v,R)
     
     # Now perform one more rotation, taking vp[0] onto the [100] Cartesian axis
-    phi = np.arccos(vp[0,0]/np.linalg.norm(vp[0]))
+    phi = -np.arccos(vp[0,0]/np.linalg.norm(vp[0]))
     Rp = np.array([[np.cos(phi),-np.sin(phi),0],[np.sin(phi),np.cos(phi),0],[0,0,1]]).T
     vp = np.dot(vp,Rp)
     R = np.dot(R,Rp)
@@ -325,7 +325,7 @@ def gen_surface(avec,miller,basis):
         tmp.pos = ordering[ii][:3]
 
 #        tmp.proj,tmp.Dmat = tmp.rot_projection(-gamma,uv)
-        tmp.proj,tmp.Dmat = tmp.rot_projection(R.T)
+        tmp.proj,tmp.Dmat = olib.rot_projection(tmp.l,tmp.proj,R.T)
 
         new_basis[ii] = tmp
     

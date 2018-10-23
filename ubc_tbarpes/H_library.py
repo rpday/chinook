@@ -162,7 +162,6 @@ def sk_build_2(avec,basis,Vdict,cutoff,tol,renorm,offset):
     index_orbitals = index_ordering(basis[:brange]) #define the indices associated with the various orbital shells in the basis,
     H_raw = on_site(basis[:brange],V,offset) #fill in the on-site energies
 
-    
     for i1 in index_orbitals:
         for i2 in index_orbitals:
             if index_orbitals[i1][index_orbitals[i1]>-1].min()<=index_orbitals[i2][index_orbitals[i2]>-1].min():
@@ -296,11 +295,12 @@ def cluster_init(Vdict,cutoff,avec):
     Return an array of lattice points which go safely to the edge of the cutoff range.
     
     '''
-    if type(cutoff)==float:
-            cutoff = np.array([0.0,cutoff])
-            Vdict = [Vdict]
+    try:
+        cutoff = np.array([0.0,cutoff])
+        Vdict = [Vdict]
+    except ValueError:
         
-    else:
+    
         if cutoff[0]>0:
             cutoff =np.array([0.0]+[c for c in cutoff])
         else:

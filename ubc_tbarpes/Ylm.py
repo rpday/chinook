@@ -32,6 +32,7 @@ import scipy.special as sc
 from math import factorial
 
 
+
 projdict={"0":np.array([[1.0,0.0,0.0,0.0]]),
                "1x":np.array([[-np.sqrt(0.5),0.0,1,1],[np.sqrt(0.5),0.0,1,-1]]),"1y":np.array([[0.0,np.sqrt(0.5),1,1],[0,np.sqrt(0.5),1,-1]]),"1z":np.array([[1,0,1,0]]),
                 "2xy":np.array([[0.0,-np.sqrt(0.5),2,2],[0.0,np.sqrt(0.5),2,-2]]),"2yz":np.array([[0.0,np.sqrt(0.5),2,1],[0.0,np.sqrt(0.5),2,-1]]),
@@ -173,6 +174,11 @@ def Yproj(basis):
     M = {}
     M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
     for b in basis:
+        if np.linalg.norm(b.Dmat-np.identity(2*l+1))>0:
+            Dmat = b.Dmat
+        else:
+            Dmat = None
+        loc_rot = b.orient
         label = b.label[2:]
 
         if b.atom==a and b.n==n and b.l==l and b.spin==sp:
@@ -182,7 +188,7 @@ def Yproj(basis):
         else:
                 #If we are using a reduced basis, fill in orthonormalized projections for other states in the shell
                 #which have been ignored in our basis choice--these will still be relevant to the definition of the LS operator
-            M_tmp = fillin(M_tmp,l)            
+            M_tmp = fillin(M_tmp,l,Dmat)            
             M[(a,n,l,sp)] = M_tmp
                 ##Initialize the next M matrix               
             a = b.atom
@@ -193,12 +199,12 @@ def Yproj(basis):
             for p in b.proj:
                 M_tmp[l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
     
-    M_tmp = fillin(M_tmp,l)
+    M_tmp = fillin(M_tmp,l,loc_rot)
     M[(a,n,l,sp)] = M_tmp
     
     return M
 
-def fillin(M,l):
+def fillin(M,l,Dmat=None):
     normal_order_rev = {0:{0:''},1:{0:'x',1:'y',2:'z'},2:{0:'xz',1:'yz',2:'xy',3:'ZR',4:'XY'},3:{0:'z3',1:'xz2',2:'yz2',3:'xzy',4:'zXY',5:'xXY',6:'yXY'}}
 
     for m in range(2*l+1):
@@ -206,6 +212,8 @@ def fillin(M,l):
             proj = np.zeros(2*l+1,dtype=complex) 
             for pi in projdict[str(l)+normal_order_rev[l][m]]: 
                 proj[l-int(pi[-1])] = pi[0]+1.0j*pi[1] #fill the column with generic projection for this orbital (this will be a dummy)
+            if type(Dmat)==np.ndarray:
+                proj = np.dot(Dmat,proj)
             for mp in range(2*l+1): #Orthogonalize against the user-defined projections
                 if np.linalg.norm(M[:,mp])!=0:
                     proj = GrahamSchmidt(proj,M[:,mp])
@@ -222,6 +230,15 @@ def GrahamSchmidt(a,b):
     tmp = a - np.dot(a,b)/np.dot(b,b)*b
     return tmp/np.linalg.norm(tmp)
 
+
+
+#    proj_n = []
+#    for a in range(2*l+1):
+#        if abs(Ynew[a])>10**-10:
+#            proj_n.append([np.around(np.real(Ynew[a]),10),np.around(np.imag(Ynew[a]),10),l,a-l])
+#            
+#    proj_n = np.array(proj_n)
+    return Ynew
 
 
     

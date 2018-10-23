@@ -179,7 +179,7 @@ def plane_intersect(p1,p2,plane):
     norm = plane[:3]/np.linalg.norm(plane[:3])
     xo = plane[3:6]
     m = p2-p1
-    return p1-np.dot(norm,(p1-xo))/np.dot(norm,m)*m 
+    return np.around(p1-np.dot(norm,(p1-xo))/np.dot(norm,m)*m ,4)
 
 def point_is_intersect(point,intersect):
     if np.linalg.norm(point-intersect)<1e-4:
@@ -210,12 +210,11 @@ def inside_pped(pped,point):
     return:
         Boolean True (inside) False (outside)
     '''
-#    if sum(True if (np.linalg.norm(point-pped.avecs[ii]*np.dot(point,pped.avecs[ii])/np.linalg.norm(pped.avecs[ii])**2)==0.0 and np.linalg.norm(point)<np.linalg.norm(pped.avecs[ii])) else False for ii in range(3)):
-#        return True
-#    else:
+
+    point2 = np.around(point + pped.maxlen*2*np.array([149,151,157]),4)
     point = np.around(point,4)
     crossings = 0
-    point2 = point + pped.maxlen*2*np.array([149,151,157])
+    
     avi = np.linalg.inv(pped.avecs)
     for pi in range(len(pped.planes)):
         if is_lattice(point,avi):
@@ -225,12 +224,14 @@ def inside_pped(pped,point):
                 intersect = plane_intersect(point,point2,pped.planes[pi])
                 inter_2D = np.dot(intersect,pped.Rmat[pi])[:2]
                 in_plane = parallelogram.in_pgram(inter_2D,pped.edges[pi],pped.edge_zeros[pi],pped.maxlen)
-    
-                if in_plane:
-                   if point_is_intersect(point,intersect):#IF THE POINT IS CONTAINED IN A PLANE
+                if in_plane<0:
+                    crossings=0
+                    break
+                if in_plane>0:
+                    if point_is_intersect(point,intersect):#IF THE POINT IS CONTAINED IN A PLANE
                         crossings = origin_plane(pi)
                         break
-                   crossings+=1
+                    crossings+=1
     if np.mod(crossings,2)==0:
         return False
     else:

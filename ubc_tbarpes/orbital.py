@@ -77,7 +77,7 @@ kb = 1.38*10**-23
 class orbital:
     
     
-    def __init__(self,atom,index,label,pos,Z,orient=None,spin=1,lam=0.0,sigma=1.0,slab_index=None):
+    def __init__(self,atom,index,label,pos,Z,orient=[0.0],spin=1,lam=0.0,sigma=1.0,slab_index=None):
         self.atom = atom #index of inequivalent atoms in basis
         self.index = index #index in the orbital basis
         self.label = label #label -- should be of format nlXX w/ lXX the orbital convention in projdict
@@ -85,10 +85,10 @@ class orbital:
         self.Z = Z # atomic number
         self.mn = am.get_mass_from_number(self.Z)*mN #atomic mass
         self.spin = spin
-        self.Dmat = None
         self.lam = lam
         self.sigma = sigma
         self.n,self.l = int(self.label[0]),int(self.label[1])
+        self.Dmat = np.identity(2*self.l+1)
         if slab_index is None:
             self.slab_index = index #this is redundant for bulk calc, but index in slab is distinct from lattice index
             self.depth = 0.0
@@ -101,12 +101,12 @@ class orbital:
             self.proj = orient #projection into Ylm of form in projdict--array: [Real,Imag,l,ml]
         elif type(self.orient)==list: #can also pass a rotation from the conventional orientation
             self.proj = projdict[self.label[1:]]
-            print(self.orient)
-            if len(self.orient)==1: #if the rotation is just an angle, assumed around z-axis
-                self.proj,self.Dmat = self.rot_projection((np.array([0,0,1]),self.orient[0]))
-            else:
-                print(self.orient[0],self.orient[1],'\n')
-                self.proj,self.Dmat = self.rot_projection((self.orient[0],self.orient[1]))
+#            if len(self.orient)==1: #if the rotation is just an angle, assumed around z-axis
+            if abs(self.orient[-1])>0:
+                self.proj,self.Dmat = rot_projection(self.l,self.proj,self.orient)
+#            else:
+#                print(self.orient[0],self.orient[1],'\n')
+#                self.proj,self.Dmat = self.rot_projection((self.orient[0],self.orient[1]))
             
 #            self.proj,self.Dmat = self.rot_projection(self.orient[0])#,self.orient[1])
         else:
@@ -122,36 +122,33 @@ class orbital:
 #        return orbital(self.atom,self.index,self.label,self.pos,self.Z,self.orient,self.spin,self.lam,self.sigma,self.slab_index)
 
         
-    def rot_projection(self,rotation):#gamma,vector=np.array([0,0,1])):
+def rot_projection(l,proj,rotation):#gamma,vector=np.array([0,0,1])):
+    
+    '''
+    Go through the projection array, and apply the correct transformation to
+    the Ylm projections in order
+    Define Euler angles in the z-y-z convention
+    THIS WILL BE A COUNTERCLOCKWISE ROTATION ABOUT vector BY gamma
+    '''
         
-        '''
-        Go through the projection array, and apply the correct transformation to
-        the Ylm projections in order
-        Define Euler angles in the z-y-z convention
-        THIS WILL BE A COUNTERCLOCKWISE ROTATION ABOUT vector BY gamma
-        '''
+    if len(rotation)==1:
+        rotation = (np.array([0,0,1]),rotation)
+    Ylm_vec = np.zeros((2*l+1),dtype=complex)
+    for a in range(len(proj)):
+        Ylm_vec[int(proj[a,-1]+l)] +=proj[a,0]+1.0j*proj[a,1]
+    
+    A,B,y = rotlib.Euler(rotation)
+    Dmat = WignerD(l,A,B,y)
+    Ynew = np.dot(Dmat,Ylm_vec)
+
+    proj = []
+
+    for a in range(2*l+1):
+        if abs(Ynew[a])>10**-10:
+            proj.append([np.around(np.real(Ynew[a]),10),np.around(np.imag(Ynew[a]),10),l,a-l])
             
-        #vector = np.array([0,0,1])# for now only accept z-rotations vector/np.linalg.norm(vector)
-        Ylm_vec = np.zeros((2*self.l+1),dtype=complex)
-        for a in range(len(self.proj)):
-            Ylm_vec[int(self.proj[a,-1]+self.l)] +=self.proj[a,0]+1.0j*self.proj[a,1]
-        
-        A,B,y = rotlib.Euler(rotation)
-        Dmat = WignerD(self.l,A,B,y)
-        Ynew = np.dot(Dmat,Ylm_vec)
-#        Dmat = WignerD(self.l,y,B,A)
-
-#        Dmat = Dmatrix(self.l,A,B,y)
-
-#        Ynew = np.dot(np.conj(Dmat),Ylm_vec)
-        proj = []
-
-        for a in range(2*self.l+1):
-            if abs(Ynew[a])>10**-10:
-                proj.append([np.around(np.real(Ynew[a]),10),np.around(np.imag(Ynew[a]),10),self.l,a-self.l])
-                
-        proj = np.array(proj)
-        return proj,Dmat
+    proj = np.array(proj)
+    return proj,Dmat
 
 def fact(n):
     if n<0:
