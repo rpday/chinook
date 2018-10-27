@@ -174,7 +174,7 @@ def Yproj(basis):
     M = {}
     M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
     for b in basis:
-        if np.linalg.norm(b.Dmat-np.identity(2*l+1))>0:
+        if np.linalg.norm(b.Dmat-np.identity(2*b.l+1))>0:
             Dmat = b.Dmat
         else:
             Dmat = None
@@ -213,6 +213,7 @@ def fillin(M,l,Dmat=None):
             for pi in projdict[str(l)+normal_order_rev[l][m]]: 
                 proj[l-int(pi[-1])] = pi[0]+1.0j*pi[1] #fill the column with generic projection for this orbital (this will be a dummy)
             if type(Dmat)==np.ndarray:
+                print('l: {:d},'.format(l),'Dmat: ',Dmat,'proj: ',proj)
                 proj = np.dot(Dmat,proj)
             for mp in range(2*l+1): #Orthogonalize against the user-defined projections
                 if mp!=m:
