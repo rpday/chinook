@@ -144,7 +144,7 @@ def rebuild_H(args,mats):
     Rebuild the Hamiltonian with modified TB parameters
     '''
     tdic = [[5,7,6,5],[0,0,0],[1,1],[4,4,4,4,4,4],[2,7,2],[4,4,4,4,4,4],[3,3,3,3,3,3],[5,7,6,5],[0,0,0],[2,7,2]]
-
+    print('TBARGS',args,'\n')
     for i in range(len(mats)):
         tmp = mats[i].H
         tmp[:,-1] = np.array(args)[tdic[i]]
