@@ -5,9 +5,34 @@ Created on Sat Oct 20 08:27:49 2018
 
 @author: rday
 
-FERMI SURFACE TRIANGULATION,
-USING THE TETRAHEDRAL MESH APPROACH
+Copyright (c) 2018 Ryan Patrick Day
 
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+
+
+FERMI SURFACE TRIANGULATION,
+USING THE TETRAHEDRAL MESH APPROACH, motivated by the discussion in Appendix A of
+Helmholtz Fermi Surface Harmonics: an efficient approach for treating anisotropic problems involving Fermi surface integrals
+May 2014New Journal of Physics
+DOI: 10.1088/1367-2630/16/6/063014
 
 """
 
@@ -17,7 +42,6 @@ import ubc_tbarpes.tetrahedra as tetrahedra
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import matplotlib.tri as mtri
 from operator import itemgetter
 
 
@@ -33,7 +57,7 @@ def EF_tetra(TB,NK,EF):
         NK -- integer / list of 3 integers -- number of k-points in mesh
     return:
     '''
-    kpts,tetra = tetrahedra.mesh_tetra(TB.avec,NK,True)
+    kpts,tetra = tetrahedra.mesh_tetra(TB.avec,NK)
     TB.Kobj.kpts = kpts
     TB.solve_H()
     surfaces = {bi:{'pts':[],'tris':[]} for bi in range(len(TB.basis)) if (TB.Eband[:,bi].min()<=EF and TB.Eband[:,bi].max()>=EF)} #iinitialize Fermi surface only for those bands which actually have one...
@@ -72,8 +96,6 @@ def EF_tetra(TB,NK,EF):
                     tri = [np.around([t5,t6,t7],4)]
                 else:
                     continue
-##                if cFS_ter(k[:,0],k[:,1],k[:,2])
-#                    count+=1
                 for trii in tri:
                     coords = np.zeros(3,dtype=int)
                     for t in list(enumerate(trii)):
@@ -89,13 +111,6 @@ def EF_tetra(TB,NK,EF):
                         else:
                             coords[t[0]] =np.where(dv_bi==0)[0][0] 
                     surfaces[bi]['tris'].append(coords)
-                    
-#                    ccoord = [surfaces[bi]['pts'][c] for c in coords]
-#                    print(np.around(trii,4))
-#                    print('\n')
-#                    print(np.around(ccoord,4))
-#                    print('------------------')
-
         surfaces[bi]['pts'] = np.array(surfaces[bi]['pts'])
         surfaces[bi]['tris'] = np.array(surfaces[bi]['tris'])
 
@@ -111,19 +126,15 @@ def FS_generate(TB,Nk,EF):
     ax = fig.add_subplot(111,projection='3d')
     for bi in surfaces:
         Fk=surfaces[bi]['pts']
-        ax.plot_trisurf(Fk[:,0],Fk[:,1],Fk[:,2],triangles=surfaces[bi]['tris'],cmap=cm.magma,linewidth=0.5,edgecolor='white')
-    
-
-        
-                
-                                    
-
-
-
-
-
+        ax.plot_trisurf(Fk[:,0],Fk[:,1],Fk[:,2],triangles=surfaces[bi]['tris'],linewidth=0.3,edgecolor='w',alpha=1.0)
+    ax.grid('off')
+    ax.axis('off')
 
 def heron(vert):
+    '''
+    Heron's algorithm for calculation of triangle area, defined by only the vertices
+    '''
+    
     L = [np.linalg.norm(vert[np.mod(j,3)]-vert[np.mod(j-1,3)]) for j in range(3)]
     S = 0.5*sum(L)
     return np.sqrt(S*(S-L[0])*(S-L[1])*(S-L[2]))

@@ -174,7 +174,7 @@ def Yproj(basis):
     M = {}
     M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
     for b in basis:
-        if np.linalg.norm(b.Dmat-np.identity(2*l+1))>0:
+        if np.linalg.norm(b.Dmat-np.identity(2*b.l+1))>0:
             Dmat = b.Dmat
         else:
             Dmat = None
@@ -213,17 +213,18 @@ def fillin(M,l,Dmat=None):
             for pi in projdict[str(l)+normal_order_rev[l][m]]: 
                 proj[l-int(pi[-1])] = pi[0]+1.0j*pi[1] #fill the column with generic projection for this orbital (this will be a dummy)
             if type(Dmat)==np.ndarray:
+                print('l: {:d},'.format(l),'Dmat: ',Dmat,'proj: ',proj)
                 proj = np.dot(Dmat,proj)
             for mp in range(2*l+1): #Orthogonalize against the user-defined projections
                 if mp!=m:
                     if np.linalg.norm(M[:,mp])!=0:
                         if np.dot(M[:,m],M[:,mp])>1e-10:
-                            proj = GrahamSchmidt(proj,M[:,mp])
+                            proj = GramSchmidt(proj,M[:,mp])
             M[:,m] = proj            
     return M
     
 
-def GrahamSchmidt(a,b):
+def GramSchmidt(a,b):
     '''
     Simple orthogonalization of two vectors, returns orthonormalized vector
     args: a,b -- np.array of same length
@@ -233,7 +234,6 @@ def GrahamSchmidt(a,b):
     return tmp/np.linalg.norm(tmp)
 
 
-    return Ynew
 
 
     
