@@ -551,8 +551,11 @@ def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
 
                 continue
     Hobj = TB_lib.gen_H_obj(Hnew)
+    print('clean Hamiltonian')
     for h in Hobj:
-        h.H = h.clean_H()
+        tmp_H = h.clean_H()
+
+        h.H = tmp_H.copy()
 
         
     return unpack(Hobj) #Modify to have function return list of H-elements

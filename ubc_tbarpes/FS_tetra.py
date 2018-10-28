@@ -43,7 +43,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from operator import itemgetter
-
+#from mayavi import mlab
 
 
 def EF_tetra(TB,NK,EF):
@@ -124,9 +124,12 @@ def FS_generate(TB,Nk,EF):
     surfaces = EF_tetra(TB,Nk,EF)
     fig = plt.figure()
     ax = fig.add_subplot(111,projection='3d')
+#    may_fig = plt.figure()
     for bi in surfaces:
         Fk=surfaces[bi]['pts']
-        ax.plot_trisurf(Fk[:,0],Fk[:,1],Fk[:,2],triangles=surfaces[bi]['tris'],linewidth=0.3,edgecolor='w',alpha=1.0)
+#        mlab.triangular_mesh(Fk[:,0],Fk[:,1],Fk[:,2],surfaces[bi]['tris'],figure=may_fig)
+#    mlab.show()
+        ax.plot_trisurf(Fk[:,0],Fk[:,1],Fk[:,2],cmap=cm.magma,triangles=surfaces[bi]['tris'],linewidth=0.3,edgecolor='w',alpha=1.0)
     ax.grid('off')
     ax.axis('off')
 

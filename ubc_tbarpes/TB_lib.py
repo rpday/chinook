@@ -32,7 +32,7 @@ import matplotlib.pyplot as plt
 import ubc_tbarpes.H_library as Hlib
 from operator import itemgetter
 import datetime as dt
-
+from itertools import compress
 
 
 '''
@@ -58,16 +58,17 @@ class H_me:
         
     def clean_H(self):
         tmp = self.H
-        for hi in range(len(tmp)):
+        bools = [True]*len(tmp)
+        for hi in range(len(tmp)-1):
             for hj in range(hi+1,len(tmp)):
                 
                 try:
                     norm = np.linalg.norm(np.array(tmp[hi])-np.array(tmp[hj]))
                     if abs(norm)<1e-5:
-                        tmp.pop(hj)
+                        bools[hj] = False
                 except IndexError:
                     continue
-        return tmp
+        return list(compress(tmp,bools))
     
     
         

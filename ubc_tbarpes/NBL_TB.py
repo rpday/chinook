@@ -105,7 +105,7 @@ def SK_pars_gen(fnm,avec,Rc,w):
     pi = int(len(pts)/2)
     for pj in list(enumerate(pts)):
         if np.linalg.norm(pj[1])>0:
-            lbl = '{:0.04f}'.format(np.linalg.norm(pj[1]))
+            lbl = '{:0.03f}'.format(np.around(np.linalg.norm(pj[1]),3))
             SK[lbl] = {}
             for par_ij in pars:
                 SK[lbl][par_ij] = SK_ij(pts,pi,pj[0],Fc,pars[par_ij])
