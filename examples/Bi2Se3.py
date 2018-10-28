@@ -113,17 +113,17 @@ if __name__=="__main__":
     Bd = build_lib.gen_basis(Bd)
 
     Kobj = build_lib.gen_K(Kd)
-    TB = build_lib.gen_TB(Bd,Hd,Kobj)
+    TB = build_lib.gen_TB(Bd,Hd,Kobj,slab_dict)
     
-#    theta = np.linspace(0,2*np.pi,100)
-#    k = 0.02*np.array([[np.cos(th),np.sin(th),0] for th in theta])
-#    
-#    TB.Kobj.kpts = k
-#    TB.Kobj.kcut = theta
-#    TB.Kobj.kcut_brk = [0,2*np.pi]
-#    
+    theta = np.linspace(0,2*np.pi,100)
+    k = 0.02*np.array([[np.cos(th),np.sin(th),0] for th in theta])
     
-#    TB.solcve_H()
+    TB.Kobj.kpts = k
+    TB.Kobj.kcut = theta
+    TB.Kobj.kcut_brk = [0,2*np.pi]
+    
+    
+#    TB.solve_H()
 #    TB.plotting(-1.5,1.5)
     
          
@@ -135,54 +135,54 @@ if __name__=="__main__":
 #    
 #    TB.solve_H()
 #    TB.plotting(-1.5,1.5)
-#    Sxmat = ops.S_vec(len(TB.basis),np.array([1,0,0]))
-#    Symat = ops.S_vec(len(TB.basis),np.array([0,1,0]))
-#    Sproj = ops.surface_proj(TB.basis,10)
-##    print(Sxmat.max(),Symat.max(),Sproj.max())
-#    Sysurf = np.dot(Symat,Sproj)
-#    Sxsurf = np.dot(Sxmat,Sproj)
-#    Sx = ops.O_path(Sxsurf,TB,TB.Kobj,vlims=(-0.1,0.1),Elims=(-1.5,1.5),degen=False)
-#    Sy = ops.O_path(Sysurf,TB,TB.Kobj,vlims=(-0.25,0.25),Elims=(-1.5,1.5),degen=True)
+    Sxmat = ops.S_vec(len(TB.basis),np.array([1,0,0]))
+    Symat = ops.S_vec(len(TB.basis),np.array([0,1,0]))
+    Sproj = ops.surface_proj(TB.basis,10)
+#    print(Sxmat.max(),Symat.max(),Sproj.max())
+    Sysurf = np.dot(Symat,Sproj)
+    Sxsurf = np.dot(Sxmat,Sproj)
+    Sx = ops.O_path(Sxsurf,TB,TB.Kobj,vlims=(-0.1,0.1),Elims=(-1.5,1.5),degen=True)
+    Sy = ops.O_path(Sysurf,TB,TB.Kobj,vlims=(-0.25,0.25),Elims=(-1.5,1.5),degen=True)
 
 
 
-    TBn = TB.copy()
-    tmpH = TBn.mat_els.copy()
-    npts = 10
-    vfK=np.zeros(npts)
-    vfM = np.zeros(npts)
-    DP=np.zeros(npts)
-    klin = np.linalg.norm(TB.Kobj.kpts,axis=1)
-    zvals = np.zeros(npts)
-    Ig = np.zeros((npts,ARPES_dict['cube']['Y'][2]))
-    w = np.linspace(*ARPES_dict['cube']['E'])
-    for i in range(npts):
-        zf = 1.+0.005*(i-npts/2)
-        zvals[i]=zf
-        print(zf,TB.avec[:,2])
-        TBn.avec[:,2]=zf*TB.avec[:,2]
-        print(TBn.avec)
-
-    
-        for p in TBn.basis:
-            p.pos[2]*=zf
-    
-    
-        for ti in tmpH:
-            for hi in ti.H:
-                nz = hi[2]*zf
-                nR = np.linalg.norm(np.array([hi[0],hi[1],nz]))
-                oR = np.linalg.norm(np.array(hi[0:3]))
-                nH = hi[3]*np.exp(-(nR-oR)/5)
-                hi[2]=nz
-                hi[3]=nH
-    
-    
-        TBn.mat_els = tmpH
-        
-        _=TBn.solve_H()
-        DP[i]=TBn.Eband[30,222]
-        wi = np.where(abs(w-DP[i]-0.2)==abs(w-DP[i]-0.2).min())[0][0]
+#    TBn = TB.copy()
+#    tmpH = TBn.mat_els.copy()
+#    npts = 10
+#    vfK=np.zeros(npts)
+#    vfM = np.zeros(npts)
+#    DP=np.zeros(npts)
+#    klin = np.linalg.norm(TB.Kobj.kpts,axis=1)
+#    zvals = np.zeros(npts)
+#    Ig = np.zeros((npts,ARPES_dict['cube']['Y'][2]))
+#    w = np.linspace(*ARPES_dict['cube']['E'])
+#    for i in range(npts):
+#        zf = 1.+0.005*(i-npts/2)
+#        zvals[i]=zf
+#        print(zf,TB.avec[:,2])
+#        TBn.avec[:,2]=zf*TB.avec[:,2]
+#        print(TBn.avec)
+#
+#    
+#        for p in TBn.basis:
+#            p.pos[2]*=zf
+#    
+#    
+#        for ti in tmpH:
+#            for hi in ti.H:
+#                nz = hi[2]*zf
+#                nR = np.linalg.norm(np.array([hi[0],hi[1],nz]))
+#                oR = np.linalg.norm(np.array(hi[0:3]))
+#                nH = hi[3]*np.exp(-(nR-oR)/5)
+#                hi[2]=nz
+#                hi[3]=nH
+#    
+#    
+#        TBn.mat_els = tmpH
+#        
+#        _=TBn.solve_H()
+#        DP[i]=TBn.Eband[30,222]
+#        wi = np.where(abs(w-DP[i]-0.2)==abs(w-DP[i]-0.2).min())[0][0]
 #        dispM = TBn.Eband[30:40,222]
 #        dispK = TBn.Eband[20:30,222]
 #        kvals = klin[30:40]
@@ -195,46 +195,46 @@ if __name__=="__main__":
 #        vfK[i]=c[0]
 #        TBn.plotting(-0.75,0.75)
 #        plt.savefig('Bi2Se3_z_{:0.04f}.jpg'.format(TBn.avec[2,2]))
-        ARPES_expmt = ARPES.experiment(TBn,ARPES_dict)
-        ARPES_expmt.datacube(ARPES_dict)
-        _,Ig_tmp = ARPES_expmt.spectral(ARPES_dict)
-#        plt.figure()
-#        plt.pcolormesh(Ig_tmp[:,0,:])
-#        plt.plot(k,Ig_tmp[:,0,wi])
-        Ig[i] = Ig_tmp[:,0,wi]
-
-        TBn = TB.copy()
-        tmpH = TBn.mat_els.copy()
-
-    
-    k = np.linspace(*ARPES_dict['cube']['Y'])
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    for i in range(npts):
-        
-        ax.plot(k,Ig[i])
-        
-        
-    def lorentz(x,A,wi,wo):
-        return A/((x-wo)**2+(wi/2)**2)
-    
-    
-    def lorentz2(x,A1,A2,wo1,wo2,wi1,wi2,B):
-        return lorentz(A1,wi1,wo1) + lorentz(A2,wi2,wo2)+B
-    
-    p0 = (0.00001,0.00001,-0.06,0.06,0.002,0.002,0.0)
-    fits = np.zeros((npts,len(p0)))
-    for i in range(npts):
-        fits[i,:],_ = curve_fit(lorentz2,k,Ig[i],p0=p0)
-        p0 = fits[i,:]
-        
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.plot(zvals,fits[:,0]/fits[:,1])
-    ax.legend(['Amplitude Left Peak','Amplitude Right Peak'])
-    ax.set_xlabel('Slab Thickness (A)')
-    ax.set_ylabel('Peak Amplitude (a.u.)')
-    ax.set_title('Bi2Se3 ARPES Intensity Variation under C-lattice Oscillation')
+#        ARPES_expmt = ARPES.experiment(TBn,ARPES_dict)
+#        ARPES_expmt.datacube(ARPES_dict)
+#        _,Ig_tmp = ARPES_expmt.spectral(ARPES_dict)
+##        plt.figure()
+##        plt.pcolormesh(Ig_tmp[:,0,:])
+##        plt.plot(k,Ig_tmp[:,0,wi])
+#        Ig[i] = Ig_tmp[:,0,wi]
+#
+#        TBn = TB.copy()
+#        tmpH = TBn.mat_els.copy()
+#
+#    
+#    k = np.linspace(*ARPES_dict['cube']['Y'])
+#    fig = plt.figure()
+#    ax = fig.add_subplot(111)
+#    for i in range(npts):
+#        
+#        ax.plot(k,Ig[i])
+#        
+#        
+#    def lorentz(x,A,wi,wo):
+#        return A/((x-wo)**2+(wi/2)**2)
+#    
+#    
+#    def lorentz2(x,A1,A2,wo1,wo2,wi1,wi2,B):
+#        return lorentz(A1,wi1,wo1) + lorentz(A2,wi2,wo2)+B
+#    
+#    p0 = (0.00001,0.00001,-0.06,0.06,0.002,0.002,0.0)
+#    fits = np.zeros((npts,len(p0)))
+#    for i in range(npts):
+#        fits[i,:],_ = curve_fit(lorentz2,k,Ig[i],p0=p0)
+#        p0 = fits[i,:]
+#        
+#    fig = plt.figure()
+#    ax = fig.add_subplot(111)
+#    ax.plot(zvals,fits[:,0]/fits[:,1])
+#    ax.legend(['Amplitude Left Peak','Amplitude Right Peak'])
+#    ax.set_xlabel('Slab Thickness (A)')
+#    ax.set_ylabel('Peak Amplitude (a.u.)')
+#    ax.set_title('Bi2Se3 ARPES Intensity Variation under C-lattice Oscillation')
     #    fig = plt.figure()
 #    plt.plot(zvals,DP)
 #    plt.figure()

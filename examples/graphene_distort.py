@@ -40,7 +40,7 @@ SOFTWARE.
 
 import sys
 
-sys.path.append('C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/')
+sys.path.append('/Users/ryanday/Documents/UBC/TB_ARPES/TB_ARPES-master 4/')
 
 
 
@@ -133,16 +133,6 @@ def rebond(matels,c0,t,lam):
         if np.linalg.norm(cv)>0.0:
             tmp_matels[hi].H[0][-1] = t_prime(np.linalg.norm(cv))
     return tmp_matels
-    
-#np.array([0,a/np.sqrt(3)+da,0]),
-#                  np.array([(a/np.sqrt(3)+da)*np.sqrt(0.75),(a/np.sqrt(3)+da)*0.5,0]),
-#                  np.array([(a/np.sqrt(3)+da)*np.sqrt(0.75),a*2.5/np.sqrt(3)-0.5*da,0]),
-#                  np.array([0,2*a/np.sqrt(3)-da,0]),
-#                  np.array([-(a/np.sqrt(3)+da)*np.sqrt(0.75),a*2.5/np.sqrt(3)-0.5*da,0]),
-#                  np.array([-(a/np.sqrt(3)+da)*np.sqrt(0.75),(a/np.sqrt(3)+da)*0.5,0]),
-#                  np.array([0,0,1.75])]
-
-
 
 if __name__=="__main__":
     
@@ -164,7 +154,7 @@ if __name__=="__main__":
     Basis_args = {'atoms':[0,0,0,0,0,0,1],
 			'Z':{0:6,1:3},
 			'orbs':[["21z"],["21z"],["21z"],["21z"],["21z"],["21z"],["20"]],
-			'pos':[np.zeros(3),np.array([0.0,a/np.sqrt(3.0),0.0]),np.array([a*0.5,a*np.sqrt(0.75),0]),np.array([0.5*a,2.5/np.sqrt(3)*a,0]),np.array([a,np.sqrt(3)*a,0]),np.array([a,np.sqrt(1./3)*a,0])],
+			'pos':[np.zeros(3),np.array([0.0,a/np.sqrt(3.0),0.0]),np.array([a*0.5,a*np.sqrt(0.75),0]),np.array([0.5*a,2.5/np.sqrt(3)*a,0]),np.array([a,np.sqrt(3)*a,0]),np.array([a,np.sqrt(1./3)*a,0]),np.array([0.0,0.71014,1.743])],
             'spin':spin_args}
 
  ######################### LATTICE DEFINITION ###############################   
@@ -173,9 +163,10 @@ if __name__=="__main__":
     
     K = np.array([0.85138012,1.47463363,0])
     M = np.array([0,1.47463363,0])
+    G = np.zeros(3)
     K_args = {'type':'A',
           'avec':avec,
-			'pts':[K,G,M,K],
+			'pts':[K,G,K],
 			'grain':81,
 			'labels':['K','$\Gamma$','M','K']}
  ######################### K-PATH DEFINITION ###############################   
@@ -183,9 +174,13 @@ if __name__=="__main__":
     
 ######################### HAMILTONIAN DEFINITION ##############################   
     t0=-3.07
-    SK = {"021":-0.44,"002211S":0.0,"002211P":t0,"120":0,"012210S":0.0} 
+ #   SK = {"021":-0.44,"002211S":0.0,"002211P":t0,"120":0,"012210S":0.0} 
+    SKCC = {"021":-2.55,"120":-1.0,"002211S":0.0,"002211P":t0}
+    SKCC2 = {"002211P":t0/10,"002211S":0.0}
+    SKLiC = {"012210S":1.0,"112200S":0.0,"002211S":0.0,"002211P":0.0,}
     CUT,REN,OFF,TOL=2.4,1,0.0,0.001	
-    
+    CUT = [1.6,1.9]#,2.5]
+    SK = [SKCC,SKLiC]#,SKCC2]
     Ham_args = {'type':'SK',
 			'V':SK,
           'avec':avec,
@@ -203,8 +198,8 @@ if __name__=="__main__":
     
     Kpt =(0,0)#(0.8514,1.4746)
     dk = 0.2
-    Nk = 101
-    ARPES_args = {'cube':{'X':[Kpt[0]-dk,Kpt[0]+dk,Nk],'Y':[Kpt[1]-dk,Kpt[1]+dk,Nk],'kz':0.0,'E':[-1.5,0.5,200]},
+    Nk = 41
+    ARPES_args = {'cube':{'X':[Kpt[0]-dk,Kpt[0]+dk,Nk],'Y':[Kpt[1]-dk,Kpt[1]+dk,Nk],'kz':0.0,'E':[-5,0.5,200]},
             'SE':[0.02,0.00],
             'directory':'C:Users/rday/Documents/graphene/',
             'hv': 50,
@@ -231,7 +226,7 @@ if __name__=="__main__":
 #    TB.mat_els = rndm_offset(TB.mat_els,len(TB.basis),DE = -0.5) #ADD RANDOM-ON SITE ENERGY
 #    TB.mat_els = rndm_bond(TB.mat_els,len(TB.basis),DE = -0.5) #ADD RANDOM-HOPPING ENERGY
 #    TB.mat_Els = mass_term(TB.mat_els,DE=0.9)
-#    TB.mat_els = kek_O(TB.mat_els,0.1) #CHANGE HOPPINGS FOR 1 RING
+#    TB.mat_els = kek_O(TB.mat_els,0.3) #CHANGE HOPPINGS FOR 1 RING
     
 #    TB.mat_els =  rebond(TB.mat_els,a/np.sqrt(3),t0,0.5)
     TB.solve_H() #solve banfstructure over K-path defined by the K_args dictionary

@@ -5,17 +5,14 @@ Created on Thu Sep 13 11:47:18 2018
 @author: rday
 """
 import sys
-sys.path.append('C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/')
+sys.path.append('/Users/ryanday/Documents/UBC/TB_ARPES/TB_ARPES-master 4/')
 
 import numpy as np
-import matplotlib.pyplot as plt
 import ubc_tbarpes.build_lib as build_lib
 import ubc_tbarpes.NBL_TB as CuTB
-import ubc_tbarpes.SK as SKlib
 import ubc_tbarpes.ARPES_lib as ARPES
 import ubc_tbarpes.operator_library as ops
 
-import ubc_tbarpes.slab as slib
 
 
 def SK_extend(SK,avec,alpha,d):
@@ -42,7 +39,7 @@ if __name__=="__main__":
     a =  3.56
 #    avec = np.array([[a/2,a/2,0],[0,a/2,a/2],[a/2,0,a/2]])
 #    _,_,Nr = slib.gen_surface(avec,np.array([1,1,1])),TB.basis
-    avec = 2.51730014/2.51735729*np.array([[-1.2587, -0.7267,  2.0554],[ 1.2587, -0.7267,  2.0554],[-0.    ,  1.4534,  2.0554]])
+    avec = np.around(2.51730014/2.51735729*np.array([[-1.2587, -0.7267,  2.0554],[ 1.2587, -0.7267,  2.0554],[-0.    ,  1.4534,  2.0554]]),4)
     
     CUT,REN,OFF,TOL=3.5,1,0,0.001
     G,X,W,L,K = np.zeros(3),np.array([0,0.5,0.5]),np.array([0.25,0.75,0.5]),np.array([0.5,0.5,0.5]),np.array([0.375,0.75,0.375])
@@ -54,19 +51,19 @@ if __name__=="__main__":
 #    d = a/np.sqrt(2)
 #    SK = SKlib.eta_dict_to_SK(eta,0.67,np.sqrt(0.5)*a)
 #    CUT,SK = SK_extend(SK,avec,6./d,d)
-    fnm = 'C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master//examples/cu_params_pan.txt'
+    fnm = 'cu_params_pan.txt'
     tol = 0.0001
     SK,CUT = CuTB.gen_Cu_SK(avec,fnm,tol)
     OFF = CuTB.pair_pot(fnm,avec)/(-18)+1.55#-18#
-    SK = SK[0]
-    CUT = float(CUT[0])
+#    SK = SK[0]
+#    CUT = float(CUT[0])
     
 #    SK = {"040":-2.408,"031":4.00,"032":-5.00,"004400S":-0.05652552534871882,"003410S":0.10235422439959821,"004302S":-0.036994370838375354,
 #          "003311S": 0.21924434953910618,"003311P":0.0,"003312S":-0.053580360262257626,"003312P":0.013802597521248922,"003322S":-0.012755569410002986,
 #          "003322P":0.0033741803350209204,"003322D":-0.0012785070616424799}
 #    txtfile = 'C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/examples/Cu.txt'
 
-    spin = {'bool':False,'soc':True,'lam':{0:0.1}}
+    spin = {'bool':True,'soc':True,'lam':{0:0.1}}
 
     Bd = {'atoms':[0],
 			'Z':{0:29},
@@ -76,7 +73,7 @@ if __name__=="__main__":
 
     Kd = {'type':'F',
           'avec':avec,
-			'pts':[G,X,W,L,G,K],
+			'pts':[-G,-X,-W,-L,-G,-K],
 			'grain':100,
 			'labels':['$\Gamma$','X','W','L','$\Gamma$','K']}
 
@@ -99,13 +96,15 @@ if __name__=="__main__":
     
     Bd = build_lib.gen_basis(Bd)
     Kobj = build_lib.gen_K(Kd)
-    TB = build_lib.gen_TB(Bd,Hd,Kobj,slab_dict)
+    TB = build_lib.gen_TB(Bd,Hd,Kobj)
     
 
     
     
     G,M,K=np.zeros(3),np.array([0.5,0.5,0.0]),np.array([1./3,2./3,0.0])
-    Kd['type']='F'
+    G,M,K = np.zeros(3),np.array([1.24795,0.72052,0.0]),np.array([0.83197,1.44103,0.0])
+    
+    Kd['type']='A'
     Kd['avec']=TB.avec
     Kd['pts'] = [G,M,K,G]
     TB.Kobj = build_lib.gen_K(Kd)
@@ -125,29 +124,29 @@ if __name__=="__main__":
 #    TB.Kobj.labels=['0','2pi']
 #    TB.solve_H()
 ###    TB.plotting(-1.5,1.5)
-###    
+####    
 #    Svx = ops.S_vec(len(TB.basis),np.array([1,0,0]))
 #    Svy = ops.S_vec(len(TB.basis),np.array([0,1,0]))
-#    Dsurf = np.identity(len(TB.basis))*np.array([np.exp(bi.depth/10) for bi in TB.basis])
-#    Sxs = np.dot(Svx,Dsurf)
-#    Sys = np.dot(Svy,Dsurf)
-#    SX = ops.O_path(Sxs,TB,Kobj=TB.Kobj,vlims=(-0.25,0.25),Elims=(-0.7,-0.4),degen=True)
-#    SY = ops.O_path(Sys,TB,Kobj=TB.Kobj,vlims=(-0.25,0.25),Elims=(-0.7,-0.4),degen=True)
+#    Sproj = ops.surface_proj(TB.basis,10)
+#    Sxs = np.dot(Svx,Sproj)
+#    Sys = np.dot(Svy,Sproj)
+#    SX = ops.O_path(Sxs,TB,Kobj=TB.Kobj,vlims=(-0.25,0.25),Elims=(-1,-0.),degen=True)
+#    SY = ops.O_path(Sys,TB,Kobj=TB.Kobj,vlims=(-0.25,0.25),Elims=(-1,-0.),degen=True)
+#    
     
-    
-    ARPES_dict={'cube':{'X':[-2,2,140],'Y':[-2,2,140],'kz':0.0,'E':[-0.75,0.05,120]},
-        'SE':[0.005],
-        'directory':'/Users/ryanday/Documents/UBC/TB_ARPES-082018/examples/FeSe',
-        'hv': 50,
-        'pol':np.array([0,1,0]),
-        'mfp':7.0,
-        'slab':True,
-        'resolution':{'E':0.005,'k':0.01},
-        'T':[True,10.0],
-        'W':4.0,
-        'angle':0,
-        'spin':None,
-        'slice':[False,-0.005]}
-    
-    ARPES_expmt = ARPES.experiment(TB,ARPES_dict)
-    ARPES_expmt.plot_gui(ARPES_dict)
+#    ARPES_dict={'cube':{'X':[-2,2,140],'Y':[-2,2,140],'kz':0.0,'E':[-0.75,0.05,120]},
+#        'SE':[0.005],
+#        'directory':'/Users/ryanday/Documents/UBC/TB_ARPES-082018/examples/FeSe',
+#        'hv': 50,
+#        'pol':np.array([0,1,0]),
+#        'mfp':7.0,
+#        'slab':True,
+#        'resolution':{'E':0.005,'k':0.01},
+#        'T':[True,10.0],
+#        'W':4.0,
+#        'angle':0,
+#        'spin':None,
+#        'slice':[False,-0.005]}
+#    
+#    ARPES_expmt = ARPES.experiment(TB,ARPES_dict)
+#    ARPES_expmt.plot_gui(ARPES_dict)
