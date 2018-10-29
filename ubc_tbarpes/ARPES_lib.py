@@ -34,6 +34,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import ubc_tbarpes.klib as K_lib
+import ubc_tbarpes.orbital as olib
 import ubc_tbarpes.adaptive_int as adint
 from scipy.interpolate import interp1d
 import ubc_tbarpes.Ylm as Ylm 
@@ -100,7 +101,7 @@ class experiment:
         
         
         
-    def truncate_model(self):
+    def truncate_model(self,local_basis):
         '''
         For slab calculations, the number of basis states becomes a significant memory load, as well as a time bottleneck.
         In reality, an ARPES calculation only needs the small number of basis states near the surface. Then for slab-calculations,
@@ -109,15 +110,15 @@ class experiment:
         with this projection are retained, while remainders are not
         
         '''
-        depths = np.array([abs(oi.depth) for oi in self.TB.basis])
+        depths = np.array([abs(oi.depth) for oi in local_basis])
         i_start = np.where(depths<2*self.mfp)[0][0]
 
         tmp_basis = []
         #CASE 1: BASIS INCLUDES BOTH SPIN DOF
-        if self.TB.basis[0].spin!=self.TB.basis[int(len(self.TB.basis)/2)].spin:
+        if local_basis[0].spin!=local_basis[int(len(local_basis)/2)].spin:
             
-            switch = (int(len(self.TB.basis)/2))
-            tmp_basis = self.TB.basis[i_start:switch] + self.TB.basis[(switch+i_start):]
+            switch = (int(len(local_basis)/2))
+            tmp_basis = local_basis[i_start:switch] + local_basis[(switch+i_start):]
             
             Evec = np.zeros((np.shape(self.Ev)[0],len(tmp_basis),np.shape(self.Ev)[-1]),dtype=complex)
             
@@ -126,7 +127,7 @@ class experiment:
         #CASE 2: BASIS IS SPINLESS
         else:
             
-            tmp_basis = self.TB.basis[i_start:]
+            tmp_basis = local_basis[i_start:]
             Evec=self.Ev[:,i_start:,:]
         return tmp_basis,Evec
     
@@ -155,13 +156,14 @@ class experiment:
         
 
         tmp_basis = self.rot_basis()
+
         print('Initiate diagonalization: ')
         self.diagonalize()
         print('Diagonalization Complete.')
         nstates = len(tmp_basis)
         if self.truncate:
 
-            tmp_basis,self.Ev = self.truncate_model()
+            tmp_basis,self.Ev = self.truncate_model(tmp_basis)
         
         dE = (self.cube[2][1]-self.cube[2][0])/self.cube[2][2]
         
@@ -304,9 +306,9 @@ class experiment:
             for p in range(len(self.pks)):
                 if abs(Mspin[p]).max()>0:
                     I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= abs(np.dot(Mspin[p,int((ARPES_dict['spin'][0]+1)/2),:],pol))**2*np.imag(-1./(np.pi*(w-self.pks[p,2]-SE[p]+0.01j)))*fermi
-        kxg = (self.dk/(self.cube[0][1]-self.cube[0][0]) if abs(self.cube[0][1]-self.cube[0][0])>0 else 0)
-        kyg = (self.dk/(self.cube[1][1]-self.cube[1][0]) if abs(self.cube[1][1]-self.cube[1][0])>0 else 0)
-        wg = (self.dE/(self.cube[2][1]-self.cube[2][0]) if abs(self.cube[2][1]-self.cube[2][0]) else 0)
+        kxg = (self.cube[0][2]*self.dk/(self.cube[0][1]-self.cube[0][0]) if abs(self.cube[0][1]-self.cube[0][0])>0 else 0)
+        kyg = (self.cube[1][2]*self.dk/(self.cube[1][1]-self.cube[1][0]) if abs(self.cube[1][1]-self.cube[1][0])>0 else 0)
+        wg = (self.cube[2][2]*self.dE/(self.cube[2][1]-self.cube[2][0]) if abs(self.cube[2][1]-self.cube[2][0]) else 0)
         
         Ig = nd.gaussian_filter(I,(kxg,kyg,wg))
         
@@ -479,14 +481,13 @@ class experiment:
         tmp_base = []
         if abs(self.ang)>0.0:
             for o in range(len(self.TB.basis)):
+                oproj = np.copy(self.TB.basis[o].proj)
+                l = self.TB.basis[o].l
+                nproj,_ = olib.rot_projection(l,oproj,[np.array([0,0,1]),self.ang])
                 tmp = self.TB.basis[o].copy()
-                proj_arr = np.zeros(np.shape(tmp.proj),dtype=float)
-                for p in range(len(tmp.proj)):
-                    pnew = (tmp.proj[p][0]+1.0j*tmp.proj[p][1])*np.exp(-1.0j*tmp.proj[p][-1]*self.ang)
-                    tmp_proj = np.array([np.around(np.real(pnew),5),np.around(np.imag(pnew),5),tmp.proj[p][2],tmp.proj[p][3]])
-                    proj_arr[p] = tmp_proj
+                tmp.proj = nproj
                 tmp_base.append(tmp)
-                tmp_base[-1].proj = proj_arr
+
             return tmp_base
         else:
             return self.TB.basis
