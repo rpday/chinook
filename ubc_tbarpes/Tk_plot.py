@@ -92,9 +92,18 @@ class plot_intensity_interface:
         sp1.set_clim(vmin=0,vmax=self.Imat.max()*1.05)
         sp2.set_clim(vmin=0,vmax=self.Imat.max()*1.05)
         sp3.set_clim(vmin=0,vmax=self.Imat.max()*1.05)
-        asp1 = (self.x[1]-self.x[0])/(self.y[1]-self.y[0])
-        asp2 = (self.w[1]-self.w[0])/(self.y[1]-self.y[0])
-        asp3 = (self.w[1]-self.w[0])/(self.x[1]-self.x[0])
+        try:
+            asp1 = (self.x[1]-self.x[0])/(self.y[1]-self.y[0])
+        except ZeroDivisionError:
+            asp1=1.0
+        try:
+            asp2 = (self.w[1]-self.w[0])/(self.y[1]-self.y[0])
+        except ZeroDivisionError:
+            asp2=1.0
+        try:
+            asp3 = (self.w[1]-self.w[0])/(self.x[1]-self.x[0])
+        except ZeroDivisionError:
+            asp3 =1.0
         ax1.set_aspect(asp1)
         ax2.set_aspect(asp2)
         ax3.set_aspect(asp3)
@@ -198,9 +207,38 @@ class plot_intensity_interface:
             pol_y.grid(row=4,column=2)
             pol_z.grid(row=4,column=3)
             #Name of New Map -- option of string or Blank
-            mat_nm_label = Tk.Label(master=cwin,text='Map Name: ').grid(row=5,column=0)
+            
+            ###SELF ENERGY
+            def _self_energy():
+                
+                sewin = Tk.Toplevel()
+                sewin.wm_title('SELF ENERGY')
+                
+                SE_label = Tk.Label(master=sewin,text='Im(Self-Energy)').grid(row=0,column=0)
+                SE_entry = Tk.Entry(master=sewin)
+                SE_entry.grid(row=0,column=1)
+
+                def _se_infobox():
+                    messagebox.showinfo('Information','The imaginary part of the self energy can be entered here. The absolute value of the function will be taken, preserving particle-hole symmetry and causality.',parent=sewin)
+            
+                def _quit_sub():
+                    sewin.quit()
+                    sewin.destroy()
+                
+                se_info_button = Tk.Button(master=sewin,text='Info',command=_se_infobox)
+                se_info_button.grid(row=1,column=0,columnspan=1)        
+                
+                SEquit = Tk.Button(master=sewin,text='Quit',command=_quit_sub)
+                SEquit.grid(row=1,column=1)
+                
+                sewin.mainloop()
+            
+            SE_button = Tk.Button(master=cwin,text='Self-Energy',command=_self_energy)
+            SE_button.grid(row=5,column=0)
+            
+            mat_nm_label = Tk.Label(master=cwin,text='Map Name: ').grid(row=6,column=0)
             mat_nm = Tk.Entry(master=cwin)
-            mat_nm.grid(row=5,column=1)
+            mat_nm.grid(row=6,column=1)
         
             
             #Add a new map to the list of available maps
@@ -224,7 +262,7 @@ class plot_intensity_interface:
                 mat_listbox.insert("end",mat_name)            
             
             add_button = Tk.Button(master=cwin,text ='Add Map ',command=_add_map)
-            add_button.grid(row=6,column=1,columnspan=2)            
+            add_button.grid(row=6,column=2,columnspan=1)            
             
             #add option of operating on datasets
             def _gen_map():
@@ -400,9 +438,6 @@ class plot_intensity_interface:
                         
                 print('Export Complete')
 
-#                try:
-#                    
-#                    self.Imat = self.Imat_dict[mat_listbox.get(selected)]
                     
                 
                                 

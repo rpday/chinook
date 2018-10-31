@@ -44,7 +44,7 @@ import ubc_tbarpes.Tk_plot as Tk_plot
 import datetime as dt
 
 
-
+####PHYSICAL CONSTANTS RELEVANT TO CALCULATION#######
 hb = 6.626*10**-34/(2*np.pi)
 c  = 3.0*10**8
 q = 1.602*10**-19
@@ -59,7 +59,23 @@ Lpd = {0:[1],1:[0,2],2:[1,3],3:[2,4]}
 
 ###
 class experiment:
+    '''
+    The experiment object is at the centre of the ARPES matrix element calculation.
+    This object keeps track of the experimental geometry as well as a local copy of the tight-binding model
+    and its dependents. Such a copy is used to avoid corruption of these objects in the global space during a given run
+    of the ARPES experiment.
     
+    args: TB -- instance of a tight-binding model object
+        ARPES_dict -- dictionary of relevant experimental parameters including:
+            'hv': photon energy (float,eV), 'mfp': mean-free path (float,Ang.),
+            'dE': energy resolution (float, FWHM), 'dk': momentum resolution (float, 1/Ang)
+            'ang': rotation of sample about normal emission (z) axis (float, radian),
+            'T': Temperature of sample (float, Kelvin)
+            'W': work function (float, eV)
+            'cube': momentum and energy domain (dictionary: 'kz' is float, all others are list or tuple of floats Xo,Xf,dX)
+        if running a slab calculation, the eigenvectors are truncated below a certain depth
+    
+    '''
     def __init__(self,TB,ARPES_dict):#hv,pol,mfp,dE,dk,T,ang=0.0,W=4.0):
         self.TB = TB
         self.hv = ARPES_dict['hv']
@@ -111,7 +127,7 @@ class experiment:
         
         '''
         depths = np.array([abs(oi.depth) for oi in local_basis])
-        i_start = np.where(depths<2*self.mfp)[0][0]
+        i_start = np.where(depths<4*self.mfp)[0][0]
 
         tmp_basis = []
         #CASE 1: BASIS INCLUDES BOTH SPIN DOF
@@ -231,7 +247,7 @@ class experiment:
                 o = basis[coeff[0]]
 
                 L = [lp for lp in ([o.l-1,o.l+1] if (o.l-1)>=0 else [o.l+1])]
-                pref = o.sigma*coeff[1]*np.exp((-self.mfp+0.0j*self.kz)*abs(o.depth))#*np.exp(1.0j*(-self.kz*o.pos[2]-self.X[int(self.pks[i,0]),int(self.pks[i,1])]*o.pos[0]-self.Y[int(self.pks[i,0]),int(self.pks[i,1])]*o.pos[1]))
+                pref = o.sigma*coeff[1]*np.exp((-1./self.mfp)*abs(o.depth))#*np.exp(1.0j*(-self.kz*o.pos[2]-self.X[int(self.pks[i,0]),int(self.pks[i,1])]*o.pos[0]-self.Y[int(self.pks[i,0]),int(self.pks[i,1])]*o.pos[1]))
                 for lp in L:
 
                     tmp_B = B['{:d}-{:d}-{:d}-{:d}'.format(o.atom,o.n,o.l,lp)](cube[1])
@@ -289,10 +305,12 @@ class experiment:
             sv = ARPES_dict['spin'][1]/np.linalg.norm(ARPES_dict['spin'][1])
             th = np.arccos(sv[2])
             ph = np.arctan2(sv[1],sv[0])
+            if abs(self.ang)>0:
+                ph+=self.ang
             Smat = np.array([[np.cos(th/2),np.exp(-1.0j*ph)*np.sin(th/2)],[np.sin(th/2),-np.exp(-1.0j*ph)*np.cos(th/2)]])
             Mspin = np.swapaxes(np.dot(Smat,self.Mk),0,1)
  
-        SE = abs(poly(self.pks[:,2],ARPES_dict['SE'])) #absolute value mandates that self energy be particle-hole symmetric, i.e. SE*(k,w) = -SE(k,-w). Here we define the imaginary part explicitly only!
+        SE = abs_poly(self.pks[:,2],ARPES_dict['SE']) #absolute value mandates that self energy be particle-hole symmetric, i.e. SE*(k,w) = -SE(k,-w). Here we define the imaginary part explicitly only!
         if self.T[0]:
             fermi = vf(w/(kb*self.T[1]/q))
         else:
@@ -514,14 +532,24 @@ class experiment:
         If the ARPES calculation is being done over a rotated k-space, we need to rotate our definitions of the spin
         basis as well, and so the phi values in the 'ax_dict' will be increased by the angle by which we are rotating the
         k-space
+        args: spin_ax -- numpy array indicating the vector direction of the spin projection (numpy array of 3 float)
+        return spin_mat --numpy array complex of size NxN with N the basis length
         '''
         
         if spin_ax is not None:
             spin_mat = np.zeros((len(self.TB.basis),len(self.TB.basis)))
-            ax_dict = {'x':[np.pi/2,0.0],'y':[np.pi/2,np.pi/2],'z':[0,0]}
+            spin_ax = spin_ax/np.linalg.norm(spin_ax)
+            th = np.arccos(spin_ax[2])
+            ph = np.arctan2(spin_ax[1],spin_ax[0])
+#            ax_dict = {'x':[np.pi/2,0.0],'y':[np.pi/2,np.pi/2],'z':[0,0]}
             if abs(self.ang)>0:
-                ax_dict[spin_ax][1]-=self.ang
-            US = np.array([[-np.cos(ax_dict[spin_ax][0]/2)*np.exp(-1.0j*ax_dict[spin_ax][1]),np.sin(ax_dict[spin_ax][0]/2)],[np.sin(ax_dict[spin_ax][0]/2)*np.exp(-1.0j*ax_dict[spin_ax][1]),np.cos(ax_dict[spin_ax][0]/2)]])
+                print(self.ang)
+                ph -=self.ang
+#                ax_dict[spin_ax][1]-=self.ang
+            US = np.array([[-np.cos(th/2)*np.exp(-1.0j*ph),np.sin(th/2)],[np.sin(th/2)*np.exp(-1.0j*ph),np.cos(th/2)]])
+#            US = np.array([[-np.cos(ax_dict[spin_ax][0]/2)*np.exp(-1.0j*ax_dict[spin_ax][1]),np.sin(ax_dict[spin_ax][0]/2)],[np.sin(ax_dict[spin_ax][0]/2)*np.exp(-1.0j*ax_dict[spin_ax][1]),np.cos(ax_dict[spin_ax][0]/2)]])
+            print(US)
+            
             spin_mat = np.kron(US,np.identity(int(len(self.TB.basis)/2)))
     
             return spin_mat
@@ -632,6 +660,13 @@ def poly(x,args):
         return 0
     else:
         return x**(len(args)-1)*args[-1] + poly(x,args[:-1])
+    
+    
+def abs_poly(x,args):
+    if len(args)==0:
+        return 0
+    else:
+        return abs(x)**(len(args)-1)*abs(args[-1]) + poly(x,args[:-1])
     
     
     

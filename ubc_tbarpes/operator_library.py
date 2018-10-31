@@ -216,7 +216,7 @@ def fatbs(proj,TB,Kobj=None,vlims=(0,0),Elims=(0,0),degen=False):
     except ValueError:
         print('projections need to be passed as list or array of type [index,projection]')
     
-    
+        Ovals = None
     
     return Ovals
     
