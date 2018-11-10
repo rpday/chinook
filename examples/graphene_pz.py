@@ -62,7 +62,7 @@ The basis is designed as shown here
 '''
 
 
-def rndom_offset(matels,LB,DE):
+def rndm_offset(matels,LB,DE):
     '''
     Quick function for introducing a random-energy offset to one of the supercell atoms.
     args:
@@ -79,30 +79,74 @@ def rndom_offset(matels,LB,DE):
                 if np.linalg.norm(matels[hi].H[ii][:3])==0.0:
                     tmp_matels[hi].H[ii] = [0.0,0.0,0.0,matels[hi].H[ii][-1]+DE]
     return tmp_matels
+
+
+def mass_term(matels,DE):
+    
+    tmp_matels = matels
+    for hi in range(len(matels)):
+        if np.mod(matels[hi].i,2)==0 and matels[hi].i==matels[hi].j:
+            for ii in range(len(matels[hi].H)):
+                if np.linalg.norm(matels[hi].H[ii][:3])==0.0:
+                    tmp_matels[hi].H[ii] = [0.0,0.0,0.0,matels[hi].H[ii][-1]+DE]
+    return tmp_matels
+
+
+def rndm_bond(matels,LB,DE):
+    
+    i_1 = int(np.random.random()*LB)
+    i_2 = int(np.random.random()*LB)
+    
+    tmp_matels = matels
+    find_bond=False
+    while find_bond==False:
+        for hi in range(len(matels)):
+            if (matels[hi].i==i_1 and matels[hi].j==i_2) or (matels[hi].i==i_2 and matels[hi].j==i_1):
+                for ii in range(len(matels[hi].H)):
+                    if np.linalg.norm(matels[hi].H[ii][:3])>0.0:
+                        tmp_matels[hi].H[ii][-1] = matels[hi].H[ii][-1]+DE
+                        print('Energy offset of {:0.04f} eV added to orbital {:d} bonding with orbital {:d}'.format(DE,i_1,i_2))
+
+                        find_bond=True
+        i_2 = int(np.random.random()*LB)
+        
+    return tmp_matels
+
+
+def kek_O(matels,DE):
+    
+    list_ij = [(0,1),(0,3),(1,2),(2,5),(4,5),(3,4)]
+    
+    tmp_matels = matels
+    for hi in range(len(matels)):
+        test_tup = (matels[hi].i,matels[hi].j)
+        if test_tup in list_ij:
+            tmp_matels[hi].H[0][-1] = matels[hi].H[0][-1]+DE
+    return tmp_matels
     
 
 
 if __name__=="__main__":
     
-    spin_args = {'bool':False,'soc':True,'lam':{0:0}}
+    spin_args = {'bool':True,'soc':True,'lam':{0:0.005}}
 
  ######################### LATTICE DEFINITION ###############################   
     a,c =  2.46,10.0
-   # avec = np.array([[-a/2,a*np.sqrt(3/4.),0.0],[a/2,a*np.sqrt(3/4.),0.0],[0.0,0.0,c]]) #standard unit cell
-    avec = np.array([[-a*1.5,a*np.sqrt(0.75),0],[0,np.sqrt(3)*a,0],[0,0,c]]) #supercell
+    avec = np.array([[-a/2,a*np.sqrt(3/4.),0.0],[a/2,a*np.sqrt(3/4.),0.0],[0.0,0.0,c]]) #standard unit cell
+#    avec = np.array([[-a*1.5,a*np.sqrt(0.75),0],[0,np.sqrt(3)*a,0],[0,0,c]]) #supercell
 
-#    Basis_args = {'atoms':[0,0],
-#			'Z':{0:6},
-#			'orbs':[["21z"],["21z"]],
-#			'pos':[np.zeros(3),np.array([0.0,a/np.sqrt(3.0),0.0])],
-#            'spin':spin_args}
+    Basis_args = {'atoms':[0,0],
+			'Z':{0:6},
+			'orbs':[["21z"],["21z"]],
+			'pos':[np.zeros(3),np.array([0.0,a/np.sqrt(3.0),0.0])],
+            'spin':spin_args}
     
     ###SUPERCELL
-    Basis_args = {'atoms':[0,0,0,0,0,0],
-			'Z':{0:6},
-			'orbs':[["21z"],["21z"],["21z"],["21z"],["21z"],["21z"]],
-			'pos':[np.zeros(3),np.array([0.0,a/np.sqrt(3.0),0.0]),np.array([a*0.5,a*np.sqrt(0.75),0]),np.array([0.5*a,2.5/np.sqrt(3)*a,0]),np.array([a,np.sqrt(3)*a,0]),np.array([a,np.sqrt(1./3)*a,0])],
-            'spin':spin_args}
+#    Basis_args = {'atoms':[0,0,0,0,0,0],
+#			'Z':{0:6},
+#			'orbs':[["21z"],["21z"],["21z"],["21z"],["21z"],["21z"]],
+#			'pos':[np.zeros(3),np.array([0.0,a/np.sqrt(3.0),0.0]),np.array([a*0.5,a*np.sqrt(0.75),0]),np.array([0.5*a,2.5/np.sqrt(3)*a,0]),np.array([a,np.sqrt(3)*a,0]),np.array([a,np.sqrt(1./3)*a,0])],
+#            'spin':spin_args}
 
  ######################### LATTICE DEFINITION ###############################   
  
@@ -110,9 +154,10 @@ if __name__=="__main__":
     
     K = np.array([0.85138012,1.47463363,0])
     M = np.array([0,1.47463363,0])
+    G = np.zeros(3)
     K_args = {'type':'A',
           'avec':avec,
-			'pts':[K,G,M,K],
+			'pts':[G,M,K],
 			'grain':81,
 			'labels':['K','$\Gamma$','M','K']}
  ######################### K-PATH DEFINITION ###############################   
@@ -137,19 +182,22 @@ if __name__=="__main__":
 ######################### ARPES EXP. DEFINITION ##############################   
 
     
-    Kpt =0.0# 1.7027
-    ARPES_args = {'cube':{'X':[Kpt-0.2,Kpt+0.2,101],'Y':[-0.2,0.2,101],'kz':0.0,'E':[-1,0.5,200]},
+    Kpt =1.7027
+    dk = 0.1
+    Nk = 50
+    ARPES_args = {'cube':{'X':[Kpt-dk,Kpt+dk,Nk],'Y':[-dk,dk,Nk],'kz':0.0,'E':[-1.5,0.5,200]},
             'SE':[0.02,0.00],
-            'directory':'C:\\Users\\rday\\Documents\\TB_ARPES\\2018\\TB_ARPES_2018\\FeSe',
-            'hv': 50,
-            'pol':np.array([0,np.sqrt(0.5),-np.sqrt(0.5)]),
+            'directory':'C:Users/rday/Documents/graphene/',
+            'hv': 200,
+            'pol':np.array([0,1,0]),
             'mfp':7.0,
             'resolution':{'E':0.02,'k':0.003},
             'T':[False,10.0],
             'W':4.0,
             'angle':0.0,
             'spin':None,
-            'slice':[False,-0.2]}
+            'slice':[False,-0.2]}#,
+           # 'Brads':{'0-2-1-0':0.0,'0-2-1-2':100.0}}
     
     
 ######################### ARPES EXP. DEFINITION ##############################   
@@ -162,8 +210,11 @@ if __name__=="__main__":
     Kobj = build_lib.gen_K(K_args)
     TB = build_lib.gen_TB(Basis_args,Ham_args,Kobj)
     
-    TB.mat_els = rndom_offset(TB.mat_els,len(TB.basis),0.5) #ADD RANDOM-ON SITE ENERGY of 500 meV
-    
+#    TB.mat_els = rndm_offset(TB.mat_els,len(TB.basis),DE = -0.5) #ADD RANDOM-ON SITE ENERGY
+#    TB.mat_els = rndm_bond(TB.mat_els,len(TB.basis),DE = -0.5) #ADD RANDOM-HOPPING ENERGY
+#    TB.mat_Els = mass_term(TB.mat_els,DE=0.9)
+#    TB.mat_els = kek_O(TB.mat_els,0.1) #CHANGE HOPPINGS FOR 1 RING
+
     TB.solve_H() #solve banfstructure over K-path defined by the K_args dictionary
     TB.plotting() #plot the bandstructure
     

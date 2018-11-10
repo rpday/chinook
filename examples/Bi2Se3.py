@@ -5,7 +5,7 @@ Created on Fri Feb 02 20:05:23 2018
 @author: rday
 """
 import sys
-sys.path.append('/Users/ryanday/Documents/UBC/TB_ARPES/TB_ARPES-master 02102018')
+sys.path.append('C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/')
 
 
 import numpy as np
@@ -62,7 +62,7 @@ if __name__=="__main__":
 
 
     spin = {'bool':True,'soc':True,'lam':{0:2.066*2./3,1:0.3197*2./3,2:0.3632*2./3}}
-
+    
     Bd = {'atoms':[1,0,2,0,1],
 			'Z':{0:83,1:34,2:34},
 			'orbs':[["40","41x","41y","41z"],["60","61x","61y","61z"],["40","41x","41y","41z"],["60","61x","61y","61z"],["40","41x","41y","41z"]],
@@ -71,7 +71,7 @@ if __name__=="__main__":
 
     Kd = {'type':'A',
           'avec':avec,
-			'pts':[K,G,M],
+			'pts':[K+np.array([0,0,10.0]),G+np.array([0,0,10.0]),M+np.array([0,0,10.0])],
 			'grain':30,
 			'labels':['K','$\Gamma$','M']}
 
@@ -93,16 +93,16 @@ if __name__=="__main__":
       'termination':(1,1)}
  
 
-    ARPES_dict={'cube':{'X':[0.0,0.0,1],'Y':[-0.08,0.08,70],'kz':0.0,'E':[-0.55,0.05,100]},
+    ARPES_dict={'cube':{'X':[-0.08,0.08,5],'Y':[-0.08,0.08,5],'kz':5.0,'E':[-0.55,0.05,100]},
                 'SE':[0.005,0.0],
                 'directory':'C:\\Users\\rday\\Documents\\TB_ARPES\\2018\\TB_ARPES_2018\\FeSe',
                 'hv': 21.2,
                 'pol':np.array([0,1,0]),
-                'mfp':10.0,
+                'mfp':7.0,
                 'slab':True,
                 'resolution':{'E':0.01,'k':0.01},
                 'T':[False,10.0],
-                'W':4.0,
+                'W':0.0,
                 'angle':0.0,
                 'spin':None,
                 'slice':[False,0.0]}
@@ -114,20 +114,20 @@ if __name__=="__main__":
 
     Kobj = build_lib.gen_K(Kd)
     TB = build_lib.gen_TB(Bd,Hd,Kobj,slab_dict)
+#    
+#    theta = np.linspace(0,2*np.pi,100)
+#    k = 0.02*np.array([[np.cos(th),np.sin(th),0] for th in theta])
+#    
+#    TB.Kobj.kpts = k
+#    TB.Kobj.kcut = theta
+#    TB.Kobj.kcut_brk = [0,2*np.pi]
     
-    theta = np.linspace(0,2*np.pi,100)
-    k = 0.02*np.array([[np.cos(th),np.sin(th),0] for th in theta])
     
-    TB.Kobj.kpts = k
-    TB.Kobj.kcut = theta
-    TB.Kobj.kcut_brk = [0,2*np.pi]
-    
-    
-#    TB.solve_H()
-#    TB.plotting(-1.5,1.5)
+    TB.solve_H()
+    TB.plotting(-1.5,1.5)
     
          
-    
+    ARPES_expmt = ARPES.experiment(TB,ARPES_dict)
 #    ARPES_expmt.plot_gui(ARPES_dict)
 ##
     
@@ -135,14 +135,14 @@ if __name__=="__main__":
 #    
 #    TB.solve_H()
 #    TB.plotting(-1.5,1.5)
-    Sxmat = ops.S_vec(len(TB.basis),np.array([1,0,0]))
-    Symat = ops.S_vec(len(TB.basis),np.array([0,1,0]))
-    Sproj = ops.surface_proj(TB.basis,10)
-#    print(Sxmat.max(),Symat.max(),Sproj.max())
-    Sysurf = np.dot(Symat,Sproj)
-    Sxsurf = np.dot(Sxmat,Sproj)
-    Sx = ops.O_path(Sxsurf,TB,TB.Kobj,vlims=(-0.1,0.1),Elims=(-1.5,1.5),degen=True)
-    Sy = ops.O_path(Sysurf,TB,TB.Kobj,vlims=(-0.25,0.25),Elims=(-1.5,1.5),degen=True)
+#    Sxmat = ops.S_vec(len(TB.basis),np.array([1,0,0]))
+#    Symat = ops.S_vec(len(TB.basis),np.array([0,1,0]))
+#    Sproj = ops.surface_proj(TB.basis,10)
+##    print(Sxmat.max(),Symat.max(),Sproj.max())
+#    Sysurf = np.dot(Symat,Sproj)
+#    Sxsurf = np.dot(Sxmat,Sproj)
+#    Sx = ops.O_path(Sxsurf,TB,TB.Kobj,vlims=(-0.1,0.1),Elims=(-1.5,1.5),degen=True)
+#    Sy = ops.O_path(Sysurf,TB,TB.Kobj,vlims=(-0.25,0.25),Elims=(-1.5,1.5),degen=True)
 
 
 

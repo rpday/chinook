@@ -29,7 +29,7 @@ if __name__=="__main__":
     SK,CUT = CuTB.gen_Cu_SK(avec,fnm,tol)
     OFF = CuTB.pair_pot(fnm,avec)/(-18)+1.55#-18#
 
-    spin = {'bool':False,'soc':True,'lam':{0:0.06}}
+    spin = {'bool':True,'soc':True,'lam':{0:0.06}}
 
     Bd = {'atoms':[0],
 			'Z':{0:29},
@@ -39,7 +39,7 @@ if __name__=="__main__":
 
     Kd = {'type':'F',
           'avec':avec,
-			'pts':[G,X,W,L,G,K],
+			'pts':[G,X,W,L],
 			'grain':100,
 			'labels':['$\Gamma$','X','W','L','$\Gamma$','K']}
 
@@ -100,19 +100,19 @@ if __name__=="__main__":
 #    SY = ops.O_path(Sys,TB,Kobj=TB.Kobj,vlims=(-0.25,0.25),Elims=(-1,-0.),degen=True)
 #    
     
-    ARPES_dict={'cube':{'X':[-1.45,1.45,100],'Y':[-1.45,1.45,100],'kz':0.0,'E':[-0.55,0.05,60]},
-        'SE':[0.04],
+    ARPES_dict={'cube':{'X':[-0.5,0.5,100],'Y':[-0.5,0.5,100],'kz':0.0,'E':[-0.55,0.05,100]},
+        'SE':[0.04,0.0,0.1],
         'directory':'/Users/ryanday/Documents/UBC/TB_ARPES-082018/examples/FeSe',
         'hv': 21.2,
         'pol':np.array([0,1,0]),
         'mfp':5.0,
         'slab':True,
-        'resolution':{'E':0.03,'k':0.1},
+        'resolution':{'E':0.01,'k':0.05},
         'T':[True,10.0],
         'W':4.0,
-        'angle':np.pi/6,
+        'angle':0.0,
         'spin':None,
         'slice':[False,-0.005]}
     
-#    ARPES_expmt = ARPES.experiment(TB,ARPES_dict)
-#    ARPES_expmt.plot_gui(ARPES_dict)
+    ARPES_expmt = ARPES.experiment(TB,ARPES_dict)
+    ARPES_expmt.plot_gui(ARPES_dict)

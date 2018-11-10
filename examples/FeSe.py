@@ -6,6 +6,8 @@ Created on Sat Nov 18 12:17:01 2017
 @author: ryanday
 """
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import sys
 sys.path.append('C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/')
 
@@ -15,32 +17,68 @@ import ubc_tbarpes.optics as optics
 import ubc_tbarpes.operator_library as ops
 import ubc_tbarpes.dos_Tk as dos_TK
 import ubc_tbarpes.dos as dos
+import Kreisel_load as Kreisel
+
+
+
+def redo_SO(basis,lamdict):
+    for bi in basis:
+        bi.lam = lamdict[bi.atom]
+    
+    return basis
+
+def orbital_order(mat_els,d):
+    for hi in mat_els:
+        if np.mod(hi.i,5)==2 and hi.i==hi.j:
+            hi.H.append([0,0,0,-d])
+        elif np.mod(hi.i,5)==3 and hi.i==hi.j:
+            hi.H.append([0,0,0,d])
+    return mat_els
+            
 
 
 #if __name__=="__main__":
     
     
 ############################ STRUCTURAL PARAMETERS ############################
-a,c =  3.7734,5.5258 
+a=3.7734 #FeSe
+c = 5.5258
 avec = np.array([[a/np.sqrt(2),a/np.sqrt(2),0.0],[-a/np.sqrt(2),a/np.sqrt(2),0.0],[0.0,0.0,c]])
 Fe1,Fe2 = np.array([-a/np.sqrt(8),0,0]),np.array([a/np.sqrt(8),0,0])
-G,X,M,Z,R,A = np.array([0,0,0]),np.array([0,-0.5,0]),np.array([0.5,0.5,0]),np.array([0,0,0.5]),np.array([0.5,0,0.5]),np.array([0.5,-0.5,0.5])
-Mx = np.array([0.5,-.5,0.0])
+
+
+#Kreisel Parameters:
+#a,b,c = 2.665,2.655,5.48
+#a,b,c = 2.66,2.66,5.48
+#avec = np.array([[a,b,0.0],[a,-b,0.0],[0.0,0.0,c]])
+#Fe1,Fe2 = np.array([0,0,0]),np.array([a,0,0])
+G,X,M,Z,R,A = np.array([0,0,0]),np.array([0.5,0.0,0]),np.array([0.5,0.5,0]),np.array([0,0,0.5]),np.array([0.5,0,0.5]),np.array([0.5,-0.5,0.5])
+Mx = np.array([0.5,-0.5,0.0])
 
 ############################ HAMILTONIAN PARAMETERS ############################
 
-filenm ='FeSe_o.txt'
-CUT,REN,OFF,TOL=a*3,1/1.4,0.12,0.001
+#filenm ='FeSe_BMA_BO.txt'
+#CUT,REN,OFF,TOL=a*3,1/1.,0.01,1e-7
+#filenm = 'FeSe_o.txt'
+#CUT,REN,OFF,TOL=a*3,1/1.4,0.12,0.001
+
+#Hlist = Kreisel.gen_Kreisel_list(avec,[Fe1,Fe2])
+#filenm = 'FeSe_Kreisel_mod.txt'
+filenm = 'FeSe_BMA_MOD.txt'
+CUT,REN,TOL=a*4,1.0,1e-7
+OFF = 0.015
 
 ######################### MODEL GENERATION PARAMETERS ##########################
 
 spin_dict = {'bool':True,
         'soc':True,
-        'lam':{0:0.05},
+        'lam':{0:0.04},
         'order':'N',
         'dS':0.0,
         'p_up':Fe1,
         'p_dn':Fe2}
+
+
 
 basis_dict = {'atoms':[0,0],
 			'Z':{0:26},
@@ -50,9 +88,10 @@ basis_dict = {'atoms':[0,0],
 
 K_dict = {'type':'F',
           'avec':avec,
-			'pts':[Mx,G,M],
+          'pts':[M,G,Z],#,Z,R,A,Z],
+#			'pts':[np.array([-0.72044,0,0]),np.array([1.0165866,0,0])],
 			'grain':200,
-			'labels':['Mx','$\Gamma$','My','X','$\Gamma$']}
+			'labels':['$\Gamma$','X','$M_y$','$\Gamma$','$M_x$']}
 
 
 ham_dict = {'type':'txt',
@@ -84,17 +123,17 @@ optics_dict = {'hv':0.36,
 ######################### ARPES EXPERIMENT PARAMETERS #########################
 
 
-ARPES_dict={'cube':{'X':[-0.25,0.25,40],'Y':[-0.25,0.25,40],'kz':0.0,'E':[-0.2,0.05,150]},
-        'SE':[0.002],
+ARPES_dict={'cube':{'X':[-0.5,0.5,100],'Y':[-0.0001,0.0001,1],'kz':0.0,'E':[-0.2,0.05,100]},
+        'SE':[0.01,0.0,0.4],
         'directory':'/Users/ryanday/Documents/UBC/TB_ARPES-082018/examples/FeSe',
         'hv': 37,
-        'pol':np.array([0,1,0]),
+        'pol':np.array([1,0,0]),
         'mfp':7.0,
         'slab':True,
-        'resolution':{'E':0.005,'k':0.01},
+        'resolution':{'E':0.065,'k':0.01},
         'T':[True,10.0],
         'W':4.0,
-        'angle':0,
+        'angle':0.0,
         'spin':None,
         'slice':[False,-0.005]}
  
@@ -107,10 +146,51 @@ def build_TB():
     return TB
 
 
+def ARPES_run(basis_dict,ham_dict,ARPES_dict,vfile):
+    pars = []
+    with open(vfile,'r') as fromfile:
+        for line in fromfile:
+            pars.append([float(ti) for ti in line.split(',')])
+    fromfile.close()
+#    pmax = 5
+    pars = np.array(pars)
+    basis_dict = build_lib.gen_basis(basis_dict)
+    Imaps = np.zeros((len(pars),ARPES_dict['cube']['X'][2],ARPES_dict['cube']['E'][2]))
+    Imapp = np.zeros((len(pars),ARPES_dict['cube']['X'][2],ARPES_dict['cube']['E'][2]))
+    for p in list(enumerate(pars)):
+        ham_dict['offset']=p[1][1]
+        spin_dict['lam'][0] = p[1][0]
+        basis_dict['bulk'] = redo_SO(basis_dict['bulk'],spin_dict['lam'])
+        TB = build_lib.gen_TB(basis_dict,ham_dict)
+        TB.mat_els = orbital_order(TB.mat_els[:],p[1][2])
+        ARPES_expmt = ARPES.experiment(TB,ARPES_dict)
+        ARPES_expmt.datacube(ARPES_dict)
+        ARPES_dict['pol']=np.array([1,0,0])
+        I,Ig = ARPES_expmt.spectral(ARPES_dict)
+        Imaps[p[0]] = I[0,:,:]
+        ARPES_dict['pol']=np.array([0,0.707,0.707])
+        I,Ig = ARPES_expmt.spectral(ARPES_dict)
+        Imapp[p[0]] = I[0,:,:]
+    return pars,Imapp,Imaps
+        
+
+
 if __name__ == "__main__":
     TB = build_TB()
+#    TB.mat_els = orbital_order(TB.mat_els,0.01)
     TB.solve_H()
     TB.plotting()
+    
+    pars,Ip,Is = ARPES_run(basis_dict,ham_dict,ARPES_dict,'SOC_OFF_OO.txt')
+#    
+    fig = plt.figure()
+    ax = fig.add_subplot(121)
+    ax2 = fig.add_subplot(122)
+    x = np.linspace(*ARPES_dict['cube']['X'])
+    s = pars[:,0]
+    X,S = np.meshgrid(x,s)
+    ax.pcolormesh(X,S,Ip[:,:,68],cmap=cm.magma)
+    ax2.pcolormesh(X,S,Is[:,:,68],cmap=cm.magma)
 #    Svx = ops.S_vec(len(TB.basis),np.array([1,0,0]))
 #    Svy = ops.S_vec(len(TB.basis),np.array([0,1,0]))
 #    Dsurf = np.identity(len(TB.basis))*np.array([np.exp(bi.depth/10) for bi in TB.basis])

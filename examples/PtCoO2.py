@@ -35,7 +35,8 @@ def trig_onsite(matels,Hco,Hto):
 
 
 
-if __name__=="__main__":
+#def _gen_TB():
+if __name__ == "__main__":
     a,c =  2.82,17.8 
     avec = np.around(np.array([[0,a,0],[a*np.sqrt(3)/2,a/2,0],[0,0,c]]),5)
     
@@ -106,16 +107,16 @@ if __name__=="__main__":
       'termination':(1,1)}
  
 
-    ARPES_dict={'cube':{'X':[-1.2,1.2,150],'Y':[-1.2,1.2,150],'kz':0.0,'E':[-0.5,0.05,150]},
-                'SE':[0.01,0.2],
+    ARPES_dict={'cube':{'X':[-1.2,1.2,90],'Y':[-1.2,1.2,90],'kz':0.0,'E':[-0.3,0.05,100]},
+                'SE':{'cut':27.0,'imfunc':[0.01,0.2]},
                 'directory':'C:\\Users\\rday\\Documents\\TB_ARPES\\2018\\TB_ARPES_2018\\FeSe',
                 'hv': 110.0,
-                'pol':np.array([0,1,0]),
+                'pol':np.array([1,0,1]),
                 'mfp':7.0,
                 'slab':True,
                 'resolution':{'E':0.01,'k':0.05},
                 'T':[True,10.0],
-                'W':0.0,
+                'W':4.0,
                 'angle':np.pi/2,
                 'spin':None,
                 'slice':[False,0.0]}
@@ -128,15 +129,20 @@ if __name__=="__main__":
     Kobj = build_lib.gen_K(Kd)
     TB = build_lib.gen_TB(Bd,Hd,Kobj)
     TB.mat_els = trig_onsite(TB.mat_els,Hco,Hto)
-    TB.solve_H()
-    TB.plotting(-0.7,0.1)
+#    TB.solve_H()
+#    TB.plotting(-0.7,0.1)
     
     
 
          
     ARPES_expmt = ARPES.experiment(TB,ARPES_dict)
     ARPES_expmt.plot_gui(ARPES_dict)
+#    return TB
 
+#
+#if __name__ == "__main__":
+#    
+#    TB = _gen_TB()
     
     
     
