@@ -223,7 +223,7 @@ def fatbs(proj,TB,Kobj=None,vlims=(0,0),Elims=(0,0),degen=False):
     
 
 
-def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(0,0),degen=False):
+def O_path(O,TB,Kobj=None,vlims=(-1,1),Elims=(-10,10),degen=False,plot=True):
     '''Compute and plot the expectation value of an user-defined operator along a k-path
         Option of summing over degenerate bands (for e.g. fat bands) with degen boolean flag
         
@@ -275,14 +275,14 @@ def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(0,0),degen=False):
         vlims = (O_vals.min()-(O_vals.max()-O_vals.min())/10.0,O_vals.max()+(O_vals.max()-O_vals.min())/10.0)
     if Elims==(0,0):
         Elims = (TB.Eband.min()-(TB.Eband.max()-TB.Eband.min())/10.0,TB.Eband.max()+(TB.Eband.max()-TB.Eband.min())/10.0)
-        
-    for p in range(np.shape(O_vals)[1]):
-        plt.plot(TB.Kobj.kcut,TB.Eband[:,(2 if degen else 1)*p],color='navy',lw=0.1)
-        O_line=plt.scatter(TB.Kobj.kcut,TB.Eband[:,(2 if degen else 1)*p],c=O_vals[:,p],cmap=cm.RdBu,marker='.',lw=0,s=50,vmin=vlims[0],vmax=vlims[1])
-    plt.axis([TB.Kobj.kcut[0],TB.Kobj.kcut[-1],Elims[0],Elims[1]])
-    plt.xticks(TB.Kobj.kcut_brk,TB.Kobj.labels)
-    plt.colorbar(O_line,ax=ax)
-    plt.ylabel("Energy (eV)")
+    if plot:
+        for p in range(np.shape(O_vals)[1]):
+            plt.plot(TB.Kobj.kcut,TB.Eband[:,(2 if degen else 1)*p],color='navy',lw=0.1)
+            O_line=plt.scatter(TB.Kobj.kcut,TB.Eband[:,(2 if degen else 1)*p],c=O_vals[:,p],cmap=cm.RdBu,marker='.',lw=0,s=50,vmin=vlims[0],vmax=vlims[1])
+        plt.axis([TB.Kobj.kcut[0],TB.Kobj.kcut[-1],Elims[0],Elims[1]])
+        plt.xticks(TB.Kobj.kcut_brk,TB.Kobj.labels)
+        plt.colorbar(O_line,ax=ax)
+        plt.ylabel("Energy (eV)")
     
     
     return O_vals

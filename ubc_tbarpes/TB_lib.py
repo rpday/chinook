@@ -70,6 +70,10 @@ class H_me:
                     continue
         return list(compress(tmp,bools))
     
+    def copy(self):
+        tmp_H = H_me(self.i,self.j)
+        tmp_H.H = self.H[:]
+    
     
         
 class TB_model:
@@ -109,14 +113,12 @@ class TB_model:
             self.avec = H_args['avec']
 
         self.mat_els = self.build_ham(H_args)
-#        for ti in range(len(self.mat_els)):
-#            self.mat_els[ti].H = self.mat_els[ti].clean_H()
         self.Kobj = Kobj
         
     def copy(self):
         TB_copy = TB_model(self.basis,None,self.Kobj)
         TB_copy.avec = self.avec.copy()
-        TB_copy.mat_els = self.mat_els.copy()
+        TB_copy.mat_els = self.mat_els[:]
         
         return TB_copy
         
@@ -200,11 +202,11 @@ class TB_model:
     def plotting(self,win_min=None,win_max=None,svlabel=None,title=None,lw=1.5,text=None): #plots the band structure. Takes in Latex-format labels for the symmetry points indicated in the main code
         fig=plt.figure()
         ax=fig.add_subplot(111)
-        plt.axhline(y=0,color='grey',lw=lw,ls='--')
+        plt.axhline(y=0,color='k',lw=lw,ls='--')
         for b in self.Kobj.kcut_brk:
-            plt.axvline(x = b,color = 'grey',ls='--',lw=lw)
+            plt.axvline(x = b,color = 'k',ls='--',lw=lw)
         for i in range(len(self.basis)):
-            plt.plot(self.Kobj.kcut,np.transpose(self.Eband)[i,:],color='navy',lw=lw)
+            plt.plot(self.Kobj.kcut,np.transpose(self.Eband)[i,:],color='w',lw=lw)
 
         plt.xticks(self.Kobj.kcut_brk,self.Kobj.labels)
         if win_max==None or win_min==None:

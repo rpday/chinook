@@ -164,7 +164,7 @@ def mesh_reduce(blatt,mesh,inds=False):
         return []
     else:
         for m in list(enumerate(mesh)):
-            dv = np.linalg.norm(np.around(m[1]-blatt,6),axis=1)
+            dv = np.linalg.norm(np.around(m[1]-blatt,4),axis=1)
             if (13 in np.where(dv==dv.min())[0]):
                 bz_pts.append(m[not inds])
 

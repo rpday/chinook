@@ -36,6 +36,7 @@ Plotting orbital along a path in momentum and energy
 
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.cm as cm
 import ubc_tbarpes.Ylm as Ylm
 import matplotlib.tri as mtri
@@ -74,56 +75,103 @@ def gen_psi(n,psi,psi_dict,str_nm=None):
     return sz
 
 
+def plot_psi(n,basis,vec):
+    th = np.linspace(0,np.pi,2*n)
+    ph = np.linspace(0,2*np.pi,2*n)
+    th,ph = np.meshgrid(th,ph)
+    th,ph = th.flatten(),ph.flatten()
+    r = np.zeros((len(basis),len(th)),dtype=complex)
+    x = np.zeros((len(basis),len(th)))
+    y = np.zeros((len(basis),len(th)))
+    z = np.zeros((len(basis),len(th)))
+    tri = mtri.Triangulation(th,ph)
+    cols = []
+    
+    max_val = vec[np.where(abs(vec)==abs(vec).max())[0][0]]
+    vec*=np.conj(max_val)/abs(max_val)
+    
+    print(np.around(vec,3))
+    
+    for ov in list(enumerate(vec)):
+        r[ov[0]] = np.around(np.sum(np.array([Ylm.Y(pi[2],pi[3],th,ph)*(pi[0]+1.0j*pi[1])*ov[1] for pi in basis[ov[0]].proj]),axis=0),4)#ov[1]*np.sum(np.array([Ylm.Y(pi[2],pi[3],th,ph)*(pi[0]+1.0j*pi[1]) for pi in basis[ov[0]].proj]),axis=0)
+#        print(r[ov[0]].max(),r[ov[0]].min())
+#        if abs(r[ov[0]]).max()<1e-4:
+#            r[ov[0]] = 2*np.imag(ov[1]*np.sum(np.array([Ylm.Y(pi[2],pi[3],th,ph)*(pi[0]+1.0j*pi[1]) for pi in basis[ov[0]].proj]),axis=0))
+        x[ov[0]] = 5*abs(r[ov[0]])**2*np.cos(ph)*np.sin(th)+basis[ov[0]].pos[0]
+        y[ov[0]] = 5*abs(r[ov[0]])**2*np.sin(ph)*np.sin(th)+basis[ov[0]].pos[1]
+        z[ov[0]] = 5*abs(r[ov[0]])**2*np.cos(th)+basis[ov[0]].pos[2]
+#        cols.append(r[ov[0]][tri.triangles][:,1])
+        cols.append(col_phase(r[ov[0]][tri.triangles][:,1]))
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(111,projection='3d')
+    for pi in range(len(basis)):
+        pplt = ax.plot_trisurf(x[pi],y[pi],z[pi],triangles=tri.triangles,cmap=cm.hsv,antialiased=True,lw=0.1,edgecolors='w')
+        pplt.set_array(cols[pi])
+        pplt.set_clim(-np.pi,np.pi)
+        
+        
+    ax.set_zlim(-1,1.5)
+    cbar = plt.colorbar(pplt,ax=ax)
+    cbar.set_label('Phase',rotation=270)
+    cbar.ax.locator_params(nbins=3)
+    cbar.ax.set_yticklabels(['$\pi$','0','-$\pi$'])
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    ax.grid(False)
+#    p.set_clim(-0.7,0.7)
+    
+    return x,y,z,tri.triangles,r,cols
+
+
+
+
 def plot_orbital(n,proj):#basis,vec):
     th = np.linspace(0,np.pi,2*n)
     ph = np.linspace(0,2*np.pi,2*n)
     th,ph = np.meshgrid(th,ph)
     th,ph = th.flatten(),ph.flatten()
-#    r = np.zeros((len(basis),len(th)))
-#    x = np.zeros((len(basis),len(th)))
-#    y = np.zeros((len(basis),len(th)))
-#    z = np.zeros((len(basis),len(th)))
-#    tri = mtri.Triangulation(th,ph)
-#    cols = []
-#    for ov in list(enumerate(vec)):
-#        r[ov[0]] = np.real(ov[1]*np.sum(np.array([Ylm.Y(pi[2],pi[3],th,ph)*(pi[0]+1.0j*pi[1]) for pi in basis[ov[0]].proj]),axis=0))
-#        x[ov[0]] = abs(r[ov[0]])**2*np.cos(ph)*np.sin(th)+basis[ov[0]].pos[0]
-#        y[ov[0]] = abs(r[ov[0]])**2*np.sin(ph)*np.sin(th)+basis[ov[0]].pos[1]
-#        z[ov[0]] = abs(r[ov[0]])**2*np.cos(th)+basis[ov[0]].pos[2]
-#        cols.append(r[ov[0]][tri.triangles][:,1])
-#    
-#    fig = plt.figure()
-#    ax = fig.add_subplot(111,projection='3d')
-#    for pi in range(len(basis)):
-#        pplt = ax.plot_trisurf(x[pi],y[pi],z[pi],triangles=tri.triangles,cmap=cm.RdBu,shade=True,lw=0)
-#        pplt.set_array(cols[pi])
-#        pplt.set_clim(-0.4,0.4)
-#        
-#    
-    
-        
-    r = np.real(np.sum(np.array([Ylm.Y(pi[2],pi[3],th,ph)*(pi[0]+1.0j*pi[1]) for pi in proj]),axis=0))
-    x = abs(r)**2*np.cos(ph)*np.sin(th)
-    y = abs(r)**2*np.sin(ph)*np.sin(th)
-    z = abs(r)**2*np.cos(th)
+
+    r = np.sum(np.array([Ylm.Y(pi[2],pi[3],th,ph)*(pi[0]+1.0j*pi[1]) for pi in proj]),axis=0)
+    x = 5*abs(r)**2*np.cos(ph)*np.sin(th)
+    y = 5*abs(r)**2*np.sin(ph)*np.sin(th)
+    z = 5*abs(r)**2*np.cos(th)
     tri = mtri.Triangulation(th,ph)
-    cols = r[tri.triangles][:,1]
-#    fig = plt.figure(figsize=plt.figaspect(1)*2)
-#    ax = fig.add_subplot(111,projection='3d')
-#    p = ax.plot_trisurf(x,y,z,triangles=tri.triangles,cmap=cm.RdBu,shade=True,antialiased=True,edgecolors='k')
-#    ax.set_xlabel('X')
-#    ax.set_ylabel('Y')
-#    ax.set_zlabel('Z')
-#    p.set_array(cols)
-#    p.set_clim(-0.7,0.7)
+#    cols = r[tri.triangles][:,1]
+    cols = col_phase(r[tri.triangles][:,1])
+#    cols =rgb_vals(r[tri.triangles][:,1])
+    fig = plt.figure(figsize=plt.figaspect(1)*2)
+    ax = fig.add_subplot(111,projection='3d')
+    p = ax.plot_trisurf(x,y,z,triangles=tri.triangles,cmap=cm.hsv,antialiased=True,edgecolors='w',linewidth=0.2)
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    p.set_array(cols)
+    p.set_clim(-np.pi,np.pi)
     
-    return x,y,z,tri.triangles,cols
-    
-    
+    return x,y,z,tri.triangles,cols,r
+
+
+def col_phase(vals):
+    x,y=np.real(vals),np.imag(vals)
+    return np.arctan2(y,x)
+#    sgn = signvec(x)*signvec(y)
+#    return np.arctan2(abs(y),sgn*abs(x))
+
+
+#def sign(x):
+#    if x>=0:
+#        return 1
+#    else:
+#        return -1
+#    
+#signvec = np.vectorize(sign)
 
 
 #if __name__=="__main__":
-#    psi_dict = {0:np.array([[-np.sqrt(0.5),0,2,1],[np.sqrt(0.5),0,2,-1]]),1:np.array([[0,np.sqrt(0.5),2,1],[0,np.sqrt(0.5),2,-1]]),
+#    _,_,_,_,cols,r = plot_orbital(40,np.array([[0,1,1,0]]))
+##    psi_dict = {0:np.array([[-np.sqrt(0.5),0,2,1],[np.sqrt(0.5),0,2,-1]]),1:np.array([[0,np.sqrt(0.5),2,1],[0,np.sqrt(0.5),2,-1]]),
 #             2:np.array([[-np.sqrt(0.5),0,2,1],[np.sqrt(0.5),0,2,-1]]),3:np.array([[0,np.sqrt(0.5),2,1],[0,np.sqrt(0.5),2,-1]])}
 #    k = np.linspace(0,1,2)
 ##    k = 0

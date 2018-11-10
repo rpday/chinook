@@ -25,7 +25,8 @@ class orbital:
     def __init__(self,index,label,pos,proj):
         self.index = index
         label_splt = label.split(':')        
-        self.label = label_splt[0]+orb_dict[label_splt[1][0]]+label_splt[1][1:]
+        self.atom = int(label_splt[0])-1
+        self.label = orb_dict[label_splt[1][0]]+label_splt[1][1:]
         self.pos = pos
         self.proj = proj
         
@@ -122,7 +123,7 @@ class wannier:
                     int_vector = np.array([int(Hstr[0]),int(Hstr[1]),int(Hstr[2])])
                     i1,i2 = int(Hstr[3])-1,int(Hstr[4])-1
                     cvec = self.hopping_path(int_vector,i1,i2)
-                    Hlist.append([i1,i2,int(Hstr[0]),*cvec,float(Hstr[6])])
+                    Hlist.append([i1,i2,*cvec,float(Hstr[-2])])
                 lc+=1
         
         
@@ -130,7 +131,10 @@ class wannier:
     
     def hopping_path(self,vector,i1,i2):
         lattice_vector = np.dot(vector,self.avec)
-        return lattice_vector + self.basis[i2].pos - self.basis[i1].pos 
+        return lattice_vector+ self.basis[i2].pos - self.basis[i1].pos 
+    
+    
+    
     
     def gen_basis(self):
         basis = []
@@ -175,15 +179,20 @@ class wannier:
         
         
             
+def write_ham(ham,fnm):
     
-    
+    with open(fnm,'w') as tofile:
+        for hi in ham:
+            line = '{:d},{:d},{:0.04f},{:0.04f},{:0.04f},{:0.04f}\n'.format(*hi)
+            tofile.write(line)
+    tofile.close()
     
 if __name__ == "__main__":
-    
-    hr =  '/Users/ryanday/Documents/UBC/TB_ARPES/TB_ARPES-master 02102018/examples/Bi2Se3/Bi2Se3_wannhr.dat'
-    inwf =  '/Users/ryanday/Documents/UBC/TB_ARPES/TB_ARPES-master 02102018/examples/Bi2Se3/Bi2Se3.inwf'
-    win = '/Users/ryanday/Documents/UBC/TB_ARPES/TB_ARPES-master 02102018/examples/Bi2Se3/Bi2Se3.win'
-        
+    seedname = 'C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/examples/Bi2Se3/Bi2Se3'
+
+    hr = seedname+'_hr.dat'
+    inwf = seedname + '.inwf'
+    win = seedname + '.win'
     new_wann = wannier(hr,win,inwf)                
                 
                     

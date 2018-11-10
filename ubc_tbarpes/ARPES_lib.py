@@ -40,8 +40,7 @@ from scipy.interpolate import interp1d
 import ubc_tbarpes.Ylm as Ylm 
 import scipy.ndimage as nd
 import ubc_tbarpes.Tk_plot as Tk_plot
-
-import datetime as dt
+from scipy.signal import hilbert
 
 
 ####PHYSICAL CONSTANTS RELEVANT TO CALCULATION#######
@@ -124,6 +123,11 @@ class experiment:
         we can truncate the basis and eigenvectors used in the calculation to dramatically improve our capacity to perform such calculations
         We keep all eigenvectors, but retain only the projection of the basis states within 2*the mean free path of the surface. The states associated
         with this projection are retained, while remainders are not
+        args:
+            local_basis -- ARPES intensity is computed with a local copy of the TB basis to avoid scrambling data. This is passed here to be modified
+        return:
+            tmp_basis -- truncated list of orbital objects
+            Evec -- numpy array of complex float --truncated eigenvector array containing only the surface-projected wavefunctions
         
         '''
         depths = np.array([abs(oi.depth) for oi in local_basis])
@@ -148,6 +152,13 @@ class experiment:
         return tmp_basis,Evec
     
     def update_resolution(self,resdict):
+        '''
+        Update the attributes relating to resolution when a parameter dictionary is passed with different values
+        args:
+            resdict --dictionary with 'E' and 'k' keys relating to the FWHM resolution in energy and momentum respectively, values are float, in eV, 1/A
+        return:
+            N/A
+        '''
         self.dE = resdict['E']/np.sqrt(8*np.log(2)) #energy resolution FWHM
         self.dk = resdict['k']/np.sqrt(8*np.log(2)) #momentum resolution FWHM
         
@@ -180,14 +191,11 @@ class experiment:
         if self.truncate:
 
             tmp_basis,self.Ev = self.truncate_model(tmp_basis)
-        
         dE = (self.cube[2][1]-self.cube[2][0])/self.cube[2][2]
-        
-#        dig_range = np.arange(self.Eb.min()-5*dE,self.Eb.max()+dE*5,dE)
+                
         
         dig_range = np.arange(self.cube[2][0]-5*dE,self.cube[2][1]+5*dE,dE)
                 
-        ##cube_indx is the position in the 3d cube of K and energy where this band is
         cube_indx = np.array([[i,self.Eb[i]] for i in range(len(self.Eb)) if dig_range[0]<=self.Eb[i]<=dig_range[-1]])
         Gvals = G_dic()
         
@@ -197,8 +205,6 @@ class experiment:
                 self.Bvals[bkey] = lambda_gen(ARPES_dict['Brads'][bkey])
         except KeyError:
             self.Bvals = self.Bdic(dig_range,tmp_basis)
-#        GB = self.matel_matrix(Bvals,Gvals,tmp_basis)
-        
            
         self.pks = np.zeros((len(cube_indx),3),dtype=float)
         self.Mk = np.zeros((len(cube_indx),2,3),dtype=complex)
@@ -233,7 +239,13 @@ class experiment:
     
 
     def M_compute(self,G,B,i,cube,kn,basis,tol,strmats):
-        
+        '''
+        The core method called during matrix element computation.
+        args:
+            G -- dictionary of relevant Gaunt coefficients
+            B -- dictionary of radial integral functions, to be evaluated at the designated energy
+            
+        '''
         nstates = len(self.TB.basis)
         phi = self.ph[int(cube[0]/nstates)]
         th = self.th[i]
@@ -245,9 +257,9 @@ class experiment:
 
             if abs(coeff[1])>tol:
                 o = basis[coeff[0]]
-
-                L = [lp for lp in ([o.l-1,o.l+1] if (o.l-1)>=0 else [o.l+1])]
                 pref = o.sigma*coeff[1]*np.exp((-1./self.mfp)*abs(o.depth))#*np.exp(1.0j*(-self.kz*o.pos[2]-self.X[int(self.pks[i,0]),int(self.pks[i,1])]*o.pos[0]-self.Y[int(self.pks[i,0]),int(self.pks[i,1])]*o.pos[1]))
+                L = [lp for lp in ([o.l-1,o.l+1] if (o.l-1)>=0 else [o.l+1])]
+
                 for lp in L:
 
                     tmp_B = B['{:d}-{:d}-{:d}-{:d}'.format(o.atom,o.n,o.l,lp)](cube[1])
@@ -296,7 +308,27 @@ class experiment:
         
     def spectral(self,ARPES_dict,slice_select=None):
         
+        '''
+        Take the matrix elements and build a simulated ARPES spectrum. 
+        The user has several options here for the self-energy to be used: 
+        most simply, nothing, then the imaginary part is taken to be -10meV to 
+        give finite width, and the real part to 0, no renormalization.
+        The next level is to pass a float different from -10 meV. Next is a polynomial
+        which goes in as a list of coefficients [a_0,a_1,a_2...]. Finally is a dictionary,
+        detailed below in gen_SE--this takes the input Im[Σ(k,w)] and uses Kramers-Kronig to
+        build a consistent Re[Σ(k,w)]. This option WILL shift the band positions!!! Be WARNED!
+        The ARPES_dict also constains a 'pol'-arization vector in Cartesian coordinates (lab frame).
+        Also has option of a 'spin' projection, coming in the form of [+/-1, np.array([x,y,z])].
+        'T' can be turned on or off [Bool, float] and set to some value in Kelvin. 'resolution'
+        can also be updated.
+        If slice_select is passed (list/tuple/float of length 2 (axis, index)) to force plotting.
+        
+        return: I, Ig the numpy array intensity maps and its resolution-broadened partner. Gaussian
+        resolution broadening is the last operation performed, to be consistent with the practical experiment.
+        '''
+        
         self.update_resolution(ARPES_dict['resolution'])
+        self.T = ARPES_dict['T']
         
         w = np.linspace(*self.cube[2])
         pol = pol_2_sph(ARPES_dict['pol'])
@@ -309,21 +341,36 @@ class experiment:
                 ph+=self.ang
             Smat = np.array([[np.cos(th/2),np.exp(-1.0j*ph)*np.sin(th/2)],[np.sin(th/2),-np.exp(-1.0j*ph)*np.cos(th/2)]])
             Mspin = np.swapaxes(np.dot(Smat,self.Mk),0,1)
- 
-        SE = abs_poly(self.pks[:,2],ARPES_dict['SE']) #absolute value mandates that self energy be particle-hole symmetric, i.e. SE*(k,w) = -SE(k,-w). Here we define the imaginary part explicitly only!
+        if callable(ARPES_dict['SE']):
+            SE = ARPES_dict['SE'](w)
+        elif type(ARPES_dict['SE'])==dict:
+            SE = gen_SE(w,ARPES_dict['SE'])#gen_SE(self.pks[:,2],ARPES_dict['SE'])
+        elif type(ARPES_dict['SE'])==list:
+            SE = -1.0j*abs(poly(w,ARPES_dict['SE']))#-1.0j*abs(poly(self.pks[:,2],ARPES_dict['SE'])) #absolute value mandates that self energy be particle-hole symmetric, i.e. SE*(k,w) = -SE(k,-w). Here we define the imaginary part explicitly only!
+        elif type(ARPES_dict['SE'])==float:
+            SE = -1.0j*abs(ARPES_dict['SE']*np.ones(len(w)))#-1.0j*abs(ARPES_dict['SE']*np.ones(len(self.pks[:,2])))
+        else:
+            SE = -0.01j*np.ones(len(w))#-0.01j*np.ones(len(self.pks[:,2]))
+            
+
         if self.T[0]:
             fermi = vf(w/(kb*self.T[1]/q))
         else:
             fermi = np.ones(self.cube[2][2])
         I = np.zeros((self.cube[1][2],self.cube[0][2],self.cube[2][2]))
+        
+        
+        
+        
         if ARPES_dict['spin'] is None:
             for p in range(len(self.pks)):
                 if abs(self.Mk[p]).max()>0:
-                    I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= (abs(np.dot(self.Mk[p,0,:],pol))**2 + abs(np.dot(self.Mk[p,1,:],pol))**2)*np.imag(-1./(np.pi*(w-self.pks[p,2]+1.0j*(SE[p]+0.0005))))*fermi
+                    I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= (abs(np.dot(self.Mk[p,0,:],pol))**2 + abs(np.dot(self.Mk[p,1,:],pol))**2)*np.imag(-1./(np.pi*(w-self.pks[p,2]-(SE-0.0005j))))*fermi #changed SE[p] to SE
         else:
             for p in range(len(self.pks)):
                 if abs(Mspin[p]).max()>0:
-                    I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= abs(np.dot(Mspin[p,int((ARPES_dict['spin'][0]+1)/2),:],pol))**2*np.imag(-1./(np.pi*(w-self.pks[p,2]-SE[p]+0.01j)))*fermi
+                    I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= abs(np.dot(Mspin[p,int((ARPES_dict['spin'][0]+1)/2),:],pol))**2*np.imag(-1./(np.pi*(w-self.pks[p,2]-(SE-0.0005j))))*fermi #changed SE[p] to SE
+        
         kxg = (self.cube[0][2]*self.dk/(self.cube[0][1]-self.cube[0][0]) if abs(self.cube[0][1]-self.cube[0][0])>0 else 0)
         kyg = (self.cube[1][2]*self.dk/(self.cube[1][1]-self.cube[1][0]) if abs(self.cube[1][1]-self.cube[1][0])>0 else 0)
         wg = (self.cube[2][2]*self.dE/(self.cube[2][1]-self.cube[2][0]) if abs(self.cube[2][1]-self.cube[2][0]) else 0)
@@ -656,20 +703,107 @@ def lambda_gen(val):
 
 
 def poly(x,args):
+    '''
+    Recursive polynomial function.
+    args:
+        x -- input value at which to evaluate the polynomial (float, int or numpy array of numeric type)
+        args -- list of coefficients, in INCREASING polynomial order i.e. [a_0,a_1,a_2] for y = a_0 + a_1 * x + a_2 *x **2
+    return:
+        polynomial evaluated at x, same datatype as input (or at worst int -> float)
+    '''
     if len(args)==0:
         return 0
     else:
         return x**(len(args)-1)*args[-1] + poly(x,args[:-1])
     
     
-def abs_poly(x,args):
-    if len(args)==0:
-        return 0
+#def abs_poly(x,args):
+#    '''
+#    
+#    '''
+#    if len(args)==0:
+#        return 0
+#    else:
+#        return abs(x)**(len(args)-1)*abs(args[-1]) + abs_poly(x,args[:-1])
+    
+    
+def gen_SE(w,SE_args):
+    '''
+    The total self-energy is computed using Kramers' Kronig relations:
+        
+        The user can pass the self-energy in the form of either a callable function, a list of polynomial coefficients, or as a numpy array with shape Nx2 (with the first
+        column an array of frequency values, and the second the values of a function). For the latter option, the user is responsible for ensuring that the function goes 
+        to zero at the tails of the domain. In the former two cases, the 'cut' parameter is used to impose an exponential cutoff near the edge of the domain to ensure this 
+        is the case. In all cases the input imaginary self-energy must be single-signed to ensure it is purely even function. It is forced to be negative in all cases to give
+        a positive spectral function.
+        With the input defined, along with the energy range of interest to the calculation, a MUCH larger domain (100x in the maximal extent of the energy region of interest) is defined
+        wf. This is the domain over which we evaluate the Hilbert transform, which itself is carried out using:
+        the scipy.signal.hilbert() function. This function acting on an array f: H(f(x)) -> f(x) + i Hf(x). It relies on the FFT performed on the product of the sgn(w) and F(w) functions, and then IFFT back
+        so that we can use this to extract the real part of the self energy, given only the input.
+        args:
+            w -- numpy array energy values for the spectral peaks used in the ARPES simulation
+            SE_args -- dictionary containing the 'imfunc' key value pair (values being either callable, list of polynomial prefactors (increasing order) or numpy array of energy and Im(SE) values)
+                    -- for the first two options, a 'cut' key value pair is also required to force the function to vanish at the boundary of the Hilbert transform integration window.
+        return: self energy as a numpy array of complex float. The indexing matches that of w, the spectral features to be plotted in the matrix element simulation.
+    '''
+    
+    
+    if ('imfunc' not in SE_args):
+        print('Self-Energy Error: Incorrect Dictionary key inputs. User requires "imfunc" for functional form for imaginary part')
+        print('Returning a constant array of Im(SE) = -0.01, Re(SE) = 0.0')
+        return -0.01j*np.ones(len(w))
     else:
-        return abs(x)**(len(args)-1)*abs(args[-1]) + poly(x,args[:-1])
-    
-    
-    
+        wlim = abs(w).max()
+        wf = np.linspace(-100*wlim,100*wlim,5000)
+        if type(SE_args['imfunc'])==np.ndarray and np.shape(SE_args['imfunc'])[1]==2:
+            wf = SE_args['imfunc'][:,0]
+            imSE = SE_args['imfunc'][:,1]
+        else:
+            if callable(SE_args['imfunc']):
+                imSE = SE_args['imfunc'](wf)
+                if np.real(imSE).max()==0.0:
+                    print('Input WARNING: The imaginary part of the self-energy should be passed as real-valued function (i.e. suppress the 1.0j factor). Taking imaginary part as real and proceeding.')
+                    imSE = np.imag(imSE)
+            elif type(SE_args['imfunc'])==list or type(SE_args['imfunc'])==tuple or type(SE_args['imfunc'])==np.ndarray:
+                if np.real(SE_args['imfunc']).max()==0.0:
+                    print('Input WARNING: Pass arguments for imaginary part of self-energy as real values. Passing imaginary part as the functional arguments')
+                    SE_args['imfunc'] = np.imag(SE_args['imfunc'])
+                imSE = abs(poly(wf,SE_args['imfunc']))
+            else:
+                print('Invalid self-energy input format. Please see ARPES_lib.gen_SE for further details on input parameters')
+                print('Returning a constant array of Im(SE) = 0.01, Re(SE) = 0.0')
+                return -0.01j*np.ones(len(w))
+                
+                 ### IMPOSE THE CUTOFF!
+            if abs(SE_args['cut'])>wf[-1]:
+                SE_args['cut'] = 0.9*wf[-1]
+                print('WARNING: INVALID CUTOFF (BEYOND HILBERT TRANSFORM DOMAIN). CUTTING TO: {:0.02f}'.format(SE_args['cut']))
+            wcut = np.where(abs(wf-abs(SE_args['cut']))==abs(wf-abs(SE_args['cut'])).min())[0][0],np.where(abs(wf+abs(SE_args['cut']))==abs(wf+abs(SE_args['cut'])).min())[0][0]
+            cut_width = wf[5]-wf[0]
+            imSE[:wcut[1]] = np.exp(-abs(wf[:wcut[1]]-wf[wcut[1]])/cut_width)*imSE[wcut[1]]
+            imSE[wcut[0]:] = np.exp(-abs(wf[wcut[0]:]-wf[wcut[0]])/cut_width)*imSE[wcut[0]]
+                
+            ##Check that IM(Self Energy) is positive/negative semi-definite. If postive, make negative
+        sign_imSE = np.sign(imSE)
+        sign_imSE = sign_imSE[abs(sign_imSE)>0]
+        if sum(sign_imSE)<len(sign_imSE):
+            print('WARNING: Invalid definition of imaginary part of self energy--values must all be single-signed. Returning constant -0.01j as Self-energy.')
+            return -0.01j*np.ones(len(w))
+        if sign_imSE[0]>0: #imaginary part of self energy should be <0
+            imSE*=-1
+
+        SEf = hilbert(imSE)
+        reSE = -SEf.imag
+        imSE = SEf.real
+        roi = np.where(wf<w.min())[0][-1]-10,np.where(wf>w.max())[0][0]+10
+
+        im_interp = interp1d(wf[roi[0]:roi[1]],imSE[roi[0]:roi[1]])
+        re_interp = interp1d(wf[roi[0]:roi[1]],reSE[roi[0]:roi[1]])
+
+        return re_interp(w) + im_interp(w)*1.0j
+#        
+            
+            
     
     
     

@@ -110,7 +110,7 @@ if __name__=="__main__":
 #    lp = [1,3]
 #    r = [0,25]
     tol = 0.5*10**-9
-    hv = np.linspace(10,120,40)
+    hv = np.linspace(10,250,40)
     kn = np.sqrt(2*(9.11*10**-31)/(6.626*10**-34/(2*np.pi))**2*(hv-4.4)*(1.602*10**-19))/10**10
     Qd=np.zeros((len(hv)),dtype=complex)
     Qs = np.copy(Qd)

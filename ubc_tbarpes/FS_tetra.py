@@ -46,6 +46,9 @@ from operator import itemgetter
 #from mayavi import mlab
 
 
+    
+
+
 def EF_tetra(TB,NK,EF):
     '''
     Generate a tetrahedra mesh of k-points which span the BZ with even distribution
@@ -61,9 +64,19 @@ def EF_tetra(TB,NK,EF):
     TB.Kobj.kpts = kpts
     TB.solve_H()
     surfaces = {bi:{'pts':[],'tris':[]} for bi in range(len(TB.basis)) if (TB.Eband[:,bi].min()<=EF and TB.Eband[:,bi].max()>=EF)} #iinitialize Fermi surface only for those bands which actually have one...
+#    if O is not None:
+#        Ovals = np.zeros((len(O),len(TB.basis)))
+#        for ki in range(len(kpts)):
+#            for p in range(len(TB.basis)):
+#                Ovals[ki,p] = np.real(np.dot(np.conj(TB.Evec[ki,:,p]),np.dot(O,TB.Evec[ki,:,p])))
+#        surfaces['patches'] = []
     for bi in surfaces.keys(): #iterate only over bands which have Fermi surface
         for ki in range(len(tetra)):
             E_tmp = TB.Eband[tetra[ki],bi]
+#            if O is not None:
+#                O_tmp = Ovals[tetra[ki],bi]
+#                register = np.zeros((4,3))
+#            else:
             register = np.zeros((4,2))
             register[:,1] = tetra[ki]
             register[:,0] = E_tmp
@@ -124,12 +137,10 @@ def FS_generate(TB,Nk,EF):
     surfaces = EF_tetra(TB,Nk,EF)
     fig = plt.figure()
     ax = fig.add_subplot(111,projection='3d')
-#    may_fig = plt.figure()
     for bi in surfaces:
         Fk=surfaces[bi]['pts']
-#        mlab.triangular_mesh(Fk[:,0],Fk[:,1],Fk[:,2],surfaces[bi]['tris'],figure=may_fig)
-#    mlab.show()
-        ax.plot_trisurf(Fk[:,0],Fk[:,1],Fk[:,2],cmap=cm.magma,triangles=surfaces[bi]['tris'],linewidth=0.3,edgecolor='w',alpha=1.0)
+
+        ax.plot_trisurf(Fk[:,0],Fk[:,1],Fk[:,2],cmap=cm.magma,triangles=surfaces[bi]['tris'],linewidth=0.1,edgecolor='w',alpha=1.0)
     ax.grid('off')
     ax.axis('off')
 

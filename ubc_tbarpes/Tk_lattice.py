@@ -267,10 +267,10 @@ def add_orbital_win(parent):
         orbs = parse_orbitals(o_entry.get())
 
         pos = np.array([float(xbox.get()),float(ybox.get()),float(zbox.get())])
-        fpos = (False)
+        fpos = [False]
         
         if unit_var.get()=='Fractional':
-            fpos = (True,pos)
+            fpos = [True,pos]
             pos = np.dot(pos,parent.avecs)
         
         
@@ -297,7 +297,7 @@ def add_orbital_win(parent):
 
 class atom:
     
-    def __init__(self,Z,orbs,pos,identity,fpos=(False)):
+    def __init__(self,Z,orbs,pos,identity,fpos=[False]):
         
         self.Z = Z
         if fpos[0]==True:

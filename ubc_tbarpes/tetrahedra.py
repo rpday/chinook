@@ -69,7 +69,7 @@ def tet_inds():
     tetra_inds = np.array([[corn_dict['{:d}{:d}{:d}'.format(*ti)] for ti in tetra_vec[j]] for j in range(6)])
     return tetra_inds
 
-def mesh_tetra(avec,N,bz_on=True):
+def mesh_tetra(avec,N):
     '''
     Generate a mesh of points spanning several lattice points in reciprocal space: bz_mesh_raw
     From this mesh, reduce to simply a set of points which define the first Brillouin zone.
@@ -90,12 +90,8 @@ def mesh_tetra(avec,N,bz_on=True):
     b_vec = klib.bvectors(avec)
     rlpts = np.dot(klib.region(1),b_vec)    
     raw_mesh = klib.raw_mesh(rlpts,N)
-    if bz_on:
-        bz = klib.mesh_reduce(rlpts,raw_mesh,inds=True) #get indices of k-points associated with the BZ
+    bz = klib.mesh_reduce(rlpts,raw_mesh,inds=True) #get indices of k-points associated with the BZ
     
-        
-    else:
-        bz = np.linspace(0,len(raw_mesh)-1,len(raw_mesh)).astype(int)
     bzd = {bz[i]:i for i in range(len(bz))}    
     Nx0 = len(set(raw_mesh[:,0])) #number of X in raw mesh
     Ny0 = len(set(raw_mesh[:,1])) #number of Y in raw_mesh

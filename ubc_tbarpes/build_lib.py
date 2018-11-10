@@ -39,6 +39,9 @@ import ubc_tbarpes.klib as klib
 
 
 
+
+
+
 ###Build Basis
 def gen_basis(basis):
 	
@@ -73,7 +76,7 @@ def gen_K(Kdic):
 
 
 ###Built Tight Binding Model
-def gen_TB(Bdict,H_args,Kobj,slab_dict=None):
+def gen_TB(Bdict,H_args,Kobj=None,slab_dict=None):
     '''
     Build a Tight-Binding Model: user passes a basis dictionary
     '''
