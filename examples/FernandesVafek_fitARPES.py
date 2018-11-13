@@ -9,6 +9,9 @@ Created on Wed Aug  2 12:24:04 2017
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+import matplotlib.cm as cm
+
 from scipy.optimize import curve_fit
 import sys
 sys.path.append('/Users/ryanday/Documents/UBC/TB_ARPES/TB_ARPES-master 4/')
@@ -37,17 +40,22 @@ def FernVaf_remodel(kin,Ef,Exy,p_nem,L,Eg,txy,mG,b,cv):
     pauli = np.array([[[1,0],[0,1]],[[0,1],[1,0]],[[0,-1.0j],[1.0j,0]],[[1,0],[0,-1]]])
     
     H = np.zeros((len(k),6,6),dtype=complex)
-    H[:,:2,:2] = np.tensordot(Eg+mG*(k[:,0]**2+k[:,1]**2),pauli[0],0) + np.tensordot(b*(k[:,0]*k[:,1])+abs(p_nem),pauli[3],0) + cv*np.tensordot((k[:,0]**2-k[:,1]**2),pauli[1],0)
+#    H[:,:2,:2] = np.tensordot(Eg+mG*(k[:,0]**2+k[:,1]**2),pauli[0],0) + np.tensordot(b*(k[:,0]*k[:,1])+abs(p_nem),pauli[3],0) + cv*np.tensordot((k[:,0]**2-k[:,1]**2),pauli[1],0)
+#    H[:,3:5,3:5] = H[:,:2,:2]
+#    H[:,2,2] =  Exy + txy*(k[:,0]**2+k[:,1]**2)
+#    H[:,5,5] =  Exy + txy*(k[:,0]**2+k[:,1]**2)
+    
+    H[:,:2,:2] = np.tensordot(Eg+mG*(k[:,0]**2+k[:,1]**2),pauli[0],0) + np.tensordot(b*0.5*(k[:,0]**2-k[:,1]**2)+abs(p_nem),pauli[3],0) + cv*np.tensordot((2*k[:,0]*k[:,1]),pauli[1],0)
     H[:,3:5,3:5] = H[:,:2,:2]
     H[:,2,2] =  Exy + txy*(k[:,0]**2+k[:,1]**2)
     H[:,5,5] =  Exy + txy*(k[:,0]**2+k[:,1]**2)
     
+    H += np.identity(6)*Ef
     if abs(L)>0:
         H[:] += SOC(L)
     
     Eb,Ev = np.linalg.eigh(H)
     
-    Eb+=Ef
   
     return Eb,Ev
 
@@ -110,7 +118,12 @@ def gen_Hmat_function(args):
         pauli = np.array([[[1,0],[0,1]],[[0,1],[1,0]],[[0,-1.0j],[1.0j,0]],[[1,0],[0,-1]]])
                 
         H = np.zeros((len(k),6,6),dtype=complex)
-        H[:,:2,:2] = np.tensordot(Eg+mG*(k[:,0]**2+k[:,1]**2),pauli[0],0) + np.tensordot(b*(k[:,0]*k[:,1])+abs(p_nem),pauli[3],0) + cv*np.tensordot((k[:,0]**2-k[:,1]**2),pauli[1],0)
+#        H[:,:2,:2] = np.tensordot(Eg+mG*(k[:,0]**2+k[:,1]**2),pauli[0],0) + np.tensordot(b*(k[:,0]*k[:,1])+abs(p_nem),pauli[3],0) + cv*np.tensordot((k[:,0]**2-k[:,1]**2),pauli[1],0)
+#        H[:,3:5,3:5] = H[:,:2,:2]
+#        H[:,2,2] =  Exy + txy*(k[:,0]**2+k[:,1]**2)
+#        H[:,5,5] =  Exy + txy*(k[:,0]**2+k[:,1]**2)
+        
+        H[:,:2,:2] = np.tensordot(Eg+mG*(k[:,0]**2+k[:,1]**2),pauli[0],0) + np.tensordot(b*0.5*(-k[:,0]**2+k[:,1]**2)+abs(p_nem),pauli[3],0) + cv*np.tensordot((2*k[:,0]*k[:,1]),pauli[1],0)
         H[:,3:5,3:5] = H[:,:2,:2]
         H[:,2,2] =  Exy + txy*(k[:,0]**2+k[:,1]**2)
         H[:,5,5] =  Exy + txy*(k[:,0]**2+k[:,1]**2)
@@ -128,7 +141,7 @@ def build_TB(args):
     
     a=3.7734 #FeSe
     c = 5.5258
-    avec = np.array([[a,0,0.0],[0,a,0.0],[0.0,0.0,c]])
+    avec = np.array([[a/np.sqrt(2),a/np.sqrt(2),0.0],[-a/np.sqrt(2),a/np.sqrt(2),0.0],[0.0,0.0,c]])
 
     G,X,M = np.array([0,0,0]),np.array([0.5,0.0,0]),np.array([0.5,0.5,0])
     spin = {'bool':True,'soc':False,'lam':{0:0}}
@@ -168,38 +181,59 @@ def build_TB(args):
 
 if __name__=="__main__":
     
+    mpl.rcParams['font.size'] = 12
+    mpl.rcParams['axes.linewidth']=1.5
+    mpl.rcParams['xtick.labelsize']=12
+    mpl.rcParams['ytick.labelsize']=12
+    
 
     lenk = 400
-    klim = 0.5*np.sqrt(0.5)
-    kpts = np.array([[-klim+klim*i/lenk,-klim+klim*i/lenk] for i in range(lenk)])#+[[klim*i/lenk,0] for i in range(lenk)])
-    kpts = np.array([[0.056,0.056],[0,0]])
+    klim = 0.5
+    kpts = np.array([[-klim+klim*i/lenk,0] for i in range(lenk)])#+[[klim*i/lenk,0] for i in range(lenk)])
+#    kpts = np.array([[0.056,0.056],[0,0]])
 
-#    Ef = -0.1
-#    Exy = 0.05
+    Ef = -0.1
+    Exy = 0.05
     
     txy = -0.02
     Eg=0.1
     mG =-0.29
     b=0.438
-    cpar=0.174
-    L = 0.02
-#    p_nem=0.0
-#    Eb,Ev = FernVaf_remodel(kpts,Ef,Exy,p_nem,L,Eg,txy,mG,b,cpar)
-#    Eb,Ev = FernVaf_remodel(k,ax,ay,b,c,E,Exy,txy,p,L)
-#    plot_dispersion(kpts,Eb)
+    cpar=0.224
+    L = 0.04
+    p_nem=0.0
+    Eb,Ev = FernVaf_remodel(kpts,Ef,Exy,p_nem,L,Eg,txy,mG,b,cpar)
+    plot_dispersion(kpts,Eb)
+    
+    
+    ARPES_dict={'cube':{'X':[-0.0,0.0,1],'Y':[-0.5,0.5,140],'kz':0.0,'E':[-0.25,0.05,400]},
+        'SE':[0.01,0.0,0.8],
+        'directory':'/Users/ryanday/Documents/UBC/TB_ARPES-082018/examples/FeSe',
+        'hv': 37,
+        'pol':np.array([1,0,1]),
+        'mfp':7.0,
+        'slab':False,
+        'resolution':{'E':0.03,'k':0.1},
+        'T':[True,120.0],
+        'W':4.0,
+        'angle':0.0,
+        'spin':None,
+        'slice':[False,-0.005]}
     
 #    TB = build_TB()
     
     
     p0 = [0.0,-0.1,0.05]
-    Nfits = 30
+    Nfits = 60
     cfits = np.zeros((Nfits,3))
     Lvals = np.linspace(0,0.05,Nfits)
-    cfit = fit_model(p0,L)
-#    for ii in range(Nfits):
-#        L = Lvals[ii]
-#        cfits[ii] = fit_model(p0,L)
-#        p0 = cfits[ii]
+#    cfit = fit_model(p0,L)
+    Ipmaps = np.zeros((Nfits,ARPES_dict['cube']['Y'][2],ARPES_dict['cube']['E'][2]))
+    Ismaps = np.zeros((Nfits,ARPES_dict['cube']['Y'][2],ARPES_dict['cube']['E'][2]))
+    for ii in range(Nfits):
+        L = Lvals[ii]
+        cfits[ii] = fit_model(p0,L)
+        p0 = cfits[ii]
 #    
 #    k = np.array([[-klim+klim*i/lenk,-klim+klim*i/lenk] for i in range(lenk)])#+[[klim*i/lenk,0] for i in range(lenk)])
 #    for ii in range(Nfits):
@@ -217,29 +251,68 @@ if __name__=="__main__":
 #    ax.legend(['OO','Eoff','Edxy'])
     
     
-    args = [cfit[1],cfit[2],cfit[0],L,Eg,txy,mG,b,cpar]
-#    args = [-0.1,0.05,0.0,0.0,Eg,txy,mG,b,cpar]
-    TB = build_TB(args)
-    _ = TB.solve_H()
-    TB.plotting()
+        args = [cfits[ii,1],cfits[ii,2],cfits[ii,0],L,Eg,txy,mG,b,cpar]
+#    args = [Ef,Exy,p_nem,L,Eg,txy,mG,b,cpar]
+        TB = build_TB(args)
+#            _ = TB.solve_H()
+#    TB.plotting(-0.25,0.1)
     
     
-    ARPES_dict={'cube':{'X':[-0.35,0.35,60],'Y':[-0.35,0.35,60],'kz':0.0,'E':[-0.25,0.05,300]},
-        'SE':[0.01,0.0,0.4],
-        'directory':'/Users/ryanday/Documents/UBC/TB_ARPES-082018/examples/FeSe',
-        'hv': 37,
-        'pol':np.array([1,0,0]),
-        'mfp':7.0,
-        'slab':False,
-        'resolution':{'E':0.065,'k':0.01},
-        'T':[True,10.0],
-        'W':4.0,
-        'angle':np.pi/4,
-        'spin':None,
-        'slice':[False,-0.005]}
     
-    expmt = ARPES.experiment(TB,ARPES_dict)
-    expmt.plot_gui(ARPES_dict)
+#    
+        expmt = ARPES.experiment(TB,ARPES_dict)
+        expmt.datacube(ARPES_dict)
+        ARPES_dict['pol'] = np.array([0.707,0,0.707])
+        Ip,Igp = expmt.spectral(ARPES_dict)
+        ARPES_dict['pol'] = np.array([0,1,0])
+        Is,Igs = expmt.spectral(ARPES_dict)
+    
+        y = np.linspace(*ARPES_dict['cube']['Y'])
+        w = np.linspace(*ARPES_dict['cube']['E'])
+        Y,W = np.meshgrid(y,w)
+        fig = plt.figure()
+        ax1= fig.add_subplot(121)
+        ax2 = fig.add_subplot(122)
+        ax1.pcolormesh(Y,W,Igs[:,0,:].T,cmap=cm.Greys)
+        ax2.pcolormesh(Y,W,Igp[:,0,:].T,cmap=cm.Greys)
+        ax1.set_title('spol L:{:0.03f}eV,\nOO:{:0.03f}eV'.format(L,cfits[ii,0]))
+        ax2.set_title('ppol L:{:0.03f}eV,\nOO:{:0.03f}eV'.format(L,cfits[ii,0]))
+        ax1.set_xlabel('Momentum (1/A)')
+        ax2.set_xlabel('Momentum (1/A)')
+        ax1.set_ylabel('Energy (eV)')
+        ax1.set_ylim(-0.2,0.05)
+        ax2.set_ylim(-0.2,0.05)
+        plt.tight_layout()
+        plt.savefig('FeSe_SOC_maps/D2_FeSe_Imaps_37eV_120K_{:d}_L_{:0.04f}_OO_{:0.04f}.png'.format(ii,L,cfits[ii,0]),dpi=300,transparent=False)
+        Ismaps[ii,:,:] = Igs[:,0,:]
+        Ipmaps[ii,:,:] = Igp[:,0,:]
+        
+        index = np.where(abs(w+0.028)==abs(w+0.028).min())[0][0]
+        mdcs = np.zeros((Nfits,len(y)))
+        for ii in range(Nfits):
+            mdcs[ii,:] = Ipmaps[ii,:,index]
+            
+        Ymesh,Lmesh = np.meshgrid(y,Lvals)
+            
+        fig2 = plt.figure()
+        ax3 = fig2.add_subplot(121)
+        ax4 = fig2.add_subplot(122)
+        ax3.plot(cfits[:,0],Lvals)
+        ax4.pcolormesh(Ymesh,Lmesh,mdcs,cmap=cm.Greys)
+        ax3.set_xlabel('Orbital Order (eV)')
+        ax3.set_ylabel('Spin-Orbit Coupling (eV)')
+        ax4.set_xlabel('Momentum (1/A)')
+        plt.tight_layout()
+        plt.savefig('FeSe_SOC_maps/FeSe_ppol_mdcs_EB_28meV.png',dpi=300,transparent=True)
+        
+        
+    with open('FeSe_SOC_maps/FeSe_params.txt','w') as tofile:
+        tofile.write('LSOC,OO,EF,Exy\n')
+        for ii in range(Nfits):
+            tofile.write('{:0.06f},{:0.06f},{:0.06f},{:0.06f}\n'.format(Lvals[ii],cfits[ii,0],cfits[ii,1],cfits[ii,2]))
+            
+    tofile.close()
+#    expmt.plot_gui(ARPES_dict)
 ##    
     
     
