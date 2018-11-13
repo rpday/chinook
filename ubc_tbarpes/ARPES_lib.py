@@ -111,6 +111,7 @@ class experiment:
         k_arr,self.ph = K_lib.kmesh(self.ang,self.X,self.Y,self.kz)      
     
         self.TB.Kobj = K_lib.kpath(k_arr)
+        ##### THIS IS WHERE I NEED TO PLUG IN THE VAFEK DIAGONALIZATION. THIS SHOULD BE THE ONLY PLACE WHERE IT IS CALLED!!!!!
         self.Eb,self.Ev = self.TB.solve_H()
         self.Eb = np.reshape(self.Eb,(np.shape(self.Eb)[-1]*np.shape(self.X)[0]*np.shape(self.X)[1])) 
         
