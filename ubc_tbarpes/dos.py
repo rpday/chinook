@@ -131,7 +131,7 @@ def pdos_project(basis,inds):
 ################# Density of States following the Blochl Prescription #######################
 ###############https://journals.aps.org/prb/pdf/10.1103/PhysRevB.49.16223####################
     
-def dos_tetra(TB,NE,NK):
+def dos_tetra(TB,NE,NK,kzval=None):
     '''
     Generate a tetrahedra mesh of k-points which span the BZ with even distribution
     Diagonalize over this mesh and then compute the resulting density of states as
@@ -145,7 +145,10 @@ def dos_tetra(TB,NE,NK):
         Elin -- linear energy array of float, spanning the range of the eigenspectrum
         DOS -- density of states numpy array of float, same length as Elin
     '''
-    kpts,tetra = tetrahedra.mesh_tetra(TB.avec,NK)
+    print('tetrahedra.mesh modified for a "fixed" kz value!')
+ #   kpts,tetra = tetrahedra.mesh_tetra(TB.avec,NK,kzval) ####EDITED FOR GRAPHITE!!!!!!!#####
+    kpts,tetra = tetrahedra.mesh_tetra_dos(TB.avec,NK)
+   # print('kzvals:',set(kpts[:,2]))
     TB.Kobj.kpts = kpts
     TB.solve_H()
     Elin = np.linspace(TB.Eband.min(),TB.Eband.max(),NE)
@@ -161,7 +164,7 @@ def dos_tetra(TB,NE,NK):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.plot(Elin,DOS)               
-    return Elin,DOS
+    return Elin,DOS,TB
         
     
 ##############################-------D(E)---------#############################

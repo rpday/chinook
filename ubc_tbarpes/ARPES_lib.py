@@ -374,8 +374,7 @@ class experiment:
         
         kxg = (self.cube[0][2]*self.dk/(self.cube[0][1]-self.cube[0][0]) if abs(self.cube[0][1]-self.cube[0][0])>0 else 0)
         kyg = (self.cube[1][2]*self.dk/(self.cube[1][1]-self.cube[1][0]) if abs(self.cube[1][1]-self.cube[1][0])>0 else 0)
-        wg = (self.cube[2][2]*self.dE/(self.cube[2][1]-self.cube[2][0]) if abs(self.cube[2][1]-self.cube[2][0]) else 0)
-        
+        wg = (self.cube[2][2]*self.dE/(self.cube[2][1]-self.cube[2][0]) if abs(self.cube[2][1]-self.cube[2][0])>0 else 0)
         Ig = nd.gaussian_filter(I,(kxg,kyg,wg))
         
         if slice_select!=None:

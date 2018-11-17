@@ -149,9 +149,9 @@ def hydrogenic(Z_ind,mn,orb,r):
     au = me/mu*ao
     n = int(orb[0])
     l = int(orb[1])
-    root = np.sqrt((2*Z_ind/(n*au))**3*factorial(n-l-1)/float(factorial(n+l)**3)/(2.*n))
+    root = np.sqrt((2*Z_ind/(n*au))**3*float(factorial(n-l-1))/float(factorial(n+l))/(2.*n))
 #    print mu,au,n,l,root
-    orb = root*np.exp(-Z_ind*2*r/(n*au))*(2*Z_ind*r/(n*au))**l*Y.laguerre(r*2*Z_ind/(n*au),2*l+1,n-l-1)
+    orb = root*np.exp(-Z_ind*r/(n*au))*(2*Z_ind*r/(n*au))**l*Y.laguerre(r*2*Z_ind/(n*au),n-l-1,2*l+1)
     return orb
 
 if __name__=="__main__":

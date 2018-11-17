@@ -69,7 +69,50 @@ def tet_inds():
     tetra_inds = np.array([[corn_dict['{:d}{:d}{:d}'.format(*ti)] for ti in tetra_vec[j]] for j in range(6)])
     return tetra_inds
 
-def mesh_tetra(avec,N):
+
+def mesh_tetra_dos(avec,N):
+    '''
+    An equivalent definition of a spanning grid over the Brillouin zone is just one which spans the 
+    reciprocal cell unit cell
+    '''
+    if type(N)==int:
+        N = (N,N,N)
+        
+    b_vec = klib.bvectors(avec)
+    x,y,z = np.linspace(0,1,N[0]),np.linspace(0,1,N[1]),np.linspace(0,1,N[2])
+    X,Y,Z = np.meshgrid(x,y,z)
+    X,Y,Z = X.flatten(),Y.flatten(),Z.flatten()
+    pts = np.dot(np.array([[X[i],Y[i],Z[i]] for i in range(len(X))]),b_vec)
+
+    ti = tet_inds()
+    
+    mesh_tet = []
+    for ii in range(len(pts)):
+        test_tetra = propagate_alt(ii,N[0],N[1])[ti]
+        for t in test_tetra:
+            try:
+                if t.max()>=len(pts) or t.max()<0:
+                    continue
+                else:
+                    mesh_tet.append(t)
+            except KeyError:
+                continue
+                
+
+            
+    mesh_tet = np.array(mesh_tet)
+    
+    if len(mesh_tet)>0:
+        return pts,mesh_tet
+    else:
+        print('WARNING: NO K-POINTS FOUND, CHOOSE A FINER K-POINT GRID')
+        return None,None
+    
+    
+    
+    
+
+def mesh_tetra(avec,N,kzval=None):
     '''
     Generate a mesh of points spanning several lattice points in reciprocal space: bz_mesh_raw
     From this mesh, reduce to simply a set of points which define the first Brillouin zone.
@@ -87,11 +130,17 @@ def mesh_tetra(avec,N):
         of a cube in k-space
     
     '''
+    print('Added "kzval" to allow mesh over 2D at fixed kz!')
     b_vec = klib.bvectors(avec)
-    rlpts = np.dot(klib.region(1),b_vec)    
+    if kzval is not None:
+        b_vec[2] = np.array([0,0,0.00001])
+    rlpts = np.dot(klib.region(1),b_vec)
+
     raw_mesh = klib.raw_mesh(rlpts,N)
     bz = klib.mesh_reduce(rlpts,raw_mesh,inds=True) #get indices of k-points associated with the BZ
-    
+    if kzval is not None:
+        rlpts[:,2]+=kzval
+        raw_mesh[:,2]+=kzval
     bzd = {bz[i]:i for i in range(len(bz))}    
     Nx0 = len(set(raw_mesh[:,0])) #number of X in raw mesh
     Ny0 = len(set(raw_mesh[:,1])) #number of Y in raw_mesh
@@ -117,6 +166,13 @@ def mesh_tetra(avec,N):
         print('WARNING: NO K-POINTS FOUND, CHOOSE A FINER K-POINT GRID')
         return None,None
 #   
+
+def propagate_alt(i,Nr,Nc):
+    if (np.mod(i,Nr)<(Nr-1)) and (np.mod(Nr+i,Nr*Nc)>np.mod(i,Nr*Nc)):
+        
+        return i + np.array([0,1,Nr,Nr+1,Nr*Nc,Nr*Nc+1,Nr*(1+Nc),Nr*(1+Nc)+1])
+    else:
+        return -1*np.ones(8)
 
 
 def propagate(i,Nr,Nc):

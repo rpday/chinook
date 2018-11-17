@@ -106,12 +106,29 @@ def j(n,x):
     return tmp
 
 def binom(a,b):
-    return factorial(a+b)/float(factorial(a-b)*factorial(b))
+    return factorial(a)/float(factorial(a-b)*factorial(b))
 
-def laguerre(x,l,j):
-#    tmp = [binom(l+j,j-i) for i in range(j+1)]
-    tmp = sum([((-1)**i)*(binom(l+j,j-i)*x**i/float(factorial(i))) for i in range(j+1)])
+def laguerre(x,j,l):
+    '''
+    Generalized Laguerre polynomial, evaluated over a numpy array x. Use the recursion below to evaluate
+    Label convention is as usual: L_j^l(x)
+    
+    args:
+        x -- input array numpy array
+        j -- principal order of the polynomial
+        l -- index of the polynomial
+    return:
+        numpy array of float
+    '''
+    
+    tmp = recur_laguerre(x,0,l,j)
     return tmp
+
+def recur_laguerre(x,i,l,j):
+    if i>j:
+        return 0
+    else:
+        return (-1)**i*binom(l+j,j-i)*x**i/float(factorial(i)) + recur_laguerre(x,i+1,l,j)
 
 
 def gaunt(l,m,dl,dm):

@@ -146,7 +146,6 @@ class TB_model:
                 htmp = []
                 if H_args['type'] == "SK":
                     htmp = Hlib.sk_build_2(H_args['avec'],self.basis,H_args['V'],H_args['cutoff'],H_args['tol'],H_args['renorm'],H_args['offset'])
-#                    htmp = Hlib.sk_build(H_args['avec'],self.basis,H_args['V'],H_args['cutoff'],H_args['tol'],H_args['renorm'],H_args['offset'],H_args['spin']['bool'])
                 elif H_args['type'] == "txt":
                     htmp = Hlib.txt_build(H_args['filename'],H_args['cutoff'],H_args['renorm'],H_args['offset'],H_args['tol'])
                 elif H_args['type'] == "list":
@@ -186,11 +185,15 @@ class TB_model:
         '''
         if self.Kobj is not None:
             Hmat = np.zeros((len(self.Kobj.kpts),len(self.basis),len(self.basis)),dtype=complex) #initialize the Hamiltonian
-            
-            for me in self.mat_els:
-                Hfunc = me.H2Hk() #transform the array above into a function of k
-                Hmat[:,me.i,me.j] = Hfunc(self.Kobj.kpts) #populate the Hij for all k points defined
-        
+            if len(self.mat_els)>0:
+                for me in self.mat_els:
+                    Hfunc = me.H2Hk() #transform the array above into a function of k
+                    Hmat[:,me.i,me.j] = Hfunc(self.Kobj.kpts) #populate the Hij for all k points defined
+            else:
+                print('Warning, a standard tight-binding model has not been implemented. Now looking for an alternative Hamiltonian.')
+                if callable(self.alt_ham):
+                    print('Found valid Hamiltonian function. Proceeding to attempt diagonalization.')
+                    Hmat = self.alt_ham(self.Kobj.kpts)
             self.Eband,self.Evec = np.linalg.eigh(Hmat,UPLO='U') #diagonalize--my H_raw definition uses i<=j, so we want to use the upper triangle in diagonalizing
             return self.Eband,self.Evec
         else:
@@ -202,11 +205,11 @@ class TB_model:
     def plotting(self,win_min=None,win_max=None,svlabel=None,title=None,lw=1.5,text=None): #plots the band structure. Takes in Latex-format labels for the symmetry points indicated in the main code
         fig=plt.figure()
         ax=fig.add_subplot(111)
-        plt.axhline(y=0,color='k',lw=lw,ls='--')
+        plt.axhline(y=0,color='grey',lw=lw,ls='--')
         for b in self.Kobj.kcut_brk:
-            plt.axvline(x = b,color = 'k',ls='--',lw=lw)
+            plt.axvline(x = b,color = 'grey',ls='--',lw=lw)
         for i in range(len(self.basis)):
-            plt.plot(self.Kobj.kcut,np.transpose(self.Eband)[i,:],color='w',lw=lw)
+            plt.plot(self.Kobj.kcut,np.transpose(self.Eband)[i,:],color='navy',lw=lw)
 
         plt.xticks(self.Kobj.kcut_brk,self.Kobj.labels)
         if win_max==None or win_min==None:

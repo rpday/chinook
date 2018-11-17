@@ -147,10 +147,12 @@ def plot_orbital(n,proj):#basis,vec):
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
+    ax.grid(False)
+    ax.axis('off')
     p.set_array(cols)
     p.set_clim(-np.pi,np.pi)
-    
-    return x,y,z,tri.triangles,cols,r
+    plt.colorbar(p,ax=ax)
+    return ax,x,y,z,tri.triangles,cols,r
 
 
 def col_phase(vals):
