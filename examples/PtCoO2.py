@@ -14,6 +14,8 @@ sys.path.append('C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-ma
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import matplotlib as mpl
 import ubc_tbarpes.build_lib as build_lib
 import ubc_tbarpes.ARPES_lib as ARPES
 import scipy.ndimage as nd
@@ -107,13 +109,13 @@ if __name__ == "__main__":
       'termination':(1,1)}
  
 
-    ARPES_dict={'cube':{'X':[-1.2,1.2,90],'Y':[-1.2,1.2,90],'kz':0.0,'E':[-0.3,0.05,100]},
-                'SE':{'cut':27.0,'imfunc':[0.01,0.2]},
+    ARPES_dict={'cube':{'X':[-1.2,1.2,120],'Y':[-1.2,1.2,120],'kz':0.0,'E':[-0.3,0.05,300]},
+                'SE':[0.01,0,0.2],
                 'directory':'C:\\Users\\rday\\Documents\\TB_ARPES\\2018\\TB_ARPES_2018\\FeSe',
                 'hv': 110.0,
                 'pol':np.array([1,0,1]),
                 'mfp':7.0,
-                'slab':True,
+                'slab':False,
                 'resolution':{'E':0.01,'k':0.05},
                 'T':[True,10.0],
                 'W':4.0,
@@ -129,20 +131,54 @@ if __name__ == "__main__":
     Kobj = build_lib.gen_K(Kd)
     TB = build_lib.gen_TB(Bd,Hd,Kobj)
     TB.mat_els = trig_onsite(TB.mat_els,Hco,Hto)
-#    TB.solve_H()
-#    TB.plotting(-0.7,0.1)
+    TB.solve_H()
+  #  TB.plotting(-0.7,0.1)
     
     
-
+  
          
     ARPES_expmt = ARPES.experiment(TB,ARPES_dict)
-    ARPES_expmt.plot_gui(ARPES_dict)
+    ARPES_expmt.datacube(ARPES_dict)
+    
+    ARPES_dict['pol'] = np.array([0.5,0.707j,0.5])
+    Icp,Icpg = ARPES_expmt.spectral(ARPES_dict)
+    ARPES_dict['pol'] = np.array([0.5,-0.707j,0.5])
+    Icm,Icmg = ARPES_expmt.spectral(ARPES_dict)
+    
+    offset = max(Icmg.max(),Icpg.max())/10
+    
+    
+    CD = (Icpg-Icmg)/(Icpg+Icmg+offset)
+    
+    x = np.linspace(*ARPES_dict['cube']['X'])
+    y = np.linspace(*ARPES_dict['cube']['Y'])
+    w = np.linspace(*ARPES_dict['cube']['E'])
+    wind = np.where(abs(w)==abs(w).min())[0][0]
+    mpl.rcParams['font.size']=14
+    fig = plt.figure()
+    ax1 = fig.add_subplot(121)
+    ax2 = fig.add_subplot(122)
+#    ax3 = fig.add_subplot(133)
+    X1,Y1 = np.meshgrid(x,y)
+#    X2,Y2 = np.meshgrid(x,w)
+    X3,Y3 = np.meshgrid(y,w)
+    wind = np.where(abs(w)==abs(w).min())[0][0]
+    ax1.pcolormesh(X1,Y1,CD[:,:,wind],cmap=cm.BrBG)
+    ax2.pcolormesh(X3,Y3,CD[:,45,:].T,cmap=cm.BrBG)
+#    ax3.pcolormesh(X2,Y2,Ipg[5,:,:].T,cmap=cm.magma)
+    ax1.set_xlabel('Momentum x (1/A)')
+    ax1.set_ylabel('Momentum y (1/A)')
+    ax2.set_xlabel('Momentum y (1/A)')
+    ax2.set_ylabel('Energy (eV)')
+#    ax3.set_xlabel('Momentum x (1/A)')
+#    ax1.set_aspect(1)
+    
 #    return TB
-
 #
+##
 #if __name__ == "__main__":
 #    
 #    TB = _gen_TB()
-    
-    
-    
+#    
+#    
+#    

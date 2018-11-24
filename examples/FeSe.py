@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import sys
 sys.path.append('C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/')
-
+import matplotlib as mpl
 import ubc_tbarpes.build_lib as build_lib
 import ubc_tbarpes.ARPES_lib as ARPES
 import ubc_tbarpes.optics as optics
@@ -59,18 +59,18 @@ Mx = np.array([0.5,-0.5,0.0])
 
 #filenm ='FeSe_BMA_BO.txt'
 #CUT,REN,OFF,TOL=a*3,1/1.,0.01,1e-7
-#filenm = 'FeSe_o.txt'
-#CUT,REN,OFF,TOL=a*3,1/1.4,0.12,0.001
+filenm = 'FeSe_o.txt'
+CUT,REN,OFF,TOL=a*3,1/1.4,0.12,0.001
 
 #Hlist = Kreisel.gen_Kreisel_list(avec,[Fe1,Fe2])
 #filenm = 'FeSe_Kreisel_mod.txt'
-filenm = 'FeSe_BMA_MOD.txt'
-CUT,REN,TOL=a*4,1.0,1e-7
-OFF = 0.015
+#filenm = 'FeSe_BMA_MOD.txt'
+#CUT,REN,TOL=a*4,1.0,1e-7
+#OFF = 0.015
 
 ######################### MODEL GENERATION PARAMETERS ##########################
 
-spin_dict = {'bool':True,
+spin_dict = {'bool':False,
         'soc':True,
         'lam':{0:0.04},
         'order':'N',
@@ -123,7 +123,7 @@ optics_dict = {'hv':0.36,
 ######################### ARPES EXPERIMENT PARAMETERS #########################
 
 
-ARPES_dict={'cube':{'X':[-0.5,0.5,100],'Y':[-0.0001,0.0001,1],'kz':0.0,'E':[-0.2,0.05,100]},
+ARPES_dict={'cube':{'X':[-0.5,0.5,20],'Y':[-0.5,0.5,20],'kz':0.0,'E':[-0.2,0.05,100]},
         'SE':[0.01,0.0,0.4],
         'directory':'/Users/ryanday/Documents/UBC/TB_ARPES-082018/examples/FeSe',
         'hv': 37,
@@ -135,7 +135,8 @@ ARPES_dict={'cube':{'X':[-0.5,0.5,100],'Y':[-0.0001,0.0001,1],'kz':0.0,'E':[-0.2
         'W':4.0,
         'angle':0.0,
         'spin':None,
-        'slice':[False,-0.005]}
+        'slice':[False,-0.005],
+        'Brads':{'0-3-2-1':1.0,'0-3-2-3':1.0}}
  
 ################################# BUILD MODEL #################################
 
@@ -178,19 +179,19 @@ def ARPES_run(basis_dict,ham_dict,ARPES_dict,vfile):
 if __name__ == "__main__":
     TB = build_TB()
 #    TB.mat_els = orbital_order(TB.mat_els,0.01)
-    TB.solve_H()
+#    TB.solve_H()
     TB.plotting()
     
-    pars,Ip,Is = ARPES_run(basis_dict,ham_dict,ARPES_dict,'SOC_OFF_OO.txt')
-#    
-    fig = plt.figure()
-    ax = fig.add_subplot(121)
-    ax2 = fig.add_subplot(122)
-    x = np.linspace(*ARPES_dict['cube']['X'])
-    s = pars[:,0]
-    X,S = np.meshgrid(x,s)
-    ax.pcolormesh(X,S,Ip[:,:,68],cmap=cm.magma)
-    ax2.pcolormesh(X,S,Is[:,:,68],cmap=cm.magma)
+#    pars,Ip,Is = ARPES_run(basis_dict,ham_dict,ARPES_dict,'SOC_OFF_OO.txt')
+##    
+#    fig = plt.figure()
+#    ax = fig.add_subplot(121)
+#    ax2 = fig.add_subplot(122)
+#    x = np.linspace(*ARPES_dict['cube']['X'])
+#    s = pars[:,0]
+#    X,S = np.meshgrid(x,s)
+#    ax.pcolormesh(X,S,Ip[:,:,68],cmap=cm.magma)
+#    ax2.pcolormesh(X,S,Is[:,:,68],cmap=cm.magma)
 #    Svx = ops.S_vec(len(TB.basis),np.array([1,0,0]))
 #    Svy = ops.S_vec(len(TB.basis),np.array([0,1,0]))
 #    Dsurf = np.identity(len(TB.basis))*np.array([np.exp(bi.depth/10) for bi in TB.basis])
@@ -216,5 +217,38 @@ if __name__ == "__main__":
 #    optics_exp = optics.optical_experiment(TB,optics_dict)
 #    optics_exp.integrate_jdos()
 #
-    ARPES_expmt = ARPES.experiment(TB,ARPES_dict)
-    ARPES_expmt.plot_gui(ARPES_dict)
+#    ARPES_expmt = ARPES.experiment(TB,ARPES_dict)
+#    ARPES_expmt.datacube(ARPES_dict)
+##    ARPES_expmt.plot_gui(ARPES_dict)
+#    Ip,Ipg = ARPES_expmt.spectral(ARPES_dict)
+##    ARPES_dict['spin']=[1,np.array([1,0,0])]
+##    Isu,Isug = ARPES_expmt.spectral(ARPES_dict)
+##    ARPES_dict['spin'] = [-1,np.array([1,0,0])]
+##    Isd,Isdg = ARPES_expmt.spectral(ARPES_dict)
+#    
+#    
+#    
+#    
+#    x = np.linspace(*ARPES_dict['cube']['X'])
+#    y = np.linspace(*ARPES_dict['cube']['Y'])
+#    w = np.linspace(*ARPES_dict['cube']['E'])
+#    mpl.rcParams['font.size']=14
+#    fig = plt.figure()
+#    ax1 = fig.add_subplot(131)
+#    ax2 = fig.add_subplot(132)
+#    ax3 = fig.add_subplot(133)
+#    X1,Y1 = np.meshgrid(x,y)
+#    X2,Y2 = np.meshgrid(x,w)
+#    X3,Y3 = np.meshgrid(y,w)
+#    wind = np.where(abs(w)==abs(w).min())[0][0]
+#    ax1.pcolormesh(X1,Y1,Ipg[:,:,wind],cmap=cm.magma)
+#    ax2.pcolormesh(X3,Y3,Ipg[:,5,:].T,cmap=cm.magma)
+#    ax3.pcolormesh(X2,Y2,Ipg[5,:,:].T,cmap=cm.magma)
+#    ax1.set_xlabel('Momentum x (1/A)')
+#    ax1.set_ylabel('Momentum y (1/A)')
+#    ax2.set_xlabel('Momentum y (1/A)')
+#    ax2.set_ylabel('Energy (eV)')
+#    ax3.set_xlabel('Momentum x (1/A)')
+#    ax1.set_aspect(1)
+#    ax2.set_aspect(6)
+#    ax3.set_aspect(6)

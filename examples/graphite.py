@@ -76,10 +76,10 @@ def build_TB():
            'spin':spin }
     #2.61 for original calculation 1.55,1.85
     kz = 2.7
-    Kd = {'type':'A',
+    Kd = {'type':'F',
           'avec':avec,
-			'pts':[np.array([0,1.702,kz]),np.array([0,1.5,kz])],#[np.array([0,1.702,2.1]),np.array([0,1.702,3.68]),np.array([0,1.702,4.75])],
-			'grain':200,
+			'pts':[G,K,H],#[np.array([0,1.702,2.1]),np.array([0,1.702,3.68]),np.array([0,1.702,4.75])],
+			'grain':500,
 			'labels':['$\Gamma$','49.9','84']}
 
 
@@ -142,24 +142,25 @@ if __name__ == "__main__":
 #    
 ###    
 ######    
-#    hv = 49.9
-#    kz_val  =klib.kz_kpt(hv,1.702,4.4,16.4)
-#    ARPES_dict = {'cube': {'X':[-2,2,len(Kobj.kpts)],'Y':[-2,2.0,len(Kobj.kpts)],'kz':kz_val,'E':[-2.,1,315]},                
-#                'SE':[0.15,0.00],
-#                'directory':'C:\\Users\\rday\\Documents\\TB_ARPES\\2018\\TB_ARPES_2018\\graphite',
-#                'hv': hv,
-#                'pol':np.array([0,0.707,-0.707]),
-#                'mfp':7.0,
-#                'resolution':{'E':0.03,'k':0.005},
-#                'T':[False,10.0],
-#                'W':4.4,
-#                'angle':0,
-#                'spin':None,
-#                'slice':[False,-0.2]}
+    hv = 49.9
+    kz_val  =klib.kz_kpt(hv,1.702,4.4,16.4)
+    ARPES_dict = {'cube': {'X':[-0.5,0.5,len(TB.Kobj.kpts)],'Y':[1.35,1.85,len(TB.Kobj.kpts)],'kz':kz_val,'E':[-2.,1,315]},                
+                'SE':[0.15,0.00],
+                'directory':'C:\\Users\\rday\\Documents\\TB_ARPES\\2018\\TB_ARPES_2018\\graphite',
+                'hv': hv,
+                'pol':np.array([0,0.707,-0.707]),
+                'mfp':7.0,
+                'resolution':{'E':0.03,'k':0.005},
+                'T':[False,10.0],
+                'W':4.4,
+                'angle':0,
+                'spin':None,
+                'slice':[False,-0.2],
+                'Brads':{'0-2-1-0':1.0,'0-2-1-2':1.0}}
+#
 ##
-###
-###    
-##
+##    
+#
 #    expmt = ARPES.experiment(TB,ARPES_dict)
 #    expmt.datacube(ARPES_dict)
 ##    Ipes,Ipesg = expmt.spectral(ARPES_dict,(2,50))

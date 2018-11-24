@@ -5,7 +5,7 @@ Created on Thu Sep 13 11:47:18 2018
 @author: rday
 """
 import sys
-sys.path.append('/Users/ryanday/Documents/UBC/TB_ARPES/TB_ARPES-master 4/')
+sys.path.append('C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/')
 
 import numpy as np
 import ubc_tbarpes.build_lib as build_lib
@@ -55,15 +55,15 @@ if __name__=="__main__":
     tol = 0.0001
     SK,CUT = CuTB.gen_Cu_SK(avec,fnm,tol)
     OFF = CuTB.pair_pot(fnm,avec)/(-18)+1.55#-18#
-#    SK = SK[0]
-#    CUT = float(CUT[0])
+#    SK = SK[:3]
+#    CUT = CUT[:3]
     
 #    SK = {"040":-2.408,"031":4.00,"032":-5.00,"004400S":-0.05652552534871882,"003410S":0.10235422439959821,"004302S":-0.036994370838375354,
 #          "003311S": 0.21924434953910618,"003311P":0.0,"003312S":-0.053580360262257626,"003312P":0.013802597521248922,"003322S":-0.012755569410002986,
 #          "003322P":0.0033741803350209204,"003322D":-0.0012785070616424799}
 #    txtfile = 'C:/Users/rday/Documents/TB_ARPES/2018/TB_ARPES_2018/TB_ARPES-master/examples/Cu.txt'
 
-    spin = {'bool':True,'soc':True,'lam':{0:0.1}}
+    spin = {'bool':False,'soc':True,'lam':{0:0.1}}
 
     Bd = {'atoms':[0],
 			'Z':{0:29},
@@ -73,7 +73,7 @@ if __name__=="__main__":
 
     Kd = {'type':'F',
           'avec':avec,
-			'pts':[-G,-X,-W,-L,-G,-K],
+			'pts':[G,X,W,L,G,K],
 			'grain':100,
 			'labels':['$\Gamma$','X','W','L','$\Gamma$','K']}
 
@@ -89,7 +89,7 @@ if __name__=="__main__":
     
     slab_dict = {'avec':avec,
       'miller':np.array([1,1,1]),
-      'thick':16,
+      'thick':30,
       'vac':10,
       'fine':(0,0),
       'termination':(0,0)}
@@ -101,14 +101,14 @@ if __name__=="__main__":
 
     
     
-    G,M,K=np.zeros(3),np.array([0.5,0.5,0.0]),np.array([1./3,2./3,0.0])
-    G,M,K = np.zeros(3),np.array([1.24795,0.72052,0.0]),np.array([0.83197,1.44103,0.0])
-    
-    Kd['type']='A'
-    Kd['avec']=TB.avec
-    Kd['pts'] = [G,M,K,G]
-    TB.Kobj = build_lib.gen_K(Kd)
-    Hd['avec'] = TB.avec
+#    G,M,K=np.zeros(3),np.array([0.5,0.5,0.0]),np.array([1./3,2./3,0.0])
+#    G,M,K = np.zeros(3),np.array([1.24795,0.72052,0.0]),np.array([0.83197,1.44103,0.0])
+#    
+#    Kd['type']='A'
+#    Kd['avec']=TB.avec
+#    Kd['pts'] = [G,M,K,G]
+#    TB.Kobj = build_lib.gen_K(Kd)
+#    Hd['avec'] = TB.avec
 
     TB.solve_H()
     TB.plotting()
@@ -134,7 +134,7 @@ if __name__=="__main__":
 #    SY = ops.O_path(Sys,TB,Kobj=TB.Kobj,vlims=(-0.25,0.25),Elims=(-1,-0.),degen=True)
 #    
     
-#    ARPES_dict={'cube':{'X':[-2,2,140],'Y':[-2,2,140],'kz':0.0,'E':[-0.75,0.05,120]},
+#    ARPES_dict={'cube':{'X':[-2,2,100],'Y':[-2,2,100],'kz':0.0,'E':[-0.75,0.05,120]},
 #        'SE':[0.005],
 #        'directory':'/Users/ryanday/Documents/UBC/TB_ARPES-082018/examples/FeSe',
 #        'hv': 50,
