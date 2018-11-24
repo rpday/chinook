@@ -42,21 +42,51 @@ Tight-Binding Utility module
 
 
 class H_me:
-    
+    '''
+    This class contains the relevant executables and data structure pertaining to generation of the Hamiltonian
+    matrix elements for a single set of coupled basis orbitals. 
+    Its attributes include integer values self.i,self.j indicating the basis indices, and a list of hopping vectors/matrix element values
+    for the Hamiltonian. 
+    The method H2Hk provides an executable function of momentum to allow broadcasting of the Hamiltonian over a large array of momenta
+    Python's flexible protocol for equivalency and passing variables by reference/value require definition of a copy operator which 
+    allows one to produce safely, a copy of the object rather than its coordinates in memory alone.
+    '''
     def __init__(self,i,j):
         self.i = i
         self.j = j
         self.H = []
     
     def append_H(self,R0,R1,R2,H):
+        '''
+        Add a new hopping path to the coupling of the parent orbitals
+        args:
+            R0,R1,R2 -- float connecting vector in cartesian coordinate frame--this is the TOTAL vector, not the relevant lattice vectors only
+            H -- matrix elment -complex float
+        return:
+            directly modifies the Hamiltonian list for these matrix coordinates
+        '''
+        
         self.H.append([R0,R1,R2,H])
         
         
     def H2Hk(self): #this employs lambda functions to allow for rapid initialization of the Hamiltonian. 
-
+        '''
+        Transform the list of hopping elements into a Fourier-series expansion of the Hamiltonian
+        This is run during diagonalization for each matrix element index
+        return:
+            function of a a float or numpy array of float
+        '''
         return lambda x: sum([complex(m[-1])*np.exp(1.0j*np.dot(x,np.array([m[0],m[1],m[2]]))) for m in self.H])
         
     def clean_H(self):
+        '''
+        Remove all duplicate instances of hopping elements in the matrix element list.
+        This function is run automatically during slab generation.
+        
+        The Hamiltonian list is not itself directly modified. 
+        return:
+            list of hopping vectors and associated Hamiltonian matrix element strengths
+        '''
         tmp = self.H
         bools = [True]*len(tmp)
         for hi in range(len(tmp)-1):
@@ -114,6 +144,7 @@ class TB_model:
 
         self.mat_els = self.build_ham(H_args)
         self.Kobj = Kobj
+
         
     def copy(self):
         TB_copy = TB_model(self.basis,None,self.Kobj)
@@ -146,6 +177,7 @@ class TB_model:
                 htmp = []
                 if H_args['type'] == "SK":
                     htmp = Hlib.sk_build_2(H_args['avec'],self.basis,H_args['V'],H_args['cutoff'],H_args['tol'],H_args['renorm'],H_args['offset'])
+#                    htmp = Hlib.sk_build(H_args['avec'],self.basis,H_args['V'],H_args['cutoff'],H_args['tol'],H_args['renorm'],H_args['offset'],H_args['spin']['bool'])
                 elif H_args['type'] == "txt":
                     htmp = Hlib.txt_build(H_args['filename'],H_args['cutoff'],H_args['renorm'],H_args['offset'],H_args['tol'])
                 elif H_args['type'] == "list":
@@ -170,8 +202,6 @@ class TB_model:
                 return None
         else:
             return None
-            
-
         
         
     def solve_H(self):
@@ -185,15 +215,11 @@ class TB_model:
         '''
         if self.Kobj is not None:
             Hmat = np.zeros((len(self.Kobj.kpts),len(self.basis),len(self.basis)),dtype=complex) #initialize the Hamiltonian
-            if len(self.mat_els)>0:
-                for me in self.mat_els:
-                    Hfunc = me.H2Hk() #transform the array above into a function of k
-                    Hmat[:,me.i,me.j] = Hfunc(self.Kobj.kpts) #populate the Hij for all k points defined
-            else:
-                print('Warning, a standard tight-binding model has not been implemented. Now looking for an alternative Hamiltonian.')
-                if callable(self.alt_ham):
-                    print('Found valid Hamiltonian function. Proceeding to attempt diagonalization.')
-                    Hmat = self.alt_ham(self.Kobj.kpts)
+            
+            for me in self.mat_els:
+                Hfunc = me.H2Hk() #transform the array above into a function of k
+                Hmat[:,me.i,me.j] = Hfunc(self.Kobj.kpts) #populate the Hij for all k points defined
+        
             self.Eband,self.Evec = np.linalg.eigh(Hmat,UPLO='U') #diagonalize--my H_raw definition uses i<=j, so we want to use the upper triangle in diagonalizing
             return self.Eband,self.Evec
         else:
@@ -203,51 +229,80 @@ class TB_model:
         
         
     def plotting(self,win_min=None,win_max=None,svlabel=None,title=None,lw=1.5,text=None): #plots the band structure. Takes in Latex-format labels for the symmetry points indicated in the main code
+        '''
+        Plotting routine for a tight-binding model evaluated over some path in k. If the model has not yet
+        been diagonalized, it is done automatically before proceeding
+        
+        '''
+        try:
+            Emin,Emax = np.amin(self.Eband),self.amax(self.Eband)
+        except AttributeError:
+            print('Warning: Bandstructure and energies have not yet been defined. Diagonalizing now.')
+            self.solve_H()
+            Emin,Emax = np.amin(self.Eband),np.amax(self.Eband)
+            print('Diagonalization complete. Proceeding to plotting.')
+            
         fig=plt.figure()
+        fig.set_tight_layout(False)
         ax=fig.add_subplot(111)
-        plt.axhline(y=0,color='grey',lw=lw,ls='--')
+        ax.axhline(y=0,color='k',lw=lw,ls='--')
         for b in self.Kobj.kcut_brk:
-            plt.axvline(x = b,color = 'grey',ls='--',lw=lw)
+            ax.axvline(x = b,color = 'k',ls='--',lw=lw)
         for i in range(len(self.basis)):
-            plt.plot(self.Kobj.kcut,np.transpose(self.Eband)[i,:],color='navy',lw=lw)
+            ax.plot(self.Kobj.kcut,np.transpose(self.Eband)[i,:],color='navy',lw=lw)
 
         plt.xticks(self.Kobj.kcut_brk,self.Kobj.labels)
         if win_max==None or win_min==None:
-            plt.axis([self.Kobj.kcut[0],self.Kobj.kcut[-1],np.amin(self.Eband)-1.0,np.amax(self.Eband)+1.0])
+            ax.set_xlim(self.Kobj.kcut[0],self.Kobj.kcut[-1])
+            ax.set_ylim(Emin-1.0,Emax+1.0)
         elif win_max !=None and win_min !=None:
-            plt.axis([self.Kobj.kcut[0],self.Kobj.kcut[-1],win_min,win_max]) #hard coded right now for Bi2Se3, should revise
+            ax.set_xlim(self.Kobj.kcut[0],self.Kobj.kcut[-1])
+            ax.set_ylim(win_min,win_max) 
         if text is not None:
             props = dict(boxstyle='round',facecolor='wheat',alpha=0.5)
             ax.text(0.05,0.2,text,transform=ax.transAxes,fontsize=14,verticalalignment='top',bbox=props)
         if title is not None:
-            plt.suptitle(title)   
-        plt.ylabel("Energy (eV)")
+            ax.set_title(title)   
+        ax.set_ylabel("Energy (eV)")
         if svlabel is not None:
             plt.savefig(svlabel)
             
             
-            
 def gen_H_obj(htmp):
-        htmp = sorted(htmp,key=itemgetter(0,1,2,3,4))
-
-        
-        H = []
-        
-        Hnow = H_me(0,0)
-        Rij = np.zeros(3)
-        
-        for h in htmp:
-            if h[0]!=Hnow.i or h[1]!=Hnow.j:
-                H.append(Hnow)
-                Hnow = H_me(int(np.real(h[0])),int(np.real(h[1])))
-            Rij = np.real(h[2:5])
-            Hnow.append_H(*Rij,h[5])
-        H.append(Hnow)
-        return H 
+    '''
+    Take a list of Hamiltonian matrix elements in list format:
+        [i,j,Rij[0],Rij[1],Rij[2],Hij(R)]
+    and generate a list of H_me objects instead. This collects all
+    related matrix elements for a given orbital-pair for convenient generation
+    of the matrix Hamiltonians over an input array of momentum
+    args:
+        htmp, list of numeric-type values (mixed integer[:2], float[2:5], complex-float[-1])
+    return:
+        The list of Hamiltonian matrix element objects
+    '''
+    htmp = sorted(htmp,key=itemgetter(0,1,2,3,4))
+    
+    H = []
+    
+    Hnow = H_me(0,0)
+    Rij = np.zeros(3)
+    
+    for h in htmp:
+        if h[0]!=Hnow.i or h[1]!=Hnow.j:
+            H.append(Hnow)
+            Hnow = H_me(int(np.real(h[0])),int(np.real(h[1])))
+        Rij = np.real(h[2:5])
+        Hnow.append_H(*Rij,h[5])
+    H.append(Hnow)
+    return H 
+            
+            
             
 
-            
-            
+#            
+#
+#            
+#            
 
 
         

@@ -258,6 +258,8 @@ def O_path(O,TB,Kobj=None,vlims=(-1,1),Elims=(-10,10),degen=False,plot=True):
     O_vals = np.zeros((int(np.shape(TB.Eband)[0]),int(np.shape(TB.Eband)[1]/int(2 if degen else 1))))
 
     fig = plt.figure()
+    fig.set_tight_layout(False)
+
     ax=fig.add_subplot(111)
 
     for b in TB.Kobj.kcut_brk:

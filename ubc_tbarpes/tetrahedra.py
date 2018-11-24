@@ -139,6 +139,7 @@ def mesh_tetra(avec,N,kzval=None):
     raw_mesh = klib.raw_mesh(rlpts,N)
     bz = klib.mesh_reduce(rlpts,raw_mesh,inds=True) #get indices of k-points associated with the BZ
     if kzval is not None:
+        print('proceeding to restrict to fixed kz')
         rlpts[:,2]+=kzval
         raw_mesh[:,2]+=kzval
     bzd = {bz[i]:i for i in range(len(bz))}    

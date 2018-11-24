@@ -32,7 +32,15 @@ class dos_env:
                 
         
     def build_bz(self,N):
-        kpts = klib.b_zone(self.TB.avec,N)
+        if type(N)==int:
+            N = (N,N,N)
+        
+        b_vec = klib.bvectors(self.TB.avec)
+        x,y,z = np.linspace(0,1,N[0]),np.linspace(0,1,N[1]),np.linspace(0,1,N[2])
+        X,Y,Z = np.meshgrid(x,y,z)
+        X,Y,Z = X.flatten(),Y.flatten(),Z.flatten()
+        kpts = np.dot(np.array([[X[i],Y[i],Z[i]] for i in range(len(X))]),b_vec)
+#        kpts = klib.b_zone(self.TB.avec,N)
         print(len(kpts))
         return kpts
     

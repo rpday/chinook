@@ -67,11 +67,14 @@ class experiment:
     args: TB -- instance of a tight-binding model object
         ARPES_dict -- dictionary of relevant experimental parameters including:
             'hv': photon energy (float,eV), 'mfp': mean-free path (float,Ang.),
-            'dE': energy resolution (float, FWHM), 'dk': momentum resolution (float, 1/Ang)
+            'resolution': dictionary for energy and momentum resolution: 'dE': energy resolution (float, FWHM), 'dk': momentum resolution (float, FWHM 1/Ang)
             'ang': rotation of sample about normal emission (z) axis (float, radian),
+            'slab':Boolean -- will truncate the eigenfunctions beyond the penetration depth (specifically 4x penetration depth)
             'T': Temperature of sample (float, Kelvin)
             'W': work function (float, eV)
-            'cube': momentum and energy domain (dictionary: 'kz' is float, all others are list or tuple of floats Xo,Xf,dX)
+            'spin': spin-ARPES measurement, list [+/-1,np.array([a,b,c])] with the numpy array indicating the spin-projection direction (w.r.t.) experimental frame (if not spin-ARPES, use None)
+            'cube': momentum and energy domain (dictionary: 'kz' is float, all others ('X','Y',E') are list or tuple of floats Xo,Xf,dX)
+            
         if running a slab calculation, the eigenvectors are truncated below a certain depth
     
     '''
@@ -180,6 +183,8 @@ class experiment:
             'slice' flag to True and select a binding energy of interest. Then a single energy is plotted.
             Alternatively, if no slice is selected, a series of text files can be generated which are then exported
             to for example Igor where they can be loaded like experimental data.
+            args: ARPES_dict--experimental configuration:  c.f. docstring for class experiment
+            for required key-value pairs in the ARPES_dict
         '''      
         
 
@@ -218,16 +223,15 @@ class experiment:
 
         
         tol = 0.01
-        strmats = Gstrings()
         print('Begin computing matrix elements: ')
         for i in range(len(cube_indx)):
             if not ARPES_dict['slice'][0]:
                 if self.cube[2][0]<=cube_indx[i][1]<=self.cube[2][1]:
-                    tmp_M = self.M_compute(Gvals,self.Bvals,i,cube_indx[i],kn[i],tmp_basis,tol,strmats) ###
+                    tmp_M = self.M_compute(Gvals,self.Bvals,i,cube_indx[i],kn[i],tmp_basis,tol) ###
                 else:
                     tmp_M=0.0
             elif abs(cube_indx[i][1]-ARPES_dict['slice'][1])<self.dE:
-                tmp_M = self.M_compute(Gvals,self.Bvals,i,cube_indx[i],kn[i],tmp_basis,tol,strmats)*np.exp(-(cube_indx[i][1]-ARPES_dict['slice'][1])**2/(2*self.dE)) ####
+                tmp_M = self.M_compute(Gvals,self.Bvals,i,cube_indx[i],kn[i],tmp_basis,tol)*np.exp(-(cube_indx[i][1]-ARPES_dict['slice'][1])**2/(2*self.dE)) ####
             else:
                 tmp_M = 0.0
 
@@ -239,17 +243,25 @@ class experiment:
         return True
     
 
-    def M_compute(self,G,B,i,cube,kn,basis,tol,strmats):
+    def M_compute(self,G,B,i,cube,kn,basis,tol):
         '''
         The core method called during matrix element computation.
         args:
             G -- dictionary of relevant Gaunt coefficients
             B -- dictionary of radial integral functions, to be evaluated at the designated energy
+            cube -- index and energy of state
+            kn -- length of the final state k-vector
+            basis -- model basis (list of orbital objects)
+            tol -- minimum projection threshold for computation
+        return Mtmp
+        numpy array (2x3) of complex float corresponding to the matrix element projection for dm = -1,0,1 (columns) and spin down or up (rows)
+        for a given state in k and energy
             
         '''
         nstates = len(self.TB.basis)
         phi = self.ph[int(cube[0]/nstates)]
         th = self.th[i]
+
         Mtmp = np.zeros((2,3),dtype=complex)
         
         psi = self.Ev[int(cube[0]/nstates),:,int(cube[0]%nstates)]
@@ -321,7 +333,7 @@ class experiment:
         The ARPES_dict also constains a 'pol'-arization vector in Cartesian coordinates (lab frame).
         Also has option of a 'spin' projection, coming in the form of [+/-1, np.array([x,y,z])].
         'T' can be turned on or off [Bool, float] and set to some value in Kelvin. 'resolution'
-        can also be updated.
+        can also be updated.***SEE docstring for class experiment above for further details on ARPES_dict
         If slice_select is passed (list/tuple/float of length 2 (axis, index)) to force plotting.
         
         return: I, Ig the numpy array intensity maps and its resolution-broadened partner. Gaussian
@@ -397,8 +409,8 @@ class experiment:
         
         return I,Ig
     
-    def plot_gui(self,Adict):
-        TK_win = Tk_plot.plot_intensity_interface(self,Adict)
+    def plot_gui(self,ARPES_dict):
+        TK_win = Tk_plot.plot_intensity_interface(self,ARPES_dict)
         
         
         
@@ -409,12 +421,27 @@ class experiment:
 ###############################################################################        
      
     def write_map(self,_map,directory):
+        '''
+        Write the intensity map to a text file in the indicated directory.
+        args:
+            _map -- numpy array of float to write
+            directory -- string, name of directory + the file-lead name e.g. /Users/name/ARPES_maps/room_temp_superconductor'
+            will produce a series of files labeled as room_temp_superconductor_xx.txt in the /Users/name/ARPES_maps/ subfolder
+        '''
         for i in range(np.shape(_map)[2]):   
             filename = directory + '_{:d}.txt'.format(i)
             self.write_Ik(filename,_map[:,:,i])
         return True
 
     def write_params(self,Adict,parfile):
+        '''
+        Generate metadata text file  associated with the saved map.
+        args:
+            Adict -- ARPES_dict same as in above functions, containing relevant experimental parameters
+            parfile -- destination for the metadata (string)
+        
+        '''
+        
         
         RE_pol = list(np.real(Adict['pol']))
         IM_pol = list(np.imag(Adict['pol']))
@@ -442,6 +469,13 @@ class experiment:
         params.close()
     
     def write_Ik(self,filename,mat):
+        '''
+        Sub-function for producing the textfiles associated with a 2dimensional numpy array of float
+        args:
+            filename -- string indicating destination of file
+            mat -- 2 dimensional numpy array of float
+        
+        '''
         with open(filename,"w") as destination:
             for i in range(np.shape(mat)[0]):
                 tmpline = " ".join(map(str,mat[i,:]))
@@ -543,6 +577,13 @@ class experiment:
     
     
     def rot_basis(self):
+        '''
+        Rotate the basis orbitals and their positions in the lab frame to be consistent with the
+        experimental geometry
+        return:
+            rotated copy of the basis (list of orbital objects) if the rotation is non-zero
+            otherwise, just return the untouched basis
+        '''
         tmp_base = []
         if abs(self.ang)>0.0:
             for o in range(len(self.TB.basis)):
@@ -588,13 +629,10 @@ class experiment:
             spin_ax = spin_ax/np.linalg.norm(spin_ax)
             th = np.arccos(spin_ax[2])
             ph = np.arctan2(spin_ax[1],spin_ax[0])
-#            ax_dict = {'x':[np.pi/2,0.0],'y':[np.pi/2,np.pi/2],'z':[0,0]}
             if abs(self.ang)>0:
                 print(self.ang)
                 ph -=self.ang
-#                ax_dict[spin_ax][1]-=self.ang
             US = np.array([[-np.cos(th/2)*np.exp(-1.0j*ph),np.sin(th/2)],[np.sin(th/2)*np.exp(-1.0j*ph),np.cos(th/2)]])
-#            US = np.array([[-np.cos(ax_dict[spin_ax][0]/2)*np.exp(-1.0j*ax_dict[spin_ax][1]),np.sin(ax_dict[spin_ax][0]/2)],[np.sin(ax_dict[spin_ax][0]/2)*np.exp(-1.0j*ax_dict[spin_ax][1]),np.cos(ax_dict[spin_ax][0]/2)]])
             print(US)
             
             spin_mat = np.kron(US,np.identity(int(len(self.TB.basis)/2)))
@@ -610,7 +648,9 @@ class experiment:
 ###############################################################################
         
 def G_dic():
-    
+    '''
+    Initialize the gaunt coefficients associated with all possible transitions relevant
+    '''
     llp = [[l,lp] for l in range(4) for lp in ([l-1,l+1] if (l-1)>=0 else [l+1])]    
 
     llpmu = [[l[0],l[1],m,u] for l in llp for m in np.arange(-l[0],l[0]+1,1) for u in [-1,0,1]]

@@ -1,4 +1,4 @@
-c# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Created on Tue Apr  3 09:39:22 2018
 
@@ -37,7 +37,6 @@ import ubc_tbarpes.atomic_mass as am
 import scipy.special as sc
 
 hb = 6.626*10**-34/(2*np.pi)
-ao = 5.29177*10**-1 #in units of angstroms
 me = 9.11*10**-31
 q = 1.602*10**-19
 Eo = 8.85*10**-12
@@ -52,8 +51,7 @@ class orb:
         self.n = n
         self.l = l
         self.mn = am.get_mass_from_number(self.Z)
-        mu = me*self.mn*mp/(me+self.mn*mp)
-        self.au = me/mu*ao
+        self.au = (4*np.pi*Eo*hb**2*(self.mn*mp+me))/(q**2*self.mn*mp*me)
 
 
 '''
@@ -64,7 +62,7 @@ def hydrogenic(r,Z,n,l,au):
     '''
     HYDROGENIC WAVEFUNCTION, SCALED TO TAKE R over ORDER 10 units (i.e. scaled to have r in units of Angstrom!)
     '''
-    return (np.sqrt((2*Z/(n*au))**3*fact(n-l-1)/(2*n*fact(n+l)))*np.exp(-Z*r/(n*au))*(2*Z*r/(n*au))**l*sc.genlaguerre(n-l-1,l*2+1)(2*Z*r/(n*au)))
+    return (np.sqrt((2*Z/(n*au))**3*fact(n-l-1)/(2*n*fact(n+l)))*np.exp(-Z*r*A/(n*au))*(2*Z*r*A/(n*au))**l*sc.genlaguerre(n-l-1,l*2+1)(2*Z*r*A/(n*au)))
 
 def d_hyd_r2(r,arglist):
     '''
@@ -190,54 +188,52 @@ def _plt_vals(x,y):
 
 if __name__=="__main__":
     
-    Z,n,l=26,3,2
+    Z,n,l=26,3,1
     
     Fe_3d = orb(Z,n,l)
     
-    Ir_5d = orb(77,5,2)
+    r0,rf,tol = 0,2,1e-2
     
-#    r0,rf,tol = 0,2,1e-2
-#    
-#    
-#    hv = np.linspace(1,200,80)
-#    ks = hv_2_k(hv)
-#    arglist = [Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,1,0]
-#    edr = np.zeros((len(hv),2),dtype=complex)
-#    edd = np.zeros((len(hv),2),dtype=complex)
-#    edk = np.zeros((len(hv),2),dtype=complex)
-#    for i in range(len(hv)):
-#        arglist[-1]=ks[i]
+    
+    hv = np.linspace(1,200,10)
+    ks = hv_2_k(hv)
+    arglist = [Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,1,0]
+    edr = np.zeros((len(hv),2),dtype=complex)
+    edd = np.zeros((len(hv),2),dtype=complex)
+    edk = np.zeros((len(hv),2),dtype=complex)
+    for i in range(len(hv)):
+        arglist[-1]=ks[i]
+        
+        edr[i,0] = me*hv[i]*1.0j*q/hb*(adint.integrate(e_dot_r,r0,rf,tol,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,l-1,ks[i]]))
+        edd[i,0] = adint.integrate(e_dot_del,r0,rf,tol,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,l-1,ks[i]])
+        edk[i,0] = abs(ks[i])*adint.integrate(e_dot_k,r0,rf,tol,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,l-1,ks[i]])
+        
+        edr[i,1] = A**4*me*hv[i]*1.0j*q/hb*(adint.integrate(e_dot_r,r0,rf,tol,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,l+1,ks[i]]))
+        edd[i,1] = adint.integrate(e_dot_del,r0,rf,tol,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,l+1,ks[i]])
+        edk[i,1] = edk[i,0]
+        
+        
+    edr[:,0]/=abs(edr[:,0]).max()
+    edr[:,1]/=abs(edr[:,1]).max()
+    edd[:,0]/=abs(edd[:,0]).max()
+    edd[:,1]/=abs(edd[:,1]).max()
+    edk[:,0]/=abs(edk[:,0]).max()
+    edk[:,1]/=abs(edk[:,1]).max()
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax2 = ax.twinx()
+    plt.plot(hv[1:],abs((edr[1:,0])))
+    plt.plot(hv[1:],abs((edd[1:,0])))
+    plt.plot(hv[1:],abs(edk[1:,0]))
+    plt.savefig('allforms.png')
+    fig2 = plt.figure()
+    
+    ax = fig2.add_subplot(111)
+    ax2 = ax.twinx()
+    plt.plot(hv[1:],abs((edr[1:,1])))
+    plt.plot(hv[1:],abs((edd[1:,1])))
+    plt.plot(hv[1:],abs(edk[1:,1]))
+    plt.savefig('allforms.png')
 #        
-#        edr[i,0] = me*hv[i]*1.0j*q/hb*(adint.integrate(e_dot_r,r0,rf,tol,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,l-1,ks[i]]))
-#        edd[i,0] = adint.integrate(e_dot_del,r0,rf,tol,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,l-1,ks[i]])
-#        edk[i,0] = abs(ks[i])*adint.integrate(e_dot_k,r0,rf,tol,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,l-1,ks[i]])
-#        
-#        edr[i,1] = A**4*me*hv[i]*1.0j*q/hb*(adint.integrate(e_dot_r,r0,rf,tol,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,l+1,ks[i]]))
-#        edd[i,1] = adint.integrate(e_dot_del,r0,rf,tol,[Fe_3d.n,Fe_3d.l,Fe_3d.Z,Fe_3d.au,l+1,ks[i]])
-#        edk[i,1] = edk[i,0]
-#        
-#        
-#    edr[:,0]/=abs(edr[:,0]).max()
-#    edr[:,1]/=abs(edr[:,1]).max()
-#    edd[:,0]/=abs(edd[:,0]).max()
-#    edd[:,1]/=abs(edd[:,1]).max()
-#    edk[:,0]/=abs(edk[:,0]).max()
-#    edk[:,1]/=abs(edk[:,1]).max()
-#    
-#    fig = plt.figure()
-#    ax = fig.add_subplot(111)
-#    ax2 = ax.twinx()
-#    plt.plot(hv[1:],abs((edr[1:,0])))
-#    plt.plot(hv[1:],abs((edd[1:,0])))
-#    plt.plot(hv[1:],abs(edk[1:,0]))
-#    plt.savefig('allforms.png')
-#    fig2 = plt.figure()
-#    
-#    ax = fig2.add_subplot(111)
-#    ax2 = ax.twinx()
-#    plt.plot(hv[1:],abs((edr[1:,1])))
-#    plt.plot(hv[1:],abs((edd[1:,1])))
-#    plt.plot(hv[1:],abs(edk[1:,1]))
-#    plt.savefig('allforms.png')
-##        
-##
+#
