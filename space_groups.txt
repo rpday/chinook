@@ -1,0 +1,5179 @@
+Space Group #1: P1
+Crystal System : TRICLINIC
+Lattice Type: P
+Number of Operations: 1
+Operations:
+ X,Y,Z 
+
+
+Space Group #2: P-1
+Crystal System : TRICLINIC
+Lattice Type: P
+Number of Operations: 2
+Operations:
+ X,Y,Z 
+ -X,-Y,-Z 
+
+
+Space Group #3: P2
+Crystal System : MONOCLINIC
+Lattice Type: P
+Number of Operations: 2
+Operations:
+ X,Y,Z 
+ -X,Y,-Z 
+
+
+Space Group #4: P2(1)
+Crystal System : MONOCLINIC
+Lattice Type: P
+Number of Operations: 2
+Operations:
+ X,Y,Z 
+ -X,Y+1/2,-Z 
+
+
+Space Group #5: C2
+Crystal System : MONOCLINIC
+Lattice Type: C
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,Y,-Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2+Y,-Z 
+
+
+Space Group #6: Pm
+Crystal System : MONOCLINIC
+Lattice Type: P
+Number of Operations: 2
+Operations:
+ X,Y,Z 
+ X,-Y,Z 
+
+
+Space Group #7: Pc
+Crystal System : MONOCLINIC
+Lattice Type: P
+Number of Operations: 2
+Operations:
+ X,Y,Z 
+ X,-Y,1/2+Z 
+
+
+Space Group #8: Cm
+Crystal System : MONOCLINIC
+Lattice Type: C
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ X,-Y,Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2+X,1/2-Y,Z 
+
+
+Space Group #9: Cc
+Crystal System : MONOCLINIC
+Lattice Type: C
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ X,-Y,1/2+Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2+X,1/2-Y,1/2+Z 
+
+
+Space Group #10: P2/m
+Crystal System : MONOCLINIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ X,-Y,Z 
+ -X,Y,-Z 
+ -X,-Y,-Z 
+
+
+Space Group #11: P2(1)/m
+Crystal System : MONOCLINIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,1/2+Y,-Z 
+ -X,-Y,-Z 
+ X,1/2-Y,Z 
+
+
+Space Group #12: C2/m
+Crystal System : MONOCLINIC
+Lattice Type: C
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ X,-Y,Z 
+ -X,Y,-Z 
+ -X,-Y,-Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2-X,1/2-Y,-Z 
+
+
+Space Group #13: P2/c
+Crystal System : MONOCLINIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,Y,1/2-Z 
+ -X,-Y,-Z 
+ X,-Y,1/2+Z 
+
+
+Space Group #14: P2(1)/c
+Crystal System : MONOCLINIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,-Z 
+ -X,1/2+Y,1/2-Z 
+ X,1/2-Y,1/2+Z 
+
+
+Space Group #15: C2/c
+Crystal System : MONOCLINIC
+Lattice Type: C
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,Y,1/2-Z 
+ -X,-Y,-Z 
+ X,-Y,1/2+Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2-X,1/2-Y,-Z 
+ 1/2+X,1/2-Y,1/2+Z 
+
+
+Space Group #16: P222
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+
+
+Space Group #17: P222(1)
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,1/2+Z 
+ -X,Y,1/2-Z 
+ X,-Y,-Z 
+
+
+Space Group #1017: P2(1)22
+Crystal System : <li>non-standard-origin)
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ 1/2+X,-Y,-Z 
+ 1/2-X,-Y,Z 
+ X,Y,-Z 
+
+
+Space Group #18: P2(1)2(1)2
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+
+
+Space Group #1018: P2(1)2(1)2
+Crystal System : <li>non-standard-origin)
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,1/2+Y,-Z 
+ 1/2+X,-Y,-Z 
+ 1/2-X,1/2-Y,Z 
+
+
+Space Group #19: P2(1)2(1)2(1)
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ 1/2-X,-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,-Z 
+
+
+Space Group #20: C222(1)
+Crystal System : ORTHORHOMBIC
+Lattice Type: C
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,1/2+Z 
+ -X,Y,1/2-Z 
+ X,-Y,-Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,-Z 
+
+
+Space Group #21: C222
+Crystal System : ORTHORHOMBIC
+Lattice Type: C
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+
+
+Space Group #22: F222
+Crystal System : ORTHORHOMBIC
+Lattice Type: F
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ X,1/2+Y,1/2+Z 
+ -X,1/2-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ X,1/2-Y,1/2-Z 
+ 1/2+X,Y,1/2+Z 
+ 1/2-X,-Y,1/2+Z 
+ 1/2-X,Y,1/2-Z 
+ 1/2+X,-Y,1/2-Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+
+
+Space Group #23: I222
+Crystal System : ORTHORHOMBIC
+Lattice Type: I
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ X,-Y,-Z 
+ -X,Y,-Z 
+ X+1/2,Y+1/2,Z+1/2 
+ -X+1/2,-Y+1/2,Z+1/2 
+ X+1/2,-Y+1/2,-Z+1/2 
+ -X+1/2,Y+1/2,-Z+1/2 
+
+
+Space Group #24: I2(1)2(1)2(1)
+Crystal System : ORTHORHOMBIC
+Lattice Type: I
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ 1/2-X,-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,-Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ -X,1/2-Y,Z 
+ 1/2-X,Y,-Z 
+ X,-Y,1/2-Z 
+
+
+Space Group #25: Pmm2
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ X,-Y,Z 
+ -X,Y,Z 
+
+
+Space Group #26: Pmc2(1)
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,1/2+Z 
+ X,-Y,1/2+Z 
+ -X,Y,Z 
+
+
+Space Group #27: Pcc2
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ X,-Y,1/2+Z 
+ -X,Y,1/2+Z 
+
+
+Space Group #28: Pma2
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2+X,-Y,Z 
+ 1/2-X,Y,Z 
+
+
+Space Group #29: Pca2(1)
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,1/2+Z 
+ 1/2+X,-Y,Z 
+ 1/2-X,Y,1/2+Z 
+
+
+Space Group #30: Pnc2
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ X,1/2-Y,1/2+Z 
+ -X,1/2+Y,1/2+Z 
+
+
+Space Group #31: Pmn2(1)
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ 1/2-X,-Y,1/2+Z 
+ 1/2+X,-Y,1/2+Z 
+ -X,Y,Z 
+
+
+Space Group #32: Pba2
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+
+
+Space Group #33: Pna2(1)
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,1/2+Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,1/2+Z 
+
+
+Space Group #34: Pnn2
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+
+
+Space Group #35: Cmm2
+Crystal System : ORTHORHOMBIC
+Lattice Type: C
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+
+
+Space Group #36: Cmc2(1)
+Crystal System : ORTHORHOMBIC
+Lattice Type: C
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,1/2+Z 
+ X,-Y,1/2+Z 
+ -X,Y,Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,Z 
+
+
+Space Group #37: Ccc2
+Crystal System : ORTHORHOMBIC
+Lattice Type: C
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ X,-Y,1/2+Z 
+ -X,Y,1/2+Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+
+
+Space Group #38: Amm2
+Crystal System : ORTHORHOMBIC
+Lattice Type: A
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ X,1/2+Y,1/2+Z 
+ -X,1/2-Y,1/2+Z 
+ X,1/2-Y,1/2+Z 
+ -X,1/2+Y,1/2+Z 
+
+
+Space Group #39: Abm2
+Crystal System : ORTHORHOMBIC
+Lattice Type: A
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ X,1/2-Y,Z 
+ -X,1/2+Y,Z 
+ X,1/2+Y,1/2+Z 
+ -X,1/2-Y,1/2+Z 
+ X,-Y,1/2+Z 
+ -X,Y,1/2+Z 
+
+
+Space Group #40: Ama2
+Crystal System : ORTHORHOMBIC
+Lattice Type: A
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2+X,-Y,Z 
+ 1/2-X,Y,Z 
+ X,1/2+Y,1/2+Z 
+ -X,1/2-Y,1/2+Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+
+
+Space Group #41: Aba2
+Crystal System : ORTHORHOMBIC
+Lattice Type: A
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+ X,1/2+Y,1/2+Z 
+ -X,1/2-Y,1/2+Z 
+ 1/2+X,-Y,1/2+Z 
+ 1/2-X,Y,1/2+Z 
+
+
+Space Group #42: Fmm2
+Crystal System : ORTHORHOMBIC
+Lattice Type: F
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ X,1/2+Y,1/2+Z 
+ -X,1/2-Y,1/2+Z 
+ X,1/2-Y,1/2+Z 
+ -X,1/2+Y,1/2+Z 
+ 1/2+X,Y,1/2+Z 
+ 1/2-X,-Y,1/2+Z 
+ 1/2+X,-Y,1/2+Z 
+ 1/2-X,Y,1/2+Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+
+
+Space Group #43: Fdd2
+Crystal System : ORTHORHOMBIC
+Lattice Type: F
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/4+X,1/4-Y,1/4+Z 
+ 1/4-X,1/4+Y,1/4+Z
+ X,1/2+Y,1/2+Z 
+ -X,1/2-Y,1/2+Z 
+ 1/4+X,3/4-Y,3/4+Z 
+ 1/4-X,3/4+Y,3/4+Z 
+ 1/2+X,Y,1/2+Z 
+ 1/2-X,-Y,1/2+Z 
+ 3/4+X,1/4-Y,3/4+Z 
+ 3/4-X,1/4+Y,3/4+Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,Z 
+ 3/4+X,3/4-Y,1/4+Z 
+ 3/4-X,3/4+Y,1/4+Z 
+
+
+Space Group #44: Imm2
+Crystal System : ORTHORHOMBIC
+Lattice Type: I
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+
+
+Space Group #45: Iba2
+Crystal System : ORTHORHOMBIC
+Lattice Type: I
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ X,-Y,1/2+Z 
+ -X,Y,1/2+Z 
+
+
+Space Group #46: Ima2
+Crystal System : ORTHORHOMBIC
+Lattice Type: I
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2+X,-Y,Z 
+ 1/2-X,Y,Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ X,1/2-Y,1/2+Z 
+ -X,1/2+Y,1/2+Z 
+
+
+Space Group #47: Pmmm
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ X,-Y,Z 
+ -X,Y,Z 
+
+
+Space Group #48: Pnnn
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ 1/2-X,1/2-Y,1/2-Z 
+ 1/2+X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+
+
+Space Group #49: Pccm
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,1/2-Z 
+ X,-Y,1/2-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ X,-Y,1/2+Z 
+ -X,Y,1/2+Z 
+
+
+Space Group #50: Pban
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ 1/2-X,1/2-Y,-Z 
+ 1/2+X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+
+
+Space Group #51: Pmma
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ 1/2-X,-Y,Z 
+ -X,Y,-Z 
+ 1/2+X,-Y,-Z 
+ -X,-Y,-Z 
+ 1/2+X,Y,-Z 
+ X,-Y,Z 
+ 1/2-X,Y,Z 
+
+
+Space Group #52: Pnna
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ 1/2-X,-Y,Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ X,1/2-Y,1/2-Z 
+ -X,-Y,-Z 
+ 1/2+X,Y,-Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ -X,1/2+Y,1/2+Z 
+
+
+Space Group #53: Pmna
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ 1/2-X,-Y,1/2+Z 
+ 1/2-X,Y,1/2-Z 
+ X,-Y,-Z 
+ -X,-Y,-Z 
+ 1/2+X,Y,1/2-Z 
+ 1/2+X,-Y,1/2+Z 
+ -X,Y,Z 
+
+
+Space Group #54: Pcca
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ 1/2-X,-Y,Z 
+ -X,Y,1/2-Z 
+ 1/2+X,-Y,1/2-Z 
+ -X,-Y,-Z 
+ 1/2+X,Y,-Z 
+ X,-Y,1/2+Z 
+ 1/2-X,Y,1/2+Z 
+
+
+Space Group #55: Pbam
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+
+
+Space Group #56: Pccn
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ 1/2-X,1/2-Y,Z 
+ -X,1/2+Y,1/2-Z 
+ 1/2+X,-Y,1/2-Z 
+ -X,-Y,-Z 
+ 1/2+X,1/2+Y,-Z 
+ X,1/2-Y,1/2+Z 
+ 1/2-X,Y,1/2+Z 
+
+
+Space Group #57: Pbcm
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ X,1/2-Y,-Z 
+ -X,-Y,-Z 
+ X,Y,1/2-Z 
+ X,1/2-Y,1/2+Z 
+ -X,1/2+Y,Z 
+
+
+Space Group #58: Pnnm
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+
+
+Space Group #59: Pmmn
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2-X,Y+1/2,-Z 
+ X+1/2,1/2-Y,-Z 
+ 1/2-X,1/2-Y,-Z 
+ X+1/2,Y+1/2,-Z 
+ X,-Y,Z 
+ -X,Y,Z 
+
+
+Space Group #1059: Pmmn
+Crystal System : <li>non-standard-origin)
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ 1/2-X,1/2-Y,Z 
+ -X,1/2+Y,-Z 
+ 1/2+X,-Y,-Z 
+ -X,-Y,-Z 
+ X+1/2,Y+1/2,-Z 
+ X,1/2-Y,Z 
+ 1/2-X,Y,Z 
+
+
+Space Group #60: Pbcn
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ -X,Y,1/2-Z 
+ 1/2+X,1/2-Y,-Z 
+ -X,-Y,-Z 
+ 1/2+X,1/2+Y,1/2-Z 
+ X,-Y,1/2+Z 
+ 1/2-X,1/2+Y,Z 
+
+
+Space Group #61: Pbca
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ 1/2-X,-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,-Z 
+ -X,-Y,-Z 
+ 1/2+X,Y,1/2-Z 
+ X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,Z 
+
+
+Space Group #62: Pnma
+Crystal System : ORTHORHOMBIC
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X+1/2,-Y,Z+1/2 
+ -X,Y+1/2,-Z 
+ X+1/2,-Y+1/2,-Z+1/2 
+ -X,-Y,-Z 
+ X+1/2,Y,-Z+1/2 
+ X,-Y+1/2,Z 
+ -X+1/2,Y+1/2,Z+1/2 
+
+
+Space Group #63: Cmcm
+Crystal System : ORTHORHOMBIC
+Lattice Type: C
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,1/2+Z 
+ -X,Y,1/2-Z 
+ X,-Y,-Z 
+ -X,-Y,-Z 
+ X,Y,1/2-Z 
+ X,-Y,1/2+Z 
+ -X,Y,Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,-Z 
+ 1/2-X,1/2-Y,-Z 
+ 1/2+X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,Z 
+
+
+Space Group #64: Cmca
+Crystal System : ORTHORHOMBIC
+Lattice Type: C
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,1/2-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ X,-Y,-Z 
+ -X,-Y,-Z 
+ X,1/2+Y,1/2-Z 
+ X,1/2-Y,1/2+Z 
+ -X,Y,Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,-Y,1/2+Z 
+ 1/2-X,Y,1/2-Z 
+ 1/2+X,1/2-Y,-Z 
+ 1/2-X,1/2-Y,-Z 
+ 1/2+X,Y,1/2-Z 
+ 1/2+X,-Y,1/2+Z 
+ 1/2-X,1/2+Y,Z 
+
+
+Space Group #65: Cmmm
+Crystal System : ORTHORHOMBIC
+Lattice Type: C
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ 1/2-X,1/2-Y,-Z 
+ 1/2+X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+
+
+Space Group #66: Cccm
+Crystal System : ORTHORHOMBIC
+Lattice Type: C
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,1/2-Z 
+ X,-Y,1/2-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ X,-Y,1/2+Z 
+ -X,Y,1/2+Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2-Z 
+ 1/2-X,1/2-Y,-Z 
+ 1/2+X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+
+
+Space Group #67: Cmma
+Crystal System : ORTHORHOMBIC
+Lattice Type: C
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,1/2-Y,Z 
+ -X,1/2+Y,-Z 
+ X,-Y,-Z 
+ -X,-Y,-Z 
+ X,1/2+Y,-Z 
+ X,1/2-Y,Z 
+ -X,Y,Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,-Y,Z 
+ 1/2-X,Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ 1/2-X,1/2-Y,-Z 
+ 1/2+X,Y,-Z 
+ 1/2+X,-Y,Z 
+ 1/2-X,1/2+Y,Z 
+
+
+Space Group #68: Ccca
+Crystal System : ORTHORHOMBIC
+Lattice Type: C
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ 1/2-X,1/2-Y,Z 
+ -X,Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ -X,1/2-Y,1/2-Z 
+ 1/2+X,Y,1/2-Z 
+ X,1/2-Y,1/2+Z 
+ 1/2-X,Y,1/2+Z 
+ 1/2+X,1/2+Y,Z 
+ -X,-Y,Z 
+ 1/2-X,1/2+Y,-Z 
+ X,-Y,-Z 
+ 1/2-X,-Y,1/2-Z 
+ X,1/2+Y,1/2-Z 
+ 1/2+X,-Y,1/2+Z 
+ -X,1/2+Y,1/2+Z 
+
+
+Space Group #69: Fmmm
+Crystal System : ORTHORHOMBIC
+Lattice Type: F
+Number of Operations: 32
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ X,1/2+Y,1/2+Z 
+ -X,1/2-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ X,1/2-Y,1/2-Z 
+ -X,1/2-Y,1/2-Z 
+ X,1/2+Y,1/2-Z 
+ X,1/2-Y,1/2+Z 
+ -X,1/2+Y,1/2+Z 
+ 1/2+X,Y,1/2+Z 
+ 1/2-X,-Y,1/2+Z 
+ 1/2-X,Y,1/2-Z 
+ 1/2+X,-Y,1/2-Z 
+ 1/2-X,-Y,1/2-Z 
+ 1/2+X,Y,1/2-Z 
+ 1/2+X,-Y,1/2+Z 
+ 1/2-X,Y,1/2+Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ 1/2-X,1/2-Y,-Z 
+ 1/2+X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+
+
+Space Group #70: Fddd
+Crystal System : ORTHORHOMBIC
+Lattice Type: F
+Number of Operations: 32
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ 1/4-X,1/4-Y,1/4-Z 
+ 1/4+X,1/4+Y,1/4-Z 
+ 1/4+X,1/4-Y,1/4+Z 
+ 1/4-X,1/4+Y,1/4+Z 
+ X,1/2+Y,1/2+Z 
+ -X,1/2-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ X,1/2-Y,1/2-Z 
+ 1/4-X,3/4-Y,3/4-Z 
+ 1/4+X,3/4+Y,3/4-Z 
+ 1/4+X,3/4-Y,3/4+Z 
+ 1/4-X,3/4+Y,3/4+Z 
+ 1/2+X,Y,1/2+Z 
+ 1/2-X,-Y,1/2+Z 
+ 1/2-X,Y,1/2-Z 
+ 1/2+X,-Y,1/2-Z 
+ 3/4-X,1/4-Y,3/4-Z 
+ 3/4+X,1/4+Y,3/4-Z 
+ 3/4+X,1/4-Y,3/4+Z 
+ 3/4-X,1/4+Y,3/4+Z 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ 3/4-X,3/4-Y,1/4-Z 
+ 3/4+X,3/4+Y,1/4-Z 
+ 3/4+X,3/4-Y,1/4+Z 
+ 3/4-X,3/4+Y,1/4+Z 
+
+
+Space Group #71: Immm
+Crystal System : ORTHORHOMBIC
+Lattice Type: I
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2-Z 
+ 1/2-X,1/2-Y,1/2-Z 
+ 1/2+X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+
+
+Space Group #72: Ibam
+Crystal System : ORTHORHOMBIC
+Lattice Type: I
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ -X,Y,1/2-Z 
+ X,-Y,1/2-Z 
+ 1/2-X,1/2-Y,1/2-Z 
+ 1/2+X,1/2+Y,1/2-Z 
+ X,-Y,1/2+Z 
+ -X,Y,1/2+Z 
+
+
+Space Group #73: Ibca
+Crystal System : ORTHORHOMBIC
+Lattice Type: I
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ 1/2-X,-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,-Z 
+ -X,-Y,-Z 
+ 1/2+X,Y,1/2-Z 
+ X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ -X,1/2-Y,Z 
+ 1/2-X,Y,-Z 
+ X,-Y,1/2-Z 
+ 1/2-X,1/2-Y,1/2-Z 
+ X,1/2+Y,-Z 
+ 1/2+X,-Y,Z 
+ -X,Y,1/2+Z 
+
+
+Space Group #74: Imma
+Crystal System : ORTHORHOMBIC
+Lattice Type: I
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,1/2-Y,Z 
+ -X,1/2+Y,-Z 
+ X,-Y,-Z 
+ -X,-Y,-Z 
+ X,1/2+Y,-Z 
+ X,1/2-Y,Z 
+ -X,Y,Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,-Y,1/2+Z 
+ 1/2-X,Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2-Z 
+ 1/2-X,1/2-Y,1/2-Z 
+ 1/2+X,Y,1/2-Z 
+ 1/2+X,-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+
+
+Space Group #75: P4
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+
+
+Space Group #76: P4(1)
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,1/2+Z 
+ -Y,X,1/4+Z 
+ Y,-X,3/4+Z 
+
+
+Space Group #77: P4(2)
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,1/2+Z 
+ Y,-X,1/2+Z 
+
+
+Space Group #78: P4(3)
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,1/2+Z 
+ -Y,X,3/4+Z 
+ Y,-X,1/4+Z 
+
+
+Space Group #79: I4
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+Y,1/2-X,1/2+Z 
+
+
+Space Group #80: I4(1)
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ -Y,1/2+X,1/4+Z 
+ 1/2+Y,-X,3/4+Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ -X,-Y,Z 
+ 1/2-Y,X,3/4+Z 
+ Y,1/2-X,1/4+Z 
+
+
+Space Group #81: P-4
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 4
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+
+
+Space Group #82: I-4
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2+Y,1/2-X,1/2-Z 
+ 1/2-Y,1/2+X,1/2-Z 
+
+
+Space Group #83: P4/m
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+
+
+Space Group #84: P4(2)/m
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,1/2+Z 
+ Y,-X,1/2+Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ Y,-X,1/2-Z 
+ -Y,X,1/2-Z 
+
+
+Space Group #85: P4/n
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2-Y,1/2+X,Z 
+ 1/2+Y,1/2-X,Z 
+ 1/2-X,1/2-Y,-Z 
+ 1/2+X,1/2+Y,-Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+
+
+Space Group #86: P4(2)/n
+Crystal System : TETRAGOANL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+Y,1/2-X,1/2+Z 
+ 1/2-X,1/2-Y,1/2-Z 
+ 1/2+X,1/2+Y,1/2-Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+
+
+Space Group #87: I4/m
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+Y,1/2-X,1/2+Z 
+ 1/2-X,1/2-Y,1/2-Z 
+ 1/2+X,1/2+Y,1/2-Z 
+ 1/2+Y,1/2-X,1/2-Z 
+ 1/2-Y,1/2+X,1/2-Z 
+
+
+Space Group #88: I4(1)/a
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ -Y,1/2+X,1/4+Z 
+ 1/2+Y,-X,3/4+Z 
+ -X,1/2-Y,1/4-Z 
+ 1/2+X,Y,3/4-Z 
+ Y,-X,-Z 
+ 1/2-Y,1/2+X,1/2-Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ -X,-Y,Z 
+ 1/2-Y,X,3/4+Z 
+ Y,1/2-X,1/4+Z 
+ 1/2-X,-Y,3/4-Z 
+ X,1/2+Y,1/4-Z 
+ 1/2+Y,1/2-X,1/2-Z 
+ -Y,X,-Z 
+
+
+Space Group #89: P422
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Y,X,-Z 
+ -Y,-X,-Z 
+
+
+Space Group #90: P42(1)2
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2-Y,1/2+X,Z 
+ 1/2+Y,1/2-X,Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ Y,X,-Z 
+ -Y,-X,-Z 
+
+
+Space Group #91: P4(1)22
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,1/2+Z 
+ -Y,X,1/4+Z 
+ Y,-X,3/4+Z 
+ -X,Y,-Z 
+ X,-Y,1/2-Z 
+ Y,X,3/4-Z 
+ -Y,-X,1/4-Z 
+
+
+Space Group #92: P4(1)2(1)2
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,1/2+Z 
+ 1/2-Y,1/2+X,1/4+Z 
+ 1/2+Y,1/2-X,3/4+Z 
+ 1/2-X,1/2+Y,1/4-Z 
+ 1/2+X,1/2-Y,3/4-Z 
+ Y,X,-Z 
+ -Y,-X,1/2-Z 
+
+
+Space Group #93: P4(2)22
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,1/2+Z 
+ Y,-X,1/2+Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Y,X,1/2-Z 
+ -Y,-X,1/2-Z 
+
+
+Space Group #94: P4(2)2(1)2
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+Y,1/2-X,1/2+Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2-Z 
+ Y,X,-Z 
+ -Y,-X,-Z 
+
+
+Space Group #95: P4(3)22
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,1/2+Z 
+ -Y,X,3/4+Z 
+ Y,-X,1/4+Z 
+ -X,Y,-Z 
+ X,-Y,1/2-Z 
+ Y,X,1/4-Z 
+ -Y,-X,3/4-Z 
+
+
+Space Group #96: P4(3)2(1)2
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,1/2+Z 
+ 1/2-Y,1/2+X,3/4+Z 
+ 1/2+Y,1/2-X,1/4+Z 
+ 1/2-X,1/2+Y,3/4-Z 
+ 1/2+X,1/2-Y,1/4-Z 
+ Y,X,-Z 
+ -Y,-X,1/2-Z 
+
+
+Space Group #97: I422
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Y,X,-Z 
+ -Y,-X,-Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+Y,1/2-X,1/2+Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2-Z 
+ 1/2+Y,1/2+X,1/2-Z 
+ 1/2-Y,1/2-X,1/2-Z 
+
+
+Space Group #98: I4(1)22
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ -Y,1/2+X,1/4+Z 
+ 1/2+Y,-X,3/4+Z 
+ 1/2-X,Y,3/4-Z 
+ X,1/2-Y,1/4-Z 
+ 1/2+Y,1/2+X,1/2-Z 
+ -Y,-X,-Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ -X,-Y,Z 
+ 1/2-Y,X,3/4+Z 
+ Y,1/2-X,1/4+Z 
+ -X,1/2+Y,1/4-Z 
+ 1/2+X,-Y,3/4-Z 
+ Y,X,-Z 
+ 1/2-Y,1/2-X,1/2-Z 
+
+
+Space Group #99: P4mm
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ -Y,-X,Z 
+ Y,X,Z 
+
+
+Space Group #100: P4bm
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+ 1/2-Y,1/2-X,Z 
+ 1/2+Y,1/2+X,Z 
+
+
+Space Group #101: P4(2)cm
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,1/2+Z 
+ Y,-X,1/2+Z 
+ X,-Y,1/2+Z 
+ -X,Y,1/2+Z 
+ -Y,-X,Z 
+ Y,X,Z 
+
+
+Space Group #102: P4(2)nm
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+Y,1/2-X,1/2+Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+ -Y,-X,Z 
+ Y,X,Z 
+
+
+Space Group #103: P4cc
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ X,-Y,1/2+Z 
+ -X,Y,1/2+Z 
+ -Y,-X,1/2+Z 
+ Y,X,1/2+Z 
+
+
+Space Group #104: P4nc
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+ 1/2-Y,1/2-X,1/2+Z 
+ 1/2+Y,1/2+X,1/2+Z 
+
+
+Space Group #105: P4(2)mc
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,1/2+Z 
+ Y,-X,1/2+Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ -Y,-X,1/2+Z 
+ Y,X,1/2+Z 
+
+
+Space Group #106: P4(2)bc
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,1/2+Z 
+ Y,-X,1/2+Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+ 1/2-Y,1/2-X,1/2+Z 
+ 1/2+Y,1/2+X,1/2+Z 
+
+
+Space Group #107: I4mm
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ -Y,-X,Z 
+ Y,X,Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+Y,1/2-X,1/2+Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+ 1/2-Y,1/2-X,1/2+Z 
+ 1/2+Y,1/2+X,1/2+Z 
+
+
+Space Group #108: I4cm
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ X,-Y,1/2+Z 
+ -X,Y,1/2+Z 
+ -Y,-X,1/2+Z 
+ Y,X,1/2+Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+Y,1/2-X,1/2+Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+ 1/2-Y,1/2-X,Z 
+ 1/2+Y,1/2+X,Z 
+
+
+Space Group #109: I4(1)md
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ -Y,1/2+X,1/4+Z 
+ 1/2+Y,-X,3/4+Z 
+ X,-Y,Z 
+ 1/2-X,1/2+Y,1/2+Z 
+ -Y,1/2-X,1/4+Z 
+ 1/2+Y,X,3/4+Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ -X,-Y,Z 
+ 1/2-Y,X,3/4+Z 
+ Y,1/2-X,1/4+Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ -X,Y,Z 
+ 1/2-Y,-X,3/4+Z 
+ Y,1/2+X,1/4+Z 
+
+
+Space Group #110: I4(1)cd
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ -Y,1/2+X,1/4+Z 
+ 1/2+Y,-X,3/4+Z 
+ X,-Y,1/2+Z 
+ 1/2-X,1/2+Y,Z 
+ -Y,1/2-X,3/4+Z 
+ 1/2+Y,X,1/4+Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ -X,-Y,Z 
+ 1/2-Y,X,3/4+Z 
+ Y,1/2-X,1/4+Z 
+ 1/2+X,1/2-Y,Z 
+ -X,Y,1/2+Z 
+ 1/2-Y,-X,1/4+Z 
+ Y,1/2+X,3/4+Z 
+
+
+Space Group #111: P-42m
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,-Z 
+ Y,-X,-Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ -Y,-X,Z 
+ Y,X,Z 
+
+
+Space Group #112: P-42c
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,-Z 
+ Y,-X,-Z 
+ -X,Y,1/2-Z 
+ X,-Y,1/2-Z 
+ -Y,-X,1/2+Z 
+ Y,X,1/2+Z 
+
+
+Space Group #113: P-42(1)m
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,-Z 
+ Y,-X,-Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ 1/2-Y,1/2-X,Z 
+ 1/2+Y,1/2+X,Z 
+
+
+Space Group #114: P-42(1)c
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,-Z 
+ Y,-X,-Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2-Z 
+ 1/2-Y,1/2-X,1/2+Z 
+ 1/2+Y,1/2+X,1/2+Z 
+
+
+Space Group #115: P-4m2
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ Y,-X,-Z
+ -Y,X,-Z
+ X,-Y,Z 
+ -X,Y,Z 
+ Y,X,-Z 
+ -Y,-X,-Z 
+
+
+Space Group #116: P-4c2
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,-Z 
+ Y,-X,-Z 
+ X,-Y,1/2+Z 
+ -X,Y,1/2+Z 
+ Y,X,1/2-Z 
+ -Y,-X,1/2-Z 
+
+
+Space Group #117: P-4b2
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,-Z 
+ Y,-X,-Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+ 1/2+Y,1/2+X,-Z 
+ 1/2-Y,1/2-X,-Z 
+
+
+Space Group #118: P-4n2
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 8
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,-Z 
+ Y,-X,-Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+ 1/2+Y,1/2+X,1/2-Z 
+ 1/2-Y,1/2-X,1/2-Z 
+
+
+Space Group #119: I-4m2
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,-Z 
+ Y,-X,-Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ Y,X,-Z 
+ -Y,-X,-Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2-Y,1/2+X,1/2-Z 
+ 1/2+Y,1/2-X,1/2-Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+ 1/2+Y,1/2+X,1/2-Z 
+ 1/2-Y,1/2-X,1/2-Z 
+
+
+Space Group #120: I-4c2
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ X,-Y,1/2+Z 
+ -X,Y,1/2+Z 
+ Y,X,1/2-Z
+ -Y,-X,1/2-Z 
+ X+1/2,Y+1/2,Z+1/2 
+ -X+1/2,-Y+1/2,Z+1/2 
+ Y+1/2,-X+1/2,-Z+1/2 
+ -Y+1/2,X+1/2,-Z+1/2 
+ X+1/2,-Y+1/2,Z 
+ -X+1/2,Y+1/2,Z 
+ Y+1/2,X+1/2,-Z 
+ -Y+1/2,-X+1/2,-Z 
+
+
+Space Group #121: I-42m
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,-Z 
+ Y,-X,-Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ -Y,-X,Z 
+ Y,X,Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2-Y,1/2+X,1/2-Z 
+ 1/2+Y,1/2-X,1/2-Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2-Z 
+ 1/2-Y,1/2-X,1/2+Z 
+ 1/2+Y,1/2+X,1/2+Z 
+
+
+Space Group #122: I-42d
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,-Z 
+ Y,-X,-Z 
+ 1/2-X,Y,3/4-Z 
+ 1/2+X,-Y,3/4-Z 
+ 1/2-Y,-X,3/4+Z 
+ 1/2+Y,X,3/4+Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2-Y,1/2+X,1/2-Z 
+ 1/2+Y,1/2-X,1/2-Z 
+ -X,1/2+Y,1/4-Z 
+ X,1/2-Y,1/4-Z 
+ -Y,1/2-X,1/4+Z 
+ Y,1/2+X,1/4+Z 
+
+
+Space Group #123: P4/mmm
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Y,X,-Z 
+ -Y,-X,-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ -Y,-X,Z 
+ Y,X,Z 
+
+
+Space Group #124: P4/mcc
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ -X,Y,1/2-Z 
+ X,-Y,1/2-Z 
+ Y,X,1/2-Z 
+ -Y,-X,1/2-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ X,-Y,1/2+Z 
+ -X,Y,1/2+Z 
+ -Y,-X,1/2+Z 
+ Y,X,1/2+Z 
+
+
+Space Group #125: P4/nbm
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Y,X,-Z 
+ -Y,-X,-Z 
+ 1/2-X,1/2-Y,-Z 
+ 1/2+X,1/2+Y,-Z 
+ 1/2+Y,1/2-X,-Z 
+ 1/2-Y,1/2+X,-Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+ 1/2-Y,1/2-X,Z 
+ 1/2+Y,1/2+X,Z 
+
+
+Space Group #126: P4/nnc
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Y,X,-Z 
+ -Y,-X,-Z 
+ 1/2-X,1/2-Y,1/2-Z 
+ 1/2+X,1/2+Y,1/2-Z 
+ 1/2+Y,1/2-X,1/2-Z 
+ 1/2-Y,1/2+X,1/2-Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+ 1/2-Y,1/2-X,1/2+Z 
+ 1/2+Y,1/2+X,1/2+Z 
+
+
+Space Group #127: P4/mbm
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ 1/2+Y,1/2+X,-Z 
+ 1/2-Y,1/2-X,-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+ 1/2-Y,1/2-X,Z 
+ 1/2+Y,1/2+X,Z 
+
+
+Space Group #128: P4/mnc
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2-Z 
+ 1/2+Y,1/2+X,1/2-Z 
+ 1/2-Y,1/2-X,1/2-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+ 1/2-Y,1/2-X,1/2+Z 
+ 1/2+Y,1/2+X,1/2+Z 
+
+
+Space Group #129: P4/nmm
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2-Y,1/2+X,Z 
+ 1/2+Y,1/2-X,Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ Y,X,-Z 
+ -Y,-X,-Z 
+ 1/2-X,1/2-Y,-Z 
+ 1/2+X,1/2+Y,-Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ 1/2-Y,1/2-X,Z 
+ 1/2+Y,1/2+X,Z 
+
+
+Space Group #130: P4/ncc
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2-Y,1/2+X,Z 
+ 1/2+Y,1/2-X,Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2-Z 
+ Y,X,1/2-Z 
+ -Y,-X,1/2-Z 
+ 1/2-X,1/2-Y,-Z 
+ 1/2+X,1/2+Y,-Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ X,-Y,1/2+Z 
+ -X,Y,1/2+Z 
+ 1/2-Y,1/2-X,1/2+Z 
+ 1/2+Y,1/2+X,1/2+Z 
+
+
+Space Group #131: P4(2)/mmc
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,1/2+Z 
+ Y,-X,1/2+Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Y,X,1/2-Z 
+ -Y,-X,1/2-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ Y,-X,1/2-Z 
+ -Y,X,1/2-Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ -Y,-X,1/2+Z 
+ Y,X,1/2+Z 
+
+
+Space Group #132: P4(2)/mcm
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,1/2+Z 
+ Y,-X,1/2+Z 
+ -X,Y,1/2-Z 
+ X,-Y,1/2-Z 
+ Y,X,-Z 
+ -Y,-X,-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ Y,-X,1/2-Z 
+ -Y,X,1/2-Z 
+ X,-Y,1/2+Z 
+ -X,Y,1/2+Z 
+ -Y,-X,Z 
+ Y,X,Z 
+
+
+Space Group #133: P4(2)/nbc
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+Y,1/2-X,1/2+Z 
+ -X,Y,1/2-Z 
+ X,-Y,1/2-Z 
+ 1/2+Y,1/2+X,-Z 
+ 1/2-Y,1/2-X,-Z 
+ 1/2-X,1/2-Y,1/2-Z 
+ 1/2+X,1/2+Y,1/2-Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+ -Y,-X,1/2+Z 
+ Y,X,1/2+Z 
+
+
+Space Group #134: P4(2)/nnm
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+Y,1/2-X,1/2+Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ 1/2+Y,1/2+X,1/2-Z 
+ 1/2-Y,1/2-X,1/2-Z 
+ 1/2-X,1/2-Y,1/2-Z 
+ 1/2+X,1/2+Y,1/2-Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+ -Y,-X,Z 
+ Y,X,Z 
+
+
+Space Group #135: P4(2)/mbc
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,1/2+Z 
+ Y,-X,1/2+Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ 1/2+Y,1/2+X,1/2-Z 
+ 1/2-Y,1/2-X,1/2-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ Y,-X,1/2-Z 
+ -Y,X,1/2-Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+ 1/2-Y,1/2-X,1/2+Z 
+ 1/2+Y,1/2+X,1/2+Z 
+
+
+Space Group #136: P4(2)/mnm
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2-Y,X+1/2,Z+1/2 
+ Y+1/2,1/2-X,Z+1/2 
+ 1/2-X,Y+1/2,1/2-Z 
+ X+1/2,1/2-Y,1/2-Z 
+ Y,X,-Z 
+ -Y,-X,-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ Y+1/2,1/2-X,1/2-Z 
+ 1/2-Y,X+1/2,1/2-Z 
+ X+1/2,1/2-Y,Z+1/2 
+ 1/2-X,Y+1/2,Z+1/2 
+ -Y,-X,Z 
+ Y,X,Z 
+
+
+Space Group #137: P4(2)/nmc
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+Y,1/2-X,1/2+Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2-Z 
+ Y,X,-Z 
+ -Y,-X,-Z 
+ 1/2-X,1/2-Y,1/2-Z 
+ 1/2+X,1/2+Y,1/2-Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ 1/2-Y,1/2-X,1/2+Z 
+ 1/2+Y,1/2+X,1/2+Z 
+
+
+Space Group #138: P4(2)/ncm
+Crystal System : TETRAGONAL
+Lattice Type: P
+Number of Operations: 16
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+Y,1/2-X,1/2+Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ Y,X,1/2-Z 
+ -Y,-X,1/2-Z 
+ 1/2-X,1/2-Y,1/2-Z 
+ 1/2+X,1/2+Y,1/2-Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ X,-Y,1/2+Z 
+ -X,Y,1/2+Z 
+ 1/2-Y,1/2-X,Z 
+ 1/2+Y,1/2+X,Z 
+
+
+Space Group #139: I4/mmm
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 32
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Y,X,-Z 
+ -Y,-X,-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ -Y,-X,Z 
+ Y,X,Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+Y,1/2-X,1/2+Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2-Z 
+ 1/2+Y,1/2+X,1/2-Z 
+ 1/2-Y,1/2-X,1/2-Z 
+ 1/2-X,1/2-Y,1/2-Z 
+ 1/2+X,1/2+Y,1/2-Z 
+ 1/2+Y,1/2-X,1/2-Z 
+ 1/2-Y,1/2+X,1/2-Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+ 1/2-Y,1/2-X,1/2+Z 
+ 1/2+Y,1/2+X,1/2+Z 
+
+
+Space Group #140: I4/mcm
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 32
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -Y,X,Z 
+ Y,-X,Z 
+ -X,Y,1/2-Z 
+ X,-Y,1/2-Z 
+ Y,X,1/2-Z 
+ -Y,-X,1/2-Z 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ X,-Y,1/2+Z 
+ -X,Y,1/2+Z 
+ -Y,-X,1/2+Z 
+ Y,X,1/2+Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+Y,1/2-X,1/2+Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ 1/2+Y,1/2+X,-Z 
+ 1/2-Y,1/2-X,-Z 
+ 1/2-X,1/2-Y,1/2-Z 
+ 1/2+X,1/2+Y,1/2-Z 
+ 1/2+Y,1/2-X,1/2-Z 
+ 1/2-Y,1/2+X,1/2-Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+ 1/2-Y,1/2-X,Z 
+ 1/2+Y,1/2+X,Z 
+
+
+Space Group #141: I4(1)/amd
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 32
+Operations:
+ X,Y,Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ -Y,1/2+X,1/4+Z 
+ 1/2+Y,-X,3/4+Z 
+ 1/2-X,Y,3/4-Z 
+ X,1/2-Y,1/4-Z 
+ 1/2+Y,1/2+X,1/2-Z 
+ -Y,-X,-Z 
+ -X,1/2-Y,1/4-Z 
+ 1/2+X,Y,3/4-Z 
+ Y,-X,-Z 
+ 1/2-Y,1/2+X,1/2-Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ -X,Y,Z 
+ 1/2-Y,-X,3/4+Z 
+ Y,1/2+X,1/4+Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ -X,-Y,Z 
+ 1/2-Y,X,3/4+Z 
+ Y,1/2-X,1/4+Z 
+ -X,1/2+Y,1/4-Z 
+ 1/2+X,-Y,3/4-Z 
+ Y,X,-Z 
+ 1/2-Y,1/2-X,1/2-Z 
+ 1/2-X,-Y,3/4-Z 
+ X,1/2+Y,1/4-Z 
+ 1/2+Y,1/2-X,1/2-Z 
+ -Y,X,-Z 
+ X,-Y,Z 
+ 1/2-X,1/2+Y,1/2+Z 
+ -Y,1/2-X,1/4+Z 
+ 1/2+Y,X,3/4+Z 
+
+
+Space Group #142: I4(1)/acd
+Crystal System : TETRAGONAL
+Lattice Type: I
+Number of Operations: 32
+Operations:
+ X,Y,Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ -Y,1/2+X,1/4+Z 
+ 1/2+Y,-X,3/4+Z 
+ 1/2-X,Y,1/4-Z 
+ X,1/2-Y,3/4-Z 
+ 1/2+Y,1/2+X,-Z 
+ -Y,-X,1/2-Z 
+ -X,1/2-Y,1/4-Z 
+ 1/2+X,Y,3/4-Z 
+ Y,-X,-Z 
+ 1/2-Y,1/2+X,1/2-Z 
+ 1/2+X,1/2-Y,Z 
+ -X,Y,1/2+Z 
+ 1/2-Y,-X,1/4+Z 
+ Y,1/2+X,3/4+Z 
+ 1/2+X,1/2+Y,1/2+Z 
+ -X,-Y,Z 
+ 1/2-Y,X,3/4+Z 
+ Y,1/2-X,1/4+Z 
+ -X,1/2+Y,3/4-Z 
+ 1/2+X,-Y,1/4-Z 
+ Y,X,1/2-Z 
+ 1/2-Y,1/2-X,-Z 
+ 1/2-X,-Y,3/4-Z 
+ X,1/2+Y,1/4-Z 
+ 1/2+Y,1/2-X,1/2-Z 
+ -Y,X,-Z 
+ X,-Y,1/2+Z 
+ 1/2-X,1/2+Y,Z 
+ -Y,1/2-X,3/4+Z 
+ 1/2+Y,X,1/4+Z 
+
+
+Space Group #143: P3
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 3
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+
+
+Space Group #144: P3(1)
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 3
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z+1/3 
+ Y-X,-X,Z+2/3 
+
+
+Space Group #145: P3(2)
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 3
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z+2/3 
+ Y-X,-X,Z+1/3 
+
+
+Space Group #146: R3
+Crystal System : TRIGONAL
+Lattice Type: R
+Number of Operations: 9
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ X+2/3,Y+1/3,Z+1/3 
+ -Y+2/3,X-Y+1/3,Z+1/3 
+ Y-X+2/3,-X+1/3,Z+1/3 
+ X+1/3,Y+2/3,Z+2/3 
+ -Y+1/3,X-Y+2/3,Z+2/3 
+ Y-X+1/3,-X+2/3,Z+2/3 
+
+
+Space Group #147: P-3
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -X,-Y,-Z 
+ Y,Y-X,-Z 
+ X-Y,X,-Z 
+
+
+Space Group #148: R-3
+Crystal System : TRIGONAL
+Lattice Type: R
+Number of Operations: 18
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -X,-Y,-Z 
+ Y,Y-X,-Z 
+ X-Y,X,-Z 
+ 2/3+X,1/3+Y,1/3+Z 
+ 2/3-Y,1/3+X-Y,1/3+Z 
+ 2/3+Y-X,1/3-X,1/3+Z 
+ 2/3-X,1/3-Y,1/3-Z 
+ 2/3+Y,1/3+Y-X,1/3-Z 
+ 2/3+X-Y,1/3+X,1/3-Z 
+ 1/3+X,2/3+Y,2/3+Z 
+ 1/3-Y,2/3+X-Y,2/3+Z 
+ 1/3+Y-X,2/3-X,2/3+Z 
+ 1/3-X,2/3-Y,2/3-Z 
+ 1/3+Y,2/3+Y-X,2/3-Z 
+ 1/3+X-Y,2/3+X,2/3-Z 
+
+
+Space Group #149: P312
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -Y,-X,-Z 
+ Y-X,Y,-Z 
+ X,X-Y,-Z 
+
+
+Space Group #150: P321
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ Y,X,-Z 
+ X-Y,-Y,-Z 
+ -X,Y-X,-Z 
+
+
+Space Group #151: P3(1)12
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,1/3+Z 
+ Y-X,-X,2/3+Z 
+ -Y,-X,2/3-Z 
+ Y-X,Y,1/3-Z 
+ X,X-Y,-Z 
+
+
+Space Group #152: P3(1)21
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z+1/3 
+ Y-X,-X,Z+2/3 
+ Y,X,-Z 
+ X-Y,-Y,2/3-Z 
+ -X,Y-X,1/3-Z 
+
+
+Space Group #153: P3(2)12
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,2/3+Z 
+ Y-X,-X,1/3+Z 
+ -Y,-X,1/3-Z 
+ Y-X,Y,2/3-Z 
+ X,X-Y,-Z 
+
+
+Space Group #154: P3(2)21
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z+2/3 
+ Y-X,-X,Z+1/3 
+ Y,X,-Z 
+ X-Y,-Y,1/3-Z 
+ -X,Y-X,2/3-Z 
+
+
+Space Group #155: R32
+Crystal System : TRIGONAL
+Lattice Type: R
+Number of Operations: 18
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ Y,X,-Z 
+ X-Y,-Y,-Z 
+ -X,Y-X,-Z 
+ 2/3+X,1/3+Y,1/3+Z 
+ 2/3-Y,1/3+X-Y,1/3+Z 
+ 2/3+Y-X,1/3-X,1/3+Z 
+ 2/3+Y,1/3+X,1/3-Z 
+ 2/3+X-Y,1/3-Y,1/3-Z 
+ 2/3-X,1/3+Y-X,1/3-Z 
+ 1/3+X,2/3+Y,2/3+Z 
+ 1/3-Y,2/3+X-Y,2/3+Z 
+ 1/3+Y-X,2/3-X,2/3+Z 
+ 1/3+Y,2/3+X,2/3-Z 
+ 1/3+X-Y,2/3-Y,2/3-Z 
+ 1/3-X,2/3+Y-X,2/3-Z 
+
+
+Space Group #156: P3m1
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -Y,-X,Z 
+ Y-X,Y,Z 
+ X,X-Y,Z 
+
+
+Space Group #157: P31m
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ Y,X,Z 
+ X-Y,-Y,Z 
+ -X,Y-X,Z 
+
+
+Space Group #158: P3c1
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -Y,-X,1/2+Z 
+ Y-X,Y,1/2+Z 
+ X,X-Y,1/2+Z 
+
+
+Space Group #159: P31c
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ Y,X,1/2+Z 
+ X-Y,-Y,1/2+Z 
+ -X,Y-X,1/2+Z 
+
+
+Space Group #160: R3m
+Crystal System : TRIGONAL
+Lattice Type: R
+Number of Operations: 18
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -Y,-X,Z 
+ Y-X,Y,Z 
+ X,X-Y,Z 
+ 2/3+X,1/3+Y,1/3+Z 
+ 2/3-Y,1/3+X-Y,1/3+Z 
+ 2/3+Y-X,1/3-X,1/3+Z 
+ 2/3-Y,1/3-X,1/3+Z 
+ 2/3+Y-X,1/3+Y,1/3+Z 
+ 2/3+X,1/3+X-Y,1/3+Z 
+ 1/3+X,2/3+Y,2/3+Z 
+ 1/3-Y,2/3+X-Y,2/3+Z  
+ 1/3+Y-X,2/3-X,2/3+Z 
+ 1/3-Y,2/3-X,2/3+Z 
+ 1/3+Y-X,2/3+Y,2/3+Z 
+ 1/3+X,2/3+X-Y,2/3+Z 
+
+
+Space Group #161: R3c
+Crystal System : TRIGONAL
+Lattice Type: R
+Number of Operations: 18
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -Y,-X,1/2+Z 
+ Y-X,Y,1/2+Z 
+ X,X-Y,1/2+Z 
+ 2/3+X,1/3+Y,1/3+Z 
+ 2/3-Y,1/3+X-Y,1/3+Z 
+ 2/3+Y-X,1/3-X,1/3+Z 
+ 2/3-Y,1/3-X,5/6+Z 
+ 2/3+Y-X,1/3+Y,5/6+Z 
+ 2/3+X,1/3+X-Y,5/6+Z 
+ 1/3+X,2/3+Y,2/3+Z 
+ 1/3-Y,2/3+X-Y,2/3+Z 
+ 1/3+Y-X,2/3-X,2/3+Z 
+ 1/3-Y,2/3-X,1/6+Z 
+ 1/3+Y-X,2/3+Y,1/6+Z 
+ 1/3+X,2/3+X-Y,1/6+Z 
+
+
+Space Group #162: P-31m
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -Y,-X,-Z 
+ Y-X,Y,-Z 
+ X,X-Y,-Z 
+ -X,-Y,-Z 
+ Y,Y-X,-Z 
+ X-Y,X,-Z 
+ Y,X,Z 
+ X-Y,-Y,Z 
+ -X,Y-X,Z 
+
+
+Space Group #163: P-31c
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -Y,-X,1/2-Z 
+ Y-X,Y,1/2-Z 
+ X,X-Y,1/2-Z 
+ -X,-Y,-Z 
+ Y,Y-X,-Z 
+ X-Y,X,-Z 
+ Y,X,1/2+Z 
+ X-Y,-Y,1/2+Z 
+ -X,Y-X,1/2+Z 
+
+
+Space Group #164: P-3m1
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ Y,X,-Z 
+ X-Y,-Y,-Z 
+ -X,Y-X,-Z 
+ -X,-Y,-Z 
+ Y,Y-X,-Z 
+ X-Y,X,-Z 
+ -Y,-X,Z 
+ Y-X,Y,Z 
+ X,X-Y,Z 
+
+
+Space Group #165: P-3c1
+Crystal System : TRIGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ Y,X,1/2-Z 
+ X-Y,-Y,1/2-Z 
+ -X,Y-X,1/2-Z 
+ -X,-Y,-Z 
+ Y,Y-X,-Z 
+ X-Y,X,-Z 
+ -Y,-X,1/2+Z 
+ Y-X,Y,1/2+Z 
+ X,X-Y,1/2+Z 
+
+
+Space Group #166: R-3m
+Crystal System : TRIGONAL
+Lattice Type: R
+Number of Operations: 36
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ Y,X,-Z 
+ X-Y,-Y,-Z 
+ -X,Y-X,-Z 
+ -X,-Y,-Z 
+ Y,Y-X,-Z 
+ X-Y,X,-Z 
+ -Y,-X,Z 
+ Y-X,Y,Z 
+ X,X-Y,Z 
+ 2/3+X,1/3+Y,1/3+Z 
+ 2/3-Y,1/3+X-Y,1/3+Z 
+ 2/3+Y-X,1/3-X,1/3+Z 
+ 2/3+Y,1/3+X,1/3-Z 
+ 2/3+X-Y,1/3-Y,1/3-Z 
+ 2/3-X,1/3+Y-X,1/3-Z 
+ 2/3-X,1/3-Y,1/3-Z 
+ 2/3+Y,1/3+Y-X,1/3-Z 
+ 2/3+X-Y,1/3+X,1/3-Z 
+ 2/3-Y,1/3-X,1/3+Z 
+ 2/3+Y-X,1/3+Y,1/3+Z 
+ 2/3+X,1/3+X-Y,1/3+Z 
+ 1/3+X,2/3+Y,2/3+Z 
+ 1/3-Y,2/3+X-Y,2/3+Z 
+ 1/3+Y-X,2/3-X,2/3+Z 
+ 1/3+Y,2/3+X,2/3-Z 
+ 1/3+X-Y,2/3-Y,2/3-Z 
+ 1/3-X,2/3+Y-X,2/3-Z 
+ 1/3-X,2/3-Y,2/3-Z 
+ 1/3+Y,2/3+Y-X,2/3-Z 
+ 1/3X-Y,2/3+X,2/3-Z 
+ 1/3-Y,2/3-X,2/3+Z 
+ 1/3+Y-X,2/3+Y,2/3+Z 
+ 1/3+X,2/3+X-Y,2/3+Z 
+
+
+Space Group #167: R-3c
+Crystal System : TRIGONAL
+Lattice Type: R
+Number of Operations: 36
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ Y,X,1/2-Z 
+ X-Y,-Y,1/2-Z 
+ -X,Y-X,1/2-Z 
+ -X,-Y,-Z 
+ Y,Y-X,-Z 
+ X-Y,X,-Z 
+ -Y,-X,1/2+Z 
+ Y-X,Y,1/2+Z 
+ X,X-Y,1/2+Z 
+ 2/3+X,1/3+Y,1/3+Z 
+ 2/3-Y,1/3+X-Y,1/3+Z 
+ 2/3+Y-X,1/3-X,1/3+Z 
+ 2/3+Y,1/3+X,5/6-Z 
+ 2/3+X-Y,1/3-Y,5/6-Z 
+ 2/3-X,1/3+Y-X,5/6-Z 
+ 2/3-X,1/3-Y,1/3-Z 
+ 2/3+Y,1/3+Y-X,1/3-Z 
+ 2/3+X-Y,1/3+X,1/3-Z 
+ 2/3-Y,1/3-X,5/6+Z 
+ 2/3+Y-X,1/3+Y,5/6+Z 
+ 2/3+X,1/3+X-Y,5/6+Z 
+ 1/3+X,2/3+Y,2/3+Z 
+ 1/3-Y,2/3+X-Y,2/3+Z 
+ 1/3+Y-X,2/3-X,2/3+Z 
+ 1/3+Y,2/3+X,1/6-Z 
+ 1/3+X-Y,2/3-Y,1/6-Z 
+ 1/3-X,2/3+Y-X,1/6-Z 
+ 1/3-X,2/3-Y,2/3-Z 
+ 1/3+Y,2/3+Y-X,2/3-Z 
+ 1/3+X-Y,2/3+X,2/3-Z 
+ 1/3-Y,2/3-X,1/6+Z 
+ 1/3+Y-X,2/3+Y,1/6+Z 
+ 1/3+X,2/3+X-Y,1/6+Z 
+
+
+Space Group #168: P6
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -X,-Y,Z 
+ Y,Y-X,Z 
+ X-Y,X,Z 
+
+
+Space Group #169: P6(1)
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z+1/3 
+ Y-X,-X,Z+2/3 
+ -X,-Y,Z+1/2 
+ Y,Y-X,Z+5/6 
+ X-Y,X,Z+1/6 
+
+
+Space Group #170: P6(5)
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z+2/3 
+ Y-X,-X,Z+1/3 
+ -X,-Y,Z+1/2 
+ Y,Y-X,Z+1/6 
+ X-Y,X,Z+5/6 
+
+
+Space Group #171: P6(2)
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,2/3+Z 
+ Y-X,-X,1/3+Z 
+ -X,-Y,Z 
+ Y,Y-X,2/3+Z 
+ X-Y,X,1/3+Z 
+
+
+Space Group #172: P6(4)
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,1/3+Z 
+ Y-X,-X,2/3+Z 
+ -X,-Y,Z 
+ Y,Y-X,1/3+Z 
+ X-Y,X,2/3+Z 
+
+
+Space Group #173: P6(3)
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -X,-Y,1/2+Z 
+ Y,Y-X,1/2+Z 
+ X-Y,X,1/2+Z 
+
+
+Space Group #174: P-6
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 6
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ X,Y,-Z 
+ -Y,X-Y,-Z 
+ Y-X,-X,-Z 
+
+
+Space Group #175: P6/m
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -X,-Y,Z 
+ Y,Y-X,Z 
+ X-Y,X,Z 
+ -X,-Y,-Z 
+ Y,Y-X,-Z 
+ X-Y,X,-Z 
+ X,Y,-Z 
+ -Y,X-Y,-Z 
+ Y-X,-X,-Z 
+
+
+Space Group #176: P6(3)/m
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -X,-Y,1/2+Z 
+ Y,Y-X,1/2+Z 
+ X-Y,X,1/2+Z 
+ -X,-Y,-Z 
+ Y,Y-X,-Z 
+ X-Y,X,-Z 
+ X,Y,1/2-Z 
+ -Y,X-Y,1/2-Z 
+ Y-X,-X,1/2-Z 
+
+
+Space Group #177: P622
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -X,-Y,Z 
+ Y,Y-X,Z 
+ X-Y,X,Z 
+ Y,X,-Z 
+ X-Y,-Y,-Z 
+ -X,Y-X,-Z 
+ -Y,-X,-Z 
+ Y-X,Y,-Z 
+ X,X-Y,-Z 
+
+
+Space Group #178: P6(1)22
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,1/3+Z 
+ Y-X,-X,2/3+Z 
+ -X,-Y,1/2+Z 
+ Y,Y-X,5/6+Z 
+ X-Y,X,1/6+Z 
+ Y,X,1/3-Z 
+ X-Y,-Y,-Z 
+ -X,Y-X,2/3-Z 
+ -Y,-X,5/6-Z 
+ Y-X,Y,1/2-Z 
+ X,X-Y,1/6-Z 
+
+
+Space Group #179: P6(5)22
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,2/3+Z 
+ Y-X,-X,1/3+Z 
+ -X,-Y,1/2+Z 
+ Y,Y-X,1/6+Z 
+ X-Y,X,5/6+Z 
+ Y,X,2/3-Z 
+ X-Y,-Y,-Z 
+ -X,Y-X,1/3-Z 
+ -Y,-X,1/6-Z 
+ Y-X,Y,1/2-Z 
+ X,X-Y,5/6-Z 
+
+
+Space Group #180: P6(2)22
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,2/3+Z 
+ Y-X,-X,1/3+Z 
+ -X,-Y,Z 
+ Y,Y-X,2/3+Z 
+ X-Y,X,1/3+Z 
+ Y,X,2/3-Z 
+ X-Y,-Y,-Z 
+ -X,Y-X,1/3-Z 
+ -Y,-X,2/3-Z 
+ Y-X,Y,-Z 
+ X,X-Y,1/3-Z 
+
+
+Space Group #181: P6(4)22
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,1/3+Z 
+ Y-X,-X,2/3+Z 
+ -X,-Y,Z 
+ Y,Y-X,1/3+Z 
+ X-Y,X,2/3+Z 
+ Y,X,1/3-Z 
+ X-Y,-Y,-Z 
+ -X,Y-X,2/3-Z 
+ -Y,-X,1/3-Z 
+ Y-X,Y,-Z 
+ X,X-Y,2/3-Z 
+
+
+Space Group #182: P6(3)22
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -X,-Y,1/2+Z 
+ Y,Y-X,1/2+Z 
+ X-Y,X,1/2+Z 
+ Y,X,-Z 
+ X-Y,-Y,-Z 
+ -X,Y-X,-Z 
+ -Y,-X,1/2-Z 
+ Y-X,Y,1/2-Z 
+ X,X-Y,1/2-Z 
+
+
+Space Group #183: P6mm
+Crystal System : HEXAGOANL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -X,-Y,Z 
+ Y,Y-X,Z 
+ X-Y,X,Z 
+ -Y,-X,Z 
+ Y-X,Y,Z 
+ X,X-Y,Z 
+ Y,X,Z 
+ X-Y,-Y,Z 
+ -X,Y-X,Z 
+
+
+Space Group #184: P6cc
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -X,-Y,Z 
+ Y,Y-X,Z 
+ X-Y,X,Z 
+ -Y,-X,1/2+Z 
+ Y-X,Y,1/2+Z 
+ X,X-Y,1/2+Z 
+ Y,X,1/2+Z 
+ X-Y,-Y,1/2+Z 
+ -X,Y-X,1/2+Z 
+
+
+Space Group #185: P6(3)cm
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -X,-Y,1/2+Z 
+ Y,Y-X,1/2+Z 
+ X-Y,X,1/2+Z 
+ -Y,-X,1/2+Z 
+ Y-X,Y,1/2+Z 
+ X,X-Y,1/2+Z 
+ Y,X,Z 
+ X-Y,-Y,Z 
+ -X,Y-X,Z 
+
+
+Space Group #186: P6(3)mc
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -X,-Y,1/2+Z 
+ Y,Y-X,1/2+Z 
+ X-Y,X,1/2+Z 
+ -Y,-X,Z 
+ Y-X,Y,Z 
+ X,X-Y,Z 
+ Y,X,1/2+Z 
+ X-Y,-Y,1/2+Z 
+ -X,Y-X,1/2+Z 
+
+
+Space Group #187: P-6m2
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ X,Y,-Z 
+ -Y,X-Y,-Z 
+ Y-X,-X,-Z 
+ -Y,-X,Z 
+ Y-X,Y,Z 
+ X,X-Y,Z 
+ -Y,-X,-Z 
+ Y-X,Y,-Z 
+ X,X-Y,-Z 
+
+
+Space Group #188: P-6c2
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ X,Y,1/2-Z 
+ -Y,X-Y,1/2-Z 
+ Y-X,-X,1/2-Z 
+ -Y,-X,1/2+Z 
+ Y-X,Y,1/2+Z 
+ X,X-Y,1/2+Z 
+ -Y,-X,-Z 
+ Y-X,Y,-Z 
+ X,X-Y,-Z 
+
+
+Space Group #189: P-62m
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ X,Y,-Z 
+ -Y,X-Y,-Z 
+ Y-X,-X,-Z 
+ Y,X,-Z 
+ X-Y,-Y,-Z 
+ -X,Y-X,-Z 
+ Y,X,Z 
+ X-Y,-Y,Z 
+ -X,Y-X,Z 
+
+
+Space Group #190: P-62c
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ X,Y,1/2-Z 
+ -Y,X-Y,1/2-Z 
+ Y-X,-X,1/2-Z 
+ Y,X,-Z 
+ X-Y,-Y,-Z 
+ -X,Y-X,-Z 
+ Y,X,1/2+Z 
+ X-Y,-Y,1/2+Z 
+ -X,Y-X,1/2+Z 
+
+
+Space Group #191: P6/mmm
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 24
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -X,-Y,Z 
+ Y,Y-X,Z 
+ X-Y,X,Z 
+ Y,X,-Z 
+ X-Y,-Y,-Z 
+ -X,Y-X,-Z 
+ -Y,-X,-Z 
+ Y-X,Y,-Z 
+ X,X-Y,-Z 
+ -X,-Y,-Z 
+ Y,Y-X,-Z 
+ X-Y,X,-Z 
+ X,Y,-Z 
+ Y-X,-X,-Z 
+ -Y,X-Y,-Z 
+ -Y,-X,Z 
+ Y-X,Y,Z 
+ X,X-Y,Z 
+ Y,X,Z 
+ X-Y,-Y,Z 
+ -X,Y-X,Z 
+
+
+Space Group #192: P6/mcc
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 24
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -X,-Y,Z 
+ Y,Y-X,Z 
+ X-Y,X,Z 
+ Y,X,1/2-Z 
+ X-Y,-Y,1/2-Z 
+ -X,Y-X,1/2-Z 
+ -Y,-X,1/2-Z 
+ Y-X,Y,1/2-Z 
+ X,X-Y,1/2-Z 
+ -X,-Y,-Z 
+ Y,Y-X,-Z 
+ X-Y,X,-Z 
+ X,Y,-Z 
+ Y-X,-X,-Z 
+ -Y,X-Y,-Z 
+ -Y,-X,1/2+Z 
+ Y-X,Y,1/2+Z 
+ X,X-Y,1/2+Z 
+ Y,X,1/2+Z 
+ X-Y,-Y,1/2+Z 
+ -X,Y-X,1/2+Z 
+
+
+Space Group #193: P6(3)/mcm
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 24
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -X,-Y,1/2+Z 
+ Y,Y-X,1/2+Z 
+ X-Y,X,1/2+Z 
+ Y,X,1/2-Z 
+ X-Y,-Y,1/2-Z 
+ -X,Y-X,1/2-Z 
+ -Y,-X,-Z 
+ Y-X,Y,-Z 
+ X,X-Y,-Z 
+ -X,-Y,-Z 
+ Y,Y-X,-Z 
+ X-Y,X,-Z 
+ X,Y,1/2-Z 
+ Y-X,-X,1/2-Z 
+ -Y,X-Y,1/2-Z 
+ -Y,-X,1/2+Z 
+ Y-X,Y,1/2+Z 
+ X,X-Y,1/2+Z 
+ Y,X,Z 
+ X-Y,-Y,Z 
+ -X,Y-X,Z 
+
+
+Space Group #194: P6(3)/mmc
+Crystal System : HEXAGONAL
+Lattice Type: P
+Number of Operations: 24
+Operations:
+ X,Y,Z 
+ -Y,X-Y,Z 
+ Y-X,-X,Z 
+ -X,-Y,1/2+Z 
+ Y,Y-X,1/2+Z 
+ X-Y,X,1/2+Z 
+ Y,X,-Z 
+ X-Y,-Y,-Z 
+ -X,Y-X,-Z 
+ -Y,-X,1/2-Z 
+ Y-X,Y,1/2-Z 
+ X,X-Y,1/2-Z 
+ -X,-Y,-Z 
+ Y,Y-X,-Z 
+ X-Y,X,-Z 
+ X,Y,1/2-Z 
+ Y-X,-X,1/2-Z 
+ -Y,X-Y,1/2-Z 
+ -Y,-X,Z 
+ Y-X,Y,Z 
+ X,X-Y,Z 
+ Y,X,1/2+Z 
+ X-Y,-Y,1/2+Z 
+ -X,Y-X,1/2+Z 
+
+
+Space Group #195: P23
+Crystal System : CUBIC
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+
+
+Space Group #196: F23
+Crystal System : CUBIC
+Lattice Type: F
+Number of Operations: 48
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ X,1/2+Y,1/2+Z 
+ -X,1/2-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ X,1/2-Y,1/2-Z 
+ Z,1/2+X,1/2+Y 
+ Z,1/2-X,1/2-Y 
+ -Z,1/2-X,1/2+Y 
+ -Z,1/2+X,1/2-Y 
+ Y,1/2+Z,1/2+X 
+ -Y,1/2+Z,1/2-X 
+ Y,1/2-Z,1/2-X 
+ -Y,1/2-Z,1/2+X 
+ 1/2+X,Y,1/2+Z 
+ 1/2-X,-Y,1/2+Z 
+ 1/2-X,Y,1/2-Z 
+ 1/2+X,-Y,1/2-Z 
+ 1/2+Z,X,1/2+Y 
+ 1/2+Z,-X,1/2-Y 
+ 1/2-Z,-X,1/2+Y 
+ 1/2-Z,X,1/2-Y 
+ 1/2+Y,Z,1/2+X 
+ 1/2-Y,Z,1/2-X 
+ 1/2+Y,-Z,1/2-X 
+ 1/2-Y,-Z,1/2+X 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ 1/2+Z,1/2+X,Y 
+ 1/2+Z,1/2-X,-Y 
+ 1/2-Z,1/2-X,Y 
+ 1/2-Z,1/2+X,-Y 
+ 1/2+Y,1/2+Z,X 
+ 1/2-Y,1/2+Z,-X 
+ 1/2+Y,1/2-Z,-X 
+ 1/2-Y,1/2-Z,X 
+
+
+Space Group #197: I23
+Crystal System : CUBIC
+Lattice Type: I
+Number of Operations: 24
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2-Z 
+ 1/2+Z,1/2+X,1/2+Y 
+ 1/2+Z,1/2-X,1/2-Y 
+ 1/2-Z,1/2-X,1/2+Y 
+ 1/2-Z,1/2+X,1/2-Y 
+ 1/2+Y,1/2+Z,1/2+X 
+ 1/2-Y,1/2+Z,1/2-X 
+ 1/2+Y,1/2-Z,1/2-X 
+ 1/2-Y,1/2-Z,1/2+X 
+
+
+Space Group #198: P2(1)3
+Crystal System : CUBIC
+Lattice Type: P
+Number of Operations: 12
+Operations:
+ X,Y,Z 
+ 1/2-X,-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,-Z 
+ Z,X,Y 
+ 1/2+Z,1/2-X,-Y 
+ 1/2-Z,-X,1/2+Y 
+ -Z,1/2+X,1/2-Y 
+ Y,Z,X 
+ -Y,1/2+Z,1/2-X 
+ 1/2+Y,1/2-Z,-X 
+ 1/2-Y,-Z,1/2+X 
+
+
+Space Group #199: I2(1)3
+Crystal System : CUBIC
+Lattice Type: I
+Number of Operations: 24
+Operations:
+ X,Y,Z 
+ 1/2-X,-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,-Z 
+ Z,X,Y 
+ 1/2+Z,1/2-X,-Y 
+ 1/2-Z,-X,1/2+Y 
+ -Z,1/2+X,1/2-Y 
+ Y,Z,X 
+ -Y,1/2+Z,1/2-X 
+ 1/2+Y,1/2-Z,-X 
+ 1/2-Y,-Z,1/2+X 
+ 1/2+X,1/2+Y,1/2+Z 
+ -X,1/2-Y,Z 
+ 1/2-X,Y,-Z 
+ X,-Y,1/2-Z 
+ 1/2+Z,1/2+X,1/2+Y 
+ Z,-X,1/2-Y 
+ -Z,1/2-X,Y 
+ 1/2-Z,X,-Y 
+ 1/2+Y,1/2+Z,1/2+X 
+ 1/2-Y,Z,-X 
+ Y,-Z,1/2-X 
+ -Y,1/2-Z,X 
+
+
+Space Group #200: Pm-3
+Crystal System : CUBIC
+Lattice Type: P
+Number of Operations: 24
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ -Z,-X,-Y 
+ -Z,X,Y 
+ Z,X,-Y 
+ Z,-X,Y 
+ -Y,-Z,-X 
+ Y,-Z,X 
+ -Y,Z,X 
+ Y,Z,-X 
+
+
+Space Group #201: Pn-3
+Crystal System : CUBIC
+Lattice Type: P
+Number of Operations: 24
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ 1/2-X,1/2-Y,1/2-Z 
+ 1/2+X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+ 1/2-Z,1/2-X,1/2-Y 
+ 1/2-Z,1/2+X,1/2+Y 
+ 1/2+Z,1/2+X,1/2-Y 
+ 1/2+Z,1/2-X,1/2+Y 
+ 1/2-Y,1/2-Z,1/2-X 
+ 1/2+Y,1/2-Z,1/2+X 
+ 1/2-Y,1/2+Z,1/2+X 
+ 1/2+Y,1/2+Z,1/2-X 
+
+
+Space Group #202: Fm-3
+Crystal System : CUBIC
+Lattice Type: F
+Number of Operations: 96
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ -Z,-X,-Y 
+ -Z,X,Y 
+ Z,X,-Y 
+ Z,-X,Y 
+ -Y,-Z,-X 
+ Y,-Z,X 
+ -Y,Z,X 
+ Y,Z,-X 
+ X,1/2+Y,1/2+Z 
+ -X,1/2-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ X,1/2-Y,1/2-Z 
+ Z,1/2+X,1/2+Y 
+ Z,1/2-X,1/2-Y 
+ -Z,1/2-X,1/2+Y 
+ -Z,1/2+X,1/2-Y 
+ Y,1/2+Z,1/2+X 
+ -Y,1/2+Z,1/2-X 
+ Y,1/2-Z,1/2-X 
+ -Y,1/2-Z,1/2+X 
+ -X,1/2-Y,1/2-Z 
+ X,1/2+Y,1/2-Z 
+ X,1/2-Y,1/2+Z 
+ -X,1/2+Y,1/2+Z 
+ -Z,1/2-X,1/2-Y 
+ -Z,1/2+X,1/2+Y 
+ Z,1/2+X,1/2-Y 
+ Z,1/2-X,1/2+Y 
+ -Y,1/2-Z,1/2-X 
+ Y,1/2-Z,1/2+X 
+ -Y,1/2+Z,1/2+X 
+ Y,1/2+Z,1/2-X 
+ 1/2+X,Y,1/2+Z 
+ 1/2-X,-Y,1/2+Z 
+ 1/2-X,Y,1/2-Z 
+ 1/2+X,-Y,1/2-Z 
+ 1/2+Z,X,1/2+Y 
+ 1/2+Z,-X,1/2-Y 
+ 1/2-Z,-X,1/2+Y 
+ 1/2-Z,X,1/2-Y 
+ 1/2+Y,Z,1/2+X 
+ 1/2-Y,Z,1/2-X 
+ 1/2+Y,-Z,1/2-X 
+ 1/2-Y,-Z,1/2+X 
+ 1/2-X,-Y,1/2-Z 
+ 1/2+X,Y,1/2-Z 
+ 1/2+X,-Y,1/2+Z 
+ 1/2-X,Y,1/2+Z 
+ 1/2-Z,-X,1/2-Y 
+ 1/2-Z,X,1/2+Y 
+ 1/2+Z,X,1/2-Y 
+ 1/2+Z,-X,1/2+Y 
+ 1/2-Y,-Z,1/2-X 
+ 1/2+Y,-Z,1/2+X 
+ 1/2-Y,Z,1/2+X 
+ 1/2+Y,Z,1/2-X 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ 1/2+Z,1/2+X,Y 
+ 1/2+Z,1/2-X,-Y 
+ 1/2-Z,1/2-X,Y 
+ 1/2-Z,1/2+X,-Y 
+ 1/2+Y,1/2+Z,X 
+ 1/2-Y,1/2+Z,-X 
+ 1/2+Y,1/2-Z,-X 
+ 1/2-Y,1/2-Z,X 
+ 1/2-X,1/2-Y,-Z 
+ 1/2+X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,Z 
+ 1/2-X,1/2+Y,Z 
+ 1/2-Z,1/2-X,-Y 
+ 1/2-Z,1/2+X,Y 
+ 1/2+Z,1/2+X,-Y 
+ 1/2+Z,1/2-X,Y 
+ 1/2-Y,1/2-Z,-X 
+ 1/2+Y,1/2-Z,X 
+ 1/2-Y,1/2+Z,X 
+ 1/2+Y,1/2+Z,-X 
+
+
+Space Group #203: Fd-3
+Crystal System : CUBIC
+Lattice Type: F
+Number of Operations: 96
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ 1/4-X,1/4-Y,1/4-Z 
+ 1/4+X,1/4+Y,1/4-Z 
+ 1/4+X,1/4-Y,1/4+Z 
+ 1/4-X,1/4+Y,1/4+Z 
+ 1/4-Z,1/4-X,1/4-Y 
+ 1/4-Z,1/4+X,1/4+Y 
+ 1/4+Z,1/4+X,1/4-Y 
+ 1/4+Z,1/4-X,1/4+Y 
+ 1/4-Y,1/4-Z,1/4-X 
+ 1/4+Y,1/4-Z,1/4+X 
+ 1/4-Y,1/4+Z,1/4+X 
+ 1/4+Y,1/4+Z,1/4-X 
+ X,1/2+Y,1/2+Z 
+ -X,1/2-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ X,1/2-Y,1/2-Z 
+ Z,1/2+X,1/2+Y 
+ Z,1/2-X,1/2-Y 
+ -Z,1/2-X,1/2+Y 
+ -Z,1/2+X,1/2-Y 
+ Y,1/2+Z,1/2+X 
+ -Y,1/2+Z,1/2-X 
+ Y,1/2-Z,1/2-X 
+ -Y,1/2-Z,1/2+X 
+ 1/4-X,3/4-Y,3/4-Z 
+ 1/4+X,3/4+Y,3/4-Z 
+ 1/4+X,3/4-Y,3/4+Z 
+ 1/4-X,3/4+Y,3/4+Z 
+ 1/4-Z,3/4-X,3/4-Y 
+ 1/4-Z,3/4+X,3/4+Y 
+ 1/4+Z,3/4+X,3/4-Y 
+ 1/4+Z,3/4-X,3/4+Y 
+ 1/4-Y,3/4-Z,3/4-X 
+ 1/4+Y,3/4-Z,3/4+X 
+ 1/4-Y,3/4+Z,3/4+X 
+ 1/4+Y,3/4+Z,3/4-X 
+ 1/2+X,Y,1/2+Z 
+ 1/2-X,-Y,1/2+Z 
+ 1/2-X,Y,1/2-Z 
+ 1/2+X,-Y,1/2-Z 
+ 1/2+Z,X,1/2+Y 
+ 1/2+Z,-X,1/2-Y 
+ 1/2-Z,-X,1/2+Y 
+ 1/2-Z,X,1/2-Y 
+ 1/2+Y,Z,1/2+X 
+ 1/2-Y,Z,1/2-X 
+ 1/2+Y,-Z,1/2-X 
+ 1/2-Y,-Z,1/2+X 
+ 3/4-X,1/4-Y,3/4-Z 
+ 3/4+X,1/4+Y,3/4-Z 
+ 3/4+X,1/4-Y,3/4+Z 
+ 3/4-X,1/4+Y,3/4+Z 
+ 3/4-Z,1/4-X,3/4-Y 
+ 3/4-Z,1/4+X,3/4+Y 
+ 3/4+Z,1/4+X,3/4-Y 
+ 3/4+Z,1/4-X,3/4+Y 
+ 3/4-Y,1/4-Z,3/4-X 
+ 3/4+Y,1/4-Z,3/4+X 
+ 3/4-Y,1/4+Z,3/4+X 
+ 3/4+Y,1/4+Z,3/4-X 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ 1/2+Z,1/2+X,Y 
+ 1/2+Z,1/2-X,-Y 
+ 1/2-Z,1/2-X,Y 
+ 1/2-Z,1/2+X,-Y 
+ 1/2+Y,1/2+Z,X 
+ 1/2-Y,1/2+Z,-X 
+ 1/2+Y,1/2-Z,-X 
+ 1/2-Y,1/2-Z,X 
+ 3/4-X,3/4-Y,1/4-Z 
+ 3/4+X,3/4+Y,1/4-Z 
+ 3/4+X,3/4-Y,Z+1/4 
+ 3/4-X,3/4+Y,Z+1/4 
+ 3/4-Z,3/4-X,1/4-Y 
+ 3/4-Z,3/4+X,1/4+Y 
+ 3/4+Z,3/4+X,1/4-Y 
+ 3/4+Z,3/4-X,1/4+Y 
+ 3/4-Y,3/4-Z,1/4-X 
+ 3/4+Y,3/4-Z,1/4+X 
+ 3/4-Y,3/4+Z,1/4+X 
+ 3/4+Y,3/4+Z,1/4-X 
+
+
+Space Group #204: Im-3
+Crystal System : CUBIC
+Lattice Type: I
+Number of Operations: 48
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ -Z,-X,-Y 
+ -Z,X,Y 
+ Z,X,-Y 
+ Z,-X,Y 
+ -Y,-Z,-X 
+ Y,-Z,X 
+ -Y,Z,X 
+ Y,Z,-X 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2-Z 
+ 1/2+Z,1/2+X,1/2+Y 
+ 1/2+Z,1/2-X,1/2-Y 
+ 1/2-Z,1/2-X,1/2+Y 
+ 1/2-Z,1/2+X,1/2-Y 
+ 1/2+Y,1/2+Z,1/2+X 
+ 1/2-Y,1/2+Z,1/2-X 
+ 1/2+Y,1/2-Z,1/2-X 
+ 1/2-Y,1/2-Z,1/2+X 
+ 1/2-X,1/2-Y,1/2-Z 
+ 1/2+X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+ 1/2-Z,1/2-X,1/2-Y 
+ 1/2-Z,1/2+X,1/2+Y 
+ 1/2+Z,1/2+X,1/2-Y 
+ 1/2+Z,1/2-X,1/2+Y 
+ 1/2-Y,1/2-Z,1/2-X 
+ 1/2+Y,1/2-Z,1/2+X 
+ 1/2-Y,1/2+Z,1/2+X 
+ 1/2+Y,1/2+Z,1/2-X 
+
+
+Space Group #205: Pa-3
+Crystal System : CUBIC
+Lattice Type: P
+Number of Operations: 24
+Operations:
+ X,Y,Z 
+ 1/2-X,-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,-Z 
+ Z,X,Y 
+ 1/2+Z,1/2-X,-Y 
+ 1/2-Z,-X,1/2+Y 
+ -Z,1/2+X,1/2-Y 
+ Y,Z,X 
+ -Y,1/2+Z,1/2-X 
+ 1/2+Y,1/2-Z,-X 
+ 1/2-Y,-Z,1/2+X 
+ -X,-Y,-Z 
+ 1/2+X,Y,1/2-Z 
+ X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,Z 
+ -Z,-X,-Y 
+ 1/2-Z,1/2+X,Y 
+ 1/2+Z,X,1/2-Y 
+ Z,1/2-X,1/2+Y 
+ -Y,-Z,-X 
+ Y,1/2-Z,1/2+X 
+ 1/2-Y,1/2+Z,X 
+ 1/2+Y,Z,1/2-X 
+
+
+Space Group #206: Ia-3
+Crystal System : CUBIC
+Lattice Type: I
+Number of Operations: 48
+Operations:
+ X,Y,Z 
+ 1/2-X,-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,-Z 
+ Z,X,Y 
+ 1/2+Z,1/2-X,-Y 
+ 1/2-Z,-X,1/2+Y 
+ -Z,1/2+X,1/2-Y 
+ Y,Z,X 
+ -Y,1/2+Z,1/2-X 
+ 1/2+Y,1/2-Z,-X 
+ 1/2-Y,-Z,1/2+X 
+ -X,-Y,-Z 
+ 1/2+X,Y,1/2-Z 
+ X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,Z 
+ -Z,-X,-Y 
+ 1/2-Z,1/2+X,Y 
+ 1/2+Z,X,1/2-Y 
+ Z,1/2-X,1/2+Y 
+ -Y,-Z,-X 
+ Y,1/2-Z,1/2+X 
+ 1/2-Y,1/2+Z,X 
+ 1/2+Y,Z,1/2-X 
+ 1/2+X,1/2+Y,1/2+Z 
+ -X,1/2-Y,Z 
+ 1/2-X,+Y,-Z 
+ X,-Y,1/2-Z 
+ 1/2+Z,1/2+X,1/2+Y 
+ Z,-X,1/2-Y 
+ -Z,1/2-X,Y 
+ 1/2-Z,X,-Y 
+ 1/2+Y,1/2+Z,1/2+X 
+ 1/2-Y,Z,-X 
+ Y,-Z,1/2-X 
+ -Y,1/2-Z,X 
+ 1/2-X,1/2-Y,1/2-Z 
+ X,1/2+Y,-Z 
+ 1/2+X,-Y,Z 
+ -X,Y,1/2+Z 
+ 1/2-Z,1/2-X,1/2-Y 
+ -Z,X,1/2+Y 
+ Z,1/2+X,-Y 
+ 1/2+Z,-X,Y 
+ 1/2-Y,1/2-Z,1/2-X 
+ 1/2+Y,-Z,X 
+ -Y,Z,1/2+X 
+ Y,1/2+Z,-X 
+
+
+Space Group #207: P432
+Crystal System : CUBIC
+Lattice Type: P
+Number of Operations: 24
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ Y,X,-Z 
+ -Y,-X,-Z 
+ Y,-X,Z 
+ -Y,X,Z 
+ X,Z,-Y 
+ -X,Z,Y 
+ -X,-Z,-Y 
+ X,-Z,Y 
+ Z,Y,-X 
+ Z,-Y,X 
+ -Z,Y,X 
+ -Z,-Y,-X 
+
+
+Space Group #208: P4(2)32
+Crystal System : CUBIC
+Lattice Type: P
+Number of Operations: 24
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ 1/2+Y,1/2+X,1/2-Z 
+ 1/2-Y,1/2-X,1/2-Z 
+ 1/2+Y,1/2-X,1/2+Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+X,1/2+Z,1/2-Y 
+ 1/2-X,1/2+Z,1/2+Y 
+ 1/2-X,1/2-Z,1/2-Y 
+ 1/2+X,1/2-Z,1/2+Y 
+ 1/2+Z,1/2+Y,1/2-X 
+ 1/2+Z,1/2-Y,1/2+X 
+ 1/2-Z,1/2+Y,1/2+X 
+ 1/2-Z,1/2-Y,1/2-X 
+
+
+Space Group #209: F432
+Crystal System : CUBIC
+Lattice Type: F
+Number of Operations: 96
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ Y,X,-Z 
+ -Y,-X,-Z 
+ Y,-X,Z 
+ -Y,X,Z 
+ X,Z,-Y 
+ -X,Z,Y 
+ -X,-Z,-Y 
+ X,-Z,Y 
+ Z,Y,-X 
+ Z,-Y,X 
+ -Z,Y,X 
+ -Z,-Y,-X 
+ X,1/2+Y,1/2+Z 
+ -X,1/2-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ X,1/2-Y,1/2-Z 
+ Z,1/2+X,1/2+Y 
+ Z,1/2-X,1/2-Y 
+ -Z,1/2-X,1/2+Y 
+ -Z,1/2+X,1/2-Y 
+ Y,1/2+Z,1/2+X 
+ -Y,1/2+Z,1/2-X 
+ Y,1/2-Z,1/2-X 
+ -Y,1/2-Z,1/2+X 
+ Y,1/2+X,1/2-Z 
+ -Y,1/2-X,1/2-Z 
+ Y,1/2-X,1/2+Z 
+ -Y,1/2+X,1/2+Z 
+ X,1/2+Z,1/2-Y 
+ -X,1/2+Z,1/2+Y 
+ -X,1/2-Z,1/2-Y 
+ X,1/2-Z,1/2+Y 
+ Z,1/2+Y,1/2-X 
+ Z,1/2-Y,1/2+X 
+ -Z,1/2+Y,1/2+X 
+ -Z,1/2-Y,1/2-X 
+ 1/2+X,Y,1/2+Z 
+ 1/2-X,-Y,1/2+Z 
+ 1/2-X,Y,1/2-Z 
+ 1/2+X,-Y,1/2-Z 
+ 1/2+Z,X,1/2+Y 
+ 1/2+Z,-X,1/2-Y 
+ 1/2-Z,-X,1/2+Y 
+ 1/2-Z,X,1/2-Y 
+ 1/2+Y,Z,1/2+X 
+ 1/2-Y,Z,1/2-X 
+ 1/2+Y,-Z,1/2-X 
+ 1/2-Y,-Z,1/2+X 
+ 1/2+Y,X,1/2-Z 
+ 1/2-Y,-X,1/2-Z 
+ 1/2+Y,-X,1/2+Z 
+ 1/2-Y,X,1/2+Z 
+ 1/2+X,Z,1/2-Y 
+ 1/2-X,Z,1/2+Y 
+ 1/2-X,-Z,1/2-Y 
+ 1/2+X,-Z,1/2+Y 
+ 1/2+Z,Y,1/2-X 
+ 1/2+Z,-Y,1/2+X 
+ 1/2-Z,Y,1/2+X 
+ 1/2-Z,-Y,1/2-X
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ 1/2+Z,1/2+X,Y 
+ 1/2+Z,1/2-X,-Y 
+ 1/2-Z,1/2-X,Y 
+ 1/2-Z,1/2+X,-Y 
+ 1/2+Y,1/2+Z,X 
+ 1/2-Y,1/2+Z,-X 
+ 1/2+Y,1/2-Z,-X 
+ 1/2-Y,1/2-Z,X 
+ 1/2+Y,1/2+X,-Z 
+ 1/2-Y,1/2-X,-Z 
+ 1/2+Y,1/2-X,Z 
+ 1/2-Y,1/2+X,Z 
+ 1/2+X,1/2+Z,-Y 
+ 1/2-X,1/2+Z,Y 
+ 1/2-X,1/2-Z,-Y 
+ 1/2+X,1/2-Z,Y 
+ 1/2+Z,1/2+Y,-X 
+ 1/2+Z,1/2-Y,X 
+ 1/2-Z,1/2+Y,X 
+ 1/2-Z,1/2-Y,-X 
+
+
+Space Group #210: F4(1)32
+Crystal System : CUBIC
+Lattice Type: F
+Number of Operations: 96
+Operations:
+ X,Y,Z 
+ -X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,-Y,1/2-Z 
+ Z,X,Y 
+ 1/2+Z,-X,1/2-Y 
+ -Z,1/2-X,1/2+Y 
+ 1/2-Z,1/2+X,-Y 
+ Y,Z,X 
+ 1/2-Y,1/2+Z,-X 
+ 1/2+Y,-Z,1/2-X 
+ -Y,1/2-Z,1/2+X 
+ 3/4+Y,1/4+X,3/4-Z 
+ 1/4-Y,1/4-X,1/4-Z 
+ 1/4+Y,3/4-X,3/4+Z 
+ 3/4-Y,3/4+X,1/4+Z
+ 3/4+X,1/4+Z,3/4-Y 
+ 3/4-X,3/4+Z,1/4+Y 
+ 1/4-X,1/4-Z,1/4-Y 
+ 1/4+X,3/4-Z,3/4+Y 
+ 3/4+Z,1/4+Y,3/4-X 
+ 1/4+Z,3/4-Y,3/4+X 
+ 3/4-Z,3/4+Y,1/4+X 
+ 1/4-Z,1/4-Y,1/4-X 
+ X,1/2+Y,1/2+Z 
+ -X,-Y,Z 
+ 1/2-X,Y,1/2-Z 
+ 1/2+X,1/2-Y,-Z 
+ Z,1/2+X,1/2+Y 
+ 1/2+Z,1/2-X,-Y 
+ -Z,-X,Y 
+ 1/2-Z,X,1/2-Y 
+ Y,1/2+Z,1/2+X 
+ 1/2-Y,Z,1/2-X 
+ 1/2+Y,1/2-Z,-X 
+ -Y,-Z,X 
+ 3/4+Y,3/4+X,1/4-Z 
+ 1/4-Y,3/4-X,3/4-Z 
+ 1/4+Y,1/4-X,1/4+Z 
+ 3/4-Y,1/4+X,3/4+Z
+ 3/4+X,3/4+Z,1/4-Y 
+ 3/4-X,1/4+Z,3/4+Y 
+ 1/4-X,3/4-Z,3/4-Y 
+ 1/4+X,1/4-Z,1/4+Y 
+ 3/4+Z,3/4+Y,1/4-X 
+ 1/4+Z,1/4-Y,1/4+X 
+ 3/4-Z,1/4+Y,3/4+X 
+ 1/4-Z,3/4-Y,3/4-X 
+ 1/2+X,Y,1/2+Z 
+ 1/2-X,1/2-Y,Z 
+ -X,1/2+Y,1/2-Z 
+ X,-Y,-Z 
+ 1/2+Z,X,1/2+Y 
+ Z,-X,-Y 
+ 1/2-Z,1/2-X,Y 
+ -Z,1/2+X,1/2-Y 
+ 1/2+Y,Z,1/2+X 
+ -Y,1/2+Z,1/2-X 
+ Y,-Z,-X 
+ 1/2-Y,1/2-Z,X 
+ 1/4+Y,1/4+X,1/4-Z 
+ 3/4-Y,1/4-X,3/4-Z 
+ 3/4+Y,3/4-X,1/4+Z 
+ 1/4-Y,3/4+X,3/4+Z 
+ 1/4+X,1/4+Z,1/4-Y 
+ 1/4-X,3/4+Z,3/4+Y 
+ 3/4-X,1/4-Z,3/4-Y 
+ 3/4+X,3/4-Z,1/4+Y 
+ 1/4+Z,1/4+Y,1/4-X 
+ 3/4+Z,3/4-Y,1/4+X 
+ 1/4-Z,3/4+Y,3/4+X 
+ 3/4-Z,1/4-Y,3/4-X 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,-Y,1/2+Z 
+ -X,Y,-Z 
+ X,1/2-Y,1/2-Z 
+ 1/2+Z,1/2+X,Y 
+ Z,1/2-X,1/2-Y 
+ 1/2-Z,-X,1/2+Y 
+ -Z,X,-Y 
+ 1/2+Y,1/2+Z,X 
+ -Y,Z,-X 
+ Y,1/2-Z,1/2-X 
+ 1/2-Y,-Z,1/2+X 
+ 1/4+Y,3/4+X,3/4-Z 
+ 3/4-Y,3/4-X,1/4-Z 
+ 3/4+Y,1/4-X,3/4+Z 
+ 1/4-Y,1/4+X,1/4+Z
+ 1/4+X,3/4+Z,3/4-Y 
+ 1/4-X,1/4+Z,1/4+Y 
+ 3/4-X,3/4-Z,1/4-Y 
+ 3/4+X,1/4-Z,3/4+Y 
+ 1/4+Z,3/4+Y,3/4-X 
+ 3/4+Z,1/4-Y,3/4+X 
+ 1/4-Z,1/4+Y,1/4+X 
+ 3/4-Z,3/4-Y,1/4-X 
+
+
+Space Group #211: I432
+Crystal System : CUBIC
+Lattice Type: I
+Number of Operations: 48
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ Y,X,-Z 
+ -Y,-X,-Z 
+ Y,-X,Z 
+ -Y,X,Z 
+ X,Z,-Y 
+ -X,Z,Y 
+ -X,-Z,-Y 
+ X,-Z,Y 
+ Z,Y,-X 
+ Z,-Y,X 
+ -Z,Y,X 
+ -Z,-Y,-X 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2-Z 
+ 1/2+Z,1/2+X,1/2+Y 
+ 1/2+Z,1/2-X,1/2-Y 
+ 1/2-Z,1/2-X,1/2+Y 
+ 1/2-Z,1/2+X,1/2-Y 
+ 1/2+Y,1/2+Z,1/2+X 
+ 1/2-Y,1/2+Z,1/2-X 
+ 1/2+Y,1/2-Z,1/2-X 
+ 1/2-Y,1/2-Z,1/2+X 
+ 1/2+Y,1/2+X,1/2-Z 
+ 1/2-Y,1/2-X,1/2-Z 
+ 1/2+Y,1/2-X,1/2+Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+X,1/2+Z,1/2-Y 
+ 1/2-X,1/2+Z,1/2+Y 
+ 1/2-X,1/2-Z,1/2-Y 
+ 1/2+X,1/2-Z,1/2+Y 
+ 1/2+Z,1/2+Y,1/2-X 
+ 1/2+Z,1/2-Y,1/2+X 
+ 1/2-Z,1/2+Y,1/2+X 
+ 1/2-Z,1/2-Y,1/2-X 
+
+
+Space Group #212: P4(3)32
+Crystal System : CUBIC
+Lattice Type: P
+Number of Operations: 24
+Operations:
+ X,Y,Z 
+ 1/2-X,-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,-Z 
+ Z,X,Y 
+ 1/2+Z,1/2-X,-Y 
+ 1/2-Z,-X,1/2+Y 
+ -Z,1/2+X,1/2-Y 
+ Y,Z,X 
+ -Y,1/2+Z,1/2-X 
+ 1/2+Y,1/2-Z,-X 
+ 1/2-Y,-Z,1/2+X 
+ 1/4+Y,3/4+X,3/4-Z 
+ 1/4-Y,1/4-X,1/4-Z 
+ 3/4+Y,3/4-X,1/4+Z 
+ 3/4-Y,1/4+X,3/4+Z 
+ 1/4+X,3/4+Z,3/4-Y 
+ 3/4-X,1/4+Z,3/4+Y 
+ 1/4-X,1/4-Z,1/4-Y 
+ 3/4+X,3/4-Z,1/4+Y 
+ 1/4+Z,3/4+Y,3/4-X 
+ 3/4+Z,3/4-Y,1/4+X 
+ 3/4-Z,1/4+Y,3/4+X 
+ 1/4-Z,1/4-Y,1/4-X 
+
+
+Space Group #213: P4(1)32
+Crystal System : CUBIC
+Lattice Type: P
+Number of Operations: 24
+Operations:
+ X,Y,Z 
+ 1/2-X,-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,-Z 
+ Z,X,Y 
+ 1/2+Z,1/2-X,-Y 
+ 1/2-Z,-X,1/2+Y 
+ -Z,1/2+X,1/2-Y 
+ Y,Z,X 
+ -Y,1/2+Z,1/2-X 
+ 1/2+Y,1/2-Z,-X 
+ 1/2-Y,-Z,1/2+X 
+ 3/4+Y,1/4+X,1/4-Z 
+ 3/4-Y,3/4-X,3/4-Z 
+ 1/4+Y,1/4-X,3/4+Z 
+ 1/4-Y,3/4+X,1/4+Z 
+ 3/4+X,1/4+Z,1/4-Y 
+ 1/4-X,3/4+Z,1/4+Y 
+ 3/4-X,3/4-Z,3/4-Y 
+ 1/4+X,1/4-Z,3/4+Y 
+ 3/4+Z,1/4+Y,1/4-X 
+ 1/4+Z,1/4-Y,3/4+X 
+ 1/4-Z,3/4+Y,1/4+X 
+ 3/4-Z,3/4-Y,3/4-X 
+
+
+Space Group #214: I4(1)32
+Crystal System : CUBIC
+Lattice Type: I
+Number of Operations: 48
+Operations:
+ X,Y,Z 
+ 1/2-X,-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,-Z 
+ Z,X,Y 
+ 1/2+Z,1/2-X,-Y 
+ 1/2-Z,-X,1/2+Y 
+ -Z,1/2+X,1/2-Y 
+ Y,Z,X 
+ -Y,1/2+Z,1/2-X 
+ 1/2+Y,1/2-Z,-X 
+ 1/2-Y,-Z,1/2+X 
+ 3/4+Y,1/4+X,1/4-Z 
+ 3/4-Y,3/4-X,3/4-Z 
+ 1/4+Y,1/4-X,3/4+Z 
+ 1/4-Y,3/4+X,1/4+Z 
+ 3/4+X,1/4+Z,1/4-Y 
+ 1/4-X,3/4+Z,1/4+Y 
+ 3/4-X,3/4-Z,3/4-Y 
+ 1/4+X,1/4-Z,3/4+Y 
+ 3/4+Z,1/4+Y,1/4-X 
+ 1/4+Z,1/4-Y,3/4+X 
+ 1/4-Z,3/4+Y,1/4+X 
+ 3/4-Z,3/4-Y,3/4-X 
+ 1/2+X,1/2+Y,1/2+Z 
+ -X,1/2-Y,Z 
+ 1/2-X,Y,-Z 
+ X,-Y,1/2-Z 
+ 1/2+Z,1/2+X,1/2+Y 
+ Z,-X,1/2-Y 
+ -Z,1/2-X,Y 
+ 1/2-Z,X,-Y 
+ 1/2+Y,1/2+Z,1/2+X 
+ 1/2-Y,Z,-X 
+ Y,-Z,1/2-X 
+ -Y,1/2-Z,X 
+ 1/4+Y,3/4+X,3/4-Z 
+ 1/4-Y,1/4-X,1/4-Z 
+ 3/4+Y,3/4-X,1/4+Z 
+ 3/4-Y,1/4+X,3/4+Z 
+ 1/4+X,3/4+Z,3/4-Y 
+ 3/4-X,1/4+Z,3/4+Y 
+ 1/4-X,1/4-Z,1/4-Y 
+ 3/4+X,3/4-Z,1/4+Y 
+ 1/4+Z,3/4+Y,3/4-X 
+ 3/4+Z,3/4-Y,1/4+X 
+ 3/4-Z,1/4+Y,3/4+X 
+ 1/4-Z,1/4-Y,1/4-X 
+
+
+Space Group #215: P-43m
+Crystal System : CUBIC
+Lattice Type: P
+Number of Operations: 24
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ Y,X,Z 
+ -Y,-X,Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ X,Z,Y 
+ -X,Z,-Y 
+ -X,-Z,Y 
+ X,-Z,-Y 
+ Z,Y,X 
+ Z,-Y,-X 
+ -Z,Y,-X 
+ -Z,-Y,X 
+
+
+Space Group #216: F4-3m
+Crystal System : CUBIC
+Lattice Type: F
+Number of Operations: 96
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ Y,X,Z 
+ -Y,-X,Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ X,Z,Y 
+ -X,Z,-Y 
+ -X,-Z,Y 
+ X,-Z,-Y 
+ Z,Y,X 
+ Z,-Y,-X 
+ -Z,Y,-X 
+ -Z,-Y,X 
+ X,1/2+Y,1/2+Z 
+ -X,1/2-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ X,1/2-Y,1/2-Z 
+ Z,1/2+X,1/2+Y 
+ Z,1/2-X,1/2-Y 
+ -Z,1/2-X,1/2+Y 
+ -Z,1/2+X,1/2-Y 
+ Y,1/2+Z,1/2+X 
+ -Y,1/2+Z,1/2-X 
+ Y,1/2-Z,1/2-X 
+ -Y,1/2-Z,1/2+X 
+ Y,1/2+X,1/2+Z 
+ -Y,1/2-X,1/2+Z 
+ Y,1/2-X,1/2-Z 
+ -Y,1/2+X,1/2-Z 
+ X,1/2+Z,1/2+Y 
+ -X,1/2+Z,1/2-Y 
+ -X,1/2-Z,1/2+Y 
+ X,1/2-Z,1/2-Y 
+ Z,1/2+Y,1/2+X 
+ Z,1/2-Y,1/2-X 
+ -Z,1/2+Y,1/2-X 
+ -Z,1/2-Y,1/2+X 
+ 1/2+X,Y,1/2+Z 
+ 1/2-X,-Y,1/2+Z 
+ 1/2-X,Y,1/2-Z 
+ 1/2+X,-Y,1/2-Z 
+ 1/2+Z,X,1/2+Y 
+ 1/2+Z,-X,1/2-Y 
+ 1/2-Z,-X,1/2+Y 
+ 1/2-Z,X,1/2-Y 
+ 1/2+Y,Z,1/2+X 
+ 1/2-Y,Z,1/2-X 
+ 1/2+Y,-Z,1/2-X 
+ 1/2-Y,-Z,1/2+X 
+ 1/2+Y,X,1/2+Z 
+ 1/2-Y,-X,1/2+Z 
+ 1/2+Y,-X,1/2-Z 
+ 1/2-Y,X,1/2-Z 
+ 1/2+X,Z,1/2+Y 
+ 1/2-X,Z,1/2-Y 
+ 1/2-X,-Z,1/2+Y 
+ 1/2+X,-Z,1/2-Y 
+ 1/2+Z,Y,1/2+X 
+ 1/2+Z,-Y,1/2-X 
+ 1/2-Z,Y,1/2-X 
+ 1/2-Z,-Y,1/2+X 
+ 1/2+X,1/2+Y,Z 
+ 1/2-X,1/2-Y,Z 
+ 1/2-X,1/2+Y,-Z 
+ 1/2+X,1/2-Y,-Z 
+ 1/2+Z,1/2+X,Y 
+ 1/2+Z,1/2-X,-Y 
+ 1/2-Z,1/2-X,Y 
+ 1/2-Z,1/2+X,-Y 
+ 1/2+Y,1/2+Z,X 
+ 1/2-Y,1/2+Z,-X 
+ 1/2+Y,1/2-Z,-X 
+ 1/2-Y,1/2-Z,X 
+ 1/2+Y,1/2+X,Z 
+ 1/2-Y,1/2-X,Z 
+ 1/2+Y,1/2-X,-Z 
+ 1/2-Y,1/2+X,-Z 
+ 1/2+X,1/2+Z,Y 
+ 1/2-X,1/2+Z,-Y 
+ 1/2-X,1/2-Z,Y 
+ 1/2+X,1/2-Z,-Y 
+ 1/2+Z,1/2+Y,X 
+ 1/2+Z,1/2-Y,-X 
+ 1/2-Z,1/2+Y,-X 
+ 1/2-Z,1/2-Y,X 
+
+
+Space Group #217: I-43m
+Crystal System : CUBIC
+Lattice Type: I
+Number of Operations: 48
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ Y,X,Z 
+ -Y,-X,Z 
+ Y,-X,-Z 
+ -Y,X,-Z 
+ X,Z,Y 
+ -X,Z,-Y 
+ -X,-Z,Y 
+ X,-Z,-Y 
+ Z,Y,X 
+ Z,-Y,-X 
+ -Z,Y,-X 
+ -Z,-Y,X 
+ 1/2+X,1/2+Y,1/2+Z 
+ 1/2-X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2-Z 
+ 1/2+Z,1/2+X,1/2+Y 
+ 1/2+Z,1/2-X,1/2-Y 
+ 1/2-Z,1/2-X,1/2+Y 
+ 1/2-Z,1/2+X,1/2-Y 
+ 1/2+Y,1/2+Z,1/2+X 
+ 1/2-Y,1/2+Z,1/2-X 
+ 1/2+Y,1/2-Z,1/2-X 
+ 1/2-Y,1/2-Z,1/2+X 
+ 1/2+Y,1/2+X,1/2+Z 
+ 1/2-Y,1/2-X,1/2+Z 
+ 1/2+Y,1/2-X,1/2-Z 
+ 1/2-Y,1/2+X,1/2-Z 
+ 1/2+X,1/2+Z,1/2+Y 
+ 1/2-X,1/2+Z,1/2-Y 
+ 1/2-X,1/2-Z,1/2+Y 
+ 1/2+X,1/2-Z,1/2-Y 
+ 1/2+Z,1/2+Y,1/2+X 
+ 1/2+Z,1/2-Y,1/2-X 
+ 1/2-Z,1/2+Y,1/2-X 
+ 1/2-Z,1/2-Y,1/2+X 
+
+
+Space Group #218: P-43n
+Crystal System : CUBIC
+Lattice Type: P
+Number of Operations: 24
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ 1/2+Y,1/2+X,1/2+Z 
+ 1/2-Y,1/2-X,1/2+Z 
+ 1/2+Y,1/2-X,1/2-Z 
+ 1/2-Y,1/2+X,1/2-Z 
+ 1/2+X,1/2+Z,1/2+Y 
+ 1/2-X,1/2+Z,1/2-Y 
+ 1/2-X,1/2-Z,1/2+Y 
+ 1/2+X,1/2-Z,1/2-Y 
+ 1/2+Z,1/2+Y,1/2+X 
+ 1/2+Z,1/2-Y,1/2-X 
+ 1/2-Z,1/2+Y,1/2-X 
+ 1/2-Z,1/2-Y,1/2+X 
+
+
+Space Group #219: F-43c
+Crystal System : CUBIC
+Lattice Type: F
+Number of Operations: 96
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ 1/2+Y,1/2+X,1/2+Z 
+ 1/2-Y,1/2-X,1/2+Z 
+ 1/2+Y,1/2-X,1/2-Z 
+ 1/2-Y,1/2+X,1/2-Z 
+ 1/2+X,1/2+Z,1/2+Y 
+ 1/2-X,1/2+Z,1/2-Y 
+ 1/2-X,1/2-Z,1/2+Y 
+ 1/2+X,1/2-Z,1/2-Y 
+ 1/2+Z,1/2+Y,1/2+X 
+ 1/2+Z,1/2-Y,1/2-X 
+ 1/2-Z,1/2+Y,1/2-X 
+ 1/2-Z,1/2-Y,1/2+X 
+ X,Y+1/2,Z+1/2
+ -X,-Y+1/2,Z+1/2 
+ -X,Y+1/2,-Z+1/2 
+ X,-Y+1/2,-Z+1/2 
+ Z,X+1/2,Y+1/2 
+ Z,-X+1/2,-Y+1/2 
+ -Z,-X+1/2,Y+1/2 
+ -Z,X+1/2,-Y+1/2 
+ Y,Z+1/2,X+1/2 
+ -Y,Z+1/2,-X+1/2 
+ Y,-Z+1/2,-X
+ -Y,-Z+1/2,X+1/2 
+ 1/2+Y,X,Z 
+ 1/2-Y,-X,Z 
+ 1/2+Y,-X,-Z 
+ 1/2-Y,+X,-Z 
+ 1/2+X,+Z,Y 
+ 1/2-X,+Z,-Y 
+ 1/2-X,-Z,Y 
+ 1/2+X,-Z,-Y 
+ 1/2+Z,+Y,X 
+ 1/2+Z,-Y,-X 
+ 1/2-Z,+Y,-X 
+ 1/2-Z,-Y,X 
+ X+1/2,Y,Z+1/2   
+ -X+1/2,-Y,Z+1/2 
+ -X+1/2,Y,-Z+1/2 
+ X+1/2,-Y,-Z+1/2 
+ Z+1/2,X,Y+1/2 
+ Z+1/2,-X,-Y+1/2 
+ -Z+1/2,-X,Y+1/2 
+ -Z+1/2,X,-Y+1/2 
+ Y+1/2,Z,X+1/2 
+ -Y+1/2,Z,-X+1/2 
+ Y+1/2,-Z,-X+1/2 
+ -Y+1/2,-Z,X+1/2 
+ Y,1/2+X,Z 
+ -Y,1/2-X,Z 
+ Y,1/2-X,-Z 
+ -Y,1/2+X,-Z 
+ X,1/2+Z,Y 
+ -X,1/2-Z,Y 
+ X,1/2-Z,-Y 
+ Z,1/2+Y,X 
+ Z,1/2-Y,-X 
+ -Z,1/2+Y,-X 
+ -Z,1/2-Y,X 
+ X+1/2,Y+1/2,Z   
+ -X+1/2,-Y+1/2,Z 
+ -X+1/2,Y+1/2,-Z 
+ X+1/2,-Y+1/2,-Z 
+ Z+1/2,X+1/2,Y 
+ Z+1/2,-X+1/2,-Y 
+ -Z+1/2,-X+1/2,Y 
+ -Z+1/2,X+1/2,-Y 
+ Y+1/2,Z+1/2,X 
+ -Y+1/2,Z+1/2,-X 
+ Y+1/2,-Z+1/2,-X 
+ -Y+1/2,-Z+1/2,X 
+ Y,X,1/2+Z 
+ -Y,-X,1/2+Z 
+ Y,-X,1/2-Z 
+ -Y,X,1/2-Z 
+ X,Z,1/2+Y 
+ -X,Z,1/2-Y 
+ -X,-Z,1/2+Y 
+ X,-Z,1/2-Y 
+ Z,Y,1/2+X 
+ Z,-Y,1/2-X 
+ -Z,Y,1/2-X 
+ -Z,-Y,1/2+X 
+
+
+Space Group #220: I-43d
+Crystal System : CUBIC
+Lattice Type: I
+Number of Operations: 48
+Operations:
+ X,Y,Z                 
+ 1/2-X,-Y,1/2+Z 
+ -X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,-Z 
+ Z,X,Y 
+ 1/2+Z,1/2-X,-Y 
+ 1/2-Z,-X,1/2+Y 
+ -Z,1/2+X,1/2-Y 
+ Y,Z,X 
+ -Y,1/2+Z,1/2-X 
+ 1/2+Y,1/2-Z,-X 
+ 1/2-Y,-Z,1/2+X 
+ 1/4+Y,1/4+X,1/4+Z 
+ 1/4-Y,3/4-X,3/4+Z 
+ 3/4+Y,1/4-X,3/4-Z 
+ 3/4-Y,3/4+X,1/4-Z 
+ 1/4+X,1/4+Z,1/4+Y 
+ 3/4-X,3/4+Z,1/4-Y 
+ 1/4-X,3/4-Z,3/4+Y 
+ 3/4+X,1/4-Z,3/4-Y 
+ 1/4+Z,1/4+Y,1/4+X 
+ 3/4+Z,1/4-Y,3/4-X 
+ 3/4-Z,3/4+Y,1/4-X 
+ 1/4-Z,3/4-Y,3/4+X 
+ X+1/2,Y+1/2,Z+1/2                  
+ -X,-Y+1/2,Z 
+ -X+1/2,Y,-Z 
+ X,-Y,-Z+1/2 
+ Z+1/2,X+1/2,Y+1/2 
+ Z,-X,-Y+1/2 
+ -Z,-X+1/2,Y 
+ -Z+1/2,X,-Y 
+ Y+1/2,Z+1/2,X+1/2 
+ -Y+1/2,Z,-X 
+ Y,-Z,-X+1/2 
+ -Y,-Z+1/2,X 
+ 3/4+Y,3/4+X,3/4+Z 
+ 3/4-Y,1/4-X,1/4+Z 
+ 1/4+Y,3/4-X,1/4-Z 
+ 1/4-Y,1/4+X,3/4-Z 
+ 3/4+X,3/4+Z,3/4+Y 
+ 1/4-X,1/4+Z,3/4-Y 
+ 3/4-X,1/4-Z,1/4+Y 
+ 1/4+X,3/4-Z,1/4-Y 
+ 3/4+Z,3/4+Y,3/4+X 
+ 1/4+Z,3/4-Y,1/4-X 
+ 1/4-Z,1/4+Y,3/4-X 
+ 3/4-Z,1/4-Y,1/4+X 
+
+
+Space Group #221: Pm-3m
+Crystal System : CUBIC
+Lattice Type: P
+Number of Operations: 48
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ Y,X,-Z 
+ -Y,-X,-Z 
+ Y,-X,Z 
+ -Y,X,Z 
+ X,Z,-Y 
+ -X,Z,Y 
+ -X,-Z,-Y 
+ X,-Z,Y 
+ Z,Y,-X 
+ Z,-Y,X 
+ -Z,Y,X 
+ -Z,-Y,-X 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ -Z,-X,-Y 
+ -Z,X,Y 
+ Z,X,-Y 
+ Z,-X,Y 
+ -Y,-Z,-X 
+ Y,-Z,X 
+ -Y,Z,X 
+ Y,Z,-X 
+ -Y,-X,Z 
+ Y,X,Z 
+ -Y,X,-Z 
+ Y,-X,-Z 
+ -X,-Z,Y 
+ X,-Z,-Y 
+ X,Z,Y 
+ -X,Z,-Y 
+ -Z,-Y,X 
+ -Z,Y,-X 
+ Z,-Y,-X 
+ Z,Y,X 
+
+
+Space Group #222: Pn-3n
+Crystal System : CUBIC
+Lattice Type: P
+Number of Operations: 48
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ Y,X,-Z 
+ -Y,-X,-Z 
+ Y,-X,Z 
+ -Y,X,Z 
+ X,Z,-Y 
+ -X,Z,Y 
+ -X,-Z,-Y 
+ X,-Z,Y 
+ Z,Y,-X 
+ Z,-Y,X 
+ -Z,Y,X 
+ -Z,-Y,-X 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ -Z,-X,-Y 
+ -Z,X,Y 
+ Z,X,-Y 
+ Z,-X,Y 
+ -Y,-Z,-X 
+ Y,-Z,X 
+ -Y,Z,X 
+ Y,Z,-X 
+ -Y,-X,Z 
+ Y,X,Z 
+ -Y,X,-Z 
+ Y,-X,-Z 
+ -X,-Z,Y 
+ X,-Z,-Y 
+ X,Z,Y 
+ -X,Z,-Y 
+ -Z,-Y,X 
+ -Z,Y,-X 
+ Z,-Y,-X 
+ Z,Y,X 
+
+
+Space Group #223: Pm-3n
+Crystal System : CUBIC
+Lattice Type: P
+Number of Operations: 48
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ 1/2+Y,1/2+X,1/2-Z 
+ 1/2-Y,1/2-X,1/2-Z 
+ 1/2+Y,1/2-X,1/2+Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+X,1/2+Z,1/2-Y 
+ 1/2-X,1/2+Z,1/2+Y 
+ 1/2-X,1/2-Z,1/2-Y 
+ 1/2+X,1/2-Z,1/2+Y 
+ 1/2+Z,1/2+Y,1/2-X 
+ 1/2+Z,1/2-Y,1/2+X 
+ 1/2-Z,1/2+Y,1/2+X 
+ 1/2-Z,1/2-Y,1/2-X 
+ -X,-Y,-Z 
+ X,Y,-Z 
+ X,-Y,Z 
+ -X,Y,Z 
+ -Z,-X,-Y 
+ -Z,X,Y 
+ Z,X,-Y 
+ Z,-X,Y 
+ -Y,-Z,-X 
+ Y,-Z,X 
+ -Y,Z,X 
+ Y,Z,-X 
+ 1/2-Y,1/2-X,1/2+Z 
+ 1/2+Y,1/2+X,1/2+Z 
+ 1/2-Y,1/2+X,1/2-Z 
+ 1/2+Y,1/2-X,1/2-Z 
+ 1/2-X,1/2-Z,1/2+Y 
+ 1/2+X,1/2-Z,1/2-Y 
+ 1/2+X,1/2+Z,1/2+Y 
+ 1/2-X,1/2+Z,1/2-Y 
+ 1/2-Z,1/2-Y,1/2+X 
+ 1/2-Z,1/2+Y,1/2-X 
+ 1/2+Z,1/2-Y,1/2-X 
+ 1/2+Z,1/2+Y,1/2+X 
+
+
+Space Group #224: Pn-3m
+Crystal System : CUBIC
+Lattice Type: P
+Number of Operations: 48
+Operations:
+ X,Y,Z 
+ -X,-Y,Z 
+ -X,Y,-Z 
+ X,-Y,-Z 
+ Z,X,Y 
+ Z,-X,-Y 
+ -Z,-X,Y 
+ -Z,X,-Y 
+ Y,Z,X 
+ -Y,Z,-X 
+ Y,-Z,-X 
+ -Y,-Z,X 
+ 1/2+Y,1/2+X,1/2-Z 
+ 1/2-Y,1/2-X,1/2-Z 
+ 1/2+Y,1/2-X,1/2+Z 
+ 1/2-Y,1/2+X,1/2+Z 
+ 1/2+X,1/2+Z,1/2-Y 
+ 1/2-X,1/2+Z,1/2+Y 
+ 1/2-X,1/2-Z,1/2-Y 
+ 1/2+X,1/2-Z,1/2+Y 
+ 1/2+Z,1/2+Y,1/2-X 
+ 1/2+Z,1/2-Y,1/2+X 
+ 1/2-Z,1/2+Y,1/2+X 
+ 1/2-Z,1/2-Y,1/2-X 
+ 1/2-X,1/2-Y,1/2-Z 
+ 1/2+X,1/2+Y,1/2-Z 
+ 1/2+X,1/2-Y,1/2+Z 
+ 1/2-X,1/2+Y,1/2+Z 
+ 1/2-Z,1/2-X,1/2-Y 
+ 1/2-Z,1/2+X,1/2+Y 
+ 1/2+Z,1/2+X,1/2-Y 
+ 1/2+Z,1/2-X,1/2+Y 
+ 1/2-Y,1/2-Z,1/2-X 
+ 1/2+Y,1/2-Z,1/2+X 
+ 1/2-Y,1/2+Z,1/2+X 
+ 1/2+Y,1/2+Z,1/2-X 
+ -Y,-X,Z 
+ Y,X,Z 
+ -Y,X,-Z 
+ Y,-X,-Z 
+ -X,-Z,Y 
+ X,-Z,-Y 
+ X,Z,Y 
+ -X,Z,-Y 
+ -Z,-Y,X 
+ -Z,Y,-X 
+ Z,-Y,-X 
+ Z,Y,X 
+
+Space Group #225: F4/m-32/m
+Crystal System : CUBIC
+Lattice Type: F
+Number of Operations: 48
+Operations:
+X,Y,Z
+X,-Y,-Z
+-X,Y,-Z
+-X,-Y,Z
+Z,X,Y
+-Z,-X,Y
+Z,-X,-Y
+-Z,X,-Y
+Y,Z,X
+-Y,Z,-X
+-Y,-Z,X
+Y,-Z,-X
+X,-Z,Y
+X,Z,-Y
+-X,-Z,-Y
+-X,Z,Y
+Z,Y,-X
+-Z,Y,X
+-Z,-Y,-X
+Z,-Y,X
+-Y,X,Z
+Y,-X,Z
+-Y,-X,-Z
+Y,X,-Z
+-X,-Y,-Z
+-X,Y,Z
+X,-Y,Z
+X,Y,-Z
+-Z,-X,-Y
+Z,X,-Y
+-Z,X,Y
+Z,-X,Y
+-Y,-Z,-X
+Y,-Z,X
+Y,Z,-X
+-Y,Z,X
+-X,Z,-Y
+-X,-Z,Y
+X,Z,Y
+X,-Z,-Y
+-Z,-Y,X
+Z,-Y,-X
+Z,Y,X
+-Z,Y,-X
+Y,-X,-Z
+-Y,X,-Z
+Y,X,Z
+-Y,-X,Z
+
+Space Group #226: F4/m-32/c
+Crystal System : CUBIC
+Lattice Type: F
+Number of Operations: 48
+Operations:
+X,Y,Z
+X,-Y,-Z
+-X,Y,-Z
+-X,-Y,Z
+Z,X,Y
+-Z,-X,Y
+Z,-X,-Y
+-Z,X,-Y
+Y,Z,X
+-Y,Z,-X
+-Y,-Z,X
+Y,-Z,-X
+X,-Z,Y+1/2
+X,Z,-Y+1/2
+-X,-Z,-Y+1/2
+-X,Z,Y+1/2
+Z,Y,-X+1/2
+-Z,Y,X+1/2
+-Z,-Y,-X+1/2
+Z,-Y,X+1/2
+-Y,X,Z+1/2
+Y,-X,Z+1/2
+-Y,-X,-Z+1/2
+Y,X,-Z+1/2
+-X,-Y,-Z
+-X,Y,Z
+X,-Y,Z
+X,Y,-Z
+-Z,-X,-Y
+Z,X,-Y
+-Z,X,Y
+Z,-X,Y
+-Y,-Z,-X
+Y,-Z,X
+Y,Z,-X
+-Y,Z,X
+-X,Z,-Y+1/2
+-X,-Z,Y+1/2
+X,Z,Y+1/2
+X,-Z,-Y+1/2
+-Z,-Y,X+1/2
+Z,-Y,X+1/2
+Z,Y,X+1/2
+-Z,Y,-X+1/2
+Y,-X,-Z+1/2
+-Y,X,-Z+1/2
+Y,X,Z+1/2
+-Y,-X,Z+1/2
+
+
+
+
