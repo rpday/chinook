@@ -201,10 +201,13 @@ class TB_model:
         ***
         '''
         self.basis = basis 
-        if 'avec' in H_args.keys():
-            self.avec = H_args['avec']
+    
+        if H_args is not None:
+            if 'avec' in H_args.keys():
+                self.avec = H_args['avec']
+        
             
-        self.mat_els = self.build_ham(H_args)
+            self.mat_els = self.build_ham(H_args)
             
         self.Kobj = Kobj
 
