@@ -240,7 +240,7 @@ def fatbs(proj,TB,Kobj=None,vlims=(0,1),Elims=(-1,1),degen=False):
     
 
 
-def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(0,0),degen=False,plot=True):
+def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=True):
     
     '''
     
@@ -523,6 +523,7 @@ def S_vec(LB,vec):
     Smats[1,numstates:,:numstates]+=-1.0j*Si
     
     return vec[0]*Smats[0]+vec[1]*Smats[1]+vec[2]*Smats[2]
+
     
 
 

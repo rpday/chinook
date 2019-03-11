@@ -229,3 +229,17 @@ def sim_tri(vert):
         return [tris[0],tris[1]]
     else:
         return [tris[2],tris[3]]
+    
+    
+#def FS_contour(TB,kmax,Ef):
+#    kr = np.linspace(kmax/1000,kmax,100)
+#    phi  = np.linspace(0,2*np.pi,100)
+#    k_phi = np.zeros((len(phi),3))
+#    for 
+#    kvecs = np.array([[kr[i]*np.cos(phi[j]),kr[i]*np.sin(phi[j]),0] for j in range(len(phi)) for i in range(len(kr))])
+
+
+#    TB.Kobj.kpts = kvecs
+        
+    
+    

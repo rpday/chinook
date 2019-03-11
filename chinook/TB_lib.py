@@ -206,7 +206,6 @@ class TB_model:
             if 'avec' in H_args.keys():
                 self.avec = H_args['avec']
         
-            
             self.mat_els = self.build_ham(H_args)
             
         self.Kobj = Kobj
@@ -362,6 +361,7 @@ def gen_H_obj(htmp):
     *return*:
         - **Hlist**: list of Hamiltonian matrix element, **H_me** objects
     '''
+
     htmp = sorted(htmp,key=itemgetter(0,1,2,3,4))
     
     Hlist = []

@@ -132,7 +132,7 @@ class wavefunction:
         self.vector = vector
         self.proj = self.make_proj()
         
-        
+            
     def make_proj(self):
         proj = []
         for v in range(len(self.vector)):
@@ -153,7 +153,7 @@ def plot_orbital(n,proj):#basis,vec):
     y = 5*abs(r)**2*np.sin(ph)*np.sin(th)
     z = 5*abs(r)**2*np.cos(th)
     tri = mtri.Triangulation(th,ph)
-#    cols = r[tri.triangles][:,1]
+#    ax.cols = r[tri.triangles][:,1]
     cols = col_phase(r[tri.triangles][:,1])
 #    cols =rgb_vals(r[tri.triangles][:,1])
     fig = plt.figure(figsize=plt.figaspect(1)*2)

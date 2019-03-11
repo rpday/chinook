@@ -74,30 +74,30 @@ class experiment:
     
     *args*: 
         
-        - *TB*: instance of a tight-binding model object
+        - **TB**: instance of a tight-binding model object
         
-        - *ARPES_dict*: dictionary of relevant experimental parameters including
+        - **ARPES_dict**: dictionary of relevant experimental parameters including
             
-            - *'hv'*: photon energy (float, eV), 
+            - *'hv'*: float, photon energy (eV), 
             
-            - *'mfp'*: mean-free path (float, Angstrom),
+            - *'mfp'*: float, mean-free path (Angstrom),
             
             - *'resolution'*: dictionary for energy and momentum resolution:
                 
-                - *'dE'*: energy resolution (float, FWHM), 
+                - *'dE'*: float, energy resolution (FWHM eV), 
                 
-                - *'dk'*: momentum resolution (float, FWHM 1/Angstrom)
+                - *'dk'*: float, momentum resolution (FWHM 1/Angstrom)
                 
-            - *'ang'*: rotation of sample about normal emission i.e. z-axis (float, radian),
+            - *'ang'*: float, rotation of sample about normal emission i.e. z-axis (radian),
             
-            - *'slab'*: Boolean -- will truncate the eigenfunctions beyond the penetration depth (specifically 4x penetration depth)
+            - *'slab'*: boolean, will truncate the eigenfunctions beyond the penetration depth (specifically 4x penetration depth)
             
-            - *'T'*: Temperature of sample (float, Kelvin)
+            - *'T'*: float, Temperature of sample (Kelvin)
             
-            - *'W'*: work function (float, eV)
+            - *'W'*: float, work function (eV)
             
-            - *'cube'*: momentum and energy domain (dictionary:
-            *'kz'* as float, all others ( *'X'* , *'Y'* , *'E'* ) are list
+            - *'cube'*: dictionary momentum and energy domain
+            (*'kz'* as float, all others ( *'X'* , *'Y'* , *'E'* ) are list
             or tuple of floats Xo,Xf,dX)
                 
     *optional args*:
@@ -109,7 +109,10 @@ class experiment:
             direction (with respect to) experimental frame.
             If not spin-ARPES, use None
             
-            - *'
+            - *'rad_type'*: string, radial wavefunctions, c.f. *chinook.rad_int.py* for details
+            
+            - *'threads'*: int, number of threads on which to calculate the matrix elements. 
+            Requires very large calculation to see improvement over single core.
             
             
             
@@ -131,10 +134,30 @@ class experiment:
         self.W = ARPES_dict['W']
         self.cube = (ARPES_dict['cube']['X'],ARPES_dict['cube']['Y'],ARPES_dict['cube']['E'])
         self.kz = ARPES_dict['cube']['kz']
+        self.SE_args = ARPES_dict['SE']
+        if 'rad_type' in ARPES_dict.keys():
+            self.rad_type = ARPES_dict['rad_type']
+        else:
+            self.rad_type = 'slater'
         try:
             self.truncate = ARPES_dict['slab']
         except KeyError:
             self.truncate = False
+            
+    def update_pars(self,ARPES_dict):
+        '''
+        Several experimental parameters can be updated without re-calculating 
+        the ARPES intensity explicitly: only a change of photon energy and
+        domain of interest require updating the matrix elements.
+        
+        
+        '''
+        if 'resolution' in ARPES_dict.keys():
+            self.update_resolution(ARPES_dict['resolution'])
+        if 'T' in ARPES_dict.keys():
+            self.T = ARPES_dict['T']
+        if 'spin' in ARPES_dict.keys():
+            self.sarpes = ARPES_dict['spin']
 
     
     
@@ -146,6 +169,7 @@ class experiment:
         return:
             None, several attributes to the experiment object are modified/defined
         '''
+        
         x = np.linspace(*self.cube[0])
         y = np.linspace(*self.cube[1])
         X,Y = np.meshgrid(x,y)
@@ -235,7 +259,8 @@ class experiment:
             args: ARPES_dict--experimental configuration:  c.f. docstring for class experiment
             for required key-value pairs in the ARPES_dict
         '''      
-        
+#        if ARPES_dict is not None:
+#            self.update_pars(ARPES_dict)
 
         self.basis = self.rot_basis()
 
@@ -363,31 +388,77 @@ class experiment:
 ####################### DATA VIEWING  #########################################
 ###############################################################################
 ############################################################################### 
-    
-        
-        
-    def SE_gen(self,SE_args,w):
+    def SE_gen(self):
         '''
-        Define a LOCAL self-energy function (constant in k) with which the spectral function
-        can be simulated. The user has a few options for how to pass this function: the self-
-        energy can be passed as an executable, a dictionary, 
-        args:
-            SE_args
+        Self energy arguments are passed as a list, which supports mixed-datatype.
+        The first entry in list is a string, indicating the type of self-energy, 
+        and the remaining entries are the self-energy. 
+        *args*:
+            - **SE_args**: list, first entry can be 'func', 'poly', 'constant', or 'grid'
+            indicating an executable function, polynomial factors, constant, or a grid of values
         
+        *return*:
+            - SE, numpy array of complex float, with either shape of the datacube,
+            or as a one dimensional array over energy only.
         '''
         
-        if callable(SE_args):
-            SE = SE_args(w)
-        elif type(SE_args)==dict:
-            SE = gen_SE_KK(w,SE_args)
-        elif type(SE_args)==list:
-            SE = -1.0j*abs(poly(w,SE_args))#-1.0j*abs(poly(self.pks[:,2],ARPES_dict['SE'])) #absolute value mandates that self energy be particle-hole symmetric, i.e. SE*(k,w) = -SE(k,-w). Here we define the imaginary part explicitly only!
-        elif type(SE_args)==float:
-            SE = -1.0j*abs(SE_args*np.ones(len(w)))#-1.0j*abs(ARPES_dict['SE']*np.ones(len(self.pks[:,2])))
-        else:
-            SE = -0.01j*np.ones(len(w))#-0.01j*np.ones(len(self.pks[:,2]))
-            
+        w = np.linspace(*self.cube[2])
+        
+        if self.SE_args[0] == 'func':
+            kx = np.linspace(*self.cube[0])
+            ky = np.linspace(*self.cube[1])
+            X,Y,W = np.meshgrid(kx,ky,w)
+            try:
+                SE = self.SE_args[1](X,Y,W)
+            except TypeError:
+                print('Using local (k-independent) self-energy.')
+                SE = self.SE_args[1](w)
+        elif self.SE_args[0] == 'grid':
+            SE = np.interp(w,self.SE_args[1],self.SE_args[2])
+        elif self.SE_args[0] == 'poly':
+            SE = -1.0j*abs(poly(w,self.SE_args[1:]))
+        elif self.SE_args[0] == 'constant':
+            SE = -1.0j*abs(self.SE_args[1])
+
         return SE
+            
+                
+        
+        
+        
+#    def SE_gen(self,SE_args,w,k):
+#        '''
+#        Define a self-energy function with which the spectral function
+#        can be simulated. The user has a few options for how to pass this function: the self-
+#        energy can be passed as an executable, a dictionary, a polynomial (passed as a
+#        list of factors for each power in w), or as a constant float (imaginary part only).
+#        Note that a k-dependent self-energy can be passed, but only as an executable.
+#        args:
+#            SE_args
+#        
+#        '''
+#        
+#        
+#        if callable(SE_args):
+#            try:
+#                SE = SE_args(k,w)
+#            except TypeError:
+#                print('Using k-independent self-energy.')
+#                try:
+#                    SE = SE_args(w)
+#                except TypeError:
+#                    print('ERROR: invalid self-energy input!. Returning constant self energy 0.01i.')
+#                    SE = -0.01*np.ones(len(w))
+#        elif type(SE_args)==dict:
+#            SE = gen_SE_KK(w,SE_args)
+#        elif type(SE_args)==list:
+#            SE = -1.0j*abs(poly(w,SE_args))#-1.0j*abs(poly(self.pks[:,2],ARPES_dict['SE'])) #absolute value mandates that self energy be particle-hole symmetric, i.e. SE*(k,w) = -SE(k,-w). Here we define the imaginary part explicitly only!
+#        elif type(SE_args)==float:
+#            SE = -1.0j*abs(SE_args*np.ones(len(w)))#-1.0j*abs(ARPES_dict['SE']*np.ones(len(self.pks[:,2])))
+#        else:
+#            SE = -0.01j*np.ones(len(w))#-0.01j*np.ones(len(self.pks[:,2]))
+#            
+#        return SE
         
     def spectral(self,ARPES_dict,slice_select=None):
         
@@ -428,9 +499,12 @@ class experiment:
                 ph+=self.ang
             Smat = np.array([[np.cos(th/2),np.exp(-1.0j*ph)*np.sin(th/2)],[np.sin(th/2),-np.exp(-1.0j*ph)*np.cos(th/2)]])
             Mspin = np.swapaxes(np.dot(Smat,self.Mk),0,1)
-            
-        SE = self.SE_gen(ARPES_dict['SE'],w)
-
+        
+#        try:
+        SE = self.SE_gen()
+        
+#        except KeyError:
+#            
             
 
         if self.T[0]:
@@ -438,6 +512,10 @@ class experiment:
         else:
             fermi = np.ones(self.cube[2][2])
         I = np.zeros((self.cube[1][2],self.cube[0][2],self.cube[2][2]))
+        if np.shape(SE)==np.shape(I):
+            SE_k = True
+        else:
+            SE_k = False
         
         
         
