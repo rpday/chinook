@@ -121,53 +121,95 @@ class experiment:
     '''
     def __init__(self,TB,ARPES_dict):
         self.TB = TB
+        
         if sum([o.spin for o in self.TB.basis])<len(self.TB.basis):
             self.spin = True
         else:
             self.spin = False
+        
         self.hv = ARPES_dict['hv']
         self.mfp = ARPES_dict['mfp'] #photoelectron mean free path for escape
         self.dE = ARPES_dict['resolution']['E']/np.sqrt(8*np.log(2)) #energy resolution FWHM
         self.dk = ARPES_dict['resolution']['k']/np.sqrt(8*np.log(2)) #momentum resolution FWHM
         self.ang = ARPES_dict['angle']
-        self.T = ARPES_dict['T']
         self.W = ARPES_dict['W']
         self.cube = (ARPES_dict['cube']['X'],ARPES_dict['cube']['Y'],ARPES_dict['cube']['E'])
         self.kz = ARPES_dict['cube']['kz']
         self.SE_args = ARPES_dict['SE']
-        if 'rad_type' in ARPES_dict.keys():
+        try:
+        	self.pol = ARPES_dict['pol']
+        try:
+	        self.T = ARPES_dict['T']
+	    except KeyError:
+	    	self.T = -1
+        try:
+        	self.sarpes = ARPES_dict['spin']
+        except KeyError:
+        	self.sarpes = None
+        try:
             self.rad_type = ARPES_dict['rad_type']
-        else:
+        except KeyError:
             self.rad_type = 'slater'
+        try:
+        	self.rad_args = ARPES_dict['rad_args']
+        except KeyError:
+        	self.rad_args = None
         try:
             self.truncate = ARPES_dict['slab']
         except KeyError:
             self.truncate = False
+        try:
+        	self.threads = ARPES_dict['threads']
+        except KeyError:
+        	self.threads = 0
             
     def update_pars(self,ARPES_dict):
         '''
         Several experimental parameters can be updated without re-calculating 
-        the ARPES intensity explicitly: only a change of photon energy and
-        domain of interest require updating the matrix elements.
+        the ARPES intensity explicitly. Specifically here, we can update 
+        resolution in both energy and momentum, as well as temperature,
+        spin-projection, self-energy function, and polarization.
         
+        *args*:
+        	- **ARPES_dict**: dictionary, specifically containing
+        		
+        		- *'resolution'*: dictionary with 'E':float and 'k':float
+
+				- *'T'*: float, temperature, a negative value will suppress the Fermi function
+
+				- *'spin'*: list of [int, numpy array of 3 float] indicating projection and spin vector
+
+				- *'SE'*: various types accepted, see *SE_gen* for details
+
+				- *'pol'*: numpy array of 3 complex float, polarization of light
         
         '''
         if 'resolution' in ARPES_dict.keys():
-            self.update_resolution(ARPES_dict['resolution'])
+        	try:
+            	self.dE = ARPES_dict['resolution']['E']/np.sqrt(8*np.log(2)) #energy resolution FWHM
+        		self.dk = ARPES_dict['resolution']['k']/np.sqrt(8*np.log(2)) #momentum resolution FWHM
+        	except KeyError:
+        		print('Energy "E" and momentum "k" resolutions not passed in "resolution" dictionary. \n Retaining original values.')
         if 'T' in ARPES_dict.keys():
             self.T = ARPES_dict['T']
         if 'spin' in ARPES_dict.keys():
             self.sarpes = ARPES_dict['spin']
+        if 'SE' in ARPES_dict.keys():
+        	self.SE_args = ARPES_dict['SE']
+        if 'pol' in ARPES_dict.keys():
+        	self.pol = ARPES_dict['pol']
 
     
     
     def diagonalize(self):
         '''
-        Diagonalize the Hamiltonian over the desired range of momentum
-        args:
-            X,Y,kz -- momentum relevant to the calculation
-        return:
-            None, several attributes to the experiment object are modified/defined
+        Diagonalize the Hamiltonian over the desired range of momentum, reshaping the 
+        band-energies into a 1-dimensional array. If the user has not selected a energy
+        grain for calculation, automatically calculate this.
+
+        *return*:
+            None, however *experiment* attributes *X*, *Y*, *ph*, *TB.Kobj*, *Eb*, *Ev*, *cube*
+            are modified.
         '''
         
         x = np.linspace(*self.cube[0])
@@ -194,17 +236,19 @@ class experiment:
         
     def truncate_model(self):
         '''
-        For slab calculations, the number of basis states becomes a significant memory load, as well as a time bottleneck.
-        In reality, an ARPES calculation only needs the small number of basis states near the surface. Then for slab-calculations,
-        we can truncate the basis and eigenvectors used in the calculation to dramatically improve our capacity to perform such calculations
-        We keep all eigenvectors, but retain only the projection of the basis states within 2*the mean free path of the surface. The states associated
-        with this projection are retained, while remainders are not
-        args:
-            local_basis -- ARPES intensity is computed with a local copy of the TB basis to avoid scrambling data. This is passed here to be modified
-        return:
-            tmp_basis -- truncated list of orbital objects
-            Evec -- numpy array of complex float --truncated eigenvector array containing only the surface-projected wavefunctions
+        For slab calculations, the number of basis states becomes a significant memory load,
+        as well as a time bottleneck. In reality, an ARPES calculation only needs the small
+        number of basis states near the surface. Then for slab-calculations, we can truncate
+        the basis and eigenvectors used in the calculation to dramatically improve our
+        capacity to perform such calculations. We keep all eigenvectors, but retain only the
+        projection of the basis states within 2*the mean free path of the surface. The 
+        states associated with this projection are retained, while remainders are not.
         
+        *return*:
+            - **tmp_basis**: list, truncated subset of the basis' orbital objects
+            
+            - **Evec**: numpy array of complex float corresponding to the truncated eigenvector
+             array containing only the surface-projected wavefunctions        
         '''
         depths = np.array([abs(oi.depth) for oi in self.basis])
         i_start = np.where(depths<4*self.mfp)[0][0]
@@ -228,18 +272,28 @@ class experiment:
             Evec=self.Ev[:,i_start:,:]
         return tmp_basis,Evec
     
-    def update_resolution(self,resdict):
+    def rot_basis(self):
         '''
-        Update the attributes relating to resolution when a parameter dictionary is passed with different values
-        args:
-            resdict --dictionary with 'E' and 'k' keys relating to the FWHM resolution in energy and momentum respectively, values are float, in eV, 1/A
-        return:
-            N/A
-        '''
-        self.dE = resdict['E']/np.sqrt(8*np.log(2)) #energy resolution FWHM
-        self.dk = resdict['k']/np.sqrt(8*np.log(2)) #momentum resolution FWHM
+        Rotate the basis orbitals and their positions in the lab frame to be consistent with the
+        experimental geometry
         
-    
+        *return*:
+            - list of orbital objects, representing a rotated version of the original basis if the 
+            angle is finite. Otherwise, just return the original basis.
+        '''
+        tmp_base = []
+        if abs(self.ang)>0.0:
+            for o in range(len(self.TB.basis)):
+                oproj = np.copy(self.TB.basis[o].proj)
+                l = self.TB.basis[o].l
+                nproj,_ = olib.rot_projection(l,oproj,[np.array([0,0,1]),self.ang])
+                tmp = self.TB.basis[o].copy()
+                tmp.proj = nproj
+                tmp_base.append(tmp)
+
+            return tmp_base
+        else:
+            return self.TB.basis
     
 ###############################################################################    
 ###############################################################################    
@@ -247,20 +301,22 @@ class experiment:
 ###############################################################################
 ############################################################################### 
     
-    def datacube(self,ARPES_dict):
+    def datacube(self,ARPES_dict=None):
         '''
-            This function computes the photoemission matrix elements.
-            Given a kmesh to calculate the photoemission over, the mesh is reshaped to an nx3 array and the Hamiltonian
-            diagonalized over this set of k points. The matrix elements are then calculated for each 
-            of these E-k points. The user can specify to do several things here. The fastest option is to set a 
-            'slice' flag to True and select a binding energy of interest. Then a single energy is plotted.
-            Alternatively, if no slice is selected, a series of text files can be generated which are then exported
-            to for example Igor where they can be loaded like experimental data.
-            args: ARPES_dict--experimental configuration:  c.f. docstring for class experiment
-            for required key-value pairs in the ARPES_dict
+        This function computes the photoemission matrix elements.
+        Given a kmesh to calculate the photoemission over, the mesh is reshaped to an nx3 array and the Hamiltonian
+        diagonalized over this set of k points. The matrix elements are then calculated for each 
+        of these E-k points
+	
+		*kwargs*:
+			- **ARPES_dict**: can optionally pass a dictionary of experimental parameters, to update those defined
+			in the initialization of the *experiment* object.
+
+		*return*:
+			- boolean, True if function finishes successfully.
         '''      
-#        if ARPES_dict is not None:
-#            self.update_pars(ARPES_dict)
+        if ARPES_dict is not None:
+            self.update_pars(ARPES_dict)
 
         self.basis = self.rot_basis()
 
@@ -289,15 +345,17 @@ class experiment:
         self.Largs,self.Margs,Gmats,self.orbital_pointers = all_Y(self.basis) 
         self.Gbasis = Gmats[self.orbital_pointers]
         self.proj_arr = projection_map(self.basis)
-        self.Bfuncs,self.radint_pointers = radint_lib.make_radint_pointer(ARPES_dict,self.basis,dig_range)
+        
+        rad_dict = {'hv':self.hv,'W':self.W,'rad_type':self.rad_type,'rad_args':self.rad_args}
+        self.Bfuncs,self.radint_pointers = radint_lib.make_radint_pointer(rad_dict,self.basis,dig_range)
 
 
         print('Begin computing matrix elements: ')
         
         valid_indices = np.array([i for i in range(len(self.cube_indx)) if (self.th[i]>=0 and self.cube[2][0]<=self.cube_indx[i][1]<=self.cube[2][1])])
         
-        if 'threads' in ARPES_dict.keys():
-            self.thread_Mk(ARPES_dict['threads'],valid_indices)
+        if self.threads>0:
+            self.thread_Mk(self.threads,valid_indices)
         else:
             self.serial_Mk(valid_indices)
 
@@ -313,12 +371,14 @@ class experiment:
     def M_compute(self,i):
         '''
         The core method called during matrix element computation.
-        args:
-            i -- index and energy of state
-        return Mtmp
-        numpy array (2x3) of complex float corresponding to the matrix element projection for dm = -1,0,1 (columns) and spin down or up (rows)
-        for a given state in k and energy
-            
+        
+        *args*:
+            - **i**: integer, index and energy of state
+        
+        *return*:
+        	- **Mtmp**: numpy array (2x3) of complex float corresponding to the matrix element
+        	  projection for dm = -1,0,1 (columns) and spin down or up (rows) for a given
+        	  state in k and energy.
         '''
         nstates = len(self.TB.basis)
         phi = self.ph[int(self.cube_indx[i,0]/nstates)]
@@ -344,11 +404,11 @@ class experiment:
     
     def serial_Mk(self,indices):
         '''
-        Run matrix element on a single thread
-        args:
-            indices -- list of all state indices for execution -- restricting states in cube_indx to those within the desired window
-        return:
-            None, directly modify the parent's Mk attribute
+        Run matrix element on a single thread, directly modifies the *Mk* attribute.
+        
+        *args*:
+            - **indices**: list of all state indices for execution; restricting states
+             in *cube_indx* to those within the desired window     
         '''
         for ii in indices:
             sys.stdout.write('\r'+progress_bar(ii+1,len(self.cube_indx)))
@@ -356,14 +416,17 @@ class experiment:
         
     def thread_Mk(self,N,indices):
         '''
-        Run matrix element on N threads using multiprocess functions
-        NOTE 21/2/2019 -- this has not been optimized to show any measureable improvement over serial execution. May require a more clever
-        way to do this to get a less disappointing result
-        args:
-            N -- number of threads
-            indices -- list of all state indices for execution -- restricting states in cube_indx to those within the desired window
-        return:
-            None, directly modify the parent's Mk attribute
+        Run matrix element on *N* threads using multiprocess functions, directly modifies the *Mk*
+        attribute.
+        
+        NOTE 21/2/2019 -- this has not been optimized to show any measureable improvement over serial execution.
+        May require a more clever way to do this to get a proper speedup.
+        
+        *args*:
+            - **N**: int, number of threads
+            
+            - **indices**: list of int, all state indices for execution; restricting 
+            states in cube_indx to those within the desired window.
         '''
         div = int(len(indices)/N)
         pool = ThreadPool(N)
@@ -375,6 +438,16 @@ class experiment:
         
         
     def Mk_wrapper(self,ilist):
+    	'''
+		Wrapper function for use in multiprocessing, to run each of the processes
+		as a serial matrix element calculation over a sublist of state indices.
+
+		*args*:
+			- **ilist**: list of int, all state indices for execution.
+
+		*return*:
+			- **Mk_out**: numpy array of complex float with shape (len(ilist), 2,3)
+    	'''
         Mk_out = np.zeros((len(ilist),2,3),dtype=complex)
         for ii in list(enumerate(ilist)):
             Mk_out[ii[0],:,:] += self.M_compute(ii[1])
@@ -393,6 +466,7 @@ class experiment:
         Self energy arguments are passed as a list, which supports mixed-datatype.
         The first entry in list is a string, indicating the type of self-energy, 
         and the remaining entries are the self-energy. 
+        
         *args*:
             - **SE_args**: list, first entry can be 'func', 'poly', 'constant', or 'grid'
             indicating an executable function, polynomial factors, constant, or a grid of values
@@ -422,140 +496,161 @@ class experiment:
 
         return SE
             
-                
-        
-        
-        
-#    def SE_gen(self,SE_args,w,k):
-#        '''
-#        Define a self-energy function with which the spectral function
-#        can be simulated. The user has a few options for how to pass this function: the self-
-#        energy can be passed as an executable, a dictionary, a polynomial (passed as a
-#        list of factors for each power in w), or as a constant float (imaginary part only).
-#        Note that a k-dependent self-energy can be passed, but only as an executable.
-#        args:
-#            SE_args
-#        
-#        '''
-#        
-#        
-#        if callable(SE_args):
-#            try:
-#                SE = SE_args(k,w)
-#            except TypeError:
-#                print('Using k-independent self-energy.')
-#                try:
-#                    SE = SE_args(w)
-#                except TypeError:
-#                    print('ERROR: invalid self-energy input!. Returning constant self energy 0.01i.')
-#                    SE = -0.01*np.ones(len(w))
-#        elif type(SE_args)==dict:
-#            SE = gen_SE_KK(w,SE_args)
-#        elif type(SE_args)==list:
-#            SE = -1.0j*abs(poly(w,SE_args))#-1.0j*abs(poly(self.pks[:,2],ARPES_dict['SE'])) #absolute value mandates that self energy be particle-hole symmetric, i.e. SE*(k,w) = -SE(k,-w). Here we define the imaginary part explicitly only!
-#        elif type(SE_args)==float:
-#            SE = -1.0j*abs(SE_args*np.ones(len(w)))#-1.0j*abs(ARPES_dict['SE']*np.ones(len(self.pks[:,2])))
-#        else:
-#            SE = -0.01j*np.ones(len(w))#-0.01j*np.ones(len(self.pks[:,2]))
-#            
-#        return SE
-        
-    def spectral(self,ARPES_dict,slice_select=None):
+	def spin_projector(self):
+		'''
+		For use in spin-resolved ARPES experiments, project the computed
+		matrix element values onto the desired spin-projection direction.
+		In the event that the spin projection direction is not along the 
+		standard out-of-plane quantization axis, we rotate the matrix elements
+		computed into the desired basis direction.
+
+		*return*:
+			- **spin_projected_Mk**: numpy array of complex float with same
+			shape as *Mk*
+		'''
+
+		try:              
+            sv = self.sarpes[1]/np.linalg.norm(self.sarpes[1])
+        except IndexError:
+            print('ERROR: Invalid spin-entry. See documentation for ARPES_lib.experiment')
+            return None
+        th = np.arccos(sv[2])
+        ph = np.arctan2(sv[1],sv[0])
+        if abs(self.ang)>0:
+            ph+=self.ang
+        Smat = np.array([[np.cos(th/2),np.exp(-1.0j*ph)*np.sin(th/2)],[np.sin(th/2),-np.exp(-1.0j*ph)*np.cos(th/2)]])
+        spin_projected_Mk = np.swapaxes(np.dot(Smat,self.Mk),0,1)             
+        return spin_projected_Mk
+
+    def T_distribution(self):
+    	'''
+		Compute the Fermi-distribution for a fixed temperature, over the domain of energy of interest
+
+		*return*:
+			- **fermi**: numpy array of float, same length as energy domain array defined by *cube[2]* attribute.
+    	'''
+    	if np.sign(self.T)>-1:
+            fermi = vf(np.linspace(*self.cube[2])/(kb*self.T[1]/q))
+        else:
+            fermi = np.ones(self.cube[2][2])
+        return fermi
+
+    def spectral(self,ARPES_dict=None,slice_select=None):
         
         '''
         Take the matrix elements and build a simulated ARPES spectrum. 
-        The user has several options here for the self-energy to be used: 
-        most simply, nothing, then the imaginary part is taken to be -10meV to 
-        give finite width, and the real part to 0, no renormalization.
-        The next level is to pass a float different from -10 meV. Next is a polynomial
-        which goes in as a list of coefficients [a_0,a_1,a_2...]. Finally is a dictionary,
-        detailed below in gen_SE--this takes the input Im[Σ(k,w)] and uses Kramers-Kronig to
-        build a consistent Re[Σ(k,w)]. This option WILL shift the band positions!!! Be WARNED!
-        The ARPES_dict also constains a 'pol'-arization vector in Cartesian coordinates (lab frame).
-        Also has option of a 'spin' projection, coming in the form of [+/-1, np.array([x,y,z])].
-        'T' can be turned on or off [Bool, float] and set to some value in Kelvin. 'resolution'
-        can also be updated.***SEE docstring for class experiment above for further details on ARPES_dict
-        If slice_select is passed (list/tuple/float of length 2 (axis, index)) to force plotting.
+        The user has several options here for the self-energy to be used,  c.f. *SE_gen()* for details.
+        Gaussian resolution broadening is the last operation performed, to be consistent with the
+        practical experiment.
         
-        return: I, Ig the numpy array intensity maps and its resolution-broadened partner. Gaussian
-        resolution broadening is the last operation performed, to be consistent with the practical experiment.
-        '''
-        
-        self.update_resolution(ARPES_dict['resolution'])
-        self.T = ARPES_dict['T']
-        
-        w = np.linspace(*self.cube[2])
-        pol = pol_2_sph(ARPES_dict['pol'])
-        
-        if 'spin' in ARPES_dict.keys() and ARPES_dict['spin'] is not None:
-            try:              
-                sv = ARPES_dict['spin'][1]/np.linalg.norm(ARPES_dict['spin'][1])
-            except KeyError:
-                print('ERROR: Invalid spin-entry. See documentation for ARPES_lib.experiment')
-                return None
-            th = np.arccos(sv[2])
-            ph = np.arctan2(sv[1],sv[0])
-            if abs(self.ang)>0:
-                ph+=self.ang
-            Smat = np.array([[np.cos(th/2),np.exp(-1.0j*ph)*np.sin(th/2)],[np.sin(th/2),-np.exp(-1.0j*ph)*np.cos(th/2)]])
-            Mspin = np.swapaxes(np.dot(Smat,self.Mk),0,1)
-        
-#        try:
-        SE = self.SE_gen()
-        
-#        except KeyError:
-#            
-            
+        *return*:
+        	- **I**: numpy array of float, raw intensity map.
 
-        if self.T[0]:
-            fermi = vf(w/(kb*self.T[1]/q))
+        	- **Ig**: numpy array of float, resolution-broadened intensity map.
+        '''
+        if ARPES_dict is not None:
+
+			self.update_pars(ARPES_dict)
+        
+        pol = pol_2_sph(self.pol)
+        
+        if self.sarpes is not None:
+            spin_Mk = self.sarpes_projector()
+        	M_factor = np.power(abs(np.einsum('ik,k->i',spin_Mk[:,int((self.sarpes[0]+1)/2),:],pol)),2)
         else:
-            fermi = np.ones(self.cube[2][2])
+        	M_factor = np.power(abs(np.einsum('ijk,k->ij',self.Mk,pol)),2)    
+        
+        SE = self.SE_gen()
+        fermi = self.T_distribution()    
+
         I = np.zeros((self.cube[1][2],self.cube[0][2],self.cube[2][2]))
         if np.shape(SE)==np.shape(I):
             SE_k = True
         else:
             SE_k = False
-        
-        
-        
-        
-        if 'spin' not in ARPES_dict.keys() or ARPES_dict['spin'] is None:
-            for p in range(len(self.pks)):
-                if abs(self.Mk[p]).max()>0:
-                    I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= (abs(np.dot(self.Mk[p,0,:],pol))**2 + abs(np.dot(self.Mk[p,1,:],pol))**2)*np.imag(-1./(np.pi*(w-self.pks[p,2]-(SE-0.0005j))))*fermi #changed SE[p] to SE
-        else:
-            
-            for p in range(len(self.pks)):
-                if abs(Mspin[p]).max()>0:
-                    I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= abs(np.dot(Mspin[p,int((ARPES_dict['spin'][0]+1)/2),:],pol))**2*np.imag(-1./(np.pi*(w-self.pks[p,2]-(SE-0.0005j))))*fermi #changed SE[p] to SE
-        
+
+        for p in range(len(self.pks)):
+        	if SE_k:
+        		I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:] += M_factor[p]*np.imag(-1./(np.pi*(w-self.pks[p,2]-(SE-0.0005j))))*fermi
+    		else:
+				I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= M_factor[p]*np.imag(-1./(np.pi*(w-self.pks[p,2]-(SE[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]-0.0005j))))*fermi 
+
         kxg = (self.cube[0][2]*self.dk/(self.cube[0][1]-self.cube[0][0]) if abs(self.cube[0][1]-self.cube[0][0])>0 else 0)
         kyg = (self.cube[1][2]*self.dk/(self.cube[1][1]-self.cube[1][0]) if abs(self.cube[1][1]-self.cube[1][0])>0 else 0)
         wg = (self.cube[2][2]*self.dE/(self.cube[2][1]-self.cube[2][0]) if abs(self.cube[2][1]-self.cube[2][0])>0 else 0)
         Ig = nd.gaussian_filter(I,(kxg,kyg,wg))
         
         if slice_select!=None:
-            fig = plt.figure()
-            ax = fig.add_subplot(111)
-            if slice_select[0]==2: #FIXED ENERGY
-                X,Y = np.meshgrid(np.linspace(*self.cube[0]),np.linspace(*self.cube[1]))
-                p = ax.pcolormesh(X,Y,Ig[:,:,slice_select[1]],cmap=cm.magma)  
-                plt.axis([self.cube[0][0],self.cube[0][1],self.cube[1][0],self.cube[1][1]])
-            elif slice_select[0]==1: #FIXED KY
-                X,Y = np.meshgrid(np.linspace(*self.cube[2]),np.linspace(*self.cube[0]))
-                p = ax.pcolormesh(X,Y,Ig[slice_select[1],:,:],cmap=cm.magma)   
-                plt.axis([self.cube[2][0],self.cube[2][1],self.cube[0][0],self.cube[0][1]])
-            elif slice_select[0]==0: # FIXED KX
-                X,Y = np.meshgrid(np.linspace(*self.cube[2]),np.linspace(*self.cube[1]))
-                p = ax.pcolormesh(X,Y,Ig[:,slice_select[1],:],cmap=cm.magma)    
-                plt.axis([self.cube[2][0],self.cube[2][1],self.cube[1][0],self.cube[1][1]])
-                
-            plt.colorbar(p,ax=ax)
-        
+        	fig,ax = self.plot_intensity_map(Ig,slice_select)
+            
         return I,Ig
+
+
+    def plot_intensity_map(self,plot_map,slice_select):
+ 		'''
+		Plot a slice of the intensity map computed in *spectral*. The user selects either
+		an array index along one of the axes, or the fixed value of interest, allowing
+		either integer, or float selection.
+		
+		*args*:
+			- **plot_map**: numpy array of shape (self.cube[0],self.cube[1],self.cube[2]) of float
+
+			- **slice_select**: list of either [int,int] or [str,float], corresponding to 
+			dimension, index or label, value. The former option takes dimensions 0,1,2 while
+			the latter can handle 'x', 'kx', 'y', 'ky', 'energy', 'w', or 'e', and is not
+			case-sensitive.
+
+		*return*:
+			- **fig**: matplotlib figure object
+
+			- **ax**: matplotlib axis object
+ 		'''
+    	fig = plt.figure()
+        ax = fig.add_subplot(111)
+
+    	if type(slice_select[0]) is str:
+ 			str_opts = [['x','kx'],['y','ky'],['energy','w','e']]
+    		dim = 0
+    		for i in range(2):
+    			if slice_select[0].lower() in str_opts[i]:
+    				dim = i
+			x = np.linspace(*self.cube[dim])
+			index = np.where(abs(x-slice_select[1])==abs(x-slice_select[1]).min())[0][0]
+			slice_select = [dim,int(index)]
+
+
+        if slice_select[0]==2: #FIXED ENERGY
+            X,Y = np.meshgrid(np.linspace(*self.cube[0]),np.linspace(*self.cube[1]))
+            p = ax.pcolormesh(X,Y,plot_map[:,:,slice_select[1]],cmap=cm.magma)  
+            plt.axis([self.cube[0][0],self.cube[0][1],self.cube[1][0],self.cube[1][1]])
+
+        elif slice_select[0]==1: #FIXED KY
+            X,Y = np.meshgrid(np.linspace(*self.cube[2]),np.linspace(*self.cube[0]))
+            p = ax.pcolormesh(X,Y,plot_map[slice_select[1],:,:],cmap=cm.magma)   
+            plt.axis([self.cube[2][0],self.cube[2][1],self.cube[0][0],self.cube[0][1]])
+
+        elif slice_select[0]==0: # FIXED KX
+            X,Y = np.meshgrid(np.linspace(*self.cube[2]),np.linspace(*self.cube[1]))
+            p = ax.pcolormesh(X,Y,plot_map[:,slice_select[1],:],cmap=cm.magma)    
+            plt.axis([self.cube[2][0],self.cube[2][1],self.cube[1][0],self.cube[1][1]])
+                
+        plt.colorbar(p,ax=ax)
+
+        return fig,ax
+        
     
     def plot_gui(self,ARPES_dict):
+    	'''
+		Generate the Tkinter gui for exploring the experimental parameter-space
+		associated with the present experiment.
+
+		*args*:
+			- **ARPES_dict**: dictionary of experimental parameters, c.f. the 
+			*__init__* function for details.
+
+		*return*:
+			- **Tk_win**: Tkinter window.
+    	'''
         TK_win = Tk_plot.plot_intensity_interface(self,ARPES_dict)
         return TK_win
         
@@ -569,11 +664,15 @@ class experiment:
      
     def write_map(self,_map,directory):
         '''
-        Write the intensity map to a text file in the indicated directory.
-        args:
-            _map -- numpy array of float to write
-            directory -- string, name of directory + the file-lead name e.g. /Users/name/ARPES_maps/room_temp_superconductor'
-            will produce a series of files labeled as room_temp_superconductor_xx.txt in the /Users/name/ARPES_maps/ subfolder
+        Write the intensity maps to a series of text files in the indicated directory.
+
+        *args*:
+            - **_map**: numpy array of float to write to file
+
+            - **directory**: string, name of directory + the file-lead name 
+
+        *return*:
+            - boolean, True
         '''
         for i in range(np.shape(_map)[2]):   
             filename = directory + '_{:d}.txt'.format(i)
@@ -583,10 +682,13 @@ class experiment:
     def write_params(self,Adict,parfile):
         '''
         Generate metadata text file  associated with the saved map.
-        args:
-            Adict -- ARPES_dict same as in above functions, containing relevant experimental parameters
-            parfile -- destination for the metadata (string)
         
+        *args*:
+            - **Adict**: dictionary, ARPES_dict same as in above functions, containing
+            relevant experimental parameters for use in saving the metadata associated
+            with the related calculation.
+            
+            - **parfile**: string, destination for the metadata
         '''
         
         
@@ -617,10 +719,16 @@ class experiment:
     
     def write_Ik(self,filename,mat):
         '''
-        Sub-function for producing the textfiles associated with a 2dimensional numpy array of float
-        args:
-            filename -- string indicating destination of file
-            mat -- 2 dimensional numpy array of float
+        Function for producing the textfiles associated with a 2 dimensional numpy array of float
+        
+        *args*:
+            
+            - **filename**: string indicating destination of file
+            
+            - **mat**: numpy array of float, two dimensional
+
+        *return*:
+        	- boolean, True
         
         '''
         with open(filename,"w") as destination:
@@ -631,74 +739,7 @@ class experiment:
         destination.close()
         return True
     
-    def rot_basis(self):
-        '''
-        Rotate the basis orbitals and their positions in the lab frame to be consistent with the
-        experimental geometry
-        return:
-            rotated copy of the basis (list of orbital objects) if the rotation is non-zero
-            otherwise, just return the untouched basis
-        '''
-        tmp_base = []
-        if abs(self.ang)>0.0:
-            for o in range(len(self.TB.basis)):
-                oproj = np.copy(self.TB.basis[o].proj)
-                l = self.TB.basis[o].l
-                nproj,_ = olib.rot_projection(l,oproj,[np.array([0,0,1]),self.ang])
-                tmp = self.TB.basis[o].copy()
-                tmp.proj = nproj
-                tmp_base.append(tmp)
-
-            return tmp_base
-        else:
-            return self.TB.basis
     
-    
-    
-
-    def spin_rot(self,spin_ax):
-        '''
-        For spin-ARPES, want to project the eigenstates onto different spin axes than simply the canonical z axis. 
-        To do so we perform an unitary transformation of the eigenvectors. 
-        A generic spin vector basis can be defined as:
-            |+n> = cos(theta/2)|+z> + e(i*phi)*sin(theta/2)|-z>
-            |-n> = sin(theta/2)|+z> - e(i*phi)*cos(theta/2)|-z>
-        Then we define a
-         
-            |  <-n|-z> , <-n|+z> |
-        U = |                    |
-            |  <+n|-z> , <+n|+z> |
-        
-        Then using a Kroenecker (tensor) product, we form a len(basis)xlen(basis) square matrix which can be separated
-        into 4 blocks defined by the above 4x4. Where each block is uniform
-        
-        If the ARPES calculation is being done over a rotated k-space, we need to rotate our definitions of the spin
-        basis as well, and so the phi values in the 'ax_dict' will be increased by the angle by which we are rotating the
-        k-space
-        args: spin_ax -- numpy array indicating the vector direction of the spin projection (numpy array of 3 float)
-        return spin_mat --numpy array complex of size NxN with N the basis length
-        '''
-        
-        if spin_ax is not None:
-            spin_mat = np.zeros((len(self.TB.basis),len(self.TB.basis)))
-            spin_ax = spin_ax/np.linalg.norm(spin_ax)
-            th = np.arccos(spin_ax[2])
-            ph = np.arctan2(spin_ax[1],spin_ax[0])
-            if abs(self.ang)>0:
-                print(self.ang)
-                ph -=self.ang
-            US = np.array([[-np.cos(th/2)*np.exp(-1.0j*ph),np.sin(th/2)],[np.sin(th/2)*np.exp(-1.0j*ph),np.cos(th/2)]])
-            print(US)
-            
-            spin_mat = np.kron(US,np.identity(int(len(self.TB.basis)/2)))
-    
-            return spin_mat
-        else:
-            return np.identity(len(self.TB.basis))
-    
-
-
-
 ###############################################################################    
 ###############################################################################    
 ######################## SUPPORT FUNCTIONS#####################################
@@ -706,78 +747,210 @@ class experiment:
 ###############################################################################
         
         
-def con_ferm(x):      ##Typical energy scales involved and temperatures involved give overflow in exponential--define a new fermi function that works around this problem
-    tmp = 0.0
-    if x<709:
-        tmp = 1.0/(np.exp(x)+1)
-    return tmp
+def con_ferm(ekbt):      
+	'''
+	Typical values in the relevant domain for execution of the Fermi distribution will
+	result in an overflow associated with 64-bit float. To circumvent, set fermi-function
+	to zero when the argument of the exponential in the denominator is too large.
+
+	*args*:
+		- **ekbt**: float, (E-u)/kbT in terms of eV
+
+	*return*:
+		- **fermi**: float, evaluation of Fermi function.
+	'''
+    fermi = 0.0
+    if ekbt<709:
+        fermi = 1.0/(np.exp(ekbt)+1)
+    return fermi
 
 
 vf = np.vectorize(con_ferm)
 
-def pol_Y(pvec):
-    '''
-    Transform polarization vector from cartesian to spherical components
-    args: pvec -- len(3) numpy array with form ([p_x,p_y,p_z])
-    return: len(3) numpy array describing polarization vector projected as ([p_1,p_0,p_-1])
-    '''
-    R = np.array([[-np.sqrt(0.5),-np.sqrt(0.5)*1.0j,0],[0,0,1],[np.sqrt(0.5),-np.sqrt(0.5)*1.0j,0]])
-    return np.dot(R,pvec)
 
-def base2sph(basis):
-    '''
-    Define a basis transformation from user to Y_lm, this will simplify the calculation of matrix elements significantly
-    args: basis --list of orbital objects
-    '''
-    o2l = []
-    n,l,pos,s = basis[0].n,basis[0].l,basis[0].pos,basis[0].spin
-    mvals =[m for m in range(-l,l+1)]
-    tmp = np.zeros((2*l+1,len(basis)),dtype=complex)
-    for b in basis:
-        if b.n!=n or b.l!=l or np.linalg.norm(b.pos-pos)>0.0 or b.spin!=s:
-            for t in tmp:
-                o2l.append(t)
-            tmp = np.zeros((2*b.l+1,len(basis)),dtype=complex)
-            n,l,pos,s = b.n,b.l,b.pos,b.spin
-            mvals = mvals + [m for m in range(-l,l+1)]
 
-            
-            
-        for m in b.proj:
-            tmp[int(b.l+m[-1]),int(b.index)] +=m[0]+1.0j*m[1]
-    for t in tmp:
-        o2l.append(t)
-        
-    return np.array(o2l),np.array(mvals)
-            
-    
 def pol_2_sph(pol):
     '''
-    return pol vector in spherical harmonics -- order being Y_11, Y_10, Y_1-1
+    return polarization vector in spherical harmonics -- order being Y_11, Y_10, Y_1-1
+
+    *args*:
+    	- **pol**: numpy array of 3 complex float, polarization vector in Cartesian coordinates (x,y,z)
+
+	*return*:
+		- numpy array of 3 complex float, transformed polarization vector.
     '''
     M = np.sqrt(0.5)*np.array([[-1,1.0j,0],[0,0,np.sqrt(2)],[1.,1.0j,0]])
     return np.dot(M,pol)
 
-    
-def lambda_gen(val):
-    return lambda x: val
-
-
-def poly(x,args):
+def poly(input_x,poly_args):
     '''
     Recursive polynomial function.
-    args:
-        x -- input value at which to evaluate the polynomial (float, int or numpy array of numeric type)
-        args -- list of coefficients, in INCREASING polynomial order i.e. [a_0,a_1,a_2] for y = a_0 + a_1 * x + a_2 *x **2
-    return:
-        polynomial evaluated at x, same datatype as input (or at worst int -> float)
+    
+    *args*:
+        - **input_x**: float, int or numpy array of numeric type, input value(s) at which to evaluate the polynomial 
+        
+        - **poly_args**: list of coefficients, in INCREASING polynomial order i.e. [a_0,a_1,a_2] for y = a_0 + a_1 * x + a_2 *x **2
+    
+    *return*:
+        - recursive call to *poly*, if *poly_args* is reduced to a single value, return explicit evaluation of the function.
+        Same datatype as input, with int changed to float if *poly_args* are float, polynomial evaluated over domain of *input_x*
     '''
-    if len(args)==0:
+    if len(poly_args)==0:
         return 0
     else:
-        return x**(len(args)-1)*args[-1] + poly(x,args[:-1])
+        return input_x**(len(poly_args)-1)*poly_args[-1] + poly(input_x,poly_args[:-1])
     
   
+
+#        
+        
+    
+def progress_bar(N,Nmax):
+	'''
+	Utility function, generate string to print matrix element calculation progress.
+
+	*args*:
+		- **N**: int, number of iterations complete
+
+		- **Nmax**: int, total number of iterations to complete
+
+	*return*:
+		- **st**: string, progress status
+	'''
+    frac = N/Nmax
+    st = ''.join(['|' for i in range(int(frac*30))])
+    st = '{:30s}'.format(st)+'{:3d}%'.format(int(frac*100))
+    return st
+
+
+###############################################################################    
+###############################################################################    
+######################## ANGULAR INTEGRALS ####################################
+###############################################################################
+###############################################################################
+        
+def G_dic():
+    '''
+    Initialize the gaunt coefficients associated with all possible transitions relevant
+
+    *return*:
+    	- **Gdict**: dictionary with keys as a string representing (l,l',m,dm) "ll'mdm" and values complex float.
+    	All unacceptable transitions set to zero.
+    '''
+    llp = [[l,lp] for l in range(4) for lp in ([l-1,l+1] if (l-1)>=0 else [l+1])]    
+
+    llpmu = [[l[0],l[1],m,u] for l in llp for m in np.arange(-l[0],l[0]+1,1) for u in [-1,0,1]]
+    keyvals = [[str(l[0])+str(l[1])+str(l[2])+str(l[3]), Ylm.gaunt(l[0],l[2],l[1]-l[0],l[3])] for l in llpmu]
+    G_dict = dict(keyvals)
+    
+    for gi in G_dict:
+        if np.isnan(G_dict[gi]):
+            G_dict[gi]=0.0       
+    return G_dict
+
+
+def all_Y(basis):
+    '''
+    Build L-M argument array input arguments for every combination of l,m in the basis. The idea is for a given k-point to have a single call
+    to evaluate all spherical harmonics at once. The pointer array orb_point is a list of lists, where for each projection in the basis, the integer
+    in the list indicates which row (first axis) of the Ylm array should be taken. This allows for very quick access to the l+/-1, m+/-1,0 Ylm evaluation
+    required.
+    
+    *args*:
+        - **basis**: list of orbital objects
+
+    *return*:
+    	- **l_args**: numpy array of int, of shape len(*lm_inds*),3,2, with the latter two indicating the final state orbital angular momentum
+
+    	- **m_args**: numpy array of int, of shape len(*lm_inds*),3,2, with the latter two indicating the final state azimuthal angular momentum
+
+    	- **g_arr**: numpy array of float, shape len(*lm_inds*),3,2, providing the related Gaunt coefficients.
+
+    	- **orb_point**: numpy array of int, matching the related sub-array of *l_args*, *m_args*, *g_arr* related to each orbital in basis
+    '''
+    maxproj = max([len(o.proj) for o in basis])
+    Gvals = G_dic()
+    lm_inds = []
+    l_args = []
+    m_args =[]
+    g_arr = []
+    orb_point = []
+    for o in basis:
+        point = np.zeros(maxproj)
+        for pi in range(len(o.proj)):
+            p = o.proj[pi]
+            lm = (p[2],p[3])
+            if lm not in lm_inds:
+                Yarr = ((np.ones((3,2))*np.array([lm[0]-1,lm[0]+1])).T,(np.ones((2,3))*np.array([lm[1]-1,lm[1]+0,lm[1]+1])))
+                l_args.append(Yarr[0])
+                m_args.append(Yarr[1])
+                g_arr.append(Gmat_make(lm,Gvals))
+                lm_inds.append(lm)
+            point[pi] = lm_inds.index(lm)
+        orb_point.append(point)
+    return np.array(l_args),np.array(m_args),np.array(g_arr),np.array(orb_point).astype(int)
+    
+
+def projection_map(basis):
+
+	'''
+	In order to improve efficiency, an array of orbital projections is generated, carrying all and each
+	orbital projection for the elements of the model basis. As these do not in general have the same length,
+	the second dimension of this array corresponds to the largest of the sets of projections associated with
+	a given orbital. This will in practice remain a modest number of order 1, since at worst we assume f-orbitals,
+	in which case the projection can be no larger than 7 long. So output will be at worst len(basis)x7 complex float
+
+	*args*:
+		- **basis**: list of orbital objects
+
+	*return*:
+		- **projarr**: numpy array of complex float
+
+	'''
+    
+    maxproj = max([len(o.proj) for o in basis])
+    projarr = np.zeros((len(basis),maxproj),dtype=complex)
+    for ii in range(len(basis)):
+        for pj in range(len(basis[ii].proj)):
+            proj = basis[ii].proj[pj]
+            projarr[ii,pj] = proj[0]+1.0j*proj[1]
+    return projarr
+
+
+
+
+Yvect = np.vectorize(Ylm.Y,otypes=[complex])
+
+def Gmat_make(lm,Gdictionary):
+	'''
+	Use the dictionary of relevant Gaunt coefficients to generate a small 2x3 array of  
+	float which carries the relevant Gaunt coefficients for a given initial state.
+
+	*args*:
+		- **lm**: tuple of 2 int, initial state orbital angular momentum and azimuthal angular momentum
+
+		- **Gdictionary**: pre-calculated dictionary of Gaunt coefficients, with key-values associated with "ll'mdm"
+
+	*return*:
+		- **mats**: numpy array of float 2x3
+	'''
+
+    l  = int(lm[0])
+    m = int(lm[1])
+    mats = np.zeros((2,3))
+    for lp in (-1,1):
+        for u in range(-1,2): 
+            try:
+                mats[int((lp+1)/2),u+1] = Gdictionary['{:d}{:d}{:d}{:d}'.format(l,l+lp,m,u)]
+            except KeyError:
+                continue
+    return mats
+    
+    
+
+
+
+
 def gen_SE_KK(w,SE_args):
     '''
     The total self-energy is computed using Kramers' Kronig relations:
@@ -853,100 +1026,3 @@ def gen_SE_KK(w,SE_args):
         re_interp = interp1d(wf[roi[0]:roi[1]],reSE[roi[0]:roi[1]])
 
         return re_interp(w) + im_interp(w)*1.0j
-#        
-        
-    
-def progress_bar(N,Nmax):
-    frac = N/Nmax
-    st = ''.join(['|' for i in range(int(frac*30))])
-    st = '{:30s}'.format(st)+'{:3d}%'.format(int(frac*100))
-    return st
-
-
-def find_max_dE(Eb):
-    dE_max = abs(np.subtract(Eb[1:,:],Eb[:-1,:])).mean()
-    return dE_max 
-            
-
-###############################################################################    
-###############################################################################    
-######################## ANGULAR INTEGRALS ####################################
-###############################################################################
-###############################################################################
-        
-def G_dic():
-    '''
-    Initialize the gaunt coefficients associated with all possible transitions relevant
-    '''
-    llp = [[l,lp] for l in range(4) for lp in ([l-1,l+1] if (l-1)>=0 else [l+1])]    
-
-    llpmu = [[l[0],l[1],m,u] for l in llp for m in np.arange(-l[0],l[0]+1,1) for u in [-1,0,1]]
-    keyvals = [[str(l[0])+str(l[1])+str(l[2])+str(l[3]), Ylm.gaunt(l[0],l[2],l[1]-l[0],l[3])] for l in llpmu]
-    G_dict = dict(keyvals)
-    
-    for gi in G_dict:
-        if np.isnan(G_dict[gi]):
-            G_dict[gi]=0.0       
-    return G_dict
-
-
-def all_Y(basis):
-    '''
-    Build L-M argument array input arguments for every combination of l,m in the basis. The idea is for a given k-point to have a single call
-    to evaluate all spherical harmonics at once. The pointer array orb_point is a list of lists, where for each projection in the basis, the integer
-    in the list indicates which row (first axis) of the Ylm array should be taken. This allows for very quick access to the l+/-1, m+/-1,0 Ylm evaluation
-    required.
-    args:
-        basis -- list of orbital objects
-    '''
-    maxproj = max([len(o.proj) for o in basis])
-    Gvals = G_dic()
-    lm_inds = []
-    l_args = []
-    m_args =[]
-    g_arr = []
-    orb_point = []
-    for o in basis:
-        point = np.zeros(maxproj)
-        for pi in range(len(o.proj)):
-            p = o.proj[pi]
-            lm = (p[2],p[3])
-            if lm not in lm_inds:
-                Yarr = ((np.ones((3,2))*np.array([lm[0]-1,lm[0]+1])).T,(np.ones((2,3))*np.array([lm[1]-1,lm[1]+0,lm[1]+1])))
-                l_args.append(Yarr[0])
-                m_args.append(Yarr[1])
-                g_arr.append(Gmat_make(lm,Gvals))
-                lm_inds.append(lm)
-            point[pi] = lm_inds.index(lm)
-        orb_point.append(point)
-    return np.array(l_args),np.array(m_args),np.array(g_arr),np.array(orb_point).astype(int)
-    
-
-def projection_map(basis):
-    
-    maxproj = max([len(o.proj) for o in basis])
-    projarr = np.zeros((len(basis),maxproj),dtype=complex)
-    for ii in range(len(basis)):
-        for pj in range(len(basis[ii].proj)):
-            proj = basis[ii].proj[pj]
-            projarr[ii,pj] = proj[0]+1.0j*proj[1]
-    return projarr#,lm
-
-
-
-
-Yvect = np.vectorize(Ylm.Y,otypes=[complex])
-
-def Gmat_make(lm,Gdictionary):
-    l  = int(lm[0])
-    m = int(lm[1])
-    mats = np.zeros((2,3))
-    for lp in (-1,1):
-        for u in range(-1,2): 
-            try:
-                mats[int((lp+1)/2),u+1] = Gdictionary['{:d}{:d}{:d}{:d}'.format(l,l+lp,m,u)]
-            except KeyError:
-                continue
-    return mats
-    
-    

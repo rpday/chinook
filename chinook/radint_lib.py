@@ -44,7 +44,7 @@ mN = 1.67*10**-27
 kb = 1.38*10**-23
 
 
-def make_radint_pointer(ARPES_dict,basis,Eb):
+def make_radint_pointer(rad_dict,basis,Eb):
     
     '''
     Define executable radial integral functions, and store in a 
@@ -60,11 +60,12 @@ def make_radint_pointer(ARPES_dict,basis,Eb):
     interpolation of these integrations.
     
     *args*:        
-        - **ARPES_dict**: dictionary of ARPES parameters: relevant keys are 
+        - **rad_dict**: dictionary of ARPES parameters: relevant keys are 
         'hv' (photon energy), 'W' (work function), and the rad_type
         (radial wavefunction type, as well as any relevant additional
         pars, c.f. *radint_lib.define_radial_wavefunctions*).
-        Note: *'rad_type'* is optional.
+        Note: *'rad_type'* is optional, as is *rad_args*, depending on choice
+        of radial wavefunction.
         
         - **basis**: list of orbitals in the basis
         
@@ -80,9 +81,9 @@ def make_radint_pointer(ARPES_dict,basis,Eb):
     ***   
     '''
     
-    radial_funcs = define_radial_wavefunctions(ARPES_dict,basis)
-    fixed = True if ('rad_type' in ARPES_dict.keys() and ARPES_dict['rad_type']=='fixed') else False
-    B_dictionary = fill_radint_dic(Eb,radial_funcs,ARPES_dict['hv'],ARPES_dict['W'],fixed)
+    radial_funcs = define_radial_wavefunctions(rad_dict,basis)
+    fixed = True if ('rad_type' in rad_dict.keys() and rad_dict['rad_type']=='fixed') else False
+    B_dictionary = fill_radint_dic(Eb,radial_funcs,rad_dict['hv'],rad_dict['W'],fixed)
     B_array,B_pointers = radint_dict_to_arr(B_dictionary,basis)
     
     return B_array,B_pointers
@@ -122,17 +123,17 @@ def radint_dict_to_arr(Bdict,basis):
         
 
 
-def define_radial_wavefunctions(ARPES_dict,basis):
+def define_radial_wavefunctions(rad_dict,basis):
     
     '''
     Define the executable radial wavefunctions for computation of
     the radial integrals
     
     *args*:       
-        - **ARPES_dict**: essential key is *'rad_type'*, if not passed,
+        - **rad_dict**: essential key is *'rad_type'*, if not passed,
         assume Slater orbitals. 
             
-        - **ARPES_dict['rad_type']**:
+        - **rad_dict['rad_type']**:
 
                 - *'slater'*: default value, if *'rad_type'* is not passed,
                 Slater type orbitals assumed and evaluated for the integral
@@ -143,7 +144,7 @@ def define_radial_wavefunctions(ARPES_dict,basis):
                 - *'grid'*: radial wavefunctions evaluated on a grid of
                 radii. Requires also another key_value pair:
                     
-                   - *'rad_grid'*: dictionary of numpy arrays evaluating
+                   - *'rad_args'*: dictionary of numpy arrays evaluating
                    the radial wavefunctions. Requires an *'r'* array,
                    as well as 'a-n-l' indicating 'atom-principal quantum number-orbital angular momentum'.
                    Must pass such a grid for each orbital in the basis!
@@ -152,7 +153,7 @@ def define_radial_wavefunctions(ARPES_dict,basis):
                 'atom-principal quantum number-orbital angular momentum'. 
                 If 	executable is chosen, require also:
                     
-                        - *'rad_exec'*, which will be a dictionary of
+                        - *'rad_args'*, which will be a dictionary of
                         executables, labelled by the keys 'a-n-l'. 
                         These will be passed to the integral routine.
                         Note that it is required that the executables
@@ -161,7 +162,7 @@ def define_radial_wavefunctions(ARPES_dict,basis):
                 - *'fixed*: radial integrals taken to be constant float,
                 require dictionary:
                     
-                    - *'B_fixed'* with keys 'a-n-l-lp', i.e. 
+                    - *'rad_args'* with keys 'a-n-l-lp', i.e. 
                     'atom-principal quantum number-orbital angular momentum-final state angular momentum'
                     and complex float values for the radial integrals.
                     
@@ -176,48 +177,48 @@ def define_radial_wavefunctions(ARPES_dict,basis):
     orbital_funcs = {}
     orbitals = gen_orb_labels(basis)
 
-    if 'rad_type' not in ARPES_dict.keys():
-        ARPES_dict['rad_type'] = 'slater'
+    if 'rad_type' not in rad_dict.keys():
+        rad_dict['rad_type'] = 'slater'
     
-    if ARPES_dict['rad_type'].lower()=='slater':
+    if rad_dict['rad_type'].lower()=='slater':
         for o in orbitals:
             orbital_funcs[o] = econ.Slater_exec(*orbitals[o])
     
-    elif ARPES_dict['rad_type'].lower() == 'hydrogenic':
+    elif rad_dict['rad_type'].lower() == 'hydrogenic':
         for o in orbitals:
             orbital_funcs[o] = econ.hydrogenic_exec(*orbitals[o])
         
-    elif ARPES_dict['rad_type'].lower() == 'grid':
-        if 'rad_grid' not in ARPES_dict.keys():
-            print('ERROR: No "rad_grid" values passed to ARPES calculation.\n Exiting. \n See Radial Integrals in the Manual for further details.\n')
+    elif rad_dict['rad_type'].lower() == 'grid':
+        if 'rad_args' not in rad_dict.keys():
+            print('ERROR: No "rad_args" key passing the grid values passed to ARPES calculation.\n Exiting. \n See Radial Integrals in the Manual for further details.\n')
             return None
-        elif np.sum([o in ARPES_dict['rad_grid'].keys() for o in orbitals])<len(orbitals):
+        elif np.sum([o in rad_dict['rad_args'].keys() for o in orbitals])<len(orbitals):
             print('ERROR: Missing radial wavefunction grids--confirm all atoms and orbital shells have a grid.\n Exiting.\n')
             return None
-        elif 'r' not in ARPES_dict['rad_grid'].keys():
+        elif 'r' not in rad_dict['rad_args'].keys():
             print('ERROR: no radial grid passed for proper scaling of the radial wavefunctions.\n Exiting.\n')
             return None
-        if ARPES_dict['rad_grid']['r'].min()>0:
+        if rad_dict['rad_args']['r'].min()>0:
             print('ERROR: radial grid must go to the origin.\n Exiting.\n')
             return None
         else:
             for o in orbitals:
-                orbital_funcs[o] = interp1d(ARPES_dict['rad_grid']['r'],ARPES_dict['rad_grid'][o])
+                orbital_funcs[o] = interp1d(rad_dict['rad_args']['r'],rad_dict['rad_args'][o])
     
-    elif ARPES_dict['rad_type'].lower() == 'exec':
-        if 'rad_exec' not in ARPES_dict.keys():
-            print('ERROR: No "rad_exec" passed to ARPES calculation.\n. Exiting.\n See Radial Integrals in the Manual for further details.\n')
+    elif rad_dict['rad_type'].lower() == 'exec':
+        if 'rad_args' not in rad_dict.keys():
+            print('ERROR: No "rad_args" key passing an executable to ARPES calculation.\n. Exiting.\n See Radial Integrals in the Manual for further details.\n')
             return None
-        elif np.sum([o in ARPES_dict['rad_exec'].keys() for o in orbitals])<len(orbitals):
+        elif np.sum([o in rad_dict['rad_args'].keys() for o in orbitals])<len(orbitals):
             print('ERROR: Missing radial wavefunction functionss--confirm all atoms and orbital shells have a function.\n Exiting.\n')
             return None
         else:
             for o in orbitals:
-                orbital_funcs[o] = ARPES_dict['rad_exec'][o]
+                orbital_funcs[o] = rad_dict['rad_args'][o]
     
     
     elif ARPES_dict['rad_type'].lower() == 'fixed':    
-        if 'B_fixed' not in ARPES_dict.keys():
+        if 'rad_args' not in rad_dict.keys():
             print('ERROR: Missing radial integral values.\n Exiting.\n See Radial Integrals in the Manual for further details.\n')
             return None
         for o in basis:
@@ -226,7 +227,7 @@ def define_radial_wavefunctions(ARPES_dict,basis):
             for lpi in lp:
                 ostr = '{:d}-{:d}-{:d}-{:d}'.format(o.atom,o.n,o.l,lpi)
                 if lpi>=0:
-                    orbital_funcs[ostr] = gen_const(ARPES_dict['B_fixed'][ostr])
+                    orbital_funcs[ostr] = gen_const(rad_dict['B_fixed'][ostr])
                 else:
                     orbital_funcs[ostr] = gen_const(0.0)
     

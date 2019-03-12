@@ -74,7 +74,7 @@ class plot_intensity_interface:
 
     def plot_make(self):
            
-        self.root.wm_title('UBC TB-ARPES DATA PLOTTER')
+        self.root.wm_title('CHINOOK DATA PLOTTER')
 
         fig1 = Figure(figsize=(5,5))
         fig2 = Figure(figsize=(5,5))
