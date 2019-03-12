@@ -50,6 +50,8 @@ import chinook.radint_lib as radint_lib
 import chinook.Tk_plot as Tk_plot
 import chinook.Ylm as Ylm 
 
+import chinook.tilt as tilt
+
 
 ####PHYSICAL CONSTANTS RELEVANT TO CALCULATION#######
 hb = 6.626*10**-34/(2*np.pi)
@@ -87,14 +89,9 @@ class experiment:
                 - *'dE'*: float, energy resolution (FWHM eV), 
                 
                 - *'dk'*: float, momentum resolution (FWHM 1/Angstrom)
-                
-            - *'ang'*: float, rotation of sample about normal emission i.e. z-axis (radian),
-            
-            - *'slab'*: boolean, will truncate the eigenfunctions beyond the penetration depth (specifically 4x penetration depth)
-            
+                            
             - *'T'*: float, Temperature of sample (Kelvin)
             
-            - *'W'*: float, work function (eV)
             
             - *'cube'*: dictionary momentum and energy domain
             (*'kz'* as float, all others ( *'X'* , *'Y'* , *'E'* ) are list
@@ -107,15 +104,18 @@ class experiment:
             - *'spin'*: spin-ARPES measurement, list [+/-1,np.array([a,b,c])] 
             with the numpy array indicating the spin-projection 
             direction (with respect to) experimental frame.
-            If not spin-ARPES, use None
             
             - *'rad_type'*: string, radial wavefunctions, c.f. *chinook.rad_int.py* for details
             
             - *'threads'*: int, number of threads on which to calculate the matrix elements. 
             Requires very large calculation to see improvement over single core.
             
-            
-            
+            - *'slab'*: boolean, will truncate the eigenfunctions beyond the penetration depth (specifically 4x penetration depth), default is False
+
+            - *'ang'*: float, rotation of sample about normal emission i.e. z-axis (radian), default is 0.0
+
+            - *'W'*: float, work function (eV), default is 4.0 
+
     
     ***            
     '''
@@ -126,44 +126,56 @@ class experiment:
             self.spin = True
         else:
             self.spin = False
-        
+
         self.hv = ARPES_dict['hv']
         self.mfp = ARPES_dict['mfp'] #photoelectron mean free path for escape
         self.dE = ARPES_dict['resolution']['E']/np.sqrt(8*np.log(2)) #energy resolution FWHM
         self.dk = ARPES_dict['resolution']['k']/np.sqrt(8*np.log(2)) #momentum resolution FWHM
-        self.ang = ARPES_dict['angle']
-        self.W = ARPES_dict['W']
         self.cube = (ARPES_dict['cube']['X'],ARPES_dict['cube']['Y'],ARPES_dict['cube']['E'])
-        self.kz = ARPES_dict['cube']['kz']
         self.SE_args = ARPES_dict['SE']
+        
         try:
-        	self.pol = ARPES_dict['pol']
-        try:
-	        self.T = ARPES_dict['T']
-	    except KeyError:
-	    	self.T = -1
-        try:
-        	self.sarpes = ARPES_dict['spin']
+            self.kz = ARPES_dict['cube']['kz']    
         except KeyError:
-        	self.sarpes = None
+            self.kz = 0.0    
+        try:
+            self.W = ARPES_dict['W']
+        except KeyError:
+            self.W = 4.0
+        try:
+            self.ang = ARPES_dict['angle']
+        except KeyError:
+            self.ang = 0.0
+        try:
+            self.pol = ARPES_dict['pol']
+        except KeyError:
+            self.pol = np.array([1,0,0])
+        try:
+            self.T = ARPES_dict['T']
+        except KeyError:
+            self.T = -1
+        try:
+            self.sarpes = ARPES_dict['spin']
+        except KeyError:
+            self.sarpes = None
         try:
             self.rad_type = ARPES_dict['rad_type']
         except KeyError:
             self.rad_type = 'slater'
         try:
-        	self.rad_args = ARPES_dict['rad_args']
+            self.rad_args = ARPES_dict['rad_args']
         except KeyError:
-        	self.rad_args = None
+            self.rad_args = None
         try:
             self.truncate = ARPES_dict['slab']
         except KeyError:
             self.truncate = False
         try:
-        	self.threads = ARPES_dict['threads']
+            self.threads = ARPES_dict['threads']
         except KeyError:
-        	self.threads = 0
+            self.threads = 0
             
-    def update_pars(self,ARPES_dict):
+    def update_pars(self,ARPES_dict,datacube=False):
         '''
         Several experimental parameters can be updated without re-calculating 
         the ARPES intensity explicitly. Specifically here, we can update 
@@ -171,33 +183,59 @@ class experiment:
         spin-projection, self-energy function, and polarization.
         
         *args*:
-        	- **ARPES_dict**: dictionary, specifically containing
-        		
-        		- *'resolution'*: dictionary with 'E':float and 'k':float
+            - **ARPES_dict**: dictionary, specifically containing
+                
+                - *'resolution'*: dictionary with 'E':float and 'k':float
 
-				- *'T'*: float, temperature, a negative value will suppress the Fermi function
+                - *'T'*: float, temperature, a negative value will suppress the Fermi function
 
-				- *'spin'*: list of [int, numpy array of 3 float] indicating projection and spin vector
+                - *'spin'*: list of [int, numpy array of 3 float] indicating projection and spin vector
 
-				- *'SE'*: various types accepted, see *SE_gen* for details
+                - *'SE'*: various types accepted, see *SE_gen* for details
 
-				- *'pol'*: numpy array of 3 complex float, polarization of light
+                - *'pol'*: numpy array of 3 complex float, polarization of light
+        
+        *kwargs*:
+            - **datacube**: bool, if updating in *spectral*, only the above  can be changed. If instead, updating
+            at the start of *datacube*, can also pass:
+                - **hv**: float, photon energy, eV
+                
+                - **ang**: float, sample orientation around normal, radiants
+                
+                - **rad_type**: string, radial integral type
+                
+                - **rad_args**: various datatype, see *radint_lib* for details
+                
+                - **kz**: float, out-of-plane momentum, inverse Angstrom
+                
+                - **mfp**: float, mean-free path, Angstrom
         
         '''
         if 'resolution' in ARPES_dict.keys():
-        	try:
-            	self.dE = ARPES_dict['resolution']['E']/np.sqrt(8*np.log(2)) #energy resolution FWHM
-        		self.dk = ARPES_dict['resolution']['k']/np.sqrt(8*np.log(2)) #momentum resolution FWHM
-        	except KeyError:
-        		print('Energy "E" and momentum "k" resolutions not passed in "resolution" dictionary. \n Retaining original values.')
+            try:
+                self.dE = ARPES_dict['resolution']['E']/np.sqrt(8*np.log(2)) #energy resolution FWHM
+                self.dk = ARPES_dict['resolution']['k']/np.sqrt(8*np.log(2)) #momentum resolution FWHM
+            except KeyError:
+                print('Energy "E" and momentum "k" resolutions not passed in "resolution" dictionary. \n Retaining original values.')
         if 'T' in ARPES_dict.keys():
             self.T = ARPES_dict['T']
         if 'spin' in ARPES_dict.keys():
             self.sarpes = ARPES_dict['spin']
         if 'SE' in ARPES_dict.keys():
-        	self.SE_args = ARPES_dict['SE']
+            self.SE_args = ARPES_dict['SE']
         if 'pol' in ARPES_dict.keys():
-        	self.pol = ARPES_dict['pol']
+            self.pol = ARPES_dict['pol']
+        if datacube:
+            if 'hv' in ARPES_dict.keys():
+                self.hv = ARPES_dict['hv']
+            if 'rad_type' in ARPES_dict.keys():
+                self.rad_type = ARPES_dict['rad_type']
+            if 'rad_args' in ARPES_dict.keys():
+                self.rad_args = ARPES_dict['rad_args']
+            if 'kz' in ARPES_dict.keys():
+                self.kz = ARPES_dict['kz']
+            if 'mfp' in ARPES_dict.keys():
+                self.mfp = ARPES_dict['mfp']
 
     
     
@@ -226,7 +264,7 @@ class experiment:
         
         if len(self.cube[2])==2:
             #user only passed the energy limits, not the grain--automate generation of the grain size
-            band_dE_max = find_max_dE(self.Eb)
+            band_dE_max = find_mean_dE(self.Eb)
             NE_pts = int(10*(self.cube[2][1]-self.cube[2][0])/band_dE_max)
             self.cube[2].append(NE_pts)
         
@@ -307,16 +345,16 @@ class experiment:
         Given a kmesh to calculate the photoemission over, the mesh is reshaped to an nx3 array and the Hamiltonian
         diagonalized over this set of k points. The matrix elements are then calculated for each 
         of these E-k points
-	
-		*kwargs*:
-			- **ARPES_dict**: can optionally pass a dictionary of experimental parameters, to update those defined
-			in the initialization of the *experiment* object.
+    
+        *kwargs*:
+            - **ARPES_dict**: can optionally pass a dictionary of experimental parameters, to update those defined
+            in the initialization of the *experiment* object.
 
-		*return*:
-			- boolean, True if function finishes successfully.
+        *return*:
+            - boolean, True if function finishes successfully.
         '''      
         if ARPES_dict is not None:
-            self.update_pars(ARPES_dict)
+            self.update_pars(ARPES_dict,True)
 
         self.basis = self.rot_basis()
 
@@ -331,14 +369,14 @@ class experiment:
 
         dE = (self.cube[2][1]-self.cube[2][0])/self.cube[2][2]            
         dig_range = (self.cube[2][0]-5*dE,self.cube[2][1]+5*dE)
-        
-        self.cube_indx = np.array([[i,self.Eb[i]] for i in range(len(self.Eb)) if dig_range[0]<=self.Eb[i]<=dig_range[-1]])
-
            
-        self.Mk = np.zeros((len(self.cube_indx),2,3),dtype=complex)
-        self.pks = np.array([np.floor(np.floor(self.cube_indx[:,0]/nstates)/np.shape(self.X)[1]),np.floor(self.cube_indx[:,0]/nstates)%np.shape(self.X)[1],self.cube_indx[:,1]]).T
-        kn = (2.*me/hb**2*(self.hv+self.cube_indx[:,1]-self.W)*q)**0.5*A
-        self.th = np.array([np.arccos((kn[i]**2-self.X[int(self.pks[i,0]),int(self.pks[i,1])]**2-self.Y[int(self.pks[i,0]),int(self.pks[i,1])]**2)**0.5/kn[i]) if (kn[i]**2-self.X[int(self.pks[i,0]),int(self.pks[i,1])]**2-self.Y[int(self.pks[i,0]),int(self.pks[i,1])]**2)>=0 else -1 for i in range(len(self.cube_indx))])
+
+        self.pks = np.array([[i,np.floor(np.floor(i/nstates)/np.shape(self.X)[1]),np.floor(i/nstates)%np.shape(self.X)[1],self.Eb[i]] for i in range(len(self.Eb)) if dig_range[0]<=self.Eb[i]<=dig_range[-1]])
+        self.Mk = np.zeros((len(self.pks),2,3),dtype=complex)
+
+        kn = (2.*me/hb**2*(self.hv+self.pks[:,3]-self.W)*q)**0.5*A
+
+        self.th = np.array([np.arccos((kn[i]**2-self.X[int(self.pks[i,1]),int(self.pks[i,2])]**2-self.Y[int(self.pks[i,1]),int(self.pks[i,2])]**2)**0.5/kn[i]) if (kn[i]**2-self.X[int(self.pks[i,1]),int(self.pks[i,2])]**2-self.Y[int(self.pks[i,1]),int(self.pks[i,2])]**2)>=0 else -1 for i in range(len(self.pks))])
 
         
         self.prefactors = np.array([o.sigma*np.exp((-1./self.mfp+1.0j*self.kz)*abs(o.depth)) for o in self.basis])
@@ -352,8 +390,8 @@ class experiment:
 
         print('Begin computing matrix elements: ')
         
-        valid_indices = np.array([i for i in range(len(self.cube_indx)) if (self.th[i]>=0 and self.cube[2][0]<=self.cube_indx[i][1]<=self.cube[2][1])])
-        
+        valid_indices = np.array([i for i in range(len(self.pks)) if (self.th[i]>=0)])# and self.cube[2][0]<=self.pks[i][3]<=self.cube[2][1])])
+
         if self.threads>0:
             self.thread_Mk(self.threads,valid_indices)
         else:
@@ -376,19 +414,19 @@ class experiment:
             - **i**: integer, index and energy of state
         
         *return*:
-        	- **Mtmp**: numpy array (2x3) of complex float corresponding to the matrix element
-        	  projection for dm = -1,0,1 (columns) and spin down or up (rows) for a given
-        	  state in k and energy.
+            - **Mtmp**: numpy array (2x3) of complex float corresponding to the matrix element
+              projection for dm = -1,0,1 (columns) and spin down or up (rows) for a given
+              state in k and energy.
         '''
         nstates = len(self.TB.basis)
-        phi = self.ph[int(self.cube_indx[i,0]/nstates)]
+        phi = self.ph[int(self.pks[i,0]/nstates)]
+
         th = self.th[i]
         Ylm_calls = Yvect(self.Largs,self.Margs,th,phi)[self.orbital_pointers]
         
         Mtmp = np.zeros((2,3),dtype=complex)
-        B_eval = np.array([[b[0](self.cube_indx[i,1]),b[1](self.cube_indx[i,1])] for b in self.Bfuncs])
-        pref = np.einsum('i,ij->ij',np.einsum('i,i->i',self.prefactors,self.Ev[int(self.cube_indx[i,0]/nstates),:,int(self.cube_indx[i,0]%nstates)]),B_eval[self.radint_pointers])  
-        
+        B_eval = np.array([[b[0](self.pks[i,3]),b[1](self.pks[i,3])] for b in self.Bfuncs])
+        pref = np.einsum('i,ij->ij',np.einsum('i,i->i',self.prefactors,self.Ev[int(self.pks[i,0]/nstates),:,int(self.pks[i,0]%nstates)]),B_eval[self.radint_pointers])  
         Gtmp = np.einsum('ij,ijkl->ikl',self.proj_arr,np.einsum('ijkl,ijkl->ijkl',Ylm_calls,self.Gbasis))
 
         if self.spin:
@@ -411,7 +449,8 @@ class experiment:
              in *cube_indx* to those within the desired window     
         '''
         for ii in indices:
-            sys.stdout.write('\r'+progress_bar(ii+1,len(self.cube_indx)))
+            sys.stdout.write('\r'+progress_bar(ii+1,len(self.pks)))
+
             self.Mk[ii,:,:]+=self.M_compute(ii)
         
     def thread_Mk(self,N,indices):
@@ -438,16 +477,16 @@ class experiment:
         
         
     def Mk_wrapper(self,ilist):
-    	'''
-		Wrapper function for use in multiprocessing, to run each of the processes
-		as a serial matrix element calculation over a sublist of state indices.
+        '''
+        Wrapper function for use in multiprocessing, to run each of the processes
+        as a serial matrix element calculation over a sublist of state indices.
 
-		*args*:
-			- **ilist**: list of int, all state indices for execution.
+        *args*:
+            - **ilist**: list of int, all state indices for execution.
 
-		*return*:
-			- **Mk_out**: numpy array of complex float with shape (len(ilist), 2,3)
-    	'''
+        *return*:
+            - **Mk_out**: numpy array of complex float with shape (len(ilist), 2,3)
+        '''
         Mk_out = np.zeros((len(ilist),2,3),dtype=complex)
         for ii in list(enumerate(ilist)):
             Mk_out[ii[0],:,:] += self.M_compute(ii[1])
@@ -496,20 +535,20 @@ class experiment:
 
         return SE
             
-	def spin_projector(self):
-		'''
-		For use in spin-resolved ARPES experiments, project the computed
-		matrix element values onto the desired spin-projection direction.
-		In the event that the spin projection direction is not along the 
-		standard out-of-plane quantization axis, we rotate the matrix elements
-		computed into the desired basis direction.
+    def spin_projector(self):
+        '''
+        For use in spin-resolved ARPES experiments, project the computed
+        matrix element values onto the desired spin-projection direction.
+        In the event that the spin projection direction is not along the 
+        standard out-of-plane quantization axis, we rotate the matrix elements
+        computed into the desired basis direction.
 
-		*return*:
-			- **spin_projected_Mk**: numpy array of complex float with same
-			shape as *Mk*
-		'''
+        *return*:
+            - **spin_projected_Mk**: numpy array of complex float with same
+            shape as *Mk*
+        '''
 
-		try:              
+        try:              
             sv = self.sarpes[1]/np.linalg.norm(self.sarpes[1])
         except IndexError:
             print('ERROR: Invalid spin-entry. See documentation for ARPES_lib.experiment')
@@ -523,14 +562,14 @@ class experiment:
         return spin_projected_Mk
 
     def T_distribution(self):
-    	'''
-		Compute the Fermi-distribution for a fixed temperature, over the domain of energy of interest
+        '''
+        Compute the Fermi-distribution for a fixed temperature, over the domain of energy of interest
 
-		*return*:
-			- **fermi**: numpy array of float, same length as energy domain array defined by *cube[2]* attribute.
-    	'''
-    	if np.sign(self.T)>-1:
-            fermi = vf(np.linspace(*self.cube[2])/(kb*self.T[1]/q))
+        *return*:
+            - **fermi**: numpy array of float, same length as energy domain array defined by *cube[2]* attribute.
+        '''
+        if np.sign(self.T)>-1:
+            fermi = vf(np.linspace(*self.cube[2])/(kb*self.T/q))
         else:
             fermi = np.ones(self.cube[2][2])
         return fermi
@@ -544,113 +583,117 @@ class experiment:
         practical experiment.
         
         *return*:
-        	- **I**: numpy array of float, raw intensity map.
+            - **I**: numpy array of float, raw intensity map.
 
-        	- **Ig**: numpy array of float, resolution-broadened intensity map.
+            - **Ig**: numpy array of float, resolution-broadened intensity map.
         '''
         if ARPES_dict is not None:
 
-			self.update_pars(ARPES_dict)
+            self.update_pars(ARPES_dict)
         
         pol = pol_2_sph(self.pol)
         
         if self.sarpes is not None:
             spin_Mk = self.sarpes_projector()
-        	M_factor = np.power(abs(np.einsum('ik,k->i',spin_Mk[:,int((self.sarpes[0]+1)/2),:],pol)),2)
+            M_factor = np.power(abs(np.einsum('ik,k->i',spin_Mk[:,int((self.sarpes[0]+1)/2),:],pol)),2)
         else:
-        	M_factor = np.power(abs(np.einsum('ijk,k->ij',self.Mk,pol)),2)    
+            M_factor = np.sum(np.power(abs(np.einsum('ijk,k->ij',self.Mk,pol)),2),axis=1)
         
         SE = self.SE_gen()
         fermi = self.T_distribution()    
-
+        w = np.linspace(*self.cube[2])
         I = np.zeros((self.cube[1][2],self.cube[0][2],self.cube[2][2]))
+
         if np.shape(SE)==np.shape(I):
             SE_k = True
         else:
             SE_k = False
 
         for p in range(len(self.pks)):
-        	if SE_k:
-        		I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:] += M_factor[p]*np.imag(-1./(np.pi*(w-self.pks[p,2]-(SE-0.0005j))))*fermi
-    		else:
-				I[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]+= M_factor[p]*np.imag(-1./(np.pi*(w-self.pks[p,2]-(SE[int(np.real(self.pks[p,0])),int(np.real(self.pks[p,1])),:]-0.0005j))))*fermi 
+
+            if not SE_k:
+                I[int(np.real(self.pks[p,1])),int(np.real(self.pks[p,2])),:] += M_factor[p]*np.imag(-1./(np.pi*(w-self.pks[p,3]-(SE-0.0005j))))*fermi
+            else:
+                I[int(np.real(self.pks[p,1])),int(np.real(self.pks[p,2])),:]+= M_factor[p]*np.imag(-1./(np.pi*(w-self.pks[p,3]-(SE[int(np.real(self.pks[p,1])),int(np.real(self.pks[p,2])),:]-0.0005j))))*fermi 
+
 
         kxg = (self.cube[0][2]*self.dk/(self.cube[0][1]-self.cube[0][0]) if abs(self.cube[0][1]-self.cube[0][0])>0 else 0)
         kyg = (self.cube[1][2]*self.dk/(self.cube[1][1]-self.cube[1][0]) if abs(self.cube[1][1]-self.cube[1][0])>0 else 0)
         wg = (self.cube[2][2]*self.dE/(self.cube[2][1]-self.cube[2][0]) if abs(self.cube[2][1]-self.cube[2][0])>0 else 0)
-        Ig = nd.gaussian_filter(I,(kxg,kyg,wg))
+
+        Ig = nd.gaussian_filter(I,(kyg,kxg,wg))
         
         if slice_select!=None:
-        	fig,ax = self.plot_intensity_map(Ig,slice_select)
+            fig,ax = self.plot_intensity_map(Ig,slice_select)
             
         return I,Ig
 
 
     def plot_intensity_map(self,plot_map,slice_select):
- 		'''
-		Plot a slice of the intensity map computed in *spectral*. The user selects either
-		an array index along one of the axes, or the fixed value of interest, allowing
-		either integer, or float selection.
-		
-		*args*:
-			- **plot_map**: numpy array of shape (self.cube[0],self.cube[1],self.cube[2]) of float
+         '''
+        Plot a slice of the intensity map computed in *spectral*. The user selects either
+        an array index along one of the axes, or the fixed value of interest, allowing
+        either integer, or float selection.
+        
+        *args*:
+            - **plot_map**: numpy array of shape (self.cube[0],self.cube[1],self.cube[2]) of float
 
-			- **slice_select**: list of either [int,int] or [str,float], corresponding to 
-			dimension, index or label, value. The former option takes dimensions 0,1,2 while
-			the latter can handle 'x', 'kx', 'y', 'ky', 'energy', 'w', or 'e', and is not
-			case-sensitive.
+            - **slice_select**: list of either [int,int] or [str,float], corresponding to 
+            dimension, index or label, value. The former option takes dimensions 0,1,2 while
+            the latter can handle 'x', 'kx', 'y', 'ky', 'energy', 'w', or 'e', and is not
+            case-sensitive.
 
-		*return*:
-			- **fig**: matplotlib figure object
+        *return*:
+            - **fig**: matplotlib figure object
 
-			- **ax**: matplotlib axis object
- 		'''
-    	fig = plt.figure()
-        ax = fig.add_subplot(111)
+            - **ax**: matplotlib axis object
+         '''
+         fig = plt.figure()
+         ax = fig.add_subplot(111)
 
-    	if type(slice_select[0]) is str:
- 			str_opts = [['x','kx'],['y','ky'],['energy','w','e']]
-    		dim = 0
-    		for i in range(2):
-    			if slice_select[0].lower() in str_opts[i]:
-    				dim = i
-			x = np.linspace(*self.cube[dim])
-			index = np.where(abs(x-slice_select[1])==abs(x-slice_select[1]).min())[0][0]
-			slice_select = [dim,int(index)]
+         if type(slice_select[0]) is str:
+             str_opts = [['x','kx'],['y','ky'],['energy','w','e']]
+             dim = 0
+             for i in range(3):
+                 if slice_select[0].lower() in str_opts[i]:
+                     dim = i
+             x = np.linspace(*self.cube[dim])
+             index = np.where(abs(x-slice_select[1])==abs(x-slice_select[1]).min())[0][0]
+             slice_select = [dim,int(index)]
 
 
-        if slice_select[0]==2: #FIXED ENERGY
-            X,Y = np.meshgrid(np.linspace(*self.cube[0]),np.linspace(*self.cube[1]))
-            p = ax.pcolormesh(X,Y,plot_map[:,:,slice_select[1]],cmap=cm.magma)  
-            plt.axis([self.cube[0][0],self.cube[0][1],self.cube[1][0],self.cube[1][1]])
+         if slice_select[0]==2: #FIXED ENERGY
+             X,Y = np.meshgrid(np.linspace(*self.cube[0]),np.linspace(*self.cube[1]))
+             p = ax.pcolormesh(X,Y,plot_map[:,:,slice_select[1]],cmap=cm.magma)  
+             plt.axis([self.cube[0][0],self.cube[0][1],self.cube[1][0],self.cube[1][1]])
 
-        elif slice_select[0]==1: #FIXED KY
-            X,Y = np.meshgrid(np.linspace(*self.cube[2]),np.linspace(*self.cube[0]))
-            p = ax.pcolormesh(X,Y,plot_map[slice_select[1],:,:],cmap=cm.magma)   
-            plt.axis([self.cube[2][0],self.cube[2][1],self.cube[0][0],self.cube[0][1]])
+         elif slice_select[0]==1: #FIXED KY
+             X,Y = np.meshgrid(np.linspace(*self.cube[2]),np.linspace(*self.cube[0]))
+             p = ax.pcolormesh(X,Y,plot_map[slice_select[1],:,:],cmap=cm.magma)   
+             plt.axis([self.cube[2][0],self.cube[2][1],self.cube[0][0],self.cube[0][1]])
 
-        elif slice_select[0]==0: # FIXED KX
-            X,Y = np.meshgrid(np.linspace(*self.cube[2]),np.linspace(*self.cube[1]))
-            p = ax.pcolormesh(X,Y,plot_map[:,slice_select[1],:],cmap=cm.magma)    
-            plt.axis([self.cube[2][0],self.cube[2][1],self.cube[1][0],self.cube[1][1]])
+         elif slice_select[0]==0: # FIXED KX
+             X,Y = np.meshgrid(np.linspace(*self.cube[2]),np.linspace(*self.cube[1]))
+             p = ax.pcolormesh(X,Y,plot_map[:,slice_select[1],:],cmap=cm.magma)    
+             plt.axis([self.cube[2][0],self.cube[2][1],self.cube[1][0],self.cube[1][1]])
                 
-        plt.colorbar(p,ax=ax)
+         plt.colorbar(p,ax=ax)
 
-        return fig,ax
+         return fig,ax
         
     
     def plot_gui(self,ARPES_dict):
-    	'''
-		Generate the Tkinter gui for exploring the experimental parameter-space
-		associated with the present experiment.
+        '''
+        Generate the Tkinter gui for exploring the experimental parameter-space
+        associated with the present experiment.
 
-		*args*:
-			- **ARPES_dict**: dictionary of experimental parameters, c.f. the 
-			*__init__* function for details.
+        *args*:
+            - **ARPES_dict**: dictionary of experimental parameters, c.f. the 
+            *__init__* function for details.
 
-		*return*:
-			- **Tk_win**: Tkinter window.
-    	'''
+        *return*:
+            - **Tk_win**: Tkinter window.
+        '''
         TK_win = Tk_plot.plot_intensity_interface(self,ARPES_dict)
         return TK_win
         
@@ -728,7 +771,7 @@ class experiment:
             - **mat**: numpy array of float, two dimensional
 
         *return*:
-        	- boolean, True
+            - boolean, True
         
         '''
         with open(filename,"w") as destination:
@@ -745,20 +788,32 @@ class experiment:
 ######################## SUPPORT FUNCTIONS#####################################
 ###############################################################################
 ###############################################################################
+def find_mean_dE(Eb):
+    '''
+    Find the average spacing between adjacent points along the dispersion calculated.
+    
+    *args*:
+        - **Eb**: numpy array of float, eigenvalues
         
+    *return*:
+        - **dE_mean**: float, average difference between consecutive eigenvalues.
+    '''
+    
+    dE_mean = abs(np.subtract(Eb[1:,:],Eb[:-1,:])).mean()
+    return dE_mean      
         
 def con_ferm(ekbt):      
-	'''
-	Typical values in the relevant domain for execution of the Fermi distribution will
-	result in an overflow associated with 64-bit float. To circumvent, set fermi-function
-	to zero when the argument of the exponential in the denominator is too large.
+    '''
+    Typical values in the relevant domain for execution of the Fermi distribution will
+    result in an overflow associated with 64-bit float. To circumvent, set fermi-function
+    to zero when the argument of the exponential in the denominator is too large.
 
-	*args*:
-		- **ekbt**: float, (E-u)/kbT in terms of eV
+    *args*:
+        - **ekbt**: float, (E-u)/kbT in terms of eV
 
-	*return*:
-		- **fermi**: float, evaluation of Fermi function.
-	'''
+    *return*:
+        - **fermi**: float, evaluation of Fermi function.
+    '''
     fermi = 0.0
     if ekbt<709:
         fermi = 1.0/(np.exp(ekbt)+1)
@@ -774,10 +829,10 @@ def pol_2_sph(pol):
     return polarization vector in spherical harmonics -- order being Y_11, Y_10, Y_1-1
 
     *args*:
-    	- **pol**: numpy array of 3 complex float, polarization vector in Cartesian coordinates (x,y,z)
+        - **pol**: numpy array of 3 complex float, polarization vector in Cartesian coordinates (x,y,z)
 
-	*return*:
-		- numpy array of 3 complex float, transformed polarization vector.
+    *return*:
+        - numpy array of 3 complex float, transformed polarization vector.
     '''
     M = np.sqrt(0.5)*np.array([[-1,1.0j,0],[0,0,np.sqrt(2)],[1.,1.0j,0]])
     return np.dot(M,pol)
@@ -806,17 +861,17 @@ def poly(input_x,poly_args):
         
     
 def progress_bar(N,Nmax):
-	'''
-	Utility function, generate string to print matrix element calculation progress.
+    '''
+    Utility function, generate string to print matrix element calculation progress.
 
-	*args*:
-		- **N**: int, number of iterations complete
+    *args*:
+        - **N**: int, number of iterations complete
 
-		- **Nmax**: int, total number of iterations to complete
+        - **Nmax**: int, total number of iterations to complete
 
-	*return*:
-		- **st**: string, progress status
-	'''
+    *return*:
+        - **st**: string, progress status
+    '''
     frac = N/Nmax
     st = ''.join(['|' for i in range(int(frac*30))])
     st = '{:30s}'.format(st)+'{:3d}%'.format(int(frac*100))
@@ -834,8 +889,8 @@ def G_dic():
     Initialize the gaunt coefficients associated with all possible transitions relevant
 
     *return*:
-    	- **Gdict**: dictionary with keys as a string representing (l,l',m,dm) "ll'mdm" and values complex float.
-    	All unacceptable transitions set to zero.
+        - **Gdict**: dictionary with keys as a string representing (l,l',m,dm) "ll'mdm" and values complex float.
+        All unacceptable transitions set to zero.
     '''
     llp = [[l,lp] for l in range(4) for lp in ([l-1,l+1] if (l-1)>=0 else [l+1])]    
 
@@ -860,13 +915,13 @@ def all_Y(basis):
         - **basis**: list of orbital objects
 
     *return*:
-    	- **l_args**: numpy array of int, of shape len(*lm_inds*),3,2, with the latter two indicating the final state orbital angular momentum
+        - **l_args**: numpy array of int, of shape len(*lm_inds*),3,2, with the latter two indicating the final state orbital angular momentum
 
-    	- **m_args**: numpy array of int, of shape len(*lm_inds*),3,2, with the latter two indicating the final state azimuthal angular momentum
+        - **m_args**: numpy array of int, of shape len(*lm_inds*),3,2, with the latter two indicating the final state azimuthal angular momentum
 
-    	- **g_arr**: numpy array of float, shape len(*lm_inds*),3,2, providing the related Gaunt coefficients.
+        - **g_arr**: numpy array of float, shape len(*lm_inds*),3,2, providing the related Gaunt coefficients.
 
-    	- **orb_point**: numpy array of int, matching the related sub-array of *l_args*, *m_args*, *g_arr* related to each orbital in basis
+        - **orb_point**: numpy array of int, matching the related sub-array of *l_args*, *m_args*, *g_arr* related to each orbital in basis
     '''
     maxproj = max([len(o.proj) for o in basis])
     Gvals = G_dic()
@@ -893,20 +948,20 @@ def all_Y(basis):
 
 def projection_map(basis):
 
-	'''
-	In order to improve efficiency, an array of orbital projections is generated, carrying all and each
-	orbital projection for the elements of the model basis. As these do not in general have the same length,
-	the second dimension of this array corresponds to the largest of the sets of projections associated with
-	a given orbital. This will in practice remain a modest number of order 1, since at worst we assume f-orbitals,
-	in which case the projection can be no larger than 7 long. So output will be at worst len(basis)x7 complex float
+    '''
+    In order to improve efficiency, an array of orbital projections is generated, carrying all and each
+    orbital projection for the elements of the model basis. As these do not in general have the same length,
+    the second dimension of this array corresponds to the largest of the sets of projections associated with
+    a given orbital. This will in practice remain a modest number of order 1, since at worst we assume f-orbitals,
+    in which case the projection can be no larger than 7 long. So output will be at worst len(basis)x7 complex float
 
-	*args*:
-		- **basis**: list of orbital objects
+    *args*:
+        - **basis**: list of orbital objects
 
-	*return*:
-		- **projarr**: numpy array of complex float
+    *return*:
+        - **projarr**: numpy array of complex float
 
-	'''
+    '''
     
     maxproj = max([len(o.proj) for o in basis])
     projarr = np.zeros((len(basis),maxproj),dtype=complex)
@@ -922,18 +977,18 @@ def projection_map(basis):
 Yvect = np.vectorize(Ylm.Y,otypes=[complex])
 
 def Gmat_make(lm,Gdictionary):
-	'''
-	Use the dictionary of relevant Gaunt coefficients to generate a small 2x3 array of  
-	float which carries the relevant Gaunt coefficients for a given initial state.
+    '''
+    Use the dictionary of relevant Gaunt coefficients to generate a small 2x3 array of  
+    float which carries the relevant Gaunt coefficients for a given initial state.
 
-	*args*:
-		- **lm**: tuple of 2 int, initial state orbital angular momentum and azimuthal angular momentum
+    *args*:
+        - **lm**: tuple of 2 int, initial state orbital angular momentum and azimuthal angular momentum
 
-		- **Gdictionary**: pre-calculated dictionary of Gaunt coefficients, with key-values associated with "ll'mdm"
+        - **Gdictionary**: pre-calculated dictionary of Gaunt coefficients, with key-values associated with "ll'mdm"
 
-	*return*:
-		- **mats**: numpy array of float 2x3
-	'''
+    *return*:
+        - **mats**: numpy array of float 2x3
+    '''
 
     l  = int(lm[0])
     m = int(lm[1])
