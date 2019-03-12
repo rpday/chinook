@@ -49,6 +49,7 @@ import chinook.orbital as olib
 import chinook.radint_lib as radint_lib
 import chinook.Tk_plot as Tk_plot
 import chinook.Ylm as Ylm 
+import chinook.rotation_lib as rotlib
 
 import chinook.tilt as tilt
 
@@ -126,12 +127,22 @@ class experiment:
             self.spin = True
         else:
             self.spin = False
+        try:
+            self.cube = (ARPES_dict['cube']['X'],ARPES_dict['cube']['Y'],ARPES_dict['cube']['E'])
+            self.coord_type = 'momentum'
+        except KeyError:
+            try:
+                self.cube = (ARPES_dict['cube']['Tx'],ARPES_dict['cube']['Ty'],ARPES_dict['cube']['E'])
+                self.coord_type = 'angle'
+            except KeyError:
+                print('Error: must pass either a momentum (X,Y,E) or angle (Tx,Ty,E) range of interest to "cube" key of input dictionary.')
+                return None
 
         self.hv = ARPES_dict['hv']
         self.mfp = ARPES_dict['mfp'] #photoelectron mean free path for escape
         self.dE = ARPES_dict['resolution']['E']/np.sqrt(8*np.log(2)) #energy resolution FWHM
         self.dk = ARPES_dict['resolution']['k']/np.sqrt(8*np.log(2)) #momentum resolution FWHM
-        self.cube = (ARPES_dict['cube']['X'],ARPES_dict['cube']['Y'],ARPES_dict['cube']['E'])
+        
         self.SE_args = ARPES_dict['SE']
         
         try:
@@ -249,15 +260,23 @@ class experiment:
             None, however *experiment* attributes *X*, *Y*, *ph*, *TB.Kobj*, *Eb*, *Ev*, *cube*
             are modified.
         '''
+        if self.coord_type=='momentum':
+            x = np.linspace(*self.cube[0])
+            y = np.linspace(*self.cube[1])
+            X,Y = np.meshgrid(x,y)
         
-        x = np.linspace(*self.cube[0])
-        y = np.linspace(*self.cube[1])
-        X,Y = np.meshgrid(x,y)
-        
-        self.X = X
-        self.Y = Y
-        
-        k_arr,self.ph = K_lib.kmesh(self.ang,self.X,self.Y,self.kz)      
+            self.X = X
+            self.Y = Y
+            
+            k_arr,self.ph = K_lib.kmesh(self.ang,self.X,self.Y,self.kz)      
+    
+        elif self.coord_type=='angle':
+            k_arr = tilt.gen_kpoints(self.hv-self.W,(self.cube[0][2],self.cube[1][2]),self.cube[0][:2],self.cube[1][:2],self.kz)
+    
+            self.X = np.reshape(k_arr[:,0],(self.cube[1][2],self.cube[0][2]))
+            self.Y = np.reshape(k_arr[:,1],(self.cube[1][2],self.cube[0][2]))
+    
+            self.ph = np.arctan2(k_arr[:,1],k_arr[:,0])
     
         self.TB.Kobj = K_lib.kpath(k_arr)
         self.Eb,self.Ev = self.TB.solve_H()
@@ -270,7 +289,7 @@ class experiment:
         
         self.Eb = np.reshape(self.Eb,(np.shape(self.Eb)[-1]*np.shape(self.X)[0]*np.shape(self.X)[1])) 
         
-        
+
         
     def truncate_model(self):
         '''
@@ -560,6 +579,25 @@ class experiment:
         Smat = np.array([[np.cos(th/2),np.exp(-1.0j*ph)*np.sin(th/2)],[np.sin(th/2),-np.exp(-1.0j*ph)*np.cos(th/2)]])
         spin_projected_Mk = np.swapaxes(np.dot(Smat,self.Mk),0,1)             
         return spin_projected_Mk
+    
+    def gen_all_pol(self):
+        '''
+        Rotate polarization vector, as it appears for each angle in the experiment.
+        Assume that it only rotates with THETA_y (vertical cryostat), and that the polarization
+        vector defined by the user relates to centre of THETA_x axis. 
+        Right now only handles zero vertical rotation (just tilt)
+        
+        *return*:
+            - numpy array of len(expmt.cube[1]) x 3 complex float, rotated polarization vectors 
+            expressed in basis of spherical harmonics
+        '''
+        
+        thvals = np.linspace(*self.cube[1])
+        Rmats = np.array([rotlib.Rodrigues_Rmat(np.array([1,0,0]),0.0) for th in thvals])
+        rot_pols = np.einsum('ijk,k->ij',Rmats,self.pol)
+        rot_pols_sph = pol_2_sph(rot_pols)
+        peak_pols = np.array([rot_pols_sph[int(self.pks[i,2])] for i in range(len(self.pks))])
+        return peak_pols
 
     def T_distribution(self):
         '''
@@ -597,13 +635,20 @@ class experiment:
             spin_Mk = self.sarpes_projector()
             M_factor = np.power(abs(np.einsum('ik,k->i',spin_Mk[:,int((self.sarpes[0]+1)/2),:],pol)),2)
         else:
-            M_factor = np.sum(np.power(abs(np.einsum('ijk,k->ij',self.Mk,pol)),2),axis=1)
+            if self.coord_type=='momentum':
+                M_factor = np.sum(np.power(abs(np.einsum('ijk,k->ij',self.Mk,pol)),2),axis=1)
+            elif self.coord_type=='angle':
+                all_pol = self.gen_all_pol()
+                M_factor = np.sum(np.power(abs(np.einsum('ijk,ik->ij',self.Mk,all_pol)),2),axis=1)                
         
         SE = self.SE_gen()
         fermi = self.T_distribution()    
         w = np.linspace(*self.cube[2])
+        
         I = np.zeros((self.cube[1][2],self.cube[0][2],self.cube[2][2]))
-
+        print('Imat shape: ',np.shape(I))
+        print('X shape: ',np.shape(self.X))
+        print('Y shape: ',np.shape(self.Y))
         if np.shape(SE)==np.shape(I):
             SE_k = True
         else:
@@ -826,7 +871,9 @@ vf = np.vectorize(con_ferm)
 
 def pol_2_sph(pol):
     '''
-    return polarization vector in spherical harmonics -- order being Y_11, Y_10, Y_1-1
+    return polarization vector in spherical harmonics -- order being Y_11, Y_10, Y_1-1.
+    If an array of polarization vectors is passed, use the einsum function to broadcast over
+    all vectors.
 
     *args*:
         - **pol**: numpy array of 3 complex float, polarization vector in Cartesian coordinates (x,y,z)
@@ -835,7 +882,13 @@ def pol_2_sph(pol):
         - numpy array of 3 complex float, transformed polarization vector.
     '''
     M = np.sqrt(0.5)*np.array([[-1,1.0j,0],[0,0,np.sqrt(2)],[1.,1.0j,0]])
-    return np.dot(M,pol)
+    if len(np.shape(pol))>1:
+        return np.einsum('ij,kj->ik',M,pol).T
+    else:
+        return np.dot(M,pol)
+
+
+
 
 def poly(input_x,poly_args):
     '''
@@ -1081,3 +1134,5 @@ def gen_SE_KK(w,SE_args):
         re_interp = interp1d(wf[roi[0]:roi[1]],reSE[roi[0]:roi[1]])
 
         return re_interp(w) + im_interp(w)*1.0j
+    
+    

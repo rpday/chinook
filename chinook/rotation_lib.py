@@ -119,6 +119,7 @@ def Rodrigues_Rmat(nvec,theta):
     '''
     Following Rodrigues theorem for rotations, define a rotation matrix which
     corresponds to the rotation about a vector nvec by the angle theta, in radians.
+    Works in pre-multiplication order (i.e. v' = R.v)
     
     *args*:
         - **nvec**: numpy array len 3 axis of rotation
