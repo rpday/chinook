@@ -65,9 +65,9 @@ class plot_intensity_interface:
             _,self.Imat = self.expmnt.spectral(self.Adict)
         self.Imat_dict = {'I_0':self.Imat}
         self.meta = {'I_0':self.Adict} #Meta data for use in exporting intensity map to file
-        self.x = self.Adict['cube']['X']
-        self.y = self.Adict['cube']['Y']
-        self.w = self.Adict['cube']['E']
+        self.x = self.expmnt.cube[0]
+        self.y = self.expmnt.cube[1]
+        self.w = self.expmnt.cube[2]
         self.dx,self.dy,self.dw = (self.x[1]-self.x[0])/self.x[2],(self.y[1]-self.y[0])/self.y[2],(self.w[1]-self.w[0])/self.w[2]
         print('Initializing interface...')
         self.plot_make()

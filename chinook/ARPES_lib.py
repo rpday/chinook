@@ -593,10 +593,10 @@ class experiment:
         '''
         
         thvals = np.linspace(*self.cube[1])
-        Rmats = np.array([rotlib.Rodrigues_Rmat(np.array([1,0,0]),0.0) for th in thvals])
+        Rmats = np.array([rotlib.Rodrigues_Rmat(np.array([1,0,0]),0) for th in thvals])
         rot_pols = np.einsum('ijk,k->ij',Rmats,self.pol)
         rot_pols_sph = pol_2_sph(rot_pols)
-        peak_pols = np.array([rot_pols_sph[int(self.pks[i,2])] for i in range(len(self.pks))])
+        peak_pols = np.array([rot_pols_sph[int(self.pks[i,1])] for i in range(len(self.pks))])
         return peak_pols
 
     def T_distribution(self):
@@ -646,9 +646,7 @@ class experiment:
         w = np.linspace(*self.cube[2])
         
         I = np.zeros((self.cube[1][2],self.cube[0][2],self.cube[2][2]))
-        print('Imat shape: ',np.shape(I))
-        print('X shape: ',np.shape(self.X))
-        print('Y shape: ',np.shape(self.Y))
+
         if np.shape(SE)==np.shape(I):
             SE_k = True
         else:
