@@ -33,6 +33,7 @@ SOFTWARE.
 import numpy as np
 
 import sys
+import datetime as dt
 
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -50,8 +51,9 @@ import chinook.radint_lib as radint_lib
 import chinook.Tk_plot as Tk_plot
 import chinook.Ylm as Ylm 
 import chinook.rotation_lib as rotlib
-
+import chinook.intensity_map as imap
 import chinook.tilt as tilt
+
 
 
 ####PHYSICAL CONSTANTS RELEVANT TO CALCULATION#######
@@ -142,7 +144,7 @@ class experiment:
         self.mfp = ARPES_dict['mfp'] #photoelectron mean free path for escape
         self.dE = ARPES_dict['resolution']['E']/np.sqrt(8*np.log(2)) #energy resolution FWHM
         self.dk = ARPES_dict['resolution']['k']/np.sqrt(8*np.log(2)) #momentum resolution FWHM
-        
+        self.maps = []
         self.SE_args = ARPES_dict['SE']
         
         try:
@@ -612,13 +614,21 @@ class experiment:
             fermi = np.ones(self.cube[2][2])
         return fermi
 
-    def spectral(self,ARPES_dict=None,slice_select=None):
+    def spectral(self,ARPES_dict=None,slice_select=None,add_map = False):
         
         '''
         Take the matrix elements and build a simulated ARPES spectrum. 
         The user has several options here for the self-energy to be used,  c.f. *SE_gen()* for details.
         Gaussian resolution broadening is the last operation performed, to be consistent with the
         practical experiment.
+        
+        *kwargs*:
+            - **ARPES_dict**: dictionary, experimental configuration. See *experiment.__init__* and *experiment.update_pars()*
+            
+            - **slice_select**: tuple, of either int (axis,index format) or string (axis), int format
+            
+            - **add_map**: boolean, add intensity map to list of intensity maps. If true, a list of intensity objects is appended,
+            otherwise, the intensity map is overwritten
         
         *return*:
             - **I**: numpy array of float, raw intensity map.
@@ -668,7 +678,12 @@ class experiment:
         
         if slice_select!=None:
             fig,ax = self.plot_intensity_map(Ig,slice_select)
-            
+        
+        if add_map:
+            self.maps.append(imap.intensity_map(len(self.maps),Ig,self.cube,self.kz,self.T,self.hv,self.pol,self.dE,self.dk,self.SE_args,self.sarpes,self.ang))
+        else:
+            self.maps = [imap.intensity_map(len(self.maps),Ig,self.cube,self.kz,self.T,self.hv,self.pol,self.dE,self.dk,self.SE_args,self.sarpes,self.ang)]
+       
         return I,Ig
 
 
@@ -725,7 +740,7 @@ class experiment:
          return fig,ax
         
     
-    def plot_gui(self,ARPES_dict):
+    def plot_gui(self):
         '''
         Generate the Tkinter gui for exploring the experimental parameter-space
         associated with the present experiment.
@@ -737,7 +752,7 @@ class experiment:
         *return*:
             - **Tk_win**: Tkinter window.
         '''
-        TK_win = Tk_plot.plot_intensity_interface(self,ARPES_dict)
+        TK_win = Tk_plot.plot_intensity_interface(self)
         return TK_win
         
         
@@ -1133,4 +1148,7 @@ def gen_SE_KK(w,SE_args):
 
         return re_interp(w) + im_interp(w)*1.0j
     
+    
+###
+
     

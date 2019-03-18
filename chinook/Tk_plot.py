@@ -46,28 +46,31 @@ import matplotlib.cm as cm
 
 import tkinter as Tk
 from tkinter import messagebox
+
+import chinook.intensity_map as imap
     
 
 
 class plot_intensity_interface:
     
-    def __init__(self,expmnt,Adict):
+    def __init__(self,experiment):
         self.root = Tk.Tk()
-        self.expmnt = expmnt
-        self.Adict = Adict
+        self.experiment = experiment
         print('Initializing spectral function...')
         try:
-            _,self.Imat = self.expmnt.spectral(self.Adict)
+            _,self.Imat = self.experiment.spectral()
         except AttributeError:
             print('Matrix elements have not yet been computed. Initializing matrix elements now...')
-            self.expmnt.datacube(self.Adict)
+            self.experiment.datacube()
             print('Matrix element calculation complete.')
-            _,self.Imat = self.expmnt.spectral(self.Adict)
-        self.Imat_dict = {'I_0':self.Imat}
-        self.meta = {'I_0':self.Adict} #Meta data for use in exporting intensity map to file
-        self.x = self.expmnt.cube[0]
-        self.y = self.expmnt.cube[1]
-        self.w = self.expmnt.cube[2]
+            _,self.Imat = self.experiment.spectral()
+            
+        map_pars = (0,self.Imat,self.experiment.cube,self.experiment.kz,self.experiment.T,self.experiment.hv,self.experiment.pol,self.experiment.dE,self.experiment.dk,self.experiment.SE_args,self.experiment.sarpes,self.experiment.ang)
+
+        self.Imat_dict = {'I_0':imap.intensity_map(*map_pars)}
+        self.x = self.experiment.cube[0]
+        self.y = self.experiment.cube[1]
+        self.w = self.experiment.cube[2]
         self.dx,self.dy,self.dw = (self.x[1]-self.x[0])/self.x[2],(self.y[1]-self.y[0])/self.y[2],(self.w[1]-self.w[0])/self.w[2]
         print('Initializing interface...')
         self.plot_make()
@@ -244,7 +247,7 @@ class plot_intensity_interface:
             #Add a new map to the list of available maps
             def _add_map():
                 
-                tmp_dict = self.Adict.copy()
+                tmp_dict = {}
                 #Define the polarization vector
                 tmp_dict['pol'] = xyz(pol_x.get(),pol_y.get(),pol_z.get())
                 
@@ -256,8 +259,11 @@ class plot_intensity_interface:
                     tmp_dict['spin'] = [-1 if proj_choice=="Down" else 1,np.array([float(sx.get()),float(sy.get()),float(sz.get())])]
                 mat_name = mat_nm.get() if mat_nm.get()!="" else "I_{:d}".format(len(self.Imat_dict))
 
-                _,self.Imat_dict[mat_name] = self.expmnt.spectral(tmp_dict)
-                self.meta[mat_name] = tmp_dict #Save the parameters associated with a given calculation for use in export
+                map_pars = (self.experiment.cube,self.experiment.kz,self.experiment.T,self.experiment.hv,tmp_dict['pol'],self.experiment.dE,self.experiment.dk,self.experiment.SE_args,tmp_dict['spin'],self.experiment.ang)
+                _,Imap = self.experiment.spectral(ARPES_dict = tmp_dict)
+                
+                self.Imat_dict[mat_name] = imap.intensity_map(len(self.Imat_dict.keys()),Imap,*map_pars)
+#                self.meta[mat_name] = tmp_dict #Save the parameters associated with a given calculation for use in export
                 
                 mat_listbox.insert("end",mat_name)            
             
@@ -272,7 +278,7 @@ class plot_intensity_interface:
                     replacement = 'self.Imat_dict["{:s}"]'.format(d)
                     st_raw = st_raw.replace(d,replacement)
                     
-                    self.Imat_dict[d]+= abs(self.Imat_dict[d][np.nonzero(self.Imat_dict[d])]).min()*10**-4 #avoid divergence for division if zeros present
+                    self.Imat_dict[d]+= abs(self.Imat_dict[d].Imat[np.nonzero(self.Imat_dict[d])]).min()*10**-4 #avoid divergence for division if zeros present
                 st_raw = st_raw.replace("SQRT","np.sqrt")
                 st_raw = st_raw.replace("COS","np.cos")
                 st_raw = st_raw.replace("SIN","np.sin")
@@ -284,8 +290,9 @@ class plot_intensity_interface:
                 tmp_mat = eval(st_raw)
                 map_nm = mat_nm.get() if (mat_nm.get()!="" or bool(sum([mat_nm==d for d in self.Imat_dict]))) else "I_{:d}".format(len(self.Imat_dict))
                 mat_listbox.insert("end",map_nm)
-                self.Imat_dict[map_nm] = tmp_mat
-                self.meta[map_nm] = tmp_mat #Save the parameters associated with a given calculation for use in export
+                self.Imat_dict[map_nm] = eval(replacement).copy()
+                self.Imat_dict[map_nm].Imat = tmp_mat
+                self.Imat_dict[map_nm].notes = 'Intensity calculated as: {:s}'.format(st_raw)
 
                 
         
@@ -299,7 +306,7 @@ class plot_intensity_interface:
                 selected = mat_listbox.curselection()[0]
                 try:
                     
-                    self.Imat = self.Imat_dict[mat_listbox.get(selected)]
+                    self.Imat = self.Imat_dict[mat_listbox.get(selected)].Imat
                     sv1 = int((float(slide_1.get())-self.w[0])/(self.dw))
                     sv2 = int((float(slide_2.get())-self.x[0])/(self.dx))
                     sv3 = int((float(slide_3.get())-self.y[0])/(self.dy))
@@ -421,27 +428,29 @@ class plot_intensity_interface:
             name_entry = Tk.Entry(master=ewin,text='UNTITLED')
             name_entry.grid(row=3,column=1)
             
-            def _exp_now():
+            def _export_now():
                 
                 if len(name_entry.get())>0:
                     file_lead=name_entry.get()
                 else:
                     file_lead = 'UNTITLED'
-                self.meta['directory'] = self.destination +'/'+ file_lead
+                filename = self.destination +'/'+ file_lead
                 
-                parfile = self.meta['directory'] + '_params.txt'
+                metafile = filename + '_params.txt'
                 
                 ind_map = mat_listbox.curselection()[0]
                 map_choice = mat_listbox.get(ind_map)
-                self.expmnt.write_params(self.meta[map_choice],parfile)
-                self.expmnt.write_map(self.Imat_dict[map_choice],self.meta['directory'])
+                self.Imat_dict[map_choice].write_meta(metafile)
+                self.Imat_dict[map_choice].save_map(filename)
+#                self.expmnt.write_params(self.meta[map_choice],parfile)
+#                self.expmnt.write_map(self.Imat_dict[map_choice],self.meta['directory'])
                         
                 print('Export Complete')
 
                     
                 
                                 
-            exp_button = Tk.Button(master=ewin,text='Export Data',command=_exp_now)
+            exp_button = Tk.Button(master=ewin,text='Export Data',command=_export_now)
             exp_button.grid(row=4,column=0)
             
             def _quit_ewin():
