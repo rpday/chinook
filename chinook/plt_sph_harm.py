@@ -41,7 +41,7 @@ import matplotlib.cm as cm
 import chinook.Ylm as Ylm
 import matplotlib.tri as mtri
 
-def gen_psi(n,psi,psi_dict,str_nm=None):
+def gen_psi(n,psi,psi_dict,str_nm=None,plot=True):
     th = np.linspace(0,np.pi,2*n)
     ph = np.linspace(0,2*np.pi,2*n)
     th,ph = np.meshgrid(th,ph)
@@ -61,18 +61,18 @@ def gen_psi(n,psi,psi_dict,str_nm=None):
 
     cols = sz[tri.triangles][:,1]
     
-    
-    fig = plt.figure(figsize=plt.figaspect(1)*2)  
-    
-    ax = fig.add_subplot(111,projection='3d')
-    p = ax.plot_trisurf(x,y,z,triangles=tri.triangles,cmap=cm.RdBu,shade=True,antialiased=True,edgecolors='k',linewidth=0.2)
-    p.set_array(cols)
-    p.set_clim(-1.2,1.2)
-    ax._axis3don=False
-    if str_nm is not None:
-        plt.savefig(str_nm,transparent=True)
-
-    return sz
+    if plot:
+        fig = plt.figure(figsize=plt.figaspect(1)*2)  
+        
+        ax = fig.add_subplot(111,projection='3d')
+        p = ax.plot_trisurf(x,y,z,triangles=tri.triangles,cmap=cm.RdBu,shade=True,antialiased=True,edgecolors='k',linewidth=0.2)
+        p.set_array(cols)
+        p.set_clim(-1.2,1.2)
+        ax._axis3don=False
+        if str_nm is not None:
+            plt.savefig(str_nm,transparent=True)
+    return x,y,z,tri.triangles,sz
+#    return sz
 
 
 def plot_psi(n,basis,vec):
@@ -142,7 +142,7 @@ class wavefunction:
         return np.array(proj)
 
 
-def plot_orbital(n,proj):#basis,vec):
+def plot_orbital(n,proj,plot=True):#basis,vec):
     th = np.linspace(0,np.pi,2*n)
     ph = np.linspace(0,2*np.pi,2*n)
     th,ph = np.meshgrid(th,ph)
@@ -156,18 +156,43 @@ def plot_orbital(n,proj):#basis,vec):
 #    ax.cols = r[tri.triangles][:,1]
     cols = col_phase(r[tri.triangles][:,1])
 #    cols =rgb_vals(r[tri.triangles][:,1])
-    fig = plt.figure(figsize=plt.figaspect(1)*2)
-    ax = fig.add_subplot(111,projection='3d')
-    p = ax.plot_trisurf(x,y,z,triangles=tri.triangles,cmap=cm.hsv,antialiased=True,edgecolors='w',linewidth=0.2)
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-    p.set_array(cols)
-    p.set_clim(-np.pi,np.pi)
+    if plot:
+        fig = plt.figure(figsize=plt.figaspect(1)*2)
+        ax = fig.add_subplot(111,projection='3d')
+        p = ax.plot_trisurf(x,y,z,triangles=tri.triangles,cmap=cm.hsv,antialiased=True,edgecolors='w',linewidth=0.2)
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Z')
+        p.set_array(cols)
+        p.set_clim(-np.pi,np.pi)
     
     return x,y,z,tri.triangles,cols,r
 
+def plot_orbital_spin(n,proj,plot=True):
+    th = np.linspace(0,np.pi,2*n)
+    ph = np.linspace(0,2*np.pi,2*n)
+    th,ph = np.meshgrid(th,ph)
+    th,ph = th.flatten(),ph.flatten()
 
+    rd = np.sum(np.array([Ylm.Y(pi[2],pi[3],th,ph)*(pi[0]+1.0j*pi[1]) for pi in proj[:int(len(proj)/2)]]),axis=0)
+    ru = np.sum(np.array([Ylm.Y(pi[2],pi[3],th,ph)*(pi[0]+1.0j*pi[1]) for pi in proj[int(len(proj)/2):]]),axis=0)
+    
+    x = 5*(abs(rd)**2+abs(ru)**2)*np.cos(ph)*np.sin(th)
+    y = 5*(abs(rd)**2+abs(ru)**2)*np.sin(ph)*np.sin(th)
+    z = 5*(abs(rd)**2+abs(ru)**2)*np.cos(th)
+    tri = mtri.Triangulation(th,ph)
+
+    if plot:
+        fig = plt.figure(figsize=plt.figaspect(1)*2)
+        ax = fig.add_subplot(111,projection='3d')
+        p = ax.plot_trisurf(x,y,z,triangles=tri.triangles,cmap=cm.hsv,antialiased=True,edgecolors='w',linewidth=0.2)
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Z')
+        p.set_clim(-np.pi,np.pi)
+    
+    return x,y,z,tri.triangles
+    
 def col_phase(vals):
     x,y=np.real(vals),np.imag(vals)
     return np.arctan2(y,x)
