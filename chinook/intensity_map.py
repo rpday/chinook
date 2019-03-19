@@ -23,7 +23,10 @@ class intensity_map:
         self.self_energy = self_energy
         self.dE = dE
         self.dk = dk
-        self.notes = notes
+        if type(notes)==str:
+            self.notes = notes
+        else:
+            self.notes = 'N/A'
         
     def save_map(self,directory):
         '''
@@ -37,12 +40,13 @@ class intensity_map:
             - boolean
         '''
         self.write_meta(directory+'_meta.txt')
-        if len(np.shape(self.Imat))==3:
+        dim_min = min([a for a in np.shape(self.Imat)])
+        if len(np.shape(self.Imat))==3 and dim_min>1:
             for i in range(np.shape(self.Imat)[2]):
                 filename = directory + '_{:d}.txt'.format(i)
                 self.write_2D_Imat(filename,i)
         else:
-            self.write_2D_Imat(self,directory+'_0.txt',-1)
+            self.write_2D_Imat(directory+'_0.txt',-1)
     
         return True
     
@@ -63,12 +67,12 @@ class intensity_map:
         if index>-1:
             imat = self.Imat[:,:,index]
         else:
-            imat = self.Imat
+            imat = np.squeeze(self.Imat)
                 
         with open(filename,"w") as destination:        
             
             for ii in range(np.shape(imat)[0]):
-                tmpline = " ".join(map(str,imat))
+                tmpline = " ".join(['{:0.04f}'.format(vi) for vi in imat[ii,:]])
                 tmpline+="\n"
                 destination.write(tmpline)
         destination.close()
@@ -92,13 +96,13 @@ class intensity_map:
             tofile.write('Calculation notes: {:s}\n\n'.format(self.notes))
             tofile.write('Temperature: {:0.02f} K\n'.format(self.T))
             tofile.write('Photon Energy: {:0.04f} eV\n'.format(self.hv))
-            tofile.write('Polarization: [{:s}, {:s}, {:s}]\n'.format(self.pol.astype(str)))
+            tofile.write('Polarization: [{:s}, {:s}, {:s}]\n'.format(*self.pol.astype(str)))
             tofile.write('Energy Resolution: {:0.04f} eV\n'.format(self.dE))
             tofile.write('Momentum Resolution: {:0.04f} 1/A\n\n'.format(self.dk))
-            tofile.write('Kx Domain: {:0.04f}, {:0.04f}, {:0.04f} 1/A\n'.format(*self.cube[0]))
-            tofile.write('Ky Domain: {:0.04f}, {:0.04f}, {:0.04f} 1/A\n'.format(*self.cube[1]))
+            tofile.write('Kx Domain: {:0.04f} -> {:0.04f} 1/A, N = {:d}\n'.format(*self.cube[0]))
+            tofile.write('Ky Domain: {:0.04f} -> {:0.04f} 1/A, N = {:d}\n'.format(*self.cube[1]))
             tofile.write('Kz: {:0.04f} 1/A\n'.format(self.kz))
-            tofile.write('Energy Domain: {:0.04f}, {:0.04f}, {:0.04f} eV\n\n'.format(*self.cube[2]))
+            tofile.write('Energy Domain: {:0.04f} -> {:0.04f} eV, N = {:d}\n\n'.format(*self.cube[2]))
             tofile.write('Sample Rotation: {:0.04f}\n'.format(self.rot))
             if self.spin is None:
                 tofile.write('Spin Projection: None\n')
@@ -126,4 +130,9 @@ class intensity_map:
         
         
     def copy(self):
+        '''
+        Copy-by-value of the intensity map object. 
+        *return*:
+            - *intensity_map* object with identical attributes to self.
+        '''
         return intensity_map(self.index,self.Imat,self.cube,self.kz,self.T,self.hv,self.pol,self.dE,self.dk,self.self_energy,self.spin,self.rot)

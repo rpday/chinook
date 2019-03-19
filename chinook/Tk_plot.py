@@ -273,12 +273,14 @@ class plot_intensity_interface:
             #add option of operating on datasets
             def _gen_map():
                 st_raw = op_entry.get()
+                placeholder  = ''
                 for d in self.Imat_dict:
-                    
-                    replacement = 'self.Imat_dict["{:s}"]'.format(d)
+                    before = st_raw
+                    replacement = 'self.Imat_dict["{:s}"].Imat'.format(d)
                     st_raw = st_raw.replace(d,replacement)
-                    
-                    self.Imat_dict[d]+= abs(self.Imat_dict[d].Imat[np.nonzero(self.Imat_dict[d])]).min()*10**-4 #avoid divergence for division if zeros present
+                    if st_raw!=before:
+                        placeholder = d
+                    self.Imat_dict[d].Imat+=  abs(self.Imat_dict[d].Imat[np.nonzero(self.Imat_dict[d].Imat)]).min()*10**-4#avoid divergence for division if zeros present
                 st_raw = st_raw.replace("SQRT","np.sqrt")
                 st_raw = st_raw.replace("COS","np.cos")
                 st_raw = st_raw.replace("SIN","np.sin")
@@ -290,8 +292,9 @@ class plot_intensity_interface:
                 tmp_mat = eval(st_raw)
                 map_nm = mat_nm.get() if (mat_nm.get()!="" or bool(sum([mat_nm==d for d in self.Imat_dict]))) else "I_{:d}".format(len(self.Imat_dict))
                 mat_listbox.insert("end",map_nm)
-                self.Imat_dict[map_nm] = eval(replacement).copy()
-                self.Imat_dict[map_nm].Imat = tmp_mat
+#                tmp_mat = eval(replacement).copy()
+                self.Imat_dict[map_nm] = self.Imat_dict[placeholder].copy()
+                self.Imat_dict[map_nm].Imat = tmp_mat.copy()
                 self.Imat_dict[map_nm].notes = 'Intensity calculated as: {:s}'.format(st_raw)
 
                 
@@ -440,7 +443,7 @@ class plot_intensity_interface:
                 
                 ind_map = mat_listbox.curselection()[0]
                 map_choice = mat_listbox.get(ind_map)
-                self.Imat_dict[map_choice].write_meta(metafile)
+#                self.Imat_dict[map_choice].write_meta(metafile)
                 self.Imat_dict[map_choice].save_map(filename)
 #                self.expmnt.write_params(self.meta[map_choice],parfile)
 #                self.expmnt.write_map(self.Imat_dict[map_choice],self.meta['directory'])
