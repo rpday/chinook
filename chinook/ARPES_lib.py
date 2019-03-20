@@ -141,12 +141,14 @@ class experiment:
                 return None
 
         self.hv = ARPES_dict['hv']
-        self.mfp = ARPES_dict['mfp'] #photoelectron mean free path for escape
         self.dE = ARPES_dict['resolution']['E']/np.sqrt(8*np.log(2)) #energy resolution FWHM
         self.dk = ARPES_dict['resolution']['k']/np.sqrt(8*np.log(2)) #momentum resolution FWHM
         self.maps = []
         self.SE_args = ARPES_dict['SE']
-        
+        try:
+            self.mfp = ARPES_dict['mfp'] #photoelectron mean free path for escape
+        except KeyError:
+            self.mfp = 10.0
         try:
             self.kz = ARPES_dict['cube']['kz']    
         except KeyError:
@@ -179,6 +181,10 @@ class experiment:
             self.rad_args = ARPES_dict['rad_args']
         except KeyError:
             self.rad_args = None
+        try:
+            self.slit = ARPES_dict['slit']
+        except KeyError:
+            self.slit = 'H'
         try:
             self.truncate = ARPES_dict['slab']
         except KeyError:
@@ -556,30 +562,60 @@ class experiment:
 
         return SE
             
-    def spin_projector(self):
+    def smat_gen(self,svector=None):
+        '''
+        Define the spin-projection matrix related to a spin-resolved ARPES experiment.
+        
+        *return*:
+            - **Smat**: numpy array of 2x2 complex float corresponding to Pauli operator along the desired direction
+        '''
+        try:
+            sv = svector/np.linalg.norm(svector)
+        except TypeError:
+            try:              
+                sv = self.sarpes[1]/np.linalg.norm(self.sarpes[1])
+            except IndexError:
+                print('ERROR: Invalid spin-entry. See documentation for ARPES_lib.experiment')
+                return None
+        th = np.arccos(sv[2])
+        ph = np.arctan2(sv[1],sv[0])
+        if abs(self.ang)>0:
+            ph+=self.ang
+        Smat = np.array([[np.cos(th/2),np.exp(-1.0j*ph)*np.sin(th/2)],[np.sin(th/2),-np.exp(-1.0j*ph)*np.cos(th/2)]])
+        return Smat
+        
+    def sarpes_projector(self):
         '''
         For use in spin-resolved ARPES experiments, project the computed
         matrix element values onto the desired spin-projection direction.
         In the event that the spin projection direction is not along the 
         standard out-of-plane quantization axis, we rotate the matrix elements
         computed into the desired basis direction.
-
+            
         *return*:
             - **spin_projected_Mk**: numpy array of complex float with same
             shape as *Mk*
         '''
-
-        try:              
-            sv = self.sarpes[1]/np.linalg.norm(self.sarpes[1])
-        except IndexError:
-            print('ERROR: Invalid spin-entry. See documentation for ARPES_lib.experiment')
-            return None
-        th = np.arccos(sv[2])
-        ph = np.arctan2(sv[1],sv[0])
-        if abs(self.ang)>0:
-            ph+=self.ang
-        Smat = np.array([[np.cos(th/2),np.exp(-1.0j*ph)*np.sin(th/2)],[np.sin(th/2),-np.exp(-1.0j*ph)*np.cos(th/2)]])
-        spin_projected_Mk = np.swapaxes(np.dot(Smat,self.Mk),0,1)             
+        if self.coord_type == 'momentum':
+            Smat = self.smat_gen()
+            spin_projected_Mk = np.einsum('ij,kjl->kil',Smat,self.Mk)            
+        elif self.coord_type == 'angle':
+            if self.slit=='H':
+                th =0.5*(self.cube[0][0]+self.cube[0][1])
+                phvals = np.linspace(*self.cube[1])
+#                th = 0.0
+#                phvals = np.zeros(self.cube[1][2])
+                Rmats = np.array([np.matmul(rotlib.Rodrigues_Rmat(np.array([1,0,0]),-ph),rotlib.Rodrigues_Rmat(np.array([0,1,0]),-th)) for ph in phvals])
+            elif self.slit=='V':
+                ph = 0.5*(self.cube[1][0]+self.cube[1][1])
+                thvals = np.linspace(*self.cube[0])
+                Rmats = np.array([np.matmul(rotlib.Rodrigues_Rmat(np.array([0,np.cos(-ph),np.sin(-ph)]),-th),rotlib.Rodrigues_Rmat(np.array([1,0,0])-ph)) for th in thvals])
+                
+            svectors = np.einsum('ijk,k->ij',Rmats,self.sarpes[1])
+            Smats = np.array([self.smat_gen(sv) for sv in svectors])
+            all_mats = Smats[np.array([int(self.pks[i,1]) for i in range(len(self.pks))])]
+            spin_projected_Mk = np.einsum('ijk,ikl->ijl',all_mats,self.Mk)
+            
         return spin_projected_Mk
     
     def gen_all_pol(self):
@@ -594,8 +630,16 @@ class experiment:
             expressed in basis of spherical harmonics
         '''
         
-        thvals = np.linspace(*self.cube[1])
-        Rmats = np.array([rotlib.Rodrigues_Rmat(np.array([1,0,0]),0) for th in thvals])
+        if self.slit=='H':
+            th =0.5*(self.cube[0][0]+self.cube[0][1])
+            phvals = np.linspace(*self.cube[1])
+#            th = 0.0
+#            phvals = np.zeros(self.cube[1][2])
+            Rmats = np.array([np.matmul(rotlib.Rodrigues_Rmat(np.array([1,0,0]),-ph),rotlib.Rodrigues_Rmat(np.array([0,1,0]),-th)) for ph in phvals])
+        elif self.slit=='V':
+            ph = 0.5*(self.cube[1][0]+self.cube[1][1])
+            thvals = np.linspace(*self.cube[0])
+            Rmats = np.array([np.matmul(rotlib.Rodrigues_Rmat(np.array([0,np.cos(-ph),np.sin(-ph)]),-th),rotlib.Rodrigues_Rmat(np.array([1,0,0])-ph)) for th in thvals])
         rot_pols = np.einsum('ijk,k->ij',Rmats,self.pol)
         rot_pols_sph = pol_2_sph(rot_pols)
         peak_pols = np.array([rot_pols_sph[int(self.pks[i,1])] for i in range(len(self.pks))])
@@ -643,11 +687,16 @@ class experiment:
         
         if self.sarpes is not None:
             spin_Mk = self.sarpes_projector()
-            M_factor = np.power(abs(np.einsum('ik,k->i',spin_Mk[:,int((self.sarpes[0]+1)/2),:],pol)),2)
+            if self.coord_type == 'momentum':
+                
+                M_factor = np.power(abs(np.einsum('ij,j->i',spin_Mk[:,int((self.sarpes[0]+1)/2),:],pol)),2)
+            elif self.coord_type == 'angle':
+                all_pol = self.gen_all_pol()
+                M_factor = np.power(abs(np.einsum('ij,ij->i',spin_Mk[:,int((self.sarpes[0]+1)/2),:],all_pol)),2)
         else:
-            if self.coord_type=='momentum':
+            if self.coord_type == 'momentum':
                 M_factor = np.sum(np.power(abs(np.einsum('ijk,k->ij',self.Mk,pol)),2),axis=1)
-            elif self.coord_type=='angle':
+            elif self.coord_type == 'angle':
                 all_pol = self.gen_all_pol()
                 M_factor = np.sum(np.power(abs(np.einsum('ijk,ik->ij',self.Mk,all_pol)),2),axis=1)                
         
