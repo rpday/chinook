@@ -10,10 +10,250 @@ Calculation of Density of States
 
 import sys
 import numpy as np
+from scipy.special import erf
 import matplotlib.pyplot as plt
 import chinook.tetrahedra as tetrahedra
 
 
+
+def dos_broad(TB,NK,NE=None,dE=None,origin = np.zeros(3)):
+    '''
+    Energy-broadened discrete density of states calculation.
+    The Hamiltonian is diagonalized over the kmesh defined by NK and
+    states are summed, as energy-broadened Gaussian peaks, rather than
+    delta functions. 
+    
+    *args*:
+        - **TB**: tight-binding model object
+        
+        - **NK**: int, or tuple of int, indicating number of k-points
+        
+    *kwargs*:
+        - **NE**: int, number of energy bins for final output
+        
+        - **dE**: float, energy broadening of peaks, eV
+        
+        - **origin**: numpy array of 3 float, indicating the origin of the mesh to be used,
+        relevant for example in kz-specific contributions to density of states
+        
+    *return*:
+        - **DOS**: numpy array of float, density-of-states in states/eV
+        
+        - **Elin**: numpy array of float, energy domain in eV
+    
+    '''
+    kpts = tetrahedra.gen_mesh(TB.avec,NK)+origin
+    TB.Kobj.kpts = kpts
+    TB.solve_H()
+    print('Diagonalization complete')
+    if dE is None:
+        dE = def_dE(TB.Eband)
+
+    Elin = np.arange(TB.Eband.min()-10*dE,TB.Eband.max()+10*dE,dE*0.5)
+    DOS = np.zeros(len(Elin))
+    for ki in range(len(kpts)):
+        sys.stdout.write('\r'+progress_bar(ki+1,len(kpts)))
+        for bi in range(len(TB.basis)): #iterate over all bands
+
+            tmp_add =  gaussian(TB.Eband[ki,bi],Elin,dE)
+            DOS+=tmp_add
+    print('\n')
+    DOS = DOS/len(kpts)
+    if NE is not None:
+        E_resample = np.linspace(Elin[0],Elin[-1],NE)
+        DOS_resample = np.interp(E_resample,Elin,DOS)
+        DOS = DOS_resample
+        Elin = E_resample
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(Elin,DOS)
+    
+    return DOS,Elin
+
+
+def def_dE(Eband):
+    
+    '''
+    If energy broadening is not passed for density-of-states calculation,
+    compute a reasonable value based on the energy between adjacent energies
+    in the tight-binding calculation
+    
+    *args*:
+        - **Eband**: numpy array of float, indicating band energies
+        
+    *return*:
+        **dE**: float, energy broadening, as the smallest average energy spacing
+        over all bands.
+    
+    '''
+    
+    dE = Eband.max()-Eband.min()
+    for bi in range(np.shape(Eband)[1]):
+        diff = abs(Eband[1:,bi]-Eband[:-1,bi]).mean()
+        if dE>diff:
+            dE = diff
+    print('Broadening: {:0.04f} eV\n'.format(dE))
+    return dE
+
+def ne_broad_numerical(TB,NK,NE=None,dE=None,origin=np.zeros(3)):
+    '''
+    Occupation function, as a numerical integral over the density of states function.
+    
+    
+    *args*:
+        - **TB**: tight-binding model object
+        
+        - **NK**: int, or tuple of int, indicating number of k-points
+        
+    *kwargs*:
+        - **NE**: int, number of energy bins for final output
+        
+        - **dE**: float, energy spacing of bins, in eV
+        
+        - **origin**: numpy array of 3 float, indicating the origin of the mesh to be used,
+        relevant for example in kz-specific contributions to density of states
+        
+    *return*:
+        - **ne**: numpy array of float, integrated density-of-states at each energy
+        
+        - **Elin**: numpy array of float, energy domain in eV
+    '''
+    DOS,Elin = dos_broad(TB,NK,NE,dE,origin)
+    delta = Elin[1]-Elin[0]
+    ne = np.zeros(len(Elin))
+    for ii in range(len(Elin)):
+        if ii==0:
+            val = (2*DOS[ii]+DOS[ii+1])/3
+        elif ii==(len(Elin)-1):
+            val = (2*DOS[ii] + DOS[ii-1])/3
+            ne[ii] = ne[ii-1]
+        else:
+            val = (DOS[ii-1]+DOS[ii]*2 + DOS[ii+1])/4
+            ne[ii] = ne[ii-1]
+        ne[ii] += val*delta
+    return ne,Elin
+
+
+def find_EF(TB,NK,occ,NE=None,dE=None,origin=np.zeros(3)):
+    '''
+    Find the Fermi level of a model Hamiltonian, for a designated electronic
+    occupation. Note this is evaluated at T=0, so EF is well-defined.
+    *args*:
+        - **TB**: tight-binding model object
+        
+        - **NK**: int, or tuple of int, indicating number of k-points
+        
+        - **occ**: float, desired electronic occupation
+        
+    *kwargs*:
+        - **NE**: int, number of energy bins for final output
+        
+        - **dE**: float, energy spacing of bins, in eV
+        
+        - **origin**: numpy array of 3 float, indicating the origin of the mesh to be used,
+        relevant for example in kz-specific contributions to density of states
+        
+    *return*:
+        - **EF**: float, Fermi level in eV
+    '''
+    
+    ne,Elin = ne_broad_numerical(TB,NK,NE,dE,origin)
+    ind_EF = np.where(ne>occ)[0][0]
+    EF = Elin[ind_EF]
+    print('Fermi Energy is at: {:0.05f}+/-{:0.06f} eV'.format(EF,Elin[1]-Elin[0]))
+    return EF
+    
+        
+        
+def ne_broad_analytical(TB,NK,NE=None,dE=None,origin=np.zeros(3)):
+    '''
+    Analytical evaluation of the occupation function. Uses scipy's errorfunction
+    executable to evaluate the analytical form of a Gaussian-broadened state's contribution
+    to the total occupation, at each energy
+    
+    *args*:
+        - **TB**: tight-binding model object
+        
+        - **NK**: int, or tuple of int, indicating number of k-points
+        
+    *kwargs*:
+        - **NE**: int, number of energy bins for final output
+        
+        - **dE**: float, energy spacing of bins, in eV
+        
+        - **origin**: numpy array of 3 float, indicating the origin of the mesh to be used,
+        relevant for example in kz-specific contributions to density of states
+        
+    *return*:
+        - **nE**: numpy array of float, occupied states
+        
+        - **Elin**: numpy array of float, energy domain in eV
+    '''
+    kpts = tetrahedra.gen_mesh(TB.avec,NK)+origin
+    TB.Kobj.kpts = kpts
+    TB.solve_H()
+    print('Diagonalization complete')
+
+    if dE is None:
+        dE = def_dE(TB.Eband)
+    Elin = np.arange(TB.Eband.min()-10*dE,TB.Eband.max()+10*dE,dE*0.5)
+
+    nE = np.zeros(len(Elin))
+    for ki in range(len(kpts)):
+        sys.stdout.write('\r'+progress_bar(ki+1,len(kpts)))
+        for bi in range(len(TB.basis)): #iterate over all bands
+
+            tmp_add =  error_function(TB.Eband[ki,bi],Elin,dE)
+            nE+=tmp_add
+    print('\n')
+    nE /=len(kpts)
+    if NE is not None:
+        E_resample = np.linspace(Elin[0],Elin[-1],NE)
+        nE_resample = np.interp(E_resample,Elin,nE)
+        Elin = E_resample
+        nE = nE_resample
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(Elin,nE)
+
+    
+    return nE,Elin
+
+
+
+    
+def error_function(x0,x,sigma):
+    
+    '''
+    Integral over the gaussian function, evaluated from -infinity to x
+    
+    *args*:
+        - **x0**: float, centre of Gaussian, in eV
+        
+        - **x**: numpy array of float, energy domain eV
+        
+        - **sigma**: float, width of Gaussian, in eV
+        
+    *return*:
+        - analytical form of integral
+    
+    '''
+    return 0.5*(erf((x-x0)/(np.sqrt(2)*sigma))+1)      
+            
+            
+            
+def gaussian(x0,x,sigma):
+    '''
+    Evaluate a normalized Gaussian function.
+    
+    *args*:
+        - **x0**: float, centre of peak, in eV
+        
+        - **x**: numpy array of float, energy domain in eV
+        
+        - **sigma**: float, width of Gaussian, in eV
+    '''
+    return np.exp(-(x-x0)**2/(2*sigma**2))*np.sqrt(1/(2*np.pi))/sigma
 ################# Density of States following the Blochl Prescription #######################
 ###############https://journals.aps.org/prb/pdf/10.1103/PhysRevB.49.16223####################
     
@@ -209,6 +449,7 @@ def dos_func(energy,epars):
     *return*:
         - numpy array of float giving DOS contribution from this tetrahedron
     '''
+    print(epars)
     return np.piecewise(energy,[energy<epars[0],(epars[0]<=energy)*(energy<epars[1]),(epars[1]<=energy)*(energy<epars[2]),(epars[2]<=energy)*(energy<epars[3]),energy>=epars[3]],[e_out,e_12,e_23,e_34,e_out],epars)
 
 
@@ -221,7 +462,7 @@ def e_12(energy,epars):
 def e_23(energy,epars):
     e21,e31,e41,e42,e32 = epars[1]-epars[0],epars[2]-epars[0],epars[3]-epars[0],epars[3]-epars[1],epars[2]-epars[1]
     e2 = energy-epars[1]
-    return epars[4]/epars[5]/e31/e41*(3*e21+6*e2-3*(e31+e42)/e32/e42*e2**2)
+    return epars[4]/epars[5]/e31/e41*(3*e21+6*e2-3*(e31+e42)/(e32*e42)*e2**2)
 
 def e_34(energy,epars):
     return epars[4]/epars[5]*3*(epars[3]-energy)**2/(epars[3]-epars[0])/(epars[3]-epars[1])/(epars[3]-epars[2])

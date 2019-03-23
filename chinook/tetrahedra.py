@@ -114,6 +114,17 @@ def tet_inds():
     return tetra_inds
 
 
+def gen_mesh(avec,N):
+    if type(N)==int:
+        N = (N,N,N)
+        
+    b_vec = klib.bvectors(avec)
+    x,y,z = np.linspace(0,1,N[0]),np.linspace(0,1,N[1]),np.linspace(0,1,N[2])
+    X,Y,Z = np.meshgrid(x,y,z)
+    X,Y,Z = X.flatten(),Y.flatten(),Z.flatten()
+    pts = np.dot(np.array([[X[i],Y[i],Z[i]] for i in range(len(X))]),b_vec)
+    return pts
+
 def mesh_tetra(avec,N):
     '''
     An equivalent definition of a spanning grid over the Brillouin zone is just
@@ -137,14 +148,7 @@ def mesh_tetra(avec,N):
         which partition the grid
         
     '''
-    if type(N)==int:
-        N = (N,N,N)
-        
-    b_vec = klib.bvectors(avec)
-    x,y,z = np.linspace(0,1,N[0]),np.linspace(0,1,N[1]),np.linspace(0,1,N[2])
-    X,Y,Z = np.meshgrid(x,y,z)
-    X,Y,Z = X.flatten(),Y.flatten(),Z.flatten()
-    pts = np.dot(np.array([[X[i],Y[i],Z[i]] for i in range(len(X))]),b_vec)
+    pts = gen_mesh(avec,N)
 
     ti = tet_inds()
     
