@@ -603,17 +603,16 @@ class experiment:
             if self.slit=='H':
                 th =0.5*(self.cube[0][0]+self.cube[0][1])
                 phvals = np.linspace(*self.cube[1])
-#                th = 0.0
-#                phvals = np.zeros(self.cube[1][2])
+                pk_index = 1
                 Rmats = np.array([np.matmul(rotlib.Rodrigues_Rmat(np.array([1,0,0]),-ph),rotlib.Rodrigues_Rmat(np.array([0,1,0]),-th)) for ph in phvals])
             elif self.slit=='V':
                 ph = 0.5*(self.cube[1][0]+self.cube[1][1])
                 thvals = np.linspace(*self.cube[0])
                 Rmats = np.array([np.matmul(rotlib.Rodrigues_Rmat(np.array([0,np.cos(-ph),np.sin(-ph)]),-th),rotlib.Rodrigues_Rmat(np.array([1,0,0])-ph)) for th in thvals])
-                
+                pk_index = 2
             svectors = np.einsum('ijk,k->ij',Rmats,self.sarpes[1])
             Smats = np.array([self.smat_gen(sv) for sv in svectors])
-            all_mats = Smats[np.array([int(self.pks[i,1]) for i in range(len(self.pks))])]
+            all_mats = Smats[np.array([int(self.pks[i,pk_index]) for i in range(len(self.pks))])]
             spin_projected_Mk = np.einsum('ijk,ikl->ijl',all_mats,self.Mk)
             
         return spin_projected_Mk
@@ -636,13 +635,15 @@ class experiment:
 #            th = 0.0
 #            phvals = np.zeros(self.cube[1][2])
             Rmats = np.array([np.matmul(rotlib.Rodrigues_Rmat(np.array([1,0,0]),-ph),rotlib.Rodrigues_Rmat(np.array([0,1,0]),-th)) for ph in phvals])
+            pk_index = 1
         elif self.slit=='V':
             ph = 0.5*(self.cube[1][0]+self.cube[1][1])
             thvals = np.linspace(*self.cube[0])
             Rmats = np.array([np.matmul(rotlib.Rodrigues_Rmat(np.array([0,np.cos(-ph),np.sin(-ph)]),-th),rotlib.Rodrigues_Rmat(np.array([1,0,0])-ph)) for th in thvals])
+            pk_index = 2
         rot_pols = np.einsum('ijk,k->ij',Rmats,self.pol)
         rot_pols_sph = pol_2_sph(rot_pols)
-        peak_pols = np.array([rot_pols_sph[int(self.pks[i,1])] for i in range(len(self.pks))])
+        peak_pols = np.array([rot_pols_sph[int(self.pks[i,pk_index])] for i in range(len(self.pks))])
         return peak_pols
 
     def T_distribution(self):

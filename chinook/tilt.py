@@ -53,7 +53,7 @@ def ang_mesh(N,th,ph):
 def k_mesh(Tmesh,Pmesh,ek):
     '''
     Application of rotation to a normal-emission vector (i.e. (0,0,1) vector)
-    Third column of a rotation matrix formed by product of rotation about vertical, and rotation around tilt axis
+    Third column of a rotation matrix formed by product of rotation about vertical (ky), and rotation around kx axis
     c.f. Labbook 28 December, 2018
     
     *args*:
@@ -67,7 +67,8 @@ def k_mesh(Tmesh,Pmesh,ek):
         - **kvec**: numpy array of float, in-plane momentum array associated with angular emission coordinates
     '''
     klen = k_parallel(ek)
-    kvec = klen*np.array([np.sin(Tmesh),-np.cos(Tmesh)*np.sin(Pmesh),np.cos(Tmesh)*np.cos(Pmesh)])
+    kvec = klen*np.array([-np.sin(Tmesh),-np.cos(Tmesh)*np.sin(Pmesh),np.cos(Tmesh)*np.cos(Pmesh)])
+
     return kvec
 
 
@@ -110,9 +111,27 @@ def plot_mesh(ek,N,th,ph):
     ax.set_aspect(1)
 #    
 
-def gen_kpoints(ek,N,th,ph,kz):
-    Th,Ph = ang_mesh(N,th,ph)
-    kv = k_mesh(Th,Ph,ek)
+def gen_kpoints(ek,N,thx,thy,kz):
+    '''
+    Generate a mesh of kpoints over a mesh of emission angles.
+    
+    *args*:
+        - **ek**: float, kinetic energy, eV
+        
+        - **N**: tuple of 2 int, number of points along each axis
+        
+        - **thx**: tuple of 2 float, range of horizontal angles, radian
+        
+        - **thy**: tuple of 2 float, range of vertical angles, radian
+        
+        - **kz**: float, k-perpendicular of interest, inverse Angstrom
+        
+    *return*:
+        - **k_array**: numpy array of N[1]xN[0] float, corresponding to mesh of in-plane momenta
+        
+    '''
+    Thx,Thy = ang_mesh(N,thx,thy)
+    kv = k_mesh(Thx,Thy,ek)
     kx = kv[0,:,:].flatten()
     ky = kv[1,:,:].flatten()
     k_array = np.array([[kx[i],ky[i],kz] for i in range(len(kx))])
@@ -126,4 +145,9 @@ if __name__ == "__main__":
     To = 0
     Tlims = [-13*rad+To*rad,13*rad+To*rad]
     Plims = [-25*rad,25*rad]
-    plot_mesh(10,N,Tlims,Plims)
+    #plot_mesh(10,N,Tlims,Plims)
+    
+    kp = gen_kpoints(21,(20,30),(-1,0),(0,3),0)
+    fig  = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.scatter(kp[:,0],kp[:,1])
