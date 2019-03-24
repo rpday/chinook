@@ -158,6 +158,10 @@ class experiment:
         except KeyError:
             self.W = 4.0
         try:
+            self.Vo = ARPES_dict['Vo']
+        except KeyError:
+            self.Vo = -1
+        try:
             self.ang = ARPES_dict['angle']
         except KeyError:
             self.ang = 0.0
@@ -244,6 +248,8 @@ class experiment:
             self.SE_args = ARPES_dict['SE']
         if 'pol' in ARPES_dict.keys():
             self.pol = ARPES_dict['pol']
+        if 'slit' in ARPES_dict.keys():
+            self.slit = ARPES_dict['slit']
         if datacube:
             if 'hv' in ARPES_dict.keys():
                 self.hv = ARPES_dict['hv']
@@ -251,6 +257,8 @@ class experiment:
                 self.rad_type = ARPES_dict['rad_type']
             if 'rad_args' in ARPES_dict.keys():
                 self.rad_args = ARPES_dict['rad_args']
+            if 'Vo' in ARPES_dict.keys():
+                self.Vo = ARPES_dict['Vo']
             if 'kz' in ARPES_dict.keys():
                 self.kz = ARPES_dict['kz']
             if 'mfp' in ARPES_dict.keys():
@@ -268,6 +276,13 @@ class experiment:
             None, however *experiment* attributes *X*, *Y*, *ph*, *TB.Kobj*, *Eb*, *Ev*, *cube*
             are modified.
         '''
+        if self.Vo>0:
+            
+            kn = (self.hv-self.W)
+            Vo_args =[self.Vo,kn]
+        else:
+            Vo_args = None
+            
         if self.coord_type=='momentum':
             x = np.linspace(*self.cube[0])
             y = np.linspace(*self.cube[1])
@@ -276,7 +291,8 @@ class experiment:
             self.X = X
             self.Y = Y
             
-            k_arr,self.ph = K_lib.kmesh(self.ang,self.X,self.Y,self.kz)      
+            k_arr,self.ph = K_lib.kmesh(self.ang,self.X,self.Y,self.kz,Vo_args)      
+            
     
         elif self.coord_type=='angle':
             k_arr = tilt.gen_kpoints(self.hv-self.W,(self.cube[0][2],self.cube[1][2]),self.cube[0][:2],self.cube[1][:2],self.kz)
@@ -598,18 +614,21 @@ class experiment:
         '''
         if self.coord_type == 'momentum':
             Smat = self.smat_gen()
-            spin_projected_Mk = np.einsum('ij,kjl->kil',Smat,self.Mk)            
+            spin_projected_Mk = np.einsum('ij,kjl->kil',Smat,self.Mk)
+            
         elif self.coord_type == 'angle':
             if self.slit=='H':
                 th =0.5*(self.cube[0][0]+self.cube[0][1])
                 phvals = np.linspace(*self.cube[1])
                 pk_index = 1
+                
                 Rmats = np.array([np.matmul(rotlib.Rodrigues_Rmat(np.array([1,0,0]),-ph),rotlib.Rodrigues_Rmat(np.array([0,1,0]),-th)) for ph in phvals])
             elif self.slit=='V':
                 ph = 0.5*(self.cube[1][0]+self.cube[1][1])
                 thvals = np.linspace(*self.cube[0])
                 Rmats = np.array([np.matmul(rotlib.Rodrigues_Rmat(np.array([0,np.cos(-ph),np.sin(-ph)]),-th),rotlib.Rodrigues_Rmat(np.array([1,0,0])-ph)) for th in thvals])
                 pk_index = 2
+                
             svectors = np.einsum('ijk,k->ij',Rmats,self.sarpes[1])
             Smats = np.array([self.smat_gen(sv) for sv in svectors])
             all_mats = Smats[np.array([int(self.pks[i,pk_index]) for i in range(len(self.pks))])]
@@ -632,15 +651,15 @@ class experiment:
         if self.slit=='H':
             th =0.5*(self.cube[0][0]+self.cube[0][1])
             phvals = np.linspace(*self.cube[1])
-#            th = 0.0
-#            phvals = np.zeros(self.cube[1][2])
             Rmats = np.array([np.matmul(rotlib.Rodrigues_Rmat(np.array([1,0,0]),-ph),rotlib.Rodrigues_Rmat(np.array([0,1,0]),-th)) for ph in phvals])
             pk_index = 1
+            
         elif self.slit=='V':
             ph = 0.5*(self.cube[1][0]+self.cube[1][1])
             thvals = np.linspace(*self.cube[0])
-            Rmats = np.array([np.matmul(rotlib.Rodrigues_Rmat(np.array([0,np.cos(-ph),np.sin(-ph)]),-th),rotlib.Rodrigues_Rmat(np.array([1,0,0])-ph)) for th in thvals])
+            Rmats = np.array([np.matmul(rotlib.Rodrigues_Rmat(np.array([0,np.cos(-ph),np.sin(-ph)]),-th),rotlib.Rodrigues_Rmat(np.array([1,0,0]),-ph)) for th in thvals])
             pk_index = 2
+            
         rot_pols = np.einsum('ijk,k->ij',Rmats,self.pol)
         rot_pols_sph = pol_2_sph(rot_pols)
         peak_pols = np.array([rot_pols_sph[int(self.pks[i,pk_index])] for i in range(len(self.pks))])
@@ -684,18 +703,20 @@ class experiment:
 
             self.update_pars(ARPES_dict)
         
-        pol = pol_2_sph(self.pol)
         
         if self.sarpes is not None:
             spin_Mk = self.sarpes_projector()
             if self.coord_type == 'momentum':
-                
+                pol = pol_2_sph(self.pol)
+
                 M_factor = np.power(abs(np.einsum('ij,j->i',spin_Mk[:,int((self.sarpes[0]+1)/2),:],pol)),2)
             elif self.coord_type == 'angle':
                 all_pol = self.gen_all_pol()
                 M_factor = np.power(abs(np.einsum('ij,ij->i',spin_Mk[:,int((self.sarpes[0]+1)/2),:],all_pol)),2)
         else:
             if self.coord_type == 'momentum':
+                pol = pol_2_sph(self.pol)
+
                 M_factor = np.sum(np.power(abs(np.einsum('ijk,k->ij',self.Mk,pol)),2),axis=1)
             elif self.coord_type == 'angle':
                 all_pol = self.gen_all_pol()
