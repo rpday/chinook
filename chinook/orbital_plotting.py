@@ -156,7 +156,7 @@ class wavefunction:
         
                 
             
-    def plot_wavefunction(self,n):
+    def triangulate_wavefunction(self,n,plotting=True):
         '''
         Plot the wavefunction stored in the class attributes as self.vector as a projection
         over the basis of spherical harmonics. The radial wavefunctions are not explicitly included,
@@ -180,7 +180,7 @@ class wavefunction:
         all_Ylm = self.calc_Ylm(th,ph)
         
         if len(self.centres)>1:
-            ad = np.mean(np.array([np.linalg.norm(self.centres[i]-self.centres[j]) for i in range(len(self.centres)) for j in range(i,len(self.centres))]))
+            ad = 0.5*np.mean(np.array([np.linalg.norm(self.centres[i]-self.centres[j]) for i in range(len(self.centres)) for j in range(i,len(self.centres))]))
         else:
             ad = 4.0
             
@@ -189,9 +189,6 @@ class wavefunction:
         radii = np.zeros((ncentres,len(th)),dtype=complex)
         triangulations = mtri.Triangulation(th,ph)
         colours = []
-        print('vert',np.shape(vertices))
-        print('xy',np.shape(np.cos(th)))
-        print('rad',np.shape(radii[0]))
         
         for bi in range(len(self.basis)):
 
@@ -199,12 +196,26 @@ class wavefunction:
         
         rescale = ad/np.mean(abs(radii)**2)
         for ni in range(ncentres):
-            vertices[ni,:,:]+=rescale*0.25*np.array([abs(radii[ni])**2*np.cos(ph)*np.sin(th),abs(radii[ni])**2*np.sin(th)*np.sin(ph),abs(radii[ni])**2*np.cos(th)]).T
+            vertices[ni,:,:]+=rescale*np.array([abs(radii[ni])**2*np.cos(ph)*np.sin(th),abs(radii[ni])**2*np.sin(th)*np.sin(ph),abs(radii[ni])**2*np.cos(th)]).T
             colours.append(col_phase(radii[ni,triangulations.triangles][:,1]))
             vertices[ni,:]+=self.centres[ni]
+            
+        colours = np.array(colours)
+        if plotting:
+            
+            _ = self.plot_wavefunction(vertices,triangulations,colours)
+            
+        return vertices,triangulations,colours
+    
+    
+    def plot_wavefunction(self,vertices,triangulations,colours,plot_ax = None):
+        ncentres = len(self.centres)
         plots = []
-        fig = plt.figure()
-        ax = fig.add_subplot(111,projection='3d')
+        if plot_ax is None:
+            fig = plt.figure()
+            ax = fig.add_subplot(111,projection='3d')
+        else:
+            ax = plot_ax
         for ni in range(ncentres):
             plots.append(ax.plot_trisurf(vertices[ni,:,0],vertices[ni,:,1],vertices[ni,:,2],triangles=triangulations.triangles,cmap=cm.hsv,antialiased=True,edgecolors='w',linewidth=0.2))
             plots[-1].set_array(colours[ni])
@@ -213,8 +224,8 @@ class wavefunction:
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
-        plt.colorbar(plots[-1],ax=ax)
-        return vertices,triangulations,np.array(colours)
+       # plt.colorbar(plots[-1],ax=ax)
+        return plots
             
 
 def make_angle_mesh(n):

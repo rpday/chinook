@@ -268,7 +268,7 @@ def plt_pts(pts):
     
 
 
-def kmesh(ang,X,Y,kz):
+def kmesh(ang,X,Y,kz,Vo=None):
     '''
     Take a mesh of kx and ky with fixed kz and generate a Nx3 array of points
     which rotates the mesh about the z axis by **ang**. N is the flattened shape
@@ -282,6 +282,9 @@ def kmesh(ang,X,Y,kz):
         - **Y**: numpy array of float, second coordinate of meshgrid
         
         - **kz**: float, third dimension of momentum path, fixed
+        
+    *kwargs*:
+        - **Vo**: parameters necessary for inclusion of inner potential
         
     *return*:
         - **k_arr**: numpy array of shape Nx3 float, rotated  kpoint array.
