@@ -1,33 +1,32 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Nov 18 21:15:20 2017
 
-@author: rday
+#Created on Sat Nov 18 21:15:20 2017
 
-MIT License
+#@author: rday
 
-Copyright (c) 2018 Ryan Patrick Day
+#MIT License
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+#Copyright (c) 2018 Ryan Patrick Day
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is
+#furnished to do so, subject to the following conditions:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+#The above copyright notice and this permission notice shall be included in all
+#copies or substantial portions of the Software.
 
-"""
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#SOFTWARE.
+
 
 
 import numpy as np
@@ -678,7 +677,7 @@ class experiment:
             fermi = np.ones(self.cube[2][2])
         return fermi
 
-    def spectral(self,ARPES_dict=None,slice_select=None,add_map = False):
+    def spectral(self,ARPES_dict=None,slice_select=None,add_map = False,plot_bands=False):
         
         '''
         Take the matrix elements and build a simulated ARPES spectrum. 
@@ -693,6 +692,8 @@ class experiment:
             
             - **add_map**: boolean, add intensity map to list of intensity maps. If true, a list of intensity objects is appended,
             otherwise, the intensity map is overwritten
+            
+            - **plot_bands**: boolean, plot bandstructure from tight-binding over the intensity map
         
         *return*:
             - **I**: numpy array of float, raw intensity map.
@@ -748,7 +749,7 @@ class experiment:
         Ig = nd.gaussian_filter(I,(kyg,kxg,wg))
         
         if slice_select!=None:
-            fig,ax = self.plot_intensity_map(Ig,slice_select)
+            ax_img = self.plot_intensity_map(Ig,slice_select,plot_bands)
         
         if add_map:
             self.maps.append(imap.intensity_map(len(self.maps),Ig,self.cube,self.kz,self.T,self.hv,self.pol,self.dE,self.dk,self.SE_args,self.sarpes,self.ang))
@@ -758,7 +759,7 @@ class experiment:
         return I,Ig
 
 
-    def plot_intensity_map(self,plot_map,slice_select):
+    def plot_intensity_map(self,plot_map,slice_select,plot_bands=False):
          '''
         Plot a slice of the intensity map computed in *spectral*. The user selects either
         an array index along one of the axes, or the fixed value of interest, allowing
@@ -771,14 +772,17 @@ class experiment:
             dimension, index or label, value. The former option takes dimensions 0,1,2 while
             the latter can handle 'x', 'kx', 'y', 'ky', 'energy', 'w', or 'e', and is not
             case-sensitive.
+            
+            - **plot_bands**: boolean, option to overlay a constant-momentum cut with
+            the dispersion calculated from tight-binding
 
         *return*:
             - **fig**: matplotlib figure object
 
             - **ax**: matplotlib axis object
          '''
-         fig = plt.figure()
-         ax = fig.add_subplot(111)
+         fig,ax_img = plt.subplots()
+         fig.set_tight_layout(False)
 
          if type(slice_select[0]) is str:
              str_opts = [['x','kx'],['y','ky'],['energy','w','e']]
@@ -793,22 +797,39 @@ class experiment:
 
          if slice_select[0]==2: #FIXED ENERGY
              X,Y = np.meshgrid(np.linspace(*self.cube[0]),np.linspace(*self.cube[1]))
-             p = ax.pcolormesh(X,Y,plot_map[:,:,slice_select[1]],cmap=cm.magma)  
-             plt.axis([self.cube[0][0],self.cube[0][1],self.cube[1][0],self.cube[1][1]])
-
+             p = ax_img.pcolormesh(X,Y,plot_map[:,:,slice_select[1]],cmap=cm.magma)  
+             ax_img.set_xlim(self.cube[0][0],self.cube[0][1])
+             ax_img.set_ylim(self.cube[1][0],self.cube[1][1])
+             
          elif slice_select[0]==1: #FIXED KY
-             X,Y = np.meshgrid(np.linspace(*self.cube[2]),np.linspace(*self.cube[0]))
-             p = ax.pcolormesh(X,Y,plot_map[slice_select[1],:,:],cmap=cm.magma)   
-             plt.axis([self.cube[2][0],self.cube[2][1],self.cube[0][0],self.cube[0][1]])
+             k = np.linspace(*self.cube[0])
+             X,Y = np.meshgrid(k,np.linspace(*self.cube[2]))
+             p = ax_img.pcolormesh(X,Y,plot_map[slice_select[1],:,:].T,cmap=cm.magma)   
+             if plot_bands:
+                 start = len(k)*slice_select[1]
+                 for ii in range(len(self.TB.basis)):  
+                     ax_img.plot(k,self.TB.Eband[start:(start+len(k)),ii],alpha=0.4,c='w')
+             
+             ax_img.set_xlim(self.cube[0][0],self.cube[0][1])                
+             ax_img.set_ylim(self.cube[2][0],self.cube[2][1])
+                     
 
          elif slice_select[0]==0: # FIXED KX
-             X,Y = np.meshgrid(np.linspace(*self.cube[2]),np.linspace(*self.cube[1]))
-             p = ax.pcolormesh(X,Y,plot_map[:,slice_select[1],:],cmap=cm.magma)    
-             plt.axis([self.cube[2][0],self.cube[2][1],self.cube[1][0],self.cube[1][1]])
+             k = np.linspace(*self.cube[1])
+             X,Y = np.meshgrid(k,np.linspace(*self.cube[2]))
+             p = ax_img.pcolormesh(X,Y,plot_map[:,slice_select[1],:].T,cmap=cm.magma)   
+             ax_img.set_xlim(self.cube[1][0],self.cube[1][1])
+             ax_img.set_ylim(self.cube[2][0],self.cube[2][1])
+             if plot_bands:
+                 for ii in range(len(self.TB.basis)):
+                     ax_img.plot(k,self.TB.Eband[slice_select[1]::self.cube[0][2],ii],c='w',alpha=0.4)
+              
                 
-         plt.colorbar(p,ax=ax)
+        
+         plt.colorbar(p,ax=ax_img)
+         plt.tight_layout()
 
-         return fig,ax
+         return ax_img
         
     
     def plot_gui(self):

@@ -1,32 +1,30 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Nov 13 15:41:01 2017
 
-@author: ryanday
-MIT License
+#Created on Mon Nov 13 15:41:01 2017
+#@author: rday
 
-Copyright (c) 2018 Ryan Patrick Day
+#MIT License
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+#Copyright (c) 2018 Ryan Patrick Day
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is
+#furnished to do so, subject to the following conditions:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+#The above copyright notice and this permission notice shall be included in all
+#copies or substantial portions of the Software.
 
-"""
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#SOFTWARE.
 import numpy as np
 import matplotlib.pyplot as plt
 from operator import itemgetter
@@ -225,6 +223,17 @@ class TB_model:
         TB_copy.mat_els = [m.copy() for m in self.mat_els]
         
         return TB_copy
+    
+    def print_basis_summary(self):
+        '''
+        Very basic print function for printing a summary
+        of the orbital basis, including their label, atomic species, position
+        and spin character.
+        '''
+        print(' Index | Atom | Label | Spin |     Position     ')
+        print('================================================')
+        for o in self.basis:
+            print('  {:3d}  |  {:2d}  |{:7}|{:6}| {:0.03f},{:0.03f},{:0.03f}'.format(o.index,o.atom,o.label,0.5*o.spin,*o.pos))
         
             
     
@@ -345,7 +354,8 @@ class TB_model:
             ax.set_ylim(win_min,win_max) 
         ax.set_ylabel("Energy (eV)")
 
-        return ax            
+        return ax  
+          
             
 def gen_H_obj(htmp):
     '''
