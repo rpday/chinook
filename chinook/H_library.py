@@ -342,14 +342,15 @@ def cluster_init(Vdict,cutoff,avec):
         
     ***
     '''
-    try:
+    if type(cutoff)==float:
         cutoff = np.array([0.0,cutoff])
         Vdict = [Vdict]
-    except ValueError: #if cutoff is already an iterable, the assignment above throws error
+    else:
         
     
         if cutoff[0]>0:
-            cutoff =np.array([0.0]+[c for c in cutoff])
+            cutoff.insert(0,0)
+            cutoff = np.array(cutoff)
         else:
             cutoff = np.array(cutoff)
         
