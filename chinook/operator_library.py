@@ -288,9 +288,9 @@ def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=True):
             
     right_product = np.einsum('ij,ljm->lim',O,TB.Evec)
     O_vals = np.einsum('ijk,ijk->ik',np.conj(TB.Evec),right_product)
-    if degen:
-        O_vals = O_vals[:,::2] + O_vals[:,1::2]
     O_vals = np.real(O_vals) #any Hermitian operator must have real-valued expectation value--discard any imaginary component
+    if degen:
+        O_vals = degen_Ovals(O_vals,TB.Eband)#O_vals[:,::2] + O_vals[:,1::2]
 
 
     rcParams.update({'font.size':14})
@@ -314,8 +314,8 @@ def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=True):
     if plot:
         for p in range(np.shape(O_vals)[1]):
 
-            plt.plot(TB.Kobj.kcut,TB.Eband[:,(2 if degen else 1)*p],color='k',lw=0.2)
-            O_line=plt.scatter(TB.Kobj.kcut,TB.Eband[:,(2 if degen else 1)*p],c=O_vals[:,p],cmap=my_cmap,marker='.',lw=0,s=80,vmin=vlims[0],vmax=vlims[1])
+            plt.plot(TB.Kobj.kcut,TB.Eband[:,p],color='k',lw=0.2)
+            O_line=plt.scatter(TB.Kobj.kcut,TB.Eband[:,p],c=O_vals[:,p],cmap=my_cmap,marker='.',lw=0,s=80,vmin=vlims[0],vmax=vlims[1])
 
         plt.axis([TB.Kobj.kcut[0],TB.Kobj.kcut[-1],Elims[0],Elims[1]])
         plt.xticks(TB.Kobj.kcut_brk,TB.Kobj.labels)
@@ -324,6 +324,36 @@ def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=True):
         
     return O_vals
 
+
+def degen_Ovals(O,E):
+    
+    '''
+    In the presence of degeneracy, we want to average over the
+    evaluated orbital expectation values--numerically, the degenerate 
+    subspace can be arbitrarily diagonalized during numpy.linalg.eigh. 
+    All degeneracies are found, and the expectation values averaged.
+    
+    *args*:
+        - **O**: numpy array of float, operator expectations
+        
+        - **E**: numpy array of float, energy eigenvalues.
+    '''
+    
+    O_copy = O.copy()
+    tol = 1e-9
+    for ki in range(np.shape(O)[0]):
+        val = E[ki,0]
+        start = 0
+        counter = 1
+        for bi in range(1,np.shape(O)[1]):
+            if abs(E[ki,bi]-val)<tol:
+                counter+=1
+            elif (abs(E[ki,bi]-val)>=tol or bi==(np.shape(O)[1]-1)):
+                O_copy[ki,start:start+counter] = np.mean(O_copy[ki,start:start+counter])
+                start = bi
+                counter = 1
+                val = E[ki,bi]
+    return O_copy                
 
 def O_surf(O,TB,ktuple,Ef,tol,vlims=(0,0)):
     
