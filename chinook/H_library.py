@@ -34,6 +34,7 @@ import chinook.SlaterKoster as SK
 import chinook.rotation_lib as rot_lib
 import chinook.Ylm as Ylm
 
+
 hb = 6.626*10**-34/(2*np.pi)
 c  = 3.0*10**8
 q = 1.602*10**-19
@@ -135,7 +136,7 @@ def sk_build(avec,basis,Vdict,cutoff,tol,renorm,offset):
         for i2 in index_orbitals:
             if index_orbitals[i1][index_orbitals[i1]>-1].min()<=index_orbitals[i2][index_orbitals[i2]>-1].min():
                 o1o2 = (i1[0],i2[0],i1[1],i2[1],i1[2],i2[2])
-                R12 = np.array(i2[3:6])-np.array(i1[3:6])
+                R12 = (np.array(i2[3:6])-np.array(i1[3:6]))
                 SKmat = SK_matrices[o1o2]
         
                 for p in pts: #iterate over the points in the cluster

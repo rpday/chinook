@@ -165,7 +165,7 @@ def find_EF(TB,NK,occ,NE=None,dE=None,origin=np.zeros(3)):
     
         
         
-def ne_broad_analytical(TB,NK,NE=None,dE=None,origin=np.zeros(3)):
+def ne_broad_analytical(TB,NK,NE=None,dE=None,origin=np.zeros(3),plot = True):
     '''
     Analytical evaluation of the occupation function. Uses scipy's errorfunction
     executable to evaluate the analytical form of a Gaussian-broadened state's contribution
@@ -184,12 +184,14 @@ def ne_broad_analytical(TB,NK,NE=None,dE=None,origin=np.zeros(3)):
         - **origin**: numpy array of 3 float, indicating the origin of the mesh to be used,
         relevant for example in kz-specific contributions to density of states
         
+        - **plot**: boolean, default to True, if false, suppress plot output
+        
     *return*:
         - **nE**: numpy array of float, occupied states
         
         - **Elin**: numpy array of float, energy domain in eV
     '''
-    kpts = tetrahedra.gen_mesh(TB.avec,NK)+origin
+    kpts = tetrahedra.gen_mesh(TB.avec,NK)+origin #just a mesh over the Brillouin zone
     TB.Kobj.kpts = kpts
     TB.solve_H()
     print('Diagonalization complete')
@@ -212,20 +214,21 @@ def ne_broad_analytical(TB,NK,NE=None,dE=None,origin=np.zeros(3)):
         nE_resample = np.interp(E_resample,Elin,nE)
         Elin = E_resample
         nE = nE_resample
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.plot(Elin,nE)
+    if plot:
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.plot(Elin,nE)
 
     
     return nE,Elin
-
 
 
     
 def error_function(x0,x,sigma):
     
     '''
-    Integral over the gaussian function, evaluated from -infinity to x
+    Integral over the gaussian function, evaluated from -infinity to x, using
+    the scipy implementation of the error function
     
     *args*:
         - **x0**: float, centre of Gaussian, in eV

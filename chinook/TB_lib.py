@@ -35,6 +35,13 @@ if sys.version_info<(3,0):
     print('Warning: This software requires Python 3.0 or higher. Please update your Python instance before proceeding')
 else:
     import chinook.H_library as Hlib
+    
+try:
+    import psutil
+    ps_found = True
+except ModuleNotFoundError:
+    print('psutil not found, please load for better memory handling. See documentation for more detail')
+    ps_found = False
 
 
 '''
@@ -284,11 +291,16 @@ class TB_model:
             return None
         
         
-    def solve_H(self):
+    def solve_H(self,Eonly = False):
         '''
         This function diagonalizes the Hamiltonian over an array of momentum vectors.
         It uses the **mat_el** objects to quickly define lambda functions of 
         momentum, which are then filled into the array and diagonalized.
+        According to https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20050192421.pdf
+        SVD algorithms require memory of 2*order*(4*order + 1) ~ 8*order^2. The matrices are
+        complex float, so this should be 16 bytes per entry: so len(k)*(2048*order**2). If 
+        the diagonalization is requesting more than 85% of the available memory, then split
+        up the k-path into sequential diagonalizations.
         
         *return*:
             - **self.Eband**: numpy array of float, shape(len(self.Kobj.kpts),len(self.basis)),
@@ -298,14 +310,37 @@ class TB_model:
             eigenvectors
                 
         '''
+        if ps_found:
+            mem_summary = psutil.virtual_memory()
+            avail = mem_summary.available
+            size_lim = int(0.85*avail)
+            mem_req = int(len(self.Kobj.kpts)*len(self.basis)**2*2048)
+            if mem_req>size_lim:
+                partition = True
+                N_partitions = int(np.ceil(mem_req/size_lim))
+                splits = [j*int(np.floor(len(self.Kobj.kpts)/N_partitions)) for j in range(N_partitions)]
+                splits.append(len(self.Kobj.kpts))
+                print('Large memory load: splitting diagonalization into {:d} segments'.format(N_partitions))
+            else:
+                partition = False
+   #     partition = False
         if self.Kobj is not None:
             Hmat = np.zeros((len(self.Kobj.kpts),len(self.basis),len(self.basis)),dtype=complex) #initialize the Hamiltonian
             
             for me in self.mat_els:
                 Hfunc = me.H2Hk() #transform the array above into a function of k
                 Hmat[:,me.i,me.j] = Hfunc(self.Kobj.kpts) #populate the Hij for all k points defined
-        
-            self.Eband,self.Evec = np.linalg.eigh(Hmat,UPLO='U') #diagonalize--my H_raw definition uses i<=j, so we want to use the upper triangle in diagonalizing
+            if not partition:
+                if not Eonly:
+                    self.Eband,self.Evec = np.linalg.eigh(Hmat,UPLO='U') #diagonalize--my H_raw definition uses i<=j, so we want to use the upper triangle in diagonalizing
+                else:
+                    self.Eband = np.linalg.eigvalsh(Hmat,UPLO='U') #get eigenvalues only
+                    self.Evec = np.array([0])
+            else:
+                self.Eband = np.zeros((len(self.Kobj.kpts),len(self.basis)))
+                self.Evec =  np.zeros((len(self.Kobj.kpts),len(self.basis),len(self.basis)),dtype=complex)
+                for ni in range(len(splits)-1):
+                    self.Eband[splits[ni]:splits[ni+1]],self.Evec[splits[ni]:splits[ni+1]] = np.linalg.eigh(Hmat[splits[ni]:splits[ni+1]],UPLO ='U')
             return self.Eband,self.Evec
         else:
             print('You have not defined a set of kpoints over which to diagonalize.')

@@ -290,7 +290,7 @@ def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=True):
     O_vals = np.einsum('ijk,ijk->ik',np.conj(TB.Evec),right_product)
     O_vals = np.real(O_vals) #any Hermitian operator must have real-valued expectation value--discard any imaginary component
     if degen:
-        O_vals = degen_Ovals(O_vals,TB.Eband)#O_vals[:,::2] + O_vals[:,1::2]
+        O_vals = degen_Ovals(O_vals,TB.Eband)
 
 
     rcParams.update({'font.size':14})

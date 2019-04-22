@@ -217,7 +217,7 @@ def define_radial_wavefunctions(rad_dict,basis):
                 orbital_funcs[o] = rad_dict['rad_args'][o]
     
     
-    elif ARPES_dict['rad_type'].lower() == 'fixed':    
+    elif rad_dict['rad_type'].lower() == 'fixed':    
         if 'rad_args' not in rad_dict.keys():
             print('ERROR: Missing radial integral values.\n Exiting.\n See Radial Integrals in the Manual for further details.\n')
             return None
@@ -227,7 +227,7 @@ def define_radial_wavefunctions(rad_dict,basis):
             for lpi in lp:
                 ostr = '{:d}-{:d}-{:d}-{:d}'.format(o.atom,o.n,o.l,lpi)
                 if lpi>=0:
-                    orbital_funcs[ostr] = gen_const(rad_dict['B_fixed'][ostr])
+                    orbital_funcs[ostr] = gen_const(rad_dict['rad_args'][ostr])
                 else:
                     orbital_funcs[ostr] = gen_const(0.0)
     

@@ -33,7 +33,6 @@ import numpy as np
 from operator import itemgetter
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import chinook.inside as inside
 import chinook.rotation_lib as rotlib
 import chinook.orbital as olib
 import chinook.TB_lib as TB_lib
@@ -346,14 +345,38 @@ def populate_par(points,avec):
         - **indices**: Nx1 numpy array of float, indices in original basis
     ***   
     '''
-    new_points = []
-    indices = []
-    pped = inside.parallelepiped(avec)
-    for p in points:
-        if inside.inside_pped(pped,p[:3]):
-            new_points.append(p[:3])
-            indices.append(p[-1])
-    return np.array(new_points),np.array(indices)
+
+    in_points = frac_inside(points,avec)
+    new_points = in_points[:,:3]
+    indices = in_points[:,-1]
+
+    return new_points,indices
+
+def frac_inside(points,avec):
+    '''
+    Use fractional coordinates to determine whether a point is inside the new unit cell, or not.
+    This is a very simple way of establishing this point, and circumvents many of the awkward 
+    rounding issues of the parallelepiped method I have used previously. Ultimately however, 
+    imprecision of the matrix multiplication and inversion result in some rounding error which
+    must be corrected for. To do this, the fractional coordinates are rounded to the 4th digit.
+    This leads to a smaller uncertainty by over an order to 10^3 than each rounding done on the 
+    direct coordinates.
+    
+    *args*:
+        - **points**: numpy array of float (Nx4) indicating positions and basis indices of the points to consider
+        
+        - **avec**: numpy array of 3x3 float, new lattice vectors
+        
+    *return*:
+        - numpy array of Mx4 float, indicating positions and basis indices of the valid basis elements inside the new
+        unit cell.
+    
+    
+    '''
+    fpoints = np.around(abs_to_frac(avec,points[:,:3]),4)
+    bool_coords = np.array([True if (fp.min()>=0 and fp.max()<1) else False for fp in fpoints])
+    return points[bool_coords]
+    
 
 
 def gen_surface(avec,miller,basis):
@@ -520,7 +543,7 @@ def unpack(Ham_obj):
     return Hlist
 #
 #
-def H_surf(surf_basis,avec,H_bulk,Rmat):
+def H_surf(surf_basis,avec,H_bulk,Rmat,lenbasis):
     '''
     Rewrite the bulk-Hamiltonian in terms of the surface unit cell, with its
     (most likely expanded) basis. The idea here is to organize all 'duplicate' 
@@ -543,6 +566,8 @@ def H_surf(surf_basis,avec,H_bulk,Rmat):
         - **Rmat**: 3x3 numpy array of float, rotation matrix 
         (pre-multiply vectors) for rotating the coordinate system from bulk 
         to surface unit cell axes
+        
+        - **lenbasis**: int, length of bulk basis
         
     *return*:
         - Hamiltonian object, written in the basis of the surface unit cell,
@@ -575,13 +600,15 @@ def H_surf(surf_basis,avec,H_bulk,Rmat):
                 if H_new[-1][0]>H_new[-1][1]:
                     H_new[-1] = H_conj(tmp_H)
 
+
         except IndexError:
            print('ERROR: no valid hopping path found relating original Hamiltonian to surface unit cell.')
            continue
 
         
     print('Number of Bulk Hamiltonian Hopping Terms Found: {:d}, Number of Surface Basis Hopping Terms Filled: {:d}'.format(len(H_old),len(H_new)))
-    if (len(H_new)/len(H_old))!=(len(surf_basis)/(H_bulk[-1].i+1)):
+    if (len(H_new)/len(H_old))!=(len(surf_basis)/(lenbasis)):
+        print('Going from {:d} to {:d} basis states'.format(lenbasis,len(surf_basis)))
         print('Invalid HAMILTONIAN! Missing hopping paths.')
         return []
     
@@ -659,8 +686,6 @@ def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
         
     ***
     '''
-    heights = np.array([o.pos[2] for o in slab_basis])
-    limits = (heights.min(),heights.max())
     Hnew = []
     Hdict = Hobj_to_dict(Hsurf,surf_basis) #dictionary of hoppings. keys correspond to the slab_index, values the relative hoppings elements
     si = np.linalg.inv(svec)
@@ -668,25 +693,26 @@ def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
     for oi in slab_basis:
         Htmp = Hdict[oi.slab_index] #access relevant hopping paths for the orbital in question
         for hi in Htmp: #iterate over all relevant hoppings
+            
+            ncells = int(np.dot(hi[2:5]+surf_basis[hi[0]].pos-surf_basis[hi[1]].pos,si)[2]) #how many unit cells -- in the surface unit cell basis are jumped during this hopping--specifically, cells along the normal direction
 
-            ncells = np.floor(np.dot(hi[2:5]+surf_basis[hi[0]].pos,si))[2] #how many unit cells -- in the surface unit cell basis are jumped during this hopping--specifically, cells along the normal direction
             Htmp_2 = [0]*6 #create empty hopping element, to be filled
 
             Htmp_2[0] = int(oi.index) #matrix row should be the SLAB BASIS INDEX
             Htmp_2[1] = int((D+oi.index)/len(surf_basis))*len(surf_basis) + int(len(surf_basis)*ncells+hi[1]-D) #matrix column is
 
-            Htmp_2[5] = hi[5]
-    
-            
+            Htmp_2[5] = hi[5]       
             try:
                 Htmp_2[2:5] = hi[2:5]
 
-                if 0<=Htmp_2[1]<len(slab_basis) and 0<=Htmp_2[0]<len(slab_basis):
-                    if limits[0]<=(slab_basis[hi[0]].pos+Htmp_2[2:5])[2]<=limits[1]:
-                        if Htmp_2[1]<Htmp_2[0]:
-                            Htmp_2 = H_conj(Htmp_2)
 
-                        Hnew.append(Htmp_2)
+                if 0<=Htmp_2[1]<len(slab_basis) and 0<=Htmp_2[0]<len(slab_basis):
+                    if Htmp_2[1]>=Htmp_2[0]:
+                       # Htmp_2 = H_conj(Htmp_2)
+                  
+                   # else:
+                        Hnew.append(Htmp_2)  
+
             except IndexError:
 
                 continue
@@ -738,7 +764,7 @@ def bulk_to_slab(slab_dict):
     '''
     
     surf_basis,nvec,Rmat = gen_surface(slab_dict['TB'].avec,slab_dict['miller'],slab_dict['TB'].basis)
-    surf_ham = H_surf(surf_basis,nvec,slab_dict['TB'].mat_els,Rmat)
+    surf_ham = H_surf(surf_basis,nvec,slab_dict['TB'].mat_els,Rmat,len(slab_dict['TB'].basis))
     slab_vec,slab_basis = gen_slab(surf_basis,nvec,slab_dict['thick'],slab_dict['vac'],slab_dict['termination'],slab_dict['fine'])
     slab_ham = build_slab_H(surf_ham,slab_basis,surf_basis,nvec)
     
