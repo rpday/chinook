@@ -1,46 +1,45 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Jun 13 17:22:12 2017
 
-@author: rday
+#Created on Tue Jun 13 17:22:12 2017
 
-MIT License
+#@author: rday
 
-Copyright (c) 2018 Ryan Patrick Day
+#MIT License
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+#Copyright (c) 2018 Ryan Patrick Day
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is
+#furnished to do so, subject to the following conditions:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+#The above copyright notice and this permission notice shall be included in all
+#copies or substantial portions of the Software.
 
-This script handles calculation of the Radial Integrals:
-    $int(dr r^3 j_lp(kf*r) R_nl(r))$
-for the photoemission matrix element calculations.
-It loads the radial part of the wavefunction from electron_configs, which itself
-takes Z and orbital label as arguments to do so.
-The integration technique is based on a simple adaptive integrations algorithm
-which is a sort of divide and conquer approach. For each iteration, the interval
-is halved and the Riemann sum is computed. If the difference is below tolerance,
-either one or both of the halves will return. If not, if either or both return diff
-above tolerance, than the corresponding interval is again split and the cycle repeats
-until the total difference over the domain is satisfactorily below tolerance.
-In this way, the partition of the domain is non-regular, with regions of higher
-curvature having a finer partitioning than those with flat regions of the function.
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#SOFTWARE.
 
-"""
+#This script handles calculation of the Radial Integrals:
+#    $int(dr r^3 j_lp(kf*r) R_nl(r))$
+#for the photoemission matrix element calculations.
+#It loads the radial part of the wavefunction from electron_configs, which itself
+#takes Z and orbital label as arguments to do so.
+#The integration technique is based on a simple adaptive integrations algorithm
+#which is a sort of divide and conquer approach. For each iteration, the interval
+#is halved and the Riemann sum is computed. If the difference is below tolerance,
+#either one or both of the halves will return. If not, if either or both return diff
+#above tolerance, than the corresponding interval is again split and the cycle repeats
+#until the total difference over the domain is satisfactorily below tolerance.
+#In this way, the partition of the domain is non-regular, with regions of higher
+#curvature having a finer partitioning than those with flat regions of the function.
+
 
 import scipy.special as sc
 

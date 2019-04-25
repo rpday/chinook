@@ -1,47 +1,41 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Sep 28 10:15:56 2016
 
-@author: rday
+#Created on Wed Sep 28 10:15:56 2016
 
-MIT License
+#@author: ryanday
+#MIT License
 
-Copyright (c) 2018 Ryan Patrick Day
+#Copyright (c) 2018 Ryan Patrick Day
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is
+#furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+#The above copyright notice and this permission notice shall be included in all
+#copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-"""
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#SOFTWARE.
 
 
-'''
-Slater's rules for calculating effective nuclear charge:
-    Group --- Other electrons in --- electrons in group(s) w/ --- electrons in group(s) --- electrons in group(s) w/
-                the same group            n'=n, l'<l                   w/ n'=n-1                    n'<=n-2
- -------------------------------------------------------------------------------------------------------------------
-  [1s]    ---        0.30        ---         -                ---          -            ---            -
-  [ns,np] ---        0.35        ---         -                ---         0.85          ---            1
-  [nd,nf] ---        0.35        ---         1                ---          1            ---            1
 
-Effective nuclear charge: n = 1,2,3,4,5,6 --- n' = 1,2,3,3.7,4.0,4.2
+#Slater's rules for calculating effective nuclear charge:
+#   Group --- Other electrons in --- electrons in group(s) w/ --- electrons in group(s) --- electrons in group(s) w/
+#               the same group            n'=n, l'<l                   w/ n'=n-1                    n'<=n-2
+# -------------------------------------------------------------------------------------------------------------------
+#  [1s]    ---        0.30        ---         -                ---          -            ---            -
+#  [ns,np] ---        0.35        ---         -                ---         0.85          ---            1
+#  [nd,nf] ---        0.35        ---         1                ---          1            ---            1
 
-
-'''
+#Effective nuclear charge: n = 1,2,3,4,5,6 --- n' = 1,2,3,3.7,4.0,4.2
 
 
 import numpy as np
@@ -222,6 +216,7 @@ def hydrogenic_exec(Z_ind,orb):
     
     *args*:
         - **Z_ind**: int, atomic number
+        
         - **orb**: string, orbital label 'nlxx'
         
     *return*:
