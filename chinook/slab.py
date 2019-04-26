@@ -1,29 +1,31 @@
 # -*- coding: utf-8 -*-
+"""
+Created on Sat Jul 14 11:21:25 2018
 
-#Created on Sat Jul 14 11:21:25 2018
+@author: rday
 
-#@author: ryanday
-#MIT License
+MIT License
 
-#Copyright (c) 2018 Ryan Patrick Day
+Copyright (c) 2018 Ryan Patrick Day
 
-#Permission is hereby granted, free of charge, to any person obtaining a copy
-#of this software and associated documentation files (the "Software"), to deal
-#in the Software without restriction, including without limitation the rights
-#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#copies of the Software, and to permit persons to whom the Software is
-#furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-#The above copyright notice and this permission notice shall be included in all
-#copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
 
 
 
@@ -187,13 +189,18 @@ def p_vecs(miller,avec):
     n_zero = nonzero(miller)
     zero = iszero(miller)
     pvecs = np.zeros((3,3))
+    abs_miller = abs(miller)
+    sgn_miller = np.sign(miller)
     if len(n_zero)==3:
-        M = LCM_3(*miller)
+        M = LCM_3(*abs_miller)
+        M*=sgn_miller
         pvecs = np.array([avec[0]*M/miller[0],
                       avec[1]*M/miller[1],
                       avec[2]*M/miller[2]])
     elif len(n_zero)==2:
         M = LCM(*miller[n_zero])
+        M = LCM_3(*abs_miller)
+        M*=sgn_miller
         pvecs[n_zero[0]] = M/miller[n_zero[0]]*avec[n_zero[0]]
         pvecs[n_zero[1]] = M/miller[n_zero[1]]*avec[n_zero[1]]
         pvecs[zero[0]] = pvecs[n_zero[0]] + avec[zero[0]]
