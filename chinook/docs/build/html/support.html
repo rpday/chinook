@@ -1,0 +1,583 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Support Files &#8212; chinook 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Slab Calculation" href="slab.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="toctree-wrapper compound">
+</div>
+<div class="section" id="support-files">
+<h1>Support Files<a class="headerlink" href="#support-files" title="Permalink to this headline">¶</a></h1>
+<p>The following modules and their functions are used extensively throughout the chinook package.</p>
+<div class="section" id="module-chinook.rotation_lib">
+<span id="rotation-lib"></span><h2>rotation_lib:<a class="headerlink" href="#module-chinook.rotation_lib" title="Permalink to this headline">¶</a></h2>
+<p>Created on Mon Oct  1 20:04:24 2018</p>
+<p>&#64;author: rday</p>
+<p>Various functions relevant to rotations</p>
+<dl class="function">
+<dt id="chinook.rotation_lib.Euler">
+<code class="descclassname">chinook.rotation_lib.</code><code class="descname">Euler</code><span class="sig-paren">(</span><em>rotation</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.rotation_lib.Euler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Euler rotation angle generation, Z-Y-Z convention, as defined for a user-defined
+rotation matrix. Special case for B = +/- Z*pi where conventional approach doesn’t
+work due to division by zero, then Euler_A is zero and Euler_y is arctan(R10,R00)</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>rotation</strong>: numpy array of 3x3 float (rotation matrix)</li>
+</ul>
+<p class="last">OR tuple/list of vector and angle (numpy array of 3 float, float) respectively</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>Euler_A</strong>, <strong>Euler_B</strong>, <strong>Euler_y</strong>: float, Euler angles associated with</li>
+</ul>
+<p class="last">the given rotation.</p>
+</dd>
+</dl>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a><a href="#id3"><span class="problematic" id="id4">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.rotation_lib.Euler_to_R">
+<code class="descclassname">chinook.rotation_lib.</code><code class="descname">Euler_to_R</code><span class="sig-paren">(</span><em>Euler_A</em>, <em>Euler_B</em>, <em>Euler_y</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.rotation_lib.Euler_to_R" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inverse of <em>Euler</em>, generate a rotation matrix from the Euler angles A,B,y
+with the same conventiona as in <em>Euler</em>.
+<em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>Euler_A</strong>, <strong>Euler_B</strong>, <strong>Euler_y</strong>: float</li>
+</ul>
+</div></blockquote>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>numpy array of 3x3 float</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id5"><span class="problematic" id="id6">**</span></a><a href="#id7"><span class="problematic" id="id8">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.rotation_lib.Rodrigues_Rmat">
+<code class="descclassname">chinook.rotation_lib.</code><code class="descname">Rodrigues_Rmat</code><span class="sig-paren">(</span><em>nvec</em>, <em>theta</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.rotation_lib.Rodrigues_Rmat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Following Rodrigues theorem for rotations, define a rotation matrix which
+corresponds to the rotation about a vector nvec by the angle theta, in radians.
+Works in pre-multiplication order (i.e. v’ = R.v)</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>nvec</strong>: numpy array len 3 axis of rotation</li>
+<li><strong>theta</strong>: float radian angle of rotation counter clockwise for theta&gt;0</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Rmat</strong>: numpy array 3x3 of float rotation matrix</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id9"><span class="problematic" id="id10">**</span></a><a href="#id11"><span class="problematic" id="id12">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.rotation_lib.rot_vector">
+<code class="descclassname">chinook.rotation_lib.</code><code class="descname">rot_vector</code><span class="sig-paren">(</span><em>Rmatrix</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.rotation_lib.rot_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inverse to <em>Rodrigues_Rmat</em>, take rotation matrix as input and return 
+the angle-axis convention rotations corresponding to this rotation matrix.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Rmatrix</strong>: numpy array of 3x3 float, rotation matrix</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>nvec</strong>: numpy array of 3 float, rotation axis</li>
+<li><strong>theta</strong>: float, rotation angle in float</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id13"><span class="problematic" id="id14">**</span></a><a href="#id15"><span class="problematic" id="id16">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.rotation_lib.rotate_v1v2">
+<code class="descclassname">chinook.rotation_lib.</code><code class="descname">rotate_v1v2</code><span class="sig-paren">(</span><em>v1</em>, <em>v2</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.rotation_lib.rotate_v1v2" title="Permalink to this definition">¶</a></dt>
+<dd><p>This generates the rotation matrix for PRE-multiplication rotation:
+or written another way, defining R s.t. R.v1 = v2. This rotation will rotate
+the vector <strong>v1</strong> onto the vector <strong>v2</strong>.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>v1</strong>: numpy array len 3 of float, input vector</li>
+<li><strong>v2</strong>: numpy array len 3 of float, vector to rotate into</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Rmat</strong>: numpy array of 3x3 float, rotation matrix</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id17"><span class="problematic" id="id18">**</span></a><a href="#id19"><span class="problematic" id="id20">*</span></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-chinook.wigner">
+<span id="wigner"></span><h2>wigner:<a class="headerlink" href="#module-chinook.wigner" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="chinook.wigner.Wd_denominator">
+<code class="descclassname">chinook.wigner.</code><code class="descname">Wd_denominator</code><span class="sig-paren">(</span><em>j</em>, <em>m</em>, <em>mp</em>, <em>sp</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.wigner.Wd_denominator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Small function for computing the denominator in the s-summation, one step 
+in defining the matrix elements of Wigner’s small d-matrix</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>j</strong>, <strong>m</strong>, <strong>mp</strong>: integer (or half-integer) angular momentum</li>
+</ul>
+<p>quantum numbers</p>
+<ul class="last simple">
+<li><strong>s</strong>: int, the index of the summation</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>int, product of factorials</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id21"><span class="problematic" id="id22">**</span></a><a href="#id23"><span class="problematic" id="id24">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.wigner.WignerD">
+<code class="descclassname">chinook.wigner.</code><code class="descname">WignerD</code><span class="sig-paren">(</span><em>l</em>, <em>Euler_A</em>, <em>Euler_B</em>, <em>Euler_y</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.wigner.WignerD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Full matrix representation of Wigner’s Big D matrix relating the rotation
+of states within the subspace of the angular momentum l by the Euler rotation
+Z”(A)-Y’(B)-Z(y)</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>l</strong>: int (or half integer) angular momentum</li>
+<li><strong>Euler_A</strong>, <strong>Euler_B</strong>, <strong>Euler_y</strong>: float z-y-z Euler angles defining</li>
+</ul>
+<p class="last">the rotation</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Dmat</strong>: 2j+1 x 2j+1 numpy array of complex float</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id25"><span class="problematic" id="id26">**</span></a><a href="#id27"><span class="problematic" id="id28">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.wigner.big_D_element">
+<code class="descclassname">chinook.wigner.</code><code class="descname">big_D_element</code><span class="sig-paren">(</span><em>j</em>, <em>mp</em>, <em>m</em>, <em>Euler_A</em>, <em>Euler_B</em>, <em>Euler_y</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.wigner.big_D_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combining Wigner’s small d matrix with the other two rotations, this defines
+Wigner’s big D matrix, which defines the projection of an angular momentum state
+onto the other azimuthal projections of this angular momentum. Wigner defined 
+these matrices in the convention of a set of z-y-z Euler angles, passed here 
+along with the relevant quantum numbers:</p>
+<dl class="docutils">
+<dt><em>args</em>: </dt>
+<dd><ul class="first simple">
+<li><strong>j</strong>, <strong>mp</strong>, <strong>m</strong>: integer (half-integer) angular momentum quantum numbers</li>
+<li><strong>Euler_A</strong>, <strong>Euler_B</strong>, <strong>Euler_y</strong>: float z-y-z Euler angles defining</li>
+</ul>
+<p class="last">the rotation</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>complex float corresponding to the [mp,m] matrix element</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id29"><span class="problematic" id="id30">**</span></a><a href="#id31"><span class="problematic" id="id32">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.wigner.fact">
+<code class="descclassname">chinook.wigner.</code><code class="descname">fact</code><span class="sig-paren">(</span><em>N</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.wigner.fact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursive factorial function for non-negative integers.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>N</strong>: int, or int-like float</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>factorial of <strong>N</strong></li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id33"><span class="problematic" id="id34">**</span></a><a href="#id35"><span class="problematic" id="id36">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.wigner.rotate_orbital_test">
+<code class="descclassname">chinook.wigner.</code><code class="descname">rotate_orbital_test</code><span class="sig-paren">(</span><em>projection</em>, <em>rotation</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.wigner.rotate_orbital_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Diagnostic test for the rotation of orbitals using the Wigner matrices
+defined here.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>projection</strong>: numpy array of Nx4 float indicating orbital projection</li>
+</ul>
+<p>in spherical harmonics. Each row being [Re(proj), Im(proj), l,m]</p>
+<ul class="simple">
+<li><strong>rotation</strong>: numpy array of 3x3 float, or list of len 3 numpy array float, and</li>
+</ul>
+<p class="last">angle (float).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.wigner.s_lims">
+<code class="descclassname">chinook.wigner.</code><code class="descname">s_lims</code><span class="sig-paren">(</span><em>j</em>, <em>m</em>, <em>mp</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.wigner.s_lims" title="Permalink to this definition">¶</a></dt>
+<dd><p>Limits for summation in definition of Wigner’s little d-matrix</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>j</strong>: int,(or half-integer) total angular momentum quantum number</li>
+<li><strong>m</strong>: int, (or half-integer) initial azimuthal angular momentum quantum number</li>
+<li><strong>mp</strong>: int, (or half-integer) final azimuthal angular momentum</li>
+</ul>
+<p class="last">quantum number coupled to by rotation</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li>list of int, viable candidates which result in well-defined factorials in</li>
+</ul>
+<p class="last">summation</p>
+</dd>
+</dl>
+<p><a href="#id37"><span class="problematic" id="id38">**</span></a><a href="#id39"><span class="problematic" id="id40">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.wigner.small_D">
+<code class="descclassname">chinook.wigner.</code><code class="descname">small_D</code><span class="sig-paren">(</span><em>j</em>, <em>mp</em>, <em>m</em>, <em>Euler_B</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.wigner.small_D" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Wigner’s little d matrix, defined as         _</dt>
+<dd>j                                                    (-1)^(mp-m+s)                 2j+m-mp-2s         mp-m+2s</dd>
+<dt>d    (B) = sqrt((j+mp)!(j-mp)!(j+m)!(j-m)!)  &gt;  —————————– cos(B/2)          sin(B/2)</dt>
+<dd>mp,m                                       /_s  (j+m-s)!s!(mp-m+s)!(j-mp-s)!</dd>
+</dl>
+<p>where the sum over s includes all integers for which the factorial arguments in the denominator are non-negative.
+The limits for this summation are defined by s_lims(j,m,mp).</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>j</strong>, <strong>mp</strong> ,**m** – integer (or half-integer) angular momentum</li>
+</ul>
+<p>quantum numbers for the orbital angular momentum, and its azimuthal projections
+which are related by the Wigner D matrix during the rotation</p>
+<ul class="last simple">
+<li><strong>Euler_B</strong>: float, angle of rotation in radians, for the y-rotation</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>float representing the matrix element of Wigner’s small d-matrix</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id41"><span class="problematic" id="id42">**</span></a><a href="#id43"><span class="problematic" id="id44">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.wigner.symm_D">
+<code class="descclassname">chinook.wigner.</code><code class="descname">symm_D</code><span class="sig-paren">(</span><em>l</em>, <em>A</em>, <em>B</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.wigner.symm_D" title="Permalink to this definition">¶</a></dt>
+<dd><p>For testing purposes only, generate the Wigner Big D matrix using the 
+sympy package, for comparison.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>l</strong>: int (or half integer) angular momentum</li>
+<li><strong>Euler_A</strong>, <strong>Euler_B</strong>, <strong>Euler_y</strong>: float z-y-z Euler angles defining</li>
+</ul>
+<p class="last">the rotation</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Dmat</strong>: 2j+1 x 2j+1 numpy array of complex float</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id45"><span class="problematic" id="id46">**</span></a><a href="#id47"><span class="problematic" id="id48">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.wigner.testing">
+<code class="descclassname">chinook.wigner.</code><code class="descname">testing</code><span class="sig-paren">(</span><em>j</em>, <em>Euler_A</em>, <em>Euler_B</em>, <em>Euler_y</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.wigner.testing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test function comparing rotation via Wigner matrices here, against the
+D matrices defined in the sympy library.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>j</strong>: (half-) int, orbital angular momentum</li>
+<li><strong>Euler_A</strong>, <strong>Euler_B</strong>, <strong>Euler_y</strong>: float z-y-z Euler angles defining</li>
+</ul>
+<p class="last">the rotation</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-chinook.Ylm">
+<span id="ylm"></span><h2>Ylm:<a class="headerlink" href="#module-chinook.Ylm" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="chinook.Ylm.GramSchmidt">
+<code class="descclassname">chinook.Ylm.</code><code class="descname">GramSchmidt</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.Ylm.GramSchmidt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple orthogonalization of two vectors, returns orthonormalized vector</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>a</strong>: numpy array of numeric type, vector to orthogonalize</li>
+<li><strong>b</strong>: numpy array of numeric type, vector to be orthogonal to.</li>
+</ul>
+</dd>
+<dt><em>returns</em>: </dt>
+<dd><ul class="first simple">
+<li><strong>GS_a</strong>: numpy array of same size, <strong>a</strong> vector, now Gram-Schmidt</li>
+</ul>
+<blockquote class="last">
+<div>orthonormalized to the <strong>b</strong> vector.</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.Ylm.Y">
+<code class="descclassname">chinook.Ylm.</code><code class="descname">Y</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.Ylm.Y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spherical harmonics, defined here up to l = 4. This allows for photoemission from
+initial states up to and including f-electrons (final states can be d- or g- like).
+Can be vectorized with numpy.vectorize() to allow array-like input</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>l</strong>: int orbital angular momentum, up to l=4 supported</li>
+<li><strong>m</strong>: int, azimuthal angular momentum <a href="#id49"><span class="problematic" id="id50">|</span></a>m|&lt;=l</li>
+<li><strong>theta</strong>: float, angle in spherical coordinates, radian measured from the z-axis [0,pi]</li>
+<li><strong>phi</strong>: float, angle in spherical coordinates, radian measured from the x-axis [0,2pi]</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>complex float, value of spherical harmonic evaluated at theta,phi</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.Ylm.Yproj">
+<code class="descclassname">chinook.Ylm.</code><code class="descname">Yproj</code><span class="sig-paren">(</span><em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.Ylm.Yproj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define the unitary transformation rotating the basis of different inequivalent atoms in the
+basis to the basis of spherical harmonics for sake of defining L.S operator in basis of user</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>basis</strong>: list, orbital objects</li>
+</ul>
+</dd>
+<dt><em>return</em>: </dt>
+<dd><ul class="first last simple">
+<li><strong>Umats</strong>: dictionary of matrices for the different atoms and orbital-shells–keys are tuples of (atom,n,l,spin)</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.Ylm.binomal_coefficient">
+<code class="descclassname">chinook.Ylm.</code><code class="descname">binomal_coefficient</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.Ylm.binomal_coefficient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluation of the binomial coefficient (i.e. a choose b)</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>a</strong>: int, first value in binomial</li>
+<li><strong>b</strong>: int, second value in binomial</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>float, ratio of factorials a!, a-b!, b!</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.Ylm.fillin">
+<code class="descclassname">chinook.Ylm.</code><code class="descname">fillin</code><span class="sig-paren">(</span><em>M</em>, <em>l</em>, <em>Dmat=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.Ylm.fillin" title="Permalink to this definition">¶</a></dt>
+<dd><p>When working with reduced basis sets, need to fill in the rest of the matrix
+to account for the rest of the orbitals in the shell, which are not considered in the
+model. (For example, for a t2g model of a d-orbital system, eg states (dx^2-y^2 and d3z^2-r^2) need
+to be accounted for.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>M</strong>: numpy array of complex float, unitary transformation, as filled so far–will have zero columns</li>
+<li><strong>l</strong>: int, orbital quantum number</li>
+</ul>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Dmat</strong>: numpy array of complex float, Wigner D matrix indicating the local rotation</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><strong>M</strong>: numpy array of complex float, filled in unitary matrix.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.Ylm.gaunt">
+<code class="descclassname">chinook.Ylm.</code><code class="descname">gaunt</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>dl</em>, <em>dm</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.Ylm.gaunt" title="Permalink to this definition">¶</a></dt>
+<dd><p>I prefer to avoid using the sympy library where possible. These are the explicitly defined
+Gaunt coefficients required for dipole-allowed transitions (dl = +/-1) for arbitrary m,l and dm
+These have been tested against the sympy package to confirm numerical accuracy for all l,m possible
+up to l=5. This function is equivalent, for the subset of dm, dl allowed to
+sympy.physics.wigner.gaunt(l,1,l+dl,m,dm,-(m+dm))</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>l</strong>: int, orbital angular momentum quantum number</li>
+<li><strong>m</strong>: int, azimuthal angular momentum quantum number</li>
+<li><strong>dl</strong>: int, change in l (+/-1)</li>
+<li><strong>dm</strong>: int, change in azimuthal angular momentum (-1,0,1)</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd>float Gaunt coefficient</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.Ylm.laguerre">
+<code class="descclassname">chinook.Ylm.</code><code class="descname">laguerre</code><span class="sig-paren">(</span><em>x</em>, <em>l</em>, <em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.Ylm.laguerre" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluation of associated laguerre polynomial</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>x</strong>: float, number at which to evaluate the polynomial</li>
+<li><strong>l</strong>: int, order of polynomial</li>
+<li><strong>j</strong>: int, degree of polynomial (i.e. sum over polyomials of power up to n)</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>laguerre_value</strong>: float, value of the polynomial</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">chinook</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html#contact">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arpes.html">ARPES Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tightbinding.html">Tight Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operator.html">Model Diagnostics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slab.html">Slab Calculation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Support Files</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="slab.html" title="previous chapter">Slab Calculation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Ryan P. Day.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="_sources/support.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

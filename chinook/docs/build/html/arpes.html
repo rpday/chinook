@@ -1,0 +1,1255 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>ARPES Simulation &#8212; chinook 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tight Binding" href="tightbinding.html" />
+    <link rel="prev" title="License" href="license.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="toctree-wrapper compound">
+</div>
+<div class="section" id="arpes-simulation">
+<h1>ARPES Simulation<a class="headerlink" href="#arpes-simulation" title="Permalink to this headline">¶</a></h1>
+<p>In addition to the core ARPES_lib library, several other scripts in the module are written with the express purpose of facilitating calculation of the ARPES intensity. All relevant  docs are included below.</p>
+<div class="section" id="module-chinook.adaptive_int">
+<span id="adaptive-int"></span><h2>adaptive_int:<a class="headerlink" href="#module-chinook.adaptive_int" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="chinook.adaptive_int.general_Bnl_integrand">
+<code class="descclassname">chinook.adaptive_int.</code><code class="descname">general_Bnl_integrand</code><span class="sig-paren">(</span><em>func</em>, <em>kn</em>, <em>lp</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.adaptive_int.general_Bnl_integrand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Standard form of executable integrand in the e.r approximation of the matrix element</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>func</strong>: executable function of position (float), in units of Angstrom</li>
+<li><strong>kn</strong>: float, norm of the k vector (in inverse Angstrom)</li>
+<li><strong>lp</strong>: int, final state angular momentum quantum number</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>executable function of float (position)</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a><a href="#id3"><span class="problematic" id="id4">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.adaptive_int.integrate">
+<code class="descclassname">chinook.adaptive_int.</code><code class="descname">integrate</code><span class="sig-paren">(</span><em>func</em>, <em>a</em>, <em>b</em>, <em>tol</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.adaptive_int.integrate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate the integral of <strong>func</strong> over the domain covered by <strong>a</strong>, <strong>b</strong>. This 
+begins by seeding the evaluation with a maximally coarse approximation
+to the integral.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>func</strong>: executable</li>
+<li><strong>a</strong>: float, start of interval</li>
+<li><strong>b</strong>: float, end of interval</li>
+<li><strong>tol</strong>: float, tolerance for convergence</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Q</strong>: (complex) float, value of the integral</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id5"><span class="problematic" id="id6">**</span></a><a href="#id7"><span class="problematic" id="id8">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.adaptive_int.rect">
+<code class="descclassname">chinook.adaptive_int.</code><code class="descname">rect</code><span class="sig-paren">(</span><em>func</em>, <em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.adaptive_int.rect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Approximation to contribution of a finite domain to the integral, 
+evaluated as a rough rectangle</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>func</strong>: executable to evaluate</li>
+<li><strong>a</strong>: float, start of interval</li>
+<li><strong>b</strong>: float, end of interval</li>
+</ul>
+</dd>
+<dt><em>return</em>: </dt>
+<dd><ul class="first simple">
+<li><strong>recsum</strong>: (complex) float approximated area of the region under</li>
+</ul>
+<p class="last">function between <strong>a</strong> and <strong>b</strong></p>
+</dd>
+</dl>
+<p><a href="#id9"><span class="problematic" id="id10">**</span></a><a href="#id11"><span class="problematic" id="id12">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.adaptive_int.recursion">
+<code class="descclassname">chinook.adaptive_int.</code><code class="descname">recursion</code><span class="sig-paren">(</span><em>func</em>, <em>a</em>, <em>b</em>, <em>tol</em>, <em>currsum</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.adaptive_int.recursion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursive integration algorithm–rect is used to approximate the integral
+under each half of the domain, with the domain further divided until
+result has converged</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>func</strong>: executable</li>
+<li><strong>a</strong>: float, start of interval</li>
+<li><strong>b</strong>: float, end of interval</li>
+<li><strong>tol</strong>: float, tolerance for convergence</li>
+<li><strong>currsum</strong>: (complex) float, current evaluation for the integral</li>
+</ul>
+</dd>
+<dt><em>return</em>: </dt>
+<dd><ul class="first last simple">
+<li>recursive call to the function if not converged, otherwise the result as complex (or real) float</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id13"><span class="problematic" id="id14">**</span></a><a href="#id15"><span class="problematic" id="id16">*</span></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-chinook.ARPES_lib">
+<span id="arpes-lib"></span><h2>ARPES_lib:<a class="headerlink" href="#module-chinook.ARPES_lib" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="chinook.ARPES_lib.G_dic">
+<code class="descclassname">chinook.ARPES_lib.</code><code class="descname">G_dic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.G_dic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the gaunt coefficients associated with all possible transitions relevant</p>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>Gdict</strong>: dictionary with keys as a string representing (l,l’,m,dm) “ll’mdm” and values complex float.</li>
+</ul>
+<p class="last">All unacceptable transitions set to zero.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.ARPES_lib.Gmat_make">
+<code class="descclassname">chinook.ARPES_lib.</code><code class="descname">Gmat_make</code><span class="sig-paren">(</span><em>lm</em>, <em>Gdictionary</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.Gmat_make" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the dictionary of relevant Gaunt coefficients to generate a small 2x3 array of  
+float which carries the relevant Gaunt coefficients for a given initial state.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>lm</strong>: tuple of 2 int, initial state orbital angular momentum and azimuthal angular momentum</li>
+<li><strong>Gdictionary</strong>: pre-calculated dictionary of Gaunt coefficients, with key-values associated with “ll’mdm”</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>mats</strong>: numpy array of float 2x3</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.ARPES_lib.all_Y">
+<code class="descclassname">chinook.ARPES_lib.</code><code class="descname">all_Y</code><span class="sig-paren">(</span><em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.all_Y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build L-M argument array input arguments for every combination of l,m in the basis. The idea is for a given k-point to have a single call
+to evaluate all spherical harmonics at once. The pointer array orb_point is a list of lists, where for each projection in the basis, the integer
+in the list indicates which row (first axis) of the Ylm array should be taken. This allows for very quick access to the l+/-1, m+/-1,0 Ylm evaluation
+required.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>basis</strong>: list of orbital objects</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>l_args</strong>: numpy array of int, of shape len(<em>lm_inds</em>),3,2, with the latter two indicating the final state orbital angular momentum</li>
+<li><strong>m_args</strong>: numpy array of int, of shape len(<em>lm_inds</em>),3,2, with the latter two indicating the final state azimuthal angular momentum</li>
+<li><strong>g_arr</strong>: numpy array of float, shape len(<em>lm_inds</em>),3,2, providing the related Gaunt coefficients.</li>
+<li><strong>orb_point</strong>: numpy array of int, matching the related sub-array of <em>l_args</em>, <em>m_args</em>, <em>g_arr</em> related to each orbital in basis</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.ARPES_lib.con_ferm">
+<code class="descclassname">chinook.ARPES_lib.</code><code class="descname">con_ferm</code><span class="sig-paren">(</span><em>ekbt</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.con_ferm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Typical values in the relevant domain for execution of the Fermi distribution will
+result in an overflow associated with 64-bit float. To circumvent, set fermi-function
+to zero when the argument of the exponential in the denominator is too large.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>ekbt</strong>: float, (E-u)/kbT in terms of eV</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>fermi</strong>: float, evaluation of Fermi function.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="chinook.ARPES_lib.experiment">
+<em class="property">class </em><code class="descclassname">chinook.ARPES_lib.</code><code class="descname">experiment</code><span class="sig-paren">(</span><em>TB</em>, <em>ARPES_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment" title="Permalink to this definition">¶</a></dt>
+<dd><p>The experiment object is at the centre of the ARPES matrix element 
+calculation.This object keeps track of the experimental geometry as 
+well as a local copy of the tight-binding model and its dependents. 
+Such a copy is used to avoid corruption of these objects in the global
+space during a given run of the ARPES experiment.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul>
+<li><p class="first"><strong>TB</strong>: instance of a tight-binding model object</p>
+</li>
+<li><p class="first"><strong>ARPES_dict</strong>: dictionary of relevant experimental parameters including</p>
+<blockquote>
+<div><ul>
+<li><p class="first"><em>‘hv’</em>: float, photon energy (eV),</p>
+</li>
+<li><p class="first"><em>‘mfp’</em>: float, mean-free path (Angstrom),</p>
+</li>
+<li><p class="first"><em>‘resolution’</em>: dictionary for energy and momentum resolution:</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>‘dE’</em>: float, energy resolution (FWHM eV),</li>
+<li><em>‘dk’</em>: float, momentum resolution (FWHM 1/Angstrom)</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><em>‘T’</em>: float, Temperature of sample (Kelvin)</p>
+</li>
+<li><p class="first"><em>‘cube’</em>: dictionary momentum and energy domain</p>
+</li>
+</ul>
+<p>(<em>‘kz’</em> as float, all others ( <em>‘X’</em> , <em>‘Y’</em> , <em>‘E’</em> ) are list
+or tuple of floats Xo,Xf,dX)</p>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<p><em>optional args</em>:</p>
+<blockquote>
+<div><p>In addition to the keys above, <em>ARPES_dict</em> can also be fed the following:</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>‘spin’</em>: spin-ARPES measurement, list [+/-1,np.array([a,b,c])]</li>
+</ul>
+<p>with the numpy array indicating the spin-projection 
+direction (with respect to) experimental frame.</p>
+<ul class="simple">
+<li><em>‘rad_type’</em>: string, radial wavefunctions, c.f. <em>chinook.rad_int.py</em> for details</li>
+<li><em>‘threads’</em>: int, number of threads on which to calculate the matrix elements.</li>
+</ul>
+<p>Requires very large calculation to see improvement over single core.</p>
+<ul class="simple">
+<li><em>‘slab’</em>: boolean, will truncate the eigenfunctions beyond the penetration depth (specifically 4x penetration depth), default is False</li>
+<li><em>‘ang’</em>: float, rotation of sample about normal emission i.e. z-axis (radian), default is 0.0</li>
+<li><em>‘W’</em>: float, work function (eV), default is 4.0</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p><a href="#id17"><span class="problematic" id="id18">**</span></a><a href="#id19"><span class="problematic" id="id20">*</span></a></p>
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.M_compute">
+<code class="descname">M_compute</code><span class="sig-paren">(</span><em>i</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.M_compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>The core method called during matrix element computation.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>i</strong>: integer, index and energy of state</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Mtmp</strong>: numpy array (2x3) of complex float corresponding to the matrix element
+projection for dm = -1,0,1 (columns) and spin down or up (rows) for a given
+state in k and energy.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.Mk_wrapper">
+<code class="descname">Mk_wrapper</code><span class="sig-paren">(</span><em>ilist</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.Mk_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper function for use in multiprocessing, to run each of the processes
+as a serial matrix element calculation over a sublist of state indices.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>ilist</strong>: list of int, all state indices for execution.</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Mk_out</strong>: numpy array of complex float with shape (len(ilist), 2,3)</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.SE_gen">
+<code class="descname">SE_gen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.SE_gen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Self energy arguments are passed as a list, which supports mixed-datatype.
+The first entry in list is a string, indicating the type of self-energy, 
+and the remaining entries are the self-energy.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>SE_args</strong>: list, first entry can be ‘func’, ‘poly’, ‘constant’, or ‘grid’</li>
+</ul>
+<p class="last">indicating an executable function, polynomial factors, constant, or a grid of values</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li>SE, numpy array of complex float, with either shape of the datacube,</li>
+</ul>
+<p class="last">or as a one dimensional array over energy only.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.T_distribution">
+<code class="descname">T_distribution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.T_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the Fermi-distribution for a fixed temperature, over the domain of energy of interest</p>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>fermi</strong>: numpy array of float, same length as energy domain array defined by <em>cube[2]</em> attribute.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.datacube">
+<code class="descname">datacube</code><span class="sig-paren">(</span><em>ARPES_dict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.datacube" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function computes the photoemission matrix elements.
+Given a kmesh to calculate the photoemission over, the mesh is reshaped to an nx3 array and the Hamiltonian
+diagonalized over this set of k points. The matrix elements are then calculated for each 
+of these E-k points</p>
+<dl class="docutils">
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>ARPES_dict</strong>: can optionally pass a dictionary of experimental parameters, to update those defined</li>
+</ul>
+<p class="last">in the initialization of the <em>experiment</em> object.</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>boolean, True if function finishes successfully.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.diagonalize">
+<code class="descname">diagonalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.diagonalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Diagonalize the Hamiltonian over the desired range of momentum, reshaping the 
+band-energies into a 1-dimensional array. If the user has not selected a energy
+grain for calculation, automatically calculate this.</p>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd>None, however <em>experiment</em> attributes <em>X</em>, <em>Y</em>, <em>ph</em>, <em>TB.Kobj</em>, <em>Eb</em>, <em>Ev</em>, <em>cube</em>
+are modified.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.gen_all_pol">
+<code class="descname">gen_all_pol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.gen_all_pol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate polarization vector, as it appears for each angle in the experiment.
+Assume that it only rotates with THETA_y (vertical cryostat), and that the polarization
+vector defined by the user relates to centre of THETA_x axis. 
+Right now only handles zero vertical rotation (just tilt)</p>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li>numpy array of len(expmt.cube[1]) x 3 complex float, rotated polarization vectors</li>
+</ul>
+<p class="last">expressed in basis of spherical harmonics</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.plot_gui">
+<code class="descname">plot_gui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.plot_gui" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the Tkinter gui for exploring the experimental parameter-space
+associated with the present experiment.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>ARPES_dict</strong>: dictionary of experimental parameters, c.f. the</li>
+</ul>
+<p class="last"><em>__init__</em> function for details.</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Tk_win</strong>: Tkinter window.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.plot_intensity_map">
+<code class="descname">plot_intensity_map</code><span class="sig-paren">(</span><em>plot_map</em>, <em>slice_select</em>, <em>plot_bands=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.plot_intensity_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a slice of the intensity map computed in <em>spectral</em>. The user selects either
+an array index along one of the axes, or the fixed value of interest, allowing
+either integer, or float selection.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>plot_map</strong>: numpy array of shape (self.cube[0],self.cube[1],self.cube[2]) of float</li>
+<li><strong>slice_select</strong>: list of either [int,int] or [str,float], corresponding to</li>
+</ul>
+<p>dimension, index or label, value. The former option takes dimensions 0,1,2 while
+the latter can handle ‘x’, ‘kx’, ‘y’, ‘ky’, ‘energy’, ‘w’, or ‘e’, and is not
+case-sensitive.</p>
+<ul class="simple">
+<li><strong>plot_bands</strong>: boolean, option to overlay a constant-momentum cut with</li>
+</ul>
+<p class="last">the dispersion calculated from tight-binding</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>fig</strong>: matplotlib figure object</li>
+<li><strong>ax</strong>: matplotlib axis object</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.rot_basis">
+<code class="descname">rot_basis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.rot_basis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate the basis orbitals and their positions in the lab frame to be consistent with the
+experimental geometry</p>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li>list of orbital objects, representing a rotated version of the original basis if the</li>
+</ul>
+<p class="last">angle is finite. Otherwise, just return the original basis.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.sarpes_projector">
+<code class="descname">sarpes_projector</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.sarpes_projector" title="Permalink to this definition">¶</a></dt>
+<dd><p>For use in spin-resolved ARPES experiments, project the computed
+matrix element values onto the desired spin-projection direction.
+In the event that the spin projection direction is not along the 
+standard out-of-plane quantization axis, we rotate the matrix elements
+computed into the desired basis direction.</p>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>spin_projected_Mk</strong>: numpy array of complex float with same</li>
+</ul>
+<p class="last">shape as <em>Mk</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.serial_Mk">
+<code class="descname">serial_Mk</code><span class="sig-paren">(</span><em>indices</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.serial_Mk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run matrix element on a single thread, directly modifies the <em>Mk</em> attribute.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>indices</strong>: list of all state indices for execution; restricting states</li>
+</ul>
+<blockquote class="last">
+<div>in <em>cube_indx</em> to those within the desired window</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.smat_gen">
+<code class="descname">smat_gen</code><span class="sig-paren">(</span><em>svector=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.smat_gen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define the spin-projection matrix related to a spin-resolved ARPES experiment.</p>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Smat</strong>: numpy array of 2x2 complex float corresponding to Pauli operator along the desired direction</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.spectral">
+<code class="descname">spectral</code><span class="sig-paren">(</span><em>ARPES_dict=None</em>, <em>slice_select=None</em>, <em>add_map=False</em>, <em>plot_bands=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.spectral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take the matrix elements and build a simulated ARPES spectrum. 
+The user has several options here for the self-energy to be used,  c.f. <em>SE_gen()</em> for details.
+Gaussian resolution broadening is the last operation performed, to be consistent with the
+practical experiment.</p>
+<dl class="docutils">
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>ARPES_dict</strong>: dictionary, experimental configuration. See <em>experiment.__init__</em> and <em>experiment.update_pars()</em></li>
+<li><strong>slice_select</strong>: tuple, of either int (axis,index format) or string (axis), int format</li>
+<li><strong>add_map</strong>: boolean, add intensity map to list of intensity maps. If true, a list of intensity objects is appended,</li>
+</ul>
+<p>otherwise, the intensity map is overwritten</p>
+<ul class="last simple">
+<li><strong>plot_bands</strong>: boolean, plot bandstructure from tight-binding over the intensity map</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>I</strong>: numpy array of float, raw intensity map.</li>
+<li><strong>Ig</strong>: numpy array of float, resolution-broadened intensity map.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.thread_Mk">
+<code class="descname">thread_Mk</code><span class="sig-paren">(</span><em>N</em>, <em>indices</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.thread_Mk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run matrix element on <em>N</em> threads using multiprocess functions, directly modifies the <em>Mk</em>
+attribute.</p>
+<p>NOTE 21/2/2019 – this has not been optimized to show any measureable improvement over serial execution.
+May require a more clever way to do this to get a proper speedup.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>N</strong>: int, number of threads</li>
+<li><strong>indices</strong>: list of int, all state indices for execution; restricting</li>
+</ul>
+<p class="last">states in cube_indx to those within the desired window.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.truncate_model">
+<code class="descname">truncate_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.truncate_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>For slab calculations, the number of basis states becomes a significant memory load,
+as well as a time bottleneck. In reality, an ARPES calculation only needs the small
+number of basis states near the surface. Then for slab-calculations, we can truncate
+the basis and eigenvectors used in the calculation to dramatically improve our
+capacity to perform such calculations. We keep all eigenvectors, but retain only the
+projection of the basis states within 2*the mean free path of the surface. The 
+states associated with this projection are retained, while remainders are not.</p>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>tmp_basis</strong>: list, truncated subset of the basis’ orbital objects</li>
+<li><strong>Evec</strong>: numpy array of complex float corresponding to the truncated eigenvector</li>
+</ul>
+<blockquote class="last">
+<div>array containing only the surface-projected wavefunctions</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.update_pars">
+<code class="descname">update_pars</code><span class="sig-paren">(</span><em>ARPES_dict</em>, <em>datacube=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.update_pars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Several experimental parameters can be updated without re-calculating 
+the ARPES intensity explicitly. Specifically here, we can update 
+resolution in both energy and momentum, as well as temperature,
+spin-projection, self-energy function, and polarization.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last">
+<li><p class="first"><strong>ARPES_dict</strong>: dictionary, specifically containing</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>‘resolution’</em>: dictionary with ‘E’:float and ‘k’:float</li>
+<li><em>‘T’</em>: float, temperature, a negative value will suppress the Fermi function</li>
+<li><em>‘spin’</em>: list of [int, numpy array of 3 float] indicating projection and spin vector</li>
+<li><em>‘SE’</em>: various types accepted, see <em>SE_gen</em> for details</li>
+<li><em>‘pol’</em>: numpy array of 3 complex float, polarization of light</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>datacube</strong>: bool, if updating in <em>spectral</em>, only the above  can be changed. If instead, updating</li>
+</ul>
+<dl class="last docutils">
+<dt>at the start of <em>datacube</em>, can also pass:</dt>
+<dd><ul class="first last simple">
+<li><strong>hv</strong>: float, photon energy, eV</li>
+<li><strong>ang</strong>: float, sample orientation around normal, radiants</li>
+<li><strong>rad_type</strong>: string, radial integral type</li>
+<li><strong>rad_args</strong>: various datatype, see <em>radint_lib</em> for details</li>
+<li><strong>kz</strong>: float, out-of-plane momentum, inverse Angstrom</li>
+<li><strong>mfp</strong>: float, mean-free path, Angstrom</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.write_Ik">
+<code class="descname">write_Ik</code><span class="sig-paren">(</span><em>filename</em>, <em>mat</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.write_Ik" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function for producing the textfiles associated with a 2 dimensional numpy array of float</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>filename</strong>: string indicating destination of file</li>
+<li><strong>mat</strong>: numpy array of float, two dimensional</li>
+</ul>
+</div></blockquote>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>boolean, True</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.write_map">
+<code class="descname">write_map</code><span class="sig-paren">(</span><em>_map</em>, <em>directory</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.write_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the intensity maps to a series of text files in the indicated directory.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>_map</strong>: numpy array of float to write to file</li>
+<li><strong>directory</strong>: string, name of directory + the file-lead name</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>boolean, True</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.ARPES_lib.experiment.write_params">
+<code class="descname">write_params</code><span class="sig-paren">(</span><em>Adict</em>, <em>parfile</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.write_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate metadata text file  associated with the saved map.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>Adict</strong>: dictionary, ARPES_dict same as in above functions, containing</li>
+</ul>
+<p>relevant experimental parameters for use in saving the metadata associated
+with the related calculation.</p>
+<ul class="last simple">
+<li><strong>parfile</strong>: string, destination for the metadata</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.ARPES_lib.find_mean_dE">
+<code class="descclassname">chinook.ARPES_lib.</code><code class="descname">find_mean_dE</code><span class="sig-paren">(</span><em>Eb</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.find_mean_dE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the average spacing between adjacent points along the dispersion calculated.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Eb</strong>: numpy array of float, eigenvalues</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>dE_mean</strong>: float, average difference between consecutive eigenvalues.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.ARPES_lib.gen_SE_KK">
+<code class="descclassname">chinook.ARPES_lib.</code><code class="descname">gen_SE_KK</code><span class="sig-paren">(</span><em>w</em>, <em>SE_args</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.gen_SE_KK" title="Permalink to this definition">¶</a></dt>
+<dd><p>The total self-energy is computed using Kramers’ Kronig relations:</p>
+<blockquote>
+<div><p>The user can pass the self-energy in the form of either a callable function, a list of polynomial coefficients, or as a numpy array with shape Nx2 (with the first
+column an array of frequency values, and the second the values of a function). For the latter option, the user is responsible for ensuring that the function goes 
+to zero at the tails of the domain. In the former two cases, the ‘cut’ parameter is used to impose an exponential cutoff near the edge of the domain to ensure this 
+is the case. In all cases the input imaginary self-energy must be single-signed to ensure it is purely even function. It is forced to be negative in all cases to give
+a positive spectral function.
+With the input defined, along with the energy range of interest to the calculation, a MUCH larger domain (100x in the maximal extent of the energy region of interest) is defined
+wf. This is the domain over which we evaluate the Hilbert transform, which itself is carried out using:
+the scipy.signal.hilbert() function. This function acting on an array f: H(f(x)) -&gt; f(x) + i Hf(x). It relies on the FFT performed on the product of the sgn(w) and F(w) functions,
+and then IFFT back so that we can use this to extract the real part of the self energy, given only the input.
+args:</p>
+<blockquote>
+<div><p>w – numpy array energy values for the spectral peaks used in the ARPES simulation
+SE_args – dictionary containing the ‘imfunc’ key value pair (values being either callable, list of polynomial prefactors (increasing order) or numpy array of energy and Im(SE) values)</p>
+<blockquote>
+<div>– for the first two options, a ‘cut’ key value pair is also required to force the function to vanish at the boundary of the Hilbert transform integration window.</div></blockquote>
+</div></blockquote>
+<p>return: self energy as a numpy array of complex float. The indexing matches that of w, the spectral features to be plotted in the matrix element simulation.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.ARPES_lib.pol_2_sph">
+<code class="descclassname">chinook.ARPES_lib.</code><code class="descname">pol_2_sph</code><span class="sig-paren">(</span><em>pol</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.pol_2_sph" title="Permalink to this definition">¶</a></dt>
+<dd><p>return polarization vector in spherical harmonics – order being Y_11, Y_10, Y_1-1.
+If an array of polarization vectors is passed, use the einsum function to broadcast over
+all vectors.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>pol</strong>: numpy array of 3 complex float, polarization vector in Cartesian coordinates (x,y,z)</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>numpy array of 3 complex float, transformed polarization vector.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.ARPES_lib.poly">
+<code class="descclassname">chinook.ARPES_lib.</code><code class="descname">poly</code><span class="sig-paren">(</span><em>input_x</em>, <em>poly_args</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.poly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursive polynomial function.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>input_x</strong>: float, int or numpy array of numeric type, input value(s) at which to evaluate the polynomial</li>
+<li><strong>poly_args</strong>: list of coefficients, in INCREASING polynomial order i.e. [a_0,a_1,a_2] for y = a_0 + a_1 * x + a_2 <a href="#id21"><span class="problematic" id="id22">*</span></a>x <a href="#id23"><span class="problematic" id="id24">**</span></a>2</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li>recursive call to <em>poly</em>, if <em>poly_args</em> is reduced to a single value, return explicit evaluation of the function.</li>
+</ul>
+<p class="last">Same datatype as input, with int changed to float if <em>poly_args</em> are float, polynomial evaluated over domain of <em>input_x</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.ARPES_lib.progress_bar">
+<code class="descclassname">chinook.ARPES_lib.</code><code class="descname">progress_bar</code><span class="sig-paren">(</span><em>N</em>, <em>Nmax</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.progress_bar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function, generate string to print matrix element calculation progress.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>N</strong>: int, number of iterations complete</li>
+<li><strong>Nmax</strong>: int, total number of iterations to complete</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>st</strong>: string, progress status</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.ARPES_lib.projection_map">
+<code class="descclassname">chinook.ARPES_lib.</code><code class="descname">projection_map</code><span class="sig-paren">(</span><em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.projection_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>In order to improve efficiency, an array of orbital projections is generated, carrying all and each
+orbital projection for the elements of the model basis. As these do not in general have the same length,
+the second dimension of this array corresponds to the largest of the sets of projections associated with
+a given orbital. This will in practice remain a modest number of order 1, since at worst we assume f-orbitals,
+in which case the projection can be no larger than 7 long. So output will be at worst len(basis)x7 complex float</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>basis</strong>: list of orbital objects</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>projarr</strong>: numpy array of complex float</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-chinook.intensity_map">
+<span id="intensity-map"></span><h2>intensity_map:<a class="headerlink" href="#module-chinook.intensity_map" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-chinook.radint_lib">
+<span id="radint-lib"></span><h2>radint_lib:<a class="headerlink" href="#module-chinook.radint_lib" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="chinook.radint_lib.define_radial_wavefunctions">
+<code class="descclassname">chinook.radint_lib.</code><code class="descname">define_radial_wavefunctions</code><span class="sig-paren">(</span><em>rad_dict</em>, <em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.radint_lib.define_radial_wavefunctions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define the executable radial wavefunctions for computation of
+the radial integrals</p>
+<dl class="docutils">
+<dt><em>args</em>:       </dt>
+<dd><ul class="first simple">
+<li><strong>rad_dict</strong>: essential key is <em>‘rad_type’</em>, if not passed,</li>
+</ul>
+<p>assume Slater orbitals.</p>
+<ul class="last">
+<li><p class="first"><strong>rad_dict[‘rad_type’]</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>‘slater’</em>: default value, if <em>‘rad_type’</em> is not passed,</li>
+</ul>
+<p>Slater type orbitals assumed and evaluated for the integral</p>
+<ul class="simple">
+<li><em>‘hydrogenic’</em>: similar in execution to <em>‘slater’</em>,</li>
+</ul>
+<p>but uses Hydrogenic orbitals–more realistic for light-atoms</p>
+<ul class="simple">
+<li><em>‘grid’</em>: radial wavefunctions evaluated on a grid of</li>
+</ul>
+<p>radii. Requires also another key_value pair:</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>‘rad_args’</em>: dictionary of numpy arrays evaluating</li>
+</ul>
+<p>the radial wavefunctions. Requires an <em>‘r’</em> array,
+as well as ‘a-n-l’ indicating ‘atom-principal quantum number-orbital angular momentum’.
+Must pass such a grid for each orbital in the basis!</p>
+</div></blockquote>
+<ul class="simple">
+<li><em>‘exec’</em>: executable functions for each ‘a-n-l’ i.e.</li>
+</ul>
+<p>‘atom-principal quantum number-orbital angular momentum’. 
+If      executable is chosen, require also:</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>‘rad_args’</em>, which will be a dictionary of</li>
+</ul>
+<p>executables, labelled by the keys ‘a-n-l’. 
+These will be passed to the integral routine.
+Note that it is required that the executables
+are localized, i.e. vanishing for large radii.</p>
+</div></blockquote>
+<ul class="simple">
+<li><em>‘fixed</em>: radial integrals taken to be constant float,</li>
+</ul>
+<p>require dictionary:</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>‘rad_args’</em> with keys ‘a-n-l-lp’, i.e.</li>
+</ul>
+<p>‘atom-principal quantum number-orbital angular momentum-final state angular momentum’
+and complex float values for the radial integrals.</p>
+</div></blockquote>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>basis</strong>: list of orbital objects</p>
+</li>
+</ul>
+</dd>
+<dt><em>return</em>:        </dt>
+<dd><strong>orbital_funcs</strong>: dictionary of executables</dd>
+</dl>
+<p><a href="#id25"><span class="problematic" id="id26">**</span></a><a href="#id27"><span class="problematic" id="id28">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.radint_lib.fill_radint_dic">
+<code class="descclassname">chinook.radint_lib.</code><code class="descname">fill_radint_dic</code><span class="sig-paren">(</span><em>Eb</em>, <em>orbital_funcs</em>, <em>hv</em>, <em>W=0.0</em>, <em>fixed=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.radint_lib.fill_radint_dic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function for computing dictionary of radial integrals. 
+Can pass either an array of binding energies or a single binding
+energy as a float. In either case, returns a dictionary however 
+the difference being that the key value pairs will have a value
+which is itself either a float, or an interpolation mesh over 
+the range of the binding energy array. The output can then be 
+used by either writing <strong>Bdic[‘key’]</strong> or
+<a href="#id29"><span class="problematic" id="id30">**</span></a>Bdic[‘key’]**(valid float between endpoints of input array)</p>
+<dl class="docutils">
+<dt><em>args</em>:      </dt>
+<dd><ul class="first simple">
+<li><strong>Eb</strong>: float or tuple indicating the extremal energies</li>
+<li><strong>orbital_funcs</strong>: dictionary of executable orbital radial wavefunctions</li>
+<li><strong>fixed</strong>: bool, if True, constant radial integral for each scattering</li>
+</ul>
+<p class="last">channel available: then the orbital_funcs dictionary already
+has the radial integral evaluated</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Brad</strong>: dictionary of executable interpolation grids</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.radint_lib.find_cutoff">
+<code class="descclassname">chinook.radint_lib.</code><code class="descname">find_cutoff</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.radint_lib.find_cutoff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a suitable cutoff lengthscale for the radial integration:
+Evaluate the function over a range of 20 Angstrom, with reasonable
+detail (dr = 0.02 A). Find the maximum in this range. The cutoff
+tolerance is set to 1/1e4 of the maximum value. Since this ‘max’
+is actually a lower bound on the true maximum, this will only give
+us a more strict cutoff tolerance than is absolutely possible. With
+this point found, we then find all points which are within the
+tolerance of zero. The frequency of these points is then found. When
+the frequency is constant and 1 for all subsequent points, we have
+found the point of convergence. If the ‘point of convergence’ is the
+last point in the array, the radial wavefunction really isn’t suitably
+localized and the user should not proceed without giving more
+consideration to the application of the LCAO approximation to such
+a function.</p>
+<dl class="docutils">
+<dt><em>args</em>: </dt>
+<dd><ul class="first last simple">
+<li><strong>func</strong>: the integrand executable</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>float, cutoff distance for integration</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id31"><span class="problematic" id="id32">**</span></a><a href="#id33"><span class="problematic" id="id34">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.radint_lib.gen_const">
+<code class="descclassname">chinook.radint_lib.</code><code class="descname">gen_const</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.radint_lib.gen_const" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create executable function returning a constant value</p>
+<dl class="docutils">
+<dt><em>args</em>:    </dt>
+<dd><ul class="first last simple">
+<li><strong>val</strong>: constant value to return when executable function</li>
+</ul>
+</dd>
+<dt><em>return</em>:      </dt>
+<dd><ul class="first last simple">
+<li>lambda function with constant value</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id35"><span class="problematic" id="id36">**</span></a><a href="#id37"><span class="problematic" id="id38">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.radint_lib.gen_orb_labels">
+<code class="descclassname">chinook.radint_lib.</code><code class="descname">gen_orb_labels</code><span class="sig-paren">(</span><em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.radint_lib.gen_orb_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple utility function for generating a dictionary of 
+atom-n-l:[Z, orbital label] pairs, to establish which radial integrals
+need be computed.</p>
+<dl class="docutils">
+<dt><em>args</em>:       </dt>
+<dd><ul class="first last simple">
+<li><strong>basis</strong>: list of orbitals in basis</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>orbitals</strong>: dictionary of radial integral pairs</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id39"><span class="problematic" id="id40">**</span></a><a href="#id41"><span class="problematic" id="id42">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.radint_lib.make_radint_pointer">
+<code class="descclassname">chinook.radint_lib.</code><code class="descname">make_radint_pointer</code><span class="sig-paren">(</span><em>rad_dict</em>, <em>basis</em>, <em>Eb</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.radint_lib.make_radint_pointer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define executable radial integral functions, and store in a 
+pointer-integer referenced array. This allows for fewer executions
+of the interpolation function in the event where several orbitals
+in the basis share the same a,n,l. Each of these gets 2 functions
+for l +/-1, which are stored in the rows of the array <strong>B_array</strong>.
+The orbitals in the basis then are matched to these executables,
+with the corresponding executable row index saved in <strong>B_pointers</strong>.</p>
+<p>Begin by defining the executable radial wavefunctions, then perform
+integration at several binding energies, finally returning an
+interpolation of these integrations.</p>
+<dl class="docutils">
+<dt><em>args</em>:        </dt>
+<dd><ul class="first simple">
+<li><strong>rad_dict</strong>: dictionary of ARPES parameters: relevant keys are</li>
+</ul>
+<p>‘hv’ (photon energy), ‘W’ (work function), and the rad_type
+(radial wavefunction type, as well as any relevant additional
+pars, c.f. <em>radint_lib.define_radial_wavefunctions</em>).
+Note: <em>‘rad_type’</em> is optional, as is <em>rad_args</em>, depending on choice
+of radial wavefunction.</p>
+<ul class="simple">
+<li><strong>basis</strong>: list of orbitals in the basis</li>
+<li><strong>Eb</strong>: tuple of 2 floats indicating the range of energy of</li>
+</ul>
+<p class="last">interest (increasing order)</p>
+</dd>
+<dt><em>return</em>:       </dt>
+<dd><ul class="first simple">
+<li><strong>B_array</strong>: numpy array of Nx2 executable functions of float</li>
+<li><strong>B_pointers</strong>: numpy array of integer indices matching orbital</li>
+</ul>
+<p class="last">basis ordering to the functions in <strong>B_array</strong></p>
+</dd>
+</dl>
+<p><a href="#id43"><span class="problematic" id="id44">**</span></a><a href="#id45"><span class="problematic" id="id46">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.radint_lib.radint_calc">
+<code class="descclassname">chinook.radint_lib.</code><code class="descname">radint_calc</code><span class="sig-paren">(</span><em>k_norm</em>, <em>orbital_funcs</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.radint_lib.radint_calc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute dictionary of radial integrals evaluated at a single <a href="#id55"><span class="problematic" id="id56">|k|</span></a> value
+for the whole basis. Will avoid redundant integrations by checking for
+the presence of an identical dictionary key. The integration is done
+as a simple adaptive integration algorithm, defined in the 
+<em>adaptive_int</em> library.</p>
+<dl class="docutils">
+<dt><em>args</em>:     </dt>
+<dd><ul class="first simple">
+<li><strong>k_norm</strong>: float, length of the k-vector</li>
+</ul>
+<p>(as an argument for the spherical Bessel Function)</p>
+<ul class="last simple">
+<li><strong>orbital_funcs</strong>: dictionary, radial wavefunction executables</li>
+</ul>
+</dd>
+<dt><em>returns</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Bdic</strong>: dictionary, key value pairs in form – ‘ATOM-N-L’:<em>Bval</em></li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id47"><span class="problematic" id="id48">**</span></a><a href="#id49"><span class="problematic" id="id50">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.radint_lib.radint_dict_to_arr">
+<code class="descclassname">chinook.radint_lib.</code><code class="descname">radint_dict_to_arr</code><span class="sig-paren">(</span><em>Bdict</em>, <em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.radint_lib.radint_dict_to_arr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take a dictionary of executables defined for different combinations
+of a,n,l and send them to an array, with a corresponding pointer
+array which can be used to dereference the relevant executable.</p>
+<dl class="docutils">
+<dt><em>args</em>:        </dt>
+<dd><ul class="first last simple">
+<li><strong>Bdict</strong>: dictionary of executables with ‘a-n-l-l’’ keys</li>
+<li><strong>basis</strong>: list of orbital objects</li>
+</ul>
+</dd>
+<dt><em>return</em>:        </dt>
+<dd><ul class="first simple">
+<li><strong>Blist</strong>: numpy array of the executables, organized by a-n-l,</li>
+</ul>
+<p>and l’ (size Nx2, where N is the length of the set of 
+distinct a-n-l triplets)</p>
+<ul class="simple">
+<li><strong>pointers</strong>: numpy array of length (basis), integer datatype</li>
+</ul>
+<p class="last">indicating the related positions in the <strong>Blist</strong> array</p>
+</dd>
+</dl>
+<p><a href="#id51"><span class="problematic" id="id52">**</span></a><a href="#id53"><span class="problematic" id="id54">*</span></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-chinook.tilt">
+<span id="tilt"></span><h2>tilt:<a class="headerlink" href="#module-chinook.tilt" title="Permalink to this headline">¶</a></h2>
+<p>Created on Fri Dec 28 13:33:59 2018</p>
+<p>&#64;author: ryanday</p>
+<dl class="function">
+<dt id="chinook.tilt.ang_mesh">
+<code class="descclassname">chinook.tilt.</code><code class="descname">ang_mesh</code><span class="sig-paren">(</span><em>N</em>, <em>th</em>, <em>ph</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.tilt.ang_mesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a mesh over the indicated range of theta and phi,
+with N elements along each of the two directions</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>N</strong>: int or iterable of length 2 indicating # of points along <em>th</em>, and <em>ph</em> respectively</li>
+<li><strong>th</strong>: iterable length 2 of float (endpoints of theta range)</li>
+<li><strong>ph</strong>: iterable length 2 of float (endpoints of phi range)</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>numpy array of N_th x N_ph float, representing mesh of angular coordinates</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.tilt.gen_kpoints">
+<code class="descclassname">chinook.tilt.</code><code class="descname">gen_kpoints</code><span class="sig-paren">(</span><em>ek</em>, <em>N</em>, <em>thx</em>, <em>thy</em>, <em>kz</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.tilt.gen_kpoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a mesh of kpoints over a mesh of emission angles.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>ek</strong>: float, kinetic energy, eV</li>
+<li><strong>N</strong>: tuple of 2 int, number of points along each axis</li>
+<li><strong>thx</strong>: tuple of 2 float, range of horizontal angles, radian</li>
+<li><strong>thy</strong>: tuple of 2 float, range of vertical angles, radian</li>
+<li><strong>kz</strong>: float, k-perpendicular of interest, inverse Angstrom</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>k_array</strong>: numpy array of N[1]xN[0] float, corresponding to mesh of in-plane momenta</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.tilt.k_mesh">
+<code class="descclassname">chinook.tilt.</code><code class="descname">k_mesh</code><span class="sig-paren">(</span><em>Tmesh</em>, <em>Pmesh</em>, <em>ek</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.tilt.k_mesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Application of rotation to a normal-emission vector (i.e. (0,0,1) vector)
+Third column of a rotation matrix formed by product of rotation about vertical (ky), and rotation around kx axis
+c.f. Labbook 28 December, 2018</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Tmesh</strong>: numpy array of float, output of <em>ang_mesh</em></li>
+<li><strong>Pmesh</strong>: numpy array of float, output of <em>ang_mesh</em></li>
+<li><strong>ek</strong>: float, kinetic energy in eV</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>kvec</strong>: numpy array of float, in-plane momentum array associated with angular emission coordinates</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.tilt.k_parallel">
+<code class="descclassname">chinook.tilt.</code><code class="descname">k_parallel</code><span class="sig-paren">(</span><em>ek</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.tilt.k_parallel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert kinetic energy in eV to inverse Angstrom</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.tilt.rot_vector">
+<code class="descclassname">chinook.tilt.</code><code class="descname">rot_vector</code><span class="sig-paren">(</span><em>vector</em>, <em>th</em>, <em>ph</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.tilt.rot_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotation of vector by theta and phi angles, about the global y-axis by theta, followed by a rotation about
+the LOCAL x axis by phi. This is analogous to the rotation of a cryostat with a vertical-rotation axis (theta),
+and a sample-mount tilt angle (phi). NOTE: need to extend to include cryostats where the horizontal rotation axis
+is fixed, as opposed to the vertical axis–I have never seen such a system but it is of course totally possible.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>vector</strong>: numpy array length 3 of float (vector to rotate)</li>
+<li><strong>th</strong>: float, or numpy array of float – vertical rotation angle(s)</li>
+<li><strong>ph</strong>: float, or numpy array of float – horizontal tilt angle(s)</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li>numpy array of float, rotated vectors for all angles: shape 3 x len(ph) x len(th)</li>
+</ul>
+<p class="last">NOTE: will flatten any length-one dimensions</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">chinook</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html#contact">Contact</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ARPES Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tightbinding.html">Tight Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operator.html">Model Diagnostics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slab.html">Slab Calculation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support Files</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="license.html" title="previous chapter">License</a></li>
+      <li>Next: <a href="tightbinding.html" title="next chapter">Tight Binding</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Ryan P. Day.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="_sources/arpes.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

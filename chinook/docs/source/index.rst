@@ -7,11 +7,17 @@ Welcome to chinook's documentation!
 ===================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
+   introduction
    license
-  
+   arpes    
+   tightbinding
+   operator
+   slab
+   support
+
 Indices and tables
 ==================
 

@@ -1,5 +1,11 @@
+.. toctree::
+   :maxdepth: 2
+
+
 Documentation for chinook
 ************************
+
+
 
 adaptive_int: 
 ===================================
@@ -7,11 +13,6 @@ adaptive_int:
 .. automodule:: chinook.adaptive_int
    :members:
 
-angle_expt::
-===================================
-
-.. automodule:: chinook.angle_expt
-   :members:
 
 ARPES_lib:
 ============================
@@ -29,12 +30,6 @@ build_lib:
 ===========================
 
 .. automodule:: chinook.build_lib
-   :members:
-
-CG:
-===================================
-
-.. automodule:: chinook.CG
    :members:
 
 dos.py:

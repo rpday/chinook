@@ -1,0 +1,1318 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Model Diagnostics &#8212; chinook 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Slab Calculation" href="slab.html" />
+    <link rel="prev" title="Tight Binding" href="tightbinding.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="toctree-wrapper compound">
+</div>
+<div class="section" id="model-diagnostics">
+<h1>Model Diagnostics<a class="headerlink" href="#model-diagnostics" title="Permalink to this headline">¶</a></h1>
+<p>chinook is designed with the capacity to do fairly extensive characterization of the tight-binding model being used. These scripts contain useful tools for understanding the model in more detail</p>
+<div class="section" id="module-chinook.dos">
+<span id="dos-py"></span><h2>dos.py:<a class="headerlink" href="#module-chinook.dos" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="chinook.dos.EF_find">
+<code class="descclassname">chinook.dos.</code><code class="descname">EF_find</code><span class="sig-paren">(</span><em>TB</em>, <em>occ</em>, <em>dE</em>, <em>NK</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.dos.EF_find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the tetrahedron-integration method to establish the Fermi-level, for a given
+electron occupation.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>TB</strong>: instance of tight-binding model object from <em>TB_lib</em></li>
+<li><strong>occ</strong>: float, desired electronic occupation</li>
+<li><strong>dE</strong>: estimate of energy precision desired for evaluation of the</li>
+</ul>
+<p>Fermi-level (in eV)</p>
+<ul class="last simple">
+<li><strong>NK</strong>: int or iterable of 3 int, number of k points in mesh.</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><strong>EF</strong>: float, Fermi Energy for the desired occupation, to within dE of actual
+value.</dd>
+</dl>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a><a href="#id3"><span class="problematic" id="id4">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.dos.band_contribution">
+<code class="descclassname">chinook.dos.</code><code class="descname">band_contribution</code><span class="sig-paren">(</span><em>eigenvals</em>, <em>w_domain</em>, <em>volume</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.dos.band_contribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the contribution over a single tetrahedron, from a 
+single band, to the density of states</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>eigenvals</strong>: numpy array of float, energy values at corners</li>
+<li><strong>w_domain</strong>: numpy array of float, energy domain</li>
+<li><strong>volume</strong>: int, number of tetrahedra in the total mesh</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>DOS</strong>: numpy array of float, same length as w_domain</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id5"><span class="problematic" id="id6">**</span></a><a href="#id7"><span class="problematic" id="id8">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.dos.def_dE">
+<code class="descclassname">chinook.dos.</code><code class="descname">def_dE</code><span class="sig-paren">(</span><em>Eband</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.dos.def_dE" title="Permalink to this definition">¶</a></dt>
+<dd><p>If energy broadening is not passed for density-of-states calculation,
+compute a reasonable value based on the energy between adjacent energies
+in the tight-binding calculation</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Eband</strong>: numpy array of float, indicating band energies</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><strong>dE</strong>: float, energy broadening, as the smallest average energy spacing
+over all bands.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.dos.dos_broad">
+<code class="descclassname">chinook.dos.</code><code class="descname">dos_broad</code><span class="sig-paren">(</span><em>TB</em>, <em>NK</em>, <em>NE=None</em>, <em>dE=None</em>, <em>origin=array([0.</em>, <em>0.</em>, <em>0.])</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.dos.dos_broad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Energy-broadened discrete density of states calculation.
+The Hamiltonian is diagonalized over the kmesh defined by NK and
+states are summed, as energy-broadened Gaussian peaks, rather than
+delta functions.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>TB</strong>: tight-binding model object</li>
+<li><strong>NK</strong>: int, or tuple of int, indicating number of k-points</li>
+</ul>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>NE</strong>: int, number of energy bins for final output</li>
+<li><strong>dE</strong>: float, energy broadening of peaks, eV</li>
+<li><strong>origin</strong>: numpy array of 3 float, indicating the origin of the mesh to be used,</li>
+</ul>
+<p class="last">relevant for example in kz-specific contributions to density of states</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>DOS</strong>: numpy array of float, density-of-states in states/eV</li>
+<li><strong>Elin</strong>: numpy array of float, energy domain in eV</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.dos.dos_func">
+<code class="descclassname">chinook.dos.</code><code class="descname">dos_func</code><span class="sig-paren">(</span><em>energy</em>, <em>epars</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.dos.dos_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Piecewise function for calculation of density of states</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>energy</strong>: numpy array of float (energy domain)</li>
+<li><strong>epars</strong>: tuple of parameters: e[0],e[1],e[2],e[3],V_T,V_G being the ranked band energies for the tetrahedron,</li>
+</ul>
+<p class="last">as well as the volume of both the tetrahedron and the Brillouin zone, all float</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>numpy array of float giving DOS contribution from this tetrahedron</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.dos.dos_tetra">
+<code class="descclassname">chinook.dos.</code><code class="descname">dos_tetra</code><span class="sig-paren">(</span><em>TB</em>, <em>NE</em>, <em>NK</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.dos.dos_tetra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a tetrahedra mesh of k-points which span the BZ with even distribution
+Diagonalize over this mesh and then compute the resulting density of states as
+prescribed in the above paper. 
+The result is plotted, and DOS returned</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>TB</strong>: tight-binding model object</li>
+<li><strong>NE</strong>: int, number of energy points</li>
+<li><strong>NK</strong>: int or list of 3 int – number of k-points in mesh</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Elin</strong>: linear energy array of float, spanning the range of the eigenspectrum</li>
+<li><strong>DOS</strong>: numpy array of float, same length as Elin, density of states</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id9"><span class="problematic" id="id10">**</span></a><a href="#id11"><span class="problematic" id="id12">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.dos.error_function">
+<code class="descclassname">chinook.dos.</code><code class="descname">error_function</code><span class="sig-paren">(</span><em>x0</em>, <em>x</em>, <em>sigma</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.dos.error_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integral over the gaussian function, evaluated from -infinity to x, using
+the scipy implementation of the error function</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>x0</strong>: float, centre of Gaussian, in eV</li>
+<li><strong>x</strong>: numpy array of float, energy domain eV</li>
+<li><strong>sigma</strong>: float, width of Gaussian, in eV</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>analytical form of integral</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.dos.find_EF">
+<code class="descclassname">chinook.dos.</code><code class="descname">find_EF</code><span class="sig-paren">(</span><em>TB</em>, <em>NK</em>, <em>occ</em>, <em>NE=None</em>, <em>dE=None</em>, <em>origin=array([0.</em>, <em>0.</em>, <em>0.])</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.dos.find_EF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the Fermi level of a model Hamiltonian, for a designated electronic
+occupation. Note this is evaluated at T=0, so EF is well-defined.
+<em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>TB</strong>: tight-binding model object</li>
+<li><strong>NK</strong>: int, or tuple of int, indicating number of k-points</li>
+<li><strong>occ</strong>: float, desired electronic occupation</li>
+</ul>
+</div></blockquote>
+<dl class="docutils">
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>NE</strong>: int, number of energy bins for final output</li>
+<li><strong>dE</strong>: float, energy spacing of bins, in eV</li>
+<li><strong>origin</strong>: numpy array of 3 float, indicating the origin of the mesh to be used,</li>
+</ul>
+<p class="last">relevant for example in kz-specific contributions to density of states</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>EF</strong>: float, Fermi level in eV</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.dos.gaussian">
+<code class="descclassname">chinook.dos.</code><code class="descname">gaussian</code><span class="sig-paren">(</span><em>x0</em>, <em>x</em>, <em>sigma</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.dos.gaussian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate a normalized Gaussian function.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>x0</strong>: float, centre of peak, in eV</li>
+<li><strong>x</strong>: numpy array of float, energy domain in eV</li>
+<li><strong>sigma</strong>: float, width of Gaussian, in eV</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.dos.n_func">
+<code class="descclassname">chinook.dos.</code><code class="descname">n_func</code><span class="sig-paren">(</span><em>energy</em>, <em>epars</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.dos.n_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Piecewise function for evaluating contribution of tetrahedra to electronic
+occupation number</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>energy</strong>: numpy array of float, energy domain</li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li><strong>epars</strong>: tuple of parameters: e[0],e[1],e[2],e[3],V_T,V_G being the ranked band energies for the tetrahedron,</li>
+</ul>
+</div></blockquote>
+<p class="last">as well as the volume of both the tetrahedron and the Brillouin zone, all float</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li>numpy array of float, same length as <strong>energy</strong>, providing contribution of</li>
+</ul>
+<p class="last">tetrahedra to the occupation function</p>
+</dd>
+</dl>
+<p><a href="#id13"><span class="problematic" id="id14">**</span></a><a href="#id15"><span class="problematic" id="id16">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.dos.n_tetra">
+<code class="descclassname">chinook.dos.</code><code class="descname">n_tetra</code><span class="sig-paren">(</span><em>TB</em>, <em>dE</em>, <em>NK</em>, <em>plot=True</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.dos.n_tetra" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function, also from the algorithm of Blochl, gives the integrated DOS
+at every given energy (so from bottom of bandstructure up to its top. This makes
+for very convenient and precise evaluation of the Fermi level, given an electron
+number)</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>TB</strong>: tight-binding model object</li>
+<li><strong>dE</strong>: float, energy spacing (meV)</li>
+<li><strong>NK</strong>: int, iterable of 3 int. number of k-points in mesh</li>
+<li><strong>plot</strong>: bool, to plot or not to plot the calculated array</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>Elin</strong>: linear energy array of float, spanning the range of the eigenspectrum</li>
+<li><strong>n_elect</strong>: numpy array of float, same length as <strong>Elin</strong>, integrated DOS</li>
+</ul>
+<p class="last">at each energy, i.e. total number of electrons occupied at each energy</p>
+</dd>
+</dl>
+<p><a href="#id17"><span class="problematic" id="id18">**</span></a><a href="#id19"><span class="problematic" id="id20">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.dos.ne_broad_analytical">
+<code class="descclassname">chinook.dos.</code><code class="descname">ne_broad_analytical</code><span class="sig-paren">(</span><em>TB</em>, <em>NK</em>, <em>NE=None</em>, <em>dE=None</em>, <em>origin=array([0.</em>, <em>0.</em>, <em>0.])</em>, <em>plot=True</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.dos.ne_broad_analytical" title="Permalink to this definition">¶</a></dt>
+<dd><p>Analytical evaluation of the occupation function. Uses scipy’s errorfunction
+executable to evaluate the analytical form of a Gaussian-broadened state’s contribution
+to the total occupation, at each energy</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>TB</strong>: tight-binding model object</li>
+<li><strong>NK</strong>: int, or tuple of int, indicating number of k-points</li>
+</ul>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>NE</strong>: int, number of energy bins for final output</li>
+<li><strong>dE</strong>: float, energy spacing of bins, in eV</li>
+<li><strong>origin</strong>: numpy array of 3 float, indicating the origin of the mesh to be used,</li>
+</ul>
+<p>relevant for example in kz-specific contributions to density of states</p>
+<ul class="last simple">
+<li><strong>plot</strong>: boolean, default to True, if false, suppress plot output</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>nE</strong>: numpy array of float, occupied states</li>
+<li><strong>Elin</strong>: numpy array of float, energy domain in eV</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.dos.ne_broad_numerical">
+<code class="descclassname">chinook.dos.</code><code class="descname">ne_broad_numerical</code><span class="sig-paren">(</span><em>TB</em>, <em>NK</em>, <em>NE=None</em>, <em>dE=None</em>, <em>origin=array([0.</em>, <em>0.</em>, <em>0.])</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.dos.ne_broad_numerical" title="Permalink to this definition">¶</a></dt>
+<dd><p>Occupation function, as a numerical integral over the density of states function.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>TB</strong>: tight-binding model object</li>
+<li><strong>NK</strong>: int, or tuple of int, indicating number of k-points</li>
+</ul>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>NE</strong>: int, number of energy bins for final output</li>
+<li><strong>dE</strong>: float, energy spacing of bins, in eV</li>
+<li><strong>origin</strong>: numpy array of 3 float, indicating the origin of the mesh to be used,</li>
+</ul>
+<p class="last">relevant for example in kz-specific contributions to density of states</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>ne</strong>: numpy array of float, integrated density-of-states at each energy</li>
+<li><strong>Elin</strong>: numpy array of float, energy domain in eV</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.dos.pdos_tetra">
+<code class="descclassname">chinook.dos.</code><code class="descname">pdos_tetra</code><span class="sig-paren">(</span><em>TB</em>, <em>NE</em>, <em>NK</em>, <em>proj</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.dos.pdos_tetra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partial density of states calculation. Follows same tetrahedra method, 
+weighting the contribution of a given tetrahedra by the average projection
+onto the indicated user-defined projection. The average here taken as the sum
+over projection at the 4 vertices of the tetrahedra.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>TB</strong>: tight-binding model object</li>
+<li><strong>NE</strong>: int, number of energy bins</li>
+<li><strong>NK</strong>: int, or iterable of 3 int, indicating the number of k-points</li>
+</ul>
+<p>along each of the axes of the Brillouin zone</p>
+<ul class="last simple">
+<li><strong>proj</strong>: numpy array of float, 1D or 2D, c.f. <em>proj_mat</em>.</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>Elin</strong>: numpy array of float, with length <strong>NE</strong>, spanning the</li>
+</ul>
+<p>range of the tight-binding bandstructure</p>
+<ul class="last simple">
+<li><strong>pDOS</strong>: numpy array of float, len <strong>NE</strong>, projected density of states</li>
+<li><strong>DOS</strong>: numpy array of float, len <strong>NE</strong>, full density of states</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id21"><span class="problematic" id="id22">**</span></a><a href="#id23"><span class="problematic" id="id24">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.dos.proj_avg">
+<code class="descclassname">chinook.dos.</code><code class="descname">proj_avg</code><span class="sig-paren">(</span><em>eivecs</em>, <em>proj_matrix</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.dos.proj_avg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the expectation value of the projection operator, for each of the
+eigenvectors, at each of the vertices, and then sum over the vertices. We
+use <em>numpy.einsum</em> to perform matrix multiplication and contraction.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>eivecs</strong>: numpy array of complex float, 4xNxM, with M number of eigenvectors,</li>
+</ul>
+<p>N basis dimension</p>
+<ul class="last simple">
+<li><strong>proj_matrix</strong>: numpy array of complex float, NxN in size</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li>numpy array of M float, indicating the average projection over the 4</li>
+</ul>
+<p class="last">corners of the tetrahedron</p>
+</dd>
+</dl>
+<p><a href="#id25"><span class="problematic" id="id26">**</span></a><a href="#id27"><span class="problematic" id="id28">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.dos.proj_mat">
+<code class="descclassname">chinook.dos.</code><code class="descname">proj_mat</code><span class="sig-paren">(</span><em>proj</em>, <em>lenbasis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.dos.proj_mat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define projection matrix for fast evaluation of the partial density of states
+weighting. As the projector here is diagonal, and represents a Hermitian 
+matrix, it is by definition a real matrix operator.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>proj</strong>: numpy array, either 1D (indices of projection), or 2D (indices of</li>
+</ul>
+<p>projection and weight of projection)</p>
+<ul class="last simple">
+<li><strong>lenbasis</strong>: int, size of the orbital basis</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>numpy array of float, lenbasis x lenbasis</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id29"><span class="problematic" id="id30">**</span></a><a href="#id31"><span class="problematic" id="id32">*</span></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-chinook.FS_tetra">
+<span id="fs-tetra"></span><h2>FS_tetra:<a class="headerlink" href="#module-chinook.FS_tetra" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="chinook.FS_tetra.EF_tetra">
+<code class="descclassname">chinook.FS_tetra.</code><code class="descname">EF_tetra</code><span class="sig-paren">(</span><em>TB</em>, <em>NK</em>, <em>EF</em>, <em>degen=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.FS_tetra.EF_tetra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a tetrahedra mesh of k-points which span the BZ with even distribution
+Diagonalize over this mesh and then compute the resulting density of states as
+prescribed in the above paper.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>TB</strong>: tight-binding model object</li>
+<li><strong>NK</strong>: int or list,tuple of 3 int indicating number of k-points in mesh</li>
+<li><strong>EF</strong>: float, Fermi energy, or energy of interest</li>
+</ul>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>degen</strong>: bool, flag for whether the bands are two-fold degenerate, as for</li>
+</ul>
+<p class="last">Kramers degeneracy</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>surfaces</strong>: dictionary of dictionaries: Each key-value pair corresponds</li>
+</ul>
+<p>to a different band index. For each case, the value is a dictionary with key-value
+pairs:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li><em>‘pts’</em>: numpy array of Nx3 float, the N coordinates of EF crossing</li>
+<li><em>‘tris’</em>: numpy array of Nx3 int, the triangulation of the surface</li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+<p><a href="#id33"><span class="problematic" id="id34">**</span></a><a href="#id35"><span class="problematic" id="id36">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.FS_tetra.FS_generate">
+<code class="descclassname">chinook.FS_tetra.</code><code class="descname">FS_generate</code><span class="sig-paren">(</span><em>TB</em>, <em>Nk</em>, <em>EF</em>, <em>degen=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.FS_tetra.FS_generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper function for computing Fermi surface triangulation, and then plotting
+the result.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>TB</strong>: tight-binding model object</li>
+<li><strong>Nk</strong>: int, or tuple/list of 3 int, number of k-points in Brillouin zone mesh</li>
+<li><strong>EF</strong>: float, Fermi energy, or constant energy level of interest</li>
+</ul>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>degen</strong>: bool, flag for whether the bands are two-fold degenerate, as for</li>
+</ul>
+<p class="last">Kramers degeneracy</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>surfaces</strong>: dictionary of dictionaries: Each key-value pair corresponds</li>
+</ul>
+<p>to a different band index. For each case, the value is a dictionary with key-value
+pairs:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li><em>‘pts’</em>: numpy array of Nx3 float, the N coordinates of EF crossing</li>
+<li><em>‘tris’</em>: numpy array of Nx3 int, the triangulation of the surface</li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+<p><a href="#id37"><span class="problematic" id="id38">**</span></a><a href="#id39"><span class="problematic" id="id40">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.FS_tetra.heron">
+<code class="descclassname">chinook.FS_tetra.</code><code class="descname">heron</code><span class="sig-paren">(</span><em>vert</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.FS_tetra.heron" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heron’s algorithm for calculation of triangle area, defined by only the vertices</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>vert</strong>: numpy array of 3x3 indicating vertices of triangle</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>float, area of triangle</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id41"><span class="problematic" id="id42">**</span></a><a href="#id43"><span class="problematic" id="id44">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.FS_tetra.sim_tri">
+<code class="descclassname">chinook.FS_tetra.</code><code class="descname">sim_tri</code><span class="sig-paren">(</span><em>vert</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.FS_tetra.sim_tri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take 4 vertices of a quadrilateral and split into two alternative triangulations of the corners.
+Return the vertices of the triangulation which has the more similar areas between the two
+triangles decomposed.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>vert</strong>: (4 by 3 numpy array (or list) of float) in some coordinate frame</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>tris[0]</strong> , <strong>tris[1]</strong>: two numpy arrays of size 3 by 3 float containing</li>
+</ul>
+<p class="last">the coordinates of a triangulation</p>
+</dd>
+</dl>
+<p><a href="#id45"><span class="problematic" id="id46">**</span></a><a href="#id47"><span class="problematic" id="id48">*</span></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-chinook.operator_library">
+<span id="operator-library"></span><h2>operator_library:<a class="headerlink" href="#module-chinook.operator_library" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="chinook.operator_library.FS">
+<code class="descclassname">chinook.operator_library.</code><code class="descname">FS</code><span class="sig-paren">(</span><em>TB</em>, <em>ktuple</em>, <em>Ef</em>, <em>tol</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.FS" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simplified form of Fermi surface extraction, for proper calculation of this,
+<em>chinook.FS_tetra.py</em> is preferred. This finds all points in kmesh within a 
+tolerance of the constant energy level.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>TB</strong>: tight-binding model object</li>
+<li><strong>ktuple</strong>: tuple of k limits, len (3), First and second should be iterable,</li>
+</ul>
+<p>define the limits and mesh of k for kx,ky, the third is constant, float for kz</p>
+<ul class="last simple">
+<li><strong>Ef</strong>: float, energy of interest, eV</li>
+<li><strong>tol</strong>: float, energy tolerance, float</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>pts</strong>: numpy array of len(N) x 3 indicating x,y, band index</li>
+<li><strong>TB.Eband</strong>: numpy array of float, energy spectrum</li>
+<li><strong>TB.Evec</strong>: numpy array of complex float, eigenvectors</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id49"><span class="problematic" id="id50">**</span></a><a href="#id51"><span class="problematic" id="id52">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.operator_library.LSmat">
+<code class="descclassname">chinook.operator_library.</code><code class="descname">LSmat</code><span class="sig-paren">(</span><em>TB</em>, <em>axis=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.LSmat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an arbitary L.S type matrix for a given basis. Uses same <em>Yproj</em> as 
+the <em>HSO</em> in the <em>chinook.H_library</em>, but is otherwise different, as it supports
+projection onto specific axes, in addition to the full vector dot product operator.</p>
+<p>Otherwise, the LiSi matrix is computed with i the axis index. 
+To do this, a linear combination of L+S+,L-S-,L+S-,L-S+,LzSz terms are used to compute.</p>
+<p>In the factors dictionary, the weight of these terms is defined. 
+The keys are tuples of (L+/-/z,S+/-/z) in a bit
+of a cryptic way. For L, range (0,1,2) -&gt;(-1,0,1) 
+and for S range (-1,0,1) = S1-S2 with S1/2 = +/- 1 here</p>
+<p>L+,L-,Lz matrices are defined for each l shell in the basis, 
+transformed into the basis of cubic harmonics.
+The nonzero terms will then just be used along with the spin and 
+weighted by the factor value, and slotted into 
+a len(basis)xlen(basis) matrix HSO</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>TB</strong>: tight-binding object, as defined in TB_lib.py</li>
+<li><strong>axis</strong>: axis for calculation as either ‘x’,’y’,’z’,None,</li>
+</ul>
+<p class="last">or float (angle in the x-y plane)</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>HSO</strong>: (len(basis)xlen(basis)) numpy array of complex float</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id53"><span class="problematic" id="id54">**</span></a><a href="#id55"><span class="problematic" id="id56">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.operator_library.LdotS">
+<code class="descclassname">chinook.operator_library.</code><code class="descname">LdotS</code><span class="sig-paren">(</span><em>TB</em>, <em>axis=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.LdotS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for <strong>O_path</strong> for computing L.S along a vector projection of interest,
+or none at all.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>TB</strong>: tight-binding obect</li>
+</ul>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>axis</strong>: numpy array of 3 float, indicating axis, or None for full L.S</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>O</strong>: numpy array of Nxlen(basis) float, expectation value of operator</li>
+</ul>
+<p class="last">on each band over the kpath of TB.Kobj.</p>
+</dd>
+</dl>
+<p><a href="#id57"><span class="problematic" id="id58">**</span></a><a href="#id59"><span class="problematic" id="id60">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.operator_library.Lm">
+<code class="descclassname">chinook.operator_library.</code><code class="descname">Lm</code><span class="sig-paren">(</span><em>l</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.Lm" title="Permalink to this definition">¶</a></dt>
+<dd><p>L- operator in the l,m_l basis, organized with 
+(0,0) = <a href="#id61"><span class="problematic" id="id62">|</span></a>l,l&gt;, (2*l,2*l) = <a href="#id63"><span class="problematic" id="id64">|</span></a>l,-l&gt;
+The nonzero elements are on the upper diagonal</p>
+<dl class="docutils">
+<dt><em>arg</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>l</strong>: int orbital angular momentum</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>M</strong>: numpy array (2*l+1,2*l+1) of real float</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id65"><span class="problematic" id="id66">**</span></a><a href="#id67"><span class="problematic" id="id68">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.operator_library.Lp">
+<code class="descclassname">chinook.operator_library.</code><code class="descname">Lp</code><span class="sig-paren">(</span><em>l</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.Lp" title="Permalink to this definition">¶</a></dt>
+<dd><p>L+ operator in the l,m_l basis, organized with 
+(0,0) = <a href="#id69"><span class="problematic" id="id70">|</span></a>l,l&gt;, (2*l,2*l) = <a href="#id71"><span class="problematic" id="id72">|</span></a>l,-l&gt;
+The nonzero elements are on the upper diagonal</p>
+<dl class="docutils">
+<dt><em>arg</em>: </dt>
+<dd><ul class="first last simple">
+<li><strong>l</strong>: int orbital angular momentum</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>M</strong>: numpy array (2*l+1,2*l+1) of real float</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id73"><span class="problematic" id="id74">**</span></a><a href="#id75"><span class="problematic" id="id76">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.operator_library.Lz">
+<code class="descclassname">chinook.operator_library.</code><code class="descname">Lz</code><span class="sig-paren">(</span><em>l</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.Lz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lz operator in the l,m_l basis</p>
+<dl class="docutils">
+<dt><em>arg</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>l</strong>: int orbital angular momentum</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>numpy array (2*l+1,2*l+1)</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id77"><span class="problematic" id="id78">**</span></a><a href="#id79"><span class="problematic" id="id80">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.operator_library.O_path">
+<code class="descclassname">chinook.operator_library.</code><code class="descname">O_path</code><span class="sig-paren">(</span><em>O</em>, <em>TB</em>, <em>Kobj=None</em>, <em>vlims=(0</em>, <em>0)</em>, <em>Elims=(-10</em>, <em>10)</em>, <em>degen=False</em>, <em>plot=True</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.O_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute and plot the expectation value of an user-defined operator along a k-path
+Option of summing over degenerate bands (for e.g. fat bands) with degen boolean flag</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>O</strong>: matrix representation of the operator (numpy array len(basis), len(basis) of complex float)</li>
+<li><strong>TB</strong>: Tight binding object from TB_lib</li>
+</ul>
+</dd>
+</dl>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>Kobj</strong>: Momentum object, as defined in <em>chinook.klib.py</em></li>
+<li><strong>vlims</strong>: tuple of 2 float, limits of the colorscale for plotting, default to (0,0)</li>
+</ul>
+<p>if default value passed, will compute a reasonable range</p>
+<ul class="simple">
+<li><strong>Elims</strong>: tuple of 2 float, limits of vertical scale for plotting</li>
+<li><strong>degen</strong>: bool, True if bands are degenerate, sum over adjacent bands</li>
+</ul>
+</div></blockquote>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>O_vals</strong>: the numpy array of float, (len Kobj x len basis) expectation values</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id81"><span class="problematic" id="id82">**</span></a><a href="#id83"><span class="problematic" id="id84">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.operator_library.O_surf">
+<code class="descclassname">chinook.operator_library.</code><code class="descname">O_surf</code><span class="sig-paren">(</span><em>O</em>, <em>TB</em>, <em>ktuple</em>, <em>Ef</em>, <em>tol</em>, <em>vlims=(0</em>, <em>0)</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.O_surf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute and plot the expectation value of an user-defined operator over
+a surface of constant-binding energy</p>
+<p>Option of summing over degenerate bands (for e.g. fat bands) with degen boolean flag</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>O</strong>: matrix representation of the operator (numpy array len(basis), len(basis) of complex float)</li>
+<li><strong>TB</strong>: Tight binding object from <em>chinook.TB_lib.py</em></li>
+<li><dl class="first docutils">
+<dt><strong>ktuple</strong>: momentum range for mesh: </dt>
+<dd>ktuple[0] = (x0,xn,n),ktuple[1]=(y0,yn,n),ktuple[2]=kz</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>vlims</strong>: limits for the colourscale (optional argument), will choose</li>
+</ul>
+<p class="last">a reasonable set of limits if none passed by user</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>pts</strong>: the numpy array of expectation values, of shape Nx3, with first</li>
+</ul>
+<p class="last">two dimensions the kx,ky coordinates of the point, and the third the expectation
+value.</p>
+</dd>
+</dl>
+<p><a href="#id85"><span class="problematic" id="id86">**</span></a><a href="#id87"><span class="problematic" id="id88">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.operator_library.S_vec">
+<code class="descclassname">chinook.operator_library.</code><code class="descname">S_vec</code><span class="sig-paren">(</span><em>LB</em>, <em>vec</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.S_vec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spin operator along an arbitrary direction can be written as
+n.S = nx Sx + ny Sy + nz Sz</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>LB</strong>: int, length of basis</li>
+<li><strong>vec</strong>: numpy array of 3 float, direction of spin projection</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>numpy array of complex float (LB by LB), spin operator matrix</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.operator_library.Sz">
+<code class="descclassname">chinook.operator_library.</code><code class="descname">Sz</code><span class="sig-paren">(</span><em>TB</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.Sz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for <strong>O_path</strong> for computing Sz along a vector projection of interest,
+or none at all.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>TB</strong>: tight-binding obect</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>O</strong>: numpy array of Nxlen(basis) float, expectation value of operator</li>
+</ul>
+<p class="last">on each band over the kpath of TB.Kobj.</p>
+</dd>
+</dl>
+<p><a href="#id89"><span class="problematic" id="id90">**</span></a><a href="#id91"><span class="problematic" id="id92">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.operator_library.degen_Ovals">
+<code class="descclassname">chinook.operator_library.</code><code class="descname">degen_Ovals</code><span class="sig-paren">(</span><em>O</em>, <em>E</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.degen_Ovals" title="Permalink to this definition">¶</a></dt>
+<dd><p>In the presence of degeneracy, we want to average over the
+evaluated orbital expectation values–numerically, the degenerate 
+subspace can be arbitrarily diagonalized during numpy.linalg.eigh. 
+All degeneracies are found, and the expectation values averaged.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>O</strong>: numpy array of float, operator expectations</li>
+<li><strong>E</strong>: numpy array of float, energy eigenvalues.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.operator_library.fatbs">
+<code class="descclassname">chinook.operator_library.</code><code class="descname">fatbs</code><span class="sig-paren">(</span><em>proj</em>, <em>TB</em>, <em>Kobj=None</em>, <em>vlims=(0</em>, <em>1)</em>, <em>Elims=(-1</em>, <em>1)</em>, <em>degen=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.fatbs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fat band projections. User denotes which orbital index projection is of interest
+Projection passed either as an Nx1 or Nx2 array of float. If Nx2, first column is
+the indices of the desired orbitals, the second column is the weight. If Nx1, then
+the weights are all taken to be eqaul</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>proj</strong>: iterable of projections, to be passed as either a 1-dimensional</li>
+</ul>
+<p>with indices of projection only, OR, 2-dimensional, with the second column giving
+the amplitude of projection (for linear-combination projection)</p>
+<ul class="last simple">
+<li><strong>TB</strong>: tight-binding object</li>
+</ul>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Kobj</strong>: Momentum object, as defined in <em>chinook.klib.py</em></li>
+<li><strong>vlims</strong>: tuple of 2 float, limits of the colorscale for plotting, default to (0,1)</li>
+<li><strong>Elims</strong>: tuple of 2 float, limits of vertical scale for plotting</li>
+<li><strong>degen</strong>: bool, True if bands are degenerate, sum over adjacent bands</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Ovals</strong>: numpy array of float, len(Kobj.kpts)*len(TB.basis)</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id93"><span class="problematic" id="id94">**</span></a><a href="#id95"><span class="problematic" id="id96">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.operator_library.is_numeric">
+<code class="descclassname">chinook.operator_library.</code><code class="descname">is_numeric</code><span class="sig-paren">(</span><em>a</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.is_numeric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quick check if object is numeric</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>a</strong>: numeric, float/int</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>bool, if numeric True, else False</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.operator_library.surface_proj">
+<code class="descclassname">chinook.operator_library.</code><code class="descname">surface_proj</code><span class="sig-paren">(</span><em>basis</em>, <em>length</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.surface_proj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Operator for computing surface-projection of eigenstates. User passes the orbital basis
+and an extinction length (1/e) length for the ‘projection onto surface’. The operator 
+is diagonal with exponenential suppression based on depth.</p>
+<p>For use with SLAB geometry only</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>basis</strong>: list, orbital objects</li>
+<li><strong>cutoff</strong>: float, cutoff length</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>M</strong>: numpy array of float, shape len(TB.basis) x len(TB.basis)</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id97"><span class="problematic" id="id98">**</span></a><a href="#id99"><span class="problematic" id="id100">*</span></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-chinook.orbital_plotting">
+<span id="orbital-plotting"></span><h2>orbital_plotting:<a class="headerlink" href="#module-chinook.orbital_plotting" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="chinook.orbital_plotting.col_phase">
+<code class="descclassname">chinook.orbital_plotting.</code><code class="descname">col_phase</code><span class="sig-paren">(</span><em>vals</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital_plotting.col_phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define the phase of a complex number</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>vals</strong>: complex float, or numpy array of complex float</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>float, or numpy array of float of same shape as vals, from -pi to pi</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.orbital_plotting.make_angle_mesh">
+<code class="descclassname">chinook.orbital_plotting.</code><code class="descname">make_angle_mesh</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital_plotting.make_angle_mesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quick utility function for generating an angular mesh over spherical surface</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>n</strong>: int, number of divisions of the angular space</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>th</strong>: numpy array of 2n float from 0 to pi</li>
+<li><strong>ph</strong>: numpy array of 4n float from 0 to 2pi</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.orbital_plotting.rephase_wavefunctions">
+<code class="descclassname">chinook.orbital_plotting.</code><code class="descname">rephase_wavefunctions</code><span class="sig-paren">(</span><em>vecs</em>, <em>index=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital_plotting.rephase_wavefunctions" title="Permalink to this definition">¶</a></dt>
+<dd><p>The wavefunction at different k-points can choose an arbitrary phase, as can 
+a subspace of degenerate eigenstates. As such, it is often advisable to choose
+a global phase definition when comparing several different vectors. The user here
+passes a set of vectors, and they are rephased. The user has the option of specifying
+which basis index they would like to set the phasing. It is essential however that the
+projection onto at least one basis element is non-zero over the entire set  of vectors 
+for this rephasing to work.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>vecs</strong>: numpy array of complex float, ordered as rows:vector index, columns: basis index</li>
+</ul>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>index</strong>: int, optional choice of basis phase selection</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>rephase</strong>: numpy array of complex float of same shape as <em>vecs</em></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="chinook.orbital_plotting.wavefunction">
+<em class="property">class </em><code class="descclassname">chinook.orbital_plotting.</code><code class="descname">wavefunction</code><span class="sig-paren">(</span><em>basis</em>, <em>vector</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital_plotting.wavefunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class acts to reorganize basis and wavefunction information in a more
+suitable data structure than the native orbital class, or the sake of plotting
+orbital wavefunctions. The relevant eigenvector can be redefined, so long as it
+represents a projection onto the same orbital basis set as defined previously.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>basis</strong>: list of orbital objects</li>
+<li><strong>vector</strong>: numpy array of complex float, eigenvector projected onto the basis orbitals</li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="chinook.orbital_plotting.wavefunction.calc_Ylm">
+<code class="descname">calc_Ylm</code><span class="sig-paren">(</span><em>th</em>, <em>ph</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital_plotting.wavefunction.calc_Ylm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate all spherical harmonics needed for present calculation</p>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>numpy array of complex float, of shape (len(self.harmonics),len(th))</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.orbital_plotting.wavefunction.find_centres">
+<code class="descname">find_centres</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital_plotting.wavefunction.find_centres" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Pointer array of basis indices and the centres of these basis orbitals.</p>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>all_centres</strong>: list of numpy array of length 3, indicating unique positions in the basis set</li>
+<li><strong>centre_pointers</strong>: list of int, indicating the indices of position array, associated with the</li>
+</ul>
+<p class="last">location of the related orbital in real space.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.orbital_plotting.wavefunction.find_harmonics">
+<code class="descname">find_harmonics</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital_plotting.wavefunction.find_harmonics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a pointer array of basis indices and the associated spherical harmonics, as well as
+aa more convenient vector form of the projections themselves, as lists of complex float</p>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>all_lm</strong>: list of int, l,m pairs of all spherical harmonics relevant to calculation</li>
+<li><strong>lm_pointers</strong>: list of int, pointer indices relating each basis orbital projection to the</li>
+</ul>
+<p>lm pairs in <em>all_lm</em></p>
+<ul class="simple">
+<li><strong>projectors</strong>: list of arrays of complex float, providing the complex projection of basis</li>
+</ul>
+<p class="last">onto the related spherical harmonics</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.orbital_plotting.wavefunction.triangulate_wavefunction">
+<code class="descname">triangulate_wavefunction</code><span class="sig-paren">(</span><em>n</em>, <em>plotting=True</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital_plotting.wavefunction.triangulate_wavefunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the wavefunction stored in the class attributes as self.vector as a projection
+over the basis of spherical harmonics. The radial wavefunctions are not explicitly included,
+in the event of multiple basis atom sites, the length scale is set by the mean interatomic 
+distance. The wavefunction phase is encoded in the colourscale of the mesh plot. The user
+sets the smoothness of the orbital projection by the integer argument <em>n</em></p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>n</strong>: int, number of angles in the mesh: Theta from 0 to pi is divided 2n times, and</li>
+</ul>
+<p class="last">Phi from 0 to 2pi is divided 4n times</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>vertices</strong>: numpy array of float, shape (len(centres), len(th)*len(ph), 3) locations of vertices</li>
+<li><strong>triangulations</strong>: numpy array of int, indicating the vertices connecting each surface patch</li>
+<li><strong>colours</strong>: numpy array of float, of shape (len(centres),len(triangles)) encoding the orbital phase for each surface patch of the plotting</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-chinook.tetrahedra">
+<span id="tetrahedra"></span><h2>tetrahedra:<a class="headerlink" href="#module-chinook.tetrahedra" title="Permalink to this headline">¶</a></h2>
+<p>Created on Tue Sep  4 16:27:40 2018</p>
+<p>&#64;author: rday</p>
+<dl class="function">
+<dt id="chinook.tetrahedra.corners">
+<code class="descclassname">chinook.tetrahedra.</code><code class="descname">corners</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.tetrahedra.corners" title="Permalink to this definition">¶</a></dt>
+<dd><p>Establish the shortest main diagonal of a cube of points, so as to establish
+the main diagonal for tetrahedral partitioning of the cube</p>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><p class="first"><strong>main</strong>: tuple of 2 integers indicating the cube coordinates</p>
+<p class="last"><strong>cube</strong>: numpy array of 8 corners (8x3) float</p>
+</dd>
+</dl>
+<p><a href="#id101"><span class="problematic" id="id102">**</span></a><a href="#id103"><span class="problematic" id="id104">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.tetrahedra.mesh_tetra">
+<code class="descclassname">chinook.tetrahedra.</code><code class="descname">mesh_tetra</code><span class="sig-paren">(</span><em>avec</em>, <em>N</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.tetrahedra.mesh_tetra" title="Permalink to this definition">¶</a></dt>
+<dd><p>An equivalent definition of a spanning grid over the Brillouin zone is just
+one which spans the reciprocal cell unit cell. Translational symmetry imposes
+that this partitioning is equivalent to the conventional definition of the 
+Brillouin zone, with the very big advantage that we can define a rectilinear
+grid which spans this volume in a way which can not be done for most
+Bravais lattices in R3.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>avec</strong>: numpy array of 3x3 float, lattice vectors</li>
+<li><strong>N</strong>: int, or iterable of 3 int which define the density of the mesh</li>
+</ul>
+<p class="last">over the Brillouin zone.</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>pts</strong>: numpy array of Mx3 float, indicating the points in momentum space</li>
+</ul>
+<p>at the vertices of the mesh</p>
+<ul class="simple">
+<li><strong>mesh_tet</strong>: numpy array of Lx4 int, indicating the L-tetrahedra</li>
+</ul>
+<p class="last">which partition the grid</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.tetrahedra.neighbours">
+<code class="descclassname">chinook.tetrahedra.</code><code class="descname">neighbours</code><span class="sig-paren">(</span><em>point</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.tetrahedra.neighbours" title="Permalink to this definition">¶</a></dt>
+<dd><p>For an unit cube, we can define the set of 3 nearest neighbours by performing
+the requisite modular sum along one of the three Cartesian axes. In this way,
+for an input point, we can extract its neighbours easily.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>point</strong>: numpy array of 3 int, all either 0 or 1</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li>numpy array of 3x3 int, indicating the neighbours of <strong>point</strong> on the</li>
+</ul>
+<p class="last">unit cube.</p>
+</dd>
+</dl>
+<p><a href="#id105"><span class="problematic" id="id106">**</span></a><a href="#id107"><span class="problematic" id="id108">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.tetrahedra.not_point">
+<code class="descclassname">chinook.tetrahedra.</code><code class="descname">not_point</code><span class="sig-paren">(</span><em>point</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.tetrahedra.not_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inverse of point, defined in an N-dimensional binary coordinate frame</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>point</strong>: int or numpy array of int between 0 and 1</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>numpy array of int, NOT gate applied to the binary vector point</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id109"><span class="problematic" id="id110">**</span></a><a href="#id111"><span class="problematic" id="id112">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.tetrahedra.propagate">
+<code class="descclassname">chinook.tetrahedra.</code><code class="descname">propagate</code><span class="sig-paren">(</span><em>i</em>, <em>Nr</em>, <em>Nc</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.tetrahedra.propagate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distribute the generic corner numbering convention defined for a cube at the 
+origin to a cube starting at some arbitrary point in our grid. Excludes the
+edge points as starting points, so that all cubes are within the grid.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>i</strong>: int, index of origin</li>
+<li><strong>Nr</strong>: int, number of rows in grid</li>
+<li><strong>Nc</strong>: int, number of columns in grid</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><a href="#id113"><span class="problematic" id="id114">**</span></a>numpy array of int, len 8 corresponding to the re-numbering of the</li>
+</ul>
+<p class="last">corners of the cube.</p>
+</dd>
+</dl>
+<p><a href="#id115"><span class="problematic" id="id116">**</span></a><a href="#id117"><span class="problematic" id="id118">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.tetrahedra.tet_inds">
+<code class="descclassname">chinook.tetrahedra.</code><code class="descname">tet_inds</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.tetrahedra.tet_inds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate, for a single cube, the tetrahedral designations, 
+for the following conventional numbering:</p>
+<blockquote>
+<div><blockquote>
+<div>6 o —- o 7       
+/      / |</div></blockquote>
+<dl class="docutils">
+<dt>4 o —- o5 o 3</dt>
+<dd><div class="first last line-block">
+<div class="line">| /</div>
+</div>
+</dd>
+</dl>
+<p>0 o —- o 1</p>
+<p>with 2 hidden from view (below 6, and behind the line-segment connecting 4-5). 
+Defining the real-index spacing between adjacent cubes in a larger array, we can apply this simple prescription
+to define the spanning tetrahedra over the larger k-mesh</p>
+</div></blockquote>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>tetra_inds</strong>: numpy array of integer (6x4), with each</li>
+</ul>
+<p class="last">row containing the index of the 4 tetrahedral vertices. Together, for
+of a set of neighbouring points on a grid, we divide into a set of covering
+tetrahedra which span the volume of the cube.</p>
+</dd>
+</dl>
+<p><a href="#id119"><span class="problematic" id="id120">**</span></a><a href="#id121"><span class="problematic" id="id122">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.tetrahedra.tetrahedra">
+<code class="descclassname">chinook.tetrahedra.</code><code class="descname">tetrahedra</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.tetrahedra.tetrahedra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform partitioning of a cube into tetrahedra. The indices can then be
+dotted with some basis vector set to put them into the proper coordinate frame.</p>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>tetra</strong>: numpy array of 6 x 4 x 3 int, indicating the corners</li>
+</ul>
+<p class="last">of the 6 tetrahedra</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">chinook</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html#contact">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arpes.html">ARPES Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tightbinding.html">Tight Binding</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model Diagnostics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slab.html">Slab Calculation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support Files</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="tightbinding.html" title="previous chapter">Tight Binding</a></li>
+      <li>Next: <a href="slab.html" title="next chapter">Slab Calculation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Ryan P. Day.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="_sources/operator.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

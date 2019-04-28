@@ -1,0 +1,1088 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Slab Calculation &#8212; chinook 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Support Files" href="support.html" />
+    <link rel="prev" title="Model Diagnostics" href="operator.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="toctree-wrapper compound">
+</div>
+<div class="section" id="slab-calculation">
+<h1>Slab Calculation<a class="headerlink" href="#slab-calculation" title="Permalink to this headline">¶</a></h1>
+<p>chinook facilitates the generation of slab-models based around bulk Hamiltonians defined
+by the user. This functionality is in beta-testing mode for version 1.0. so please proceed with caution, and contact the developers if you have any concerns.</p>
+<div class="section" id="module-chinook.slab">
+<span id="slab"></span><h2>slab:<a class="headerlink" href="#module-chinook.slab" title="Permalink to this headline">¶</a></h2>
+<p>Created on Sat Jul 14 11:21:25 2018</p>
+<p>&#64;author: rday</p>
+<p>MIT License</p>
+<p>Copyright (c) 2018 Ryan Patrick Day</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
+<dl class="function">
+<dt id="chinook.slab.GCD">
+<code class="descclassname">chinook.slab.</code><code class="descname">GCD</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.GCD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic greatest common denominator function. First find all divisors of each a and b.
+Then find the maximal common element of their divisors.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>a</strong>, <strong>b</strong>: int</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>int, GCD of <strong>a</strong>, <strong>b</strong></li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a><a href="#id3"><span class="problematic" id="id4">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.H_conj">
+<code class="descclassname">chinook.slab.</code><code class="descname">H_conj</code><span class="sig-paren">(</span><em>h</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.H_conj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conjugate hopping path</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>h</strong>: list, input hopping path in format [i,j,x,y,z,Hij]</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li>list, reversed hopping path, swapped indices, complex conjugate of the</li>
+</ul>
+<p class="last">hopping strength</p>
+</dd>
+</dl>
+<p><a href="#id5"><span class="problematic" id="id6">**</span></a><a href="#id7"><span class="problematic" id="id8">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.H_surf">
+<code class="descclassname">chinook.slab.</code><code class="descname">H_surf</code><span class="sig-paren">(</span><em>surf_basis</em>, <em>avec</em>, <em>H_bulk</em>, <em>Rmat</em>, <em>lenbasis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.H_surf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rewrite the bulk-Hamiltonian in terms of the surface unit cell, with its
+(most likely expanded) basis. The idea here is to organize all ‘duplicate’ 
+orbitals, in terms of their various connecting vectors. Using modular
+arithmetic, we then create an organized dictionary which categorizes the 
+hopping paths within the new unit cell according to the new basis index
+designation. For each element in the Hamiltonian then, we can do the same
+modular definition of the hopping vector, easily determining which orbital
+in our new basis this hopping path indeed corresponds to. We then make a
+new list, organizing corresponding to the new basis listing.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>surf_basis</strong>: list of orbitals in the surface unit cell</li>
+<li><strong>avec</strong>: numpy array 3x3 of float, surface unit cell vectors</li>
+<li><strong>H_bulk</strong>: <em>H_me</em> object(defined in <em>chinook.TB_lib.py</em>), as</li>
+</ul>
+<p>the bulk-Hamiltonian</p>
+<ul class="simple">
+<li><strong>Rmat</strong>: 3x3 numpy array of float, rotation matrix</li>
+</ul>
+<p>(pre-multiply vectors) for rotating the coordinate system from bulk 
+to surface unit cell axes</p>
+<ul class="last simple">
+<li><strong>lenbasis</strong>: int, length of bulk basis</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li>Hamiltonian object, written in the basis of the surface unit cell,</li>
+</ul>
+<p class="last">and its coordinate frame, rather than those of the bulk system</p>
+</dd>
+</dl>
+<p><a href="#id9"><span class="problematic" id="id10">**</span></a><a href="#id11"><span class="problematic" id="id12">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.Hobj_to_dict">
+<code class="descclassname">chinook.slab.</code><code class="descname">Hobj_to_dict</code><span class="sig-paren">(</span><em>Hobj</em>, <em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.Hobj_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Associate a list of matrix elements with each orbital in the original basis. 
+The hopping paths are given not as direct units,but as number of unit-vectors
+for each hopping path. So the actual hopping path will be:</p>
+<blockquote>
+<div>np.dot(H[2:5],svec)+TB.basis[j].pos-TB.basis[i].pos</div></blockquote>
+<p>This facilitates determining easily which basis element we are dealing with.
+For the slab, the new supercell will be extended along the 001 direction. 
+So to redefine the orbital indices for a given element, we just take 
+[i, len(basis)*(R_2)+j, (np.dot((R_0,R_1,R_2),svec)+pos[j]-pos[i]),H]
+If the path goes into the vacuum buffer don’t add it to the new list!</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>Hobj</strong>: <em>H_me</em> object(defined in <em>chinook.TB_lib.py</em>), as</li>
+</ul>
+<p>the bulk-Hamiltonian</p>
+<ul class="last simple">
+<li><strong>basis</strong>: list of <em>orbital</em> objects</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>Hdict</strong>: dictionary of hopping paths associated with a given orbital</li>
+</ul>
+<p class="last">index</p>
+</dd>
+</dl>
+<p><a href="#id13"><span class="problematic" id="id14">**</span></a><a href="#id15"><span class="problematic" id="id16">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.LCM">
+<code class="descclassname">chinook.slab.</code><code class="descname">LCM</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.LCM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic lowest-common multiplier for two values a,b. Based on idea that LCM is just the
+product of the two input, divided by their greatest common denominator.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>a</strong>, <strong>b</strong>: int</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>int, LCM of <strong>a</strong> and <strong>b</strong></li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id17"><span class="problematic" id="id18">**</span></a><a href="#id19"><span class="problematic" id="id20">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.LCM_3">
+<code class="descclassname">chinook.slab.</code><code class="descname">LCM_3</code><span class="sig-paren">(</span><em>a</em>, <em>b</em>, <em>c</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.LCM_3" title="Permalink to this definition">¶</a></dt>
+<dd><p>For generating spanning vectors, require lowest common multiple of 3
+integers, itself just the LCM of one of the numbers, and the LCM of the other two.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>a</strong>, <strong>b</strong>, <strong>c</strong>: int</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd>int, LCM of the three numbers</dd>
+</dl>
+<p><a href="#id21"><span class="problematic" id="id22">**</span></a><a href="#id23"><span class="problematic" id="id24">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.abs_to_frac">
+<code class="descclassname">chinook.slab.</code><code class="descname">abs_to_frac</code><span class="sig-paren">(</span><em>avec</em>, <em>vec</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.abs_to_frac" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Quick function for taking a row-ordered matrix of lattice vectors: </dt>
+<dd><div class="first last line-block">
+<div class="line">a_11  a_12  a_13  |</div>
+<div class="line">a_21  a_22  a_23  |</div>
+<div class="line">a_31  a_32  a_33  |</div>
+</div>
+</dd>
+</dl>
+<p>and using it to transform a vector, written in absolute units, to fractional units.
+Note this function can be used to broadcast over N vectors you would like to transform</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><blockquote class="first">
+<div><ul class="simple">
+<li><strong>avec</strong>: numpy array of 3x3 float lattice vectors, ordered by rows</li>
+<li><strong>vec</strong>: numpy array of Nx3 float, vectors to be transformed to</li>
+</ul>
+<p>fractional coordinates</p>
+</div></blockquote>
+<dl class="last docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>Nx3 array of float, vectors translated into basis of lattice vectors</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p><a href="#id25"><span class="problematic" id="id26">**</span></a><a href="#id27"><span class="problematic" id="id28">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.basal_plane">
+<code class="descclassname">chinook.slab.</code><code class="descname">basal_plane</code><span class="sig-paren">(</span><em>vvecs</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.basal_plane" title="Permalink to this definition">¶</a></dt>
+<dd><p>Everything is most convenient if we redefine the basal plane of the surface
+normal to be oriented within a Cartesian plane. To do so, we take the
+v-vectors. We get the norm of v1,v2 and then find the cross product with
+the z-axis, as well as the angle between these two vectors. We can then
+rotate the surface normal onto the z-axis.
+In this way we conveniently re-orient the v1,v2 axes into the Cartesian x,y plane.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>vvecs</strong>: numpy array 3x3 float</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>vvec_prime</strong>: numpy array 3x3 of float, rotated v vectors</li>
+<li><strong>Rmat</strong>: numpy array of 3x3 float, rotation matrix to send original</li>
+</ul>
+<p class="last">coordinate frame into the rotated coordinates.</p>
+</dd>
+</dl>
+<p><a href="#id29"><span class="problematic" id="id30">**</span></a><a href="#id31"><span class="problematic" id="id32">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.build_slab_H">
+<code class="descclassname">chinook.slab.</code><code class="descname">build_slab_H</code><span class="sig-paren">(</span><em>Hsurf</em>, <em>slab_basis</em>, <em>surf_basis</em>, <em>svec</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.build_slab_H" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a slab Hamiltonian, having already defined the surface-unit cell
+Hamiltonian and basis. Begin by creating a dictionary corresponding to the
+Hamiltonian matrix elements associated with the relevant surface unit cell 
+orbital which pairs with our slab orbital, and all its possible hoppings
+in the original surface unit cell. This dictionary conveniently redefines
+the hopping paths in units of lattice vectors between the relevant orbitals.
+In this way, we can easily relabel a matrix element by the slab_basis 
+elements, and then translate the connecting vector in terms of the 
+pertinent orbitals.</p>
+<p>If the resulting element is from the lower diagonal, take its conjugate.
+Finally, only if the result is physical, i.e. corresponds to a hopping path
+contained in the slab, and not e.g. extending into the vacuum, 
+should the matrix element be included in the new Hamiltonian. Finally,
+the new list Hnew is made into a Hamiltonian object, as always, and
+duplicates are removed.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>Hsurf</strong>: <em>H_me</em> object(defined in <em>chinook.TB_lib.py</em>), as</li>
+</ul>
+<p>the bulk-Hamiltonian from the surface unit cell</p>
+<ul class="last simple">
+<li><strong>slab_basis</strong>: list of orbital objects, slab unit cell basis</li>
+<li><strong>surf_basis</strong>: list of orbital objects, surface unit cell basis</li>
+<li><strong>svec</strong>: numpy array of 3x3 float, surface unit cell lattice vectors</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>list of Hamiltonian matrix elements in [i,j,x,y,z,Hij] format</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id33"><span class="problematic" id="id34">**</span></a><a href="#id35"><span class="problematic" id="id36">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.bulk_to_slab">
+<code class="descclassname">chinook.slab.</code><code class="descname">bulk_to_slab</code><span class="sig-paren">(</span><em>slab_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.bulk_to_slab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper function for generating a slab tight-binding model, having 
+established a bulk model.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>slab_dict</strong>: dictionary containing all essential information</li>
+</ul>
+<p>regarding the slab construction:</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li><em>‘miller’</em>: numpy array len 3 of int, miller indices</li>
+<li><em>‘TB’</em>: Tight-binding model corresponding to the bulk model</li>
+<li><em>‘fine’</em>:  tuple of 2 float. Fine adjustment of the slab limits,</li>
+</ul>
+<p>beyond the termination to precisely indicate the termination. 
+units of Angstrom, relative to the bottom, and top surface generated</p>
+<ul class="simple">
+<li><em>‘thick’</em>: float, minimum thickness of the slab structure</li>
+<li><em>‘vac’</em>: float, minimum thickness of the slab vacuum buffer</li>
+</ul>
+<p>to properly generate a surface with possible surface states</p>
+<ul class="simple">
+<li><em>‘termination’</em>: tuple of 2 int, specifying the basis indices</li>
+</ul>
+<p>for the top and bottom of the slab structure</p>
+</div></blockquote>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>slab_TB</strong>: tight-binding TB object containing the slab basis</li>
+<li><strong>slab_ham</strong>: Hamiltonian object, slab Hamiltonian</li>
+<li><strong>Rmat</strong>: numpy array of 3x3 float, rotation matrix</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id37"><span class="problematic" id="id38">**</span></a><a href="#id39"><span class="problematic" id="id40">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.divisors">
+<code class="descclassname">chinook.slab.</code><code class="descname">divisors</code><span class="sig-paren">(</span><em>a</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.divisors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate through all integer divisors of integer input</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>a</strong>: int</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd>list of int, divisors of <strong>a</strong></dd>
+</dl>
+<p><a href="#id41"><span class="problematic" id="id42">**</span></a><a href="#id43"><span class="problematic" id="id44">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.frac_inside">
+<code class="descclassname">chinook.slab.</code><code class="descname">frac_inside</code><span class="sig-paren">(</span><em>points</em>, <em>avec</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.frac_inside" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use fractional coordinates to determine whether a point is inside the new unit cell, or not.
+This is a very simple way of establishing this point, and circumvents many of the awkward 
+rounding issues of the parallelepiped method I have used previously. Ultimately however, 
+imprecision of the matrix multiplication and inversion result in some rounding error which
+must be corrected for. To do this, the fractional coordinates are rounded to the 4th digit.
+This leads to a smaller uncertainty by over an order to 10^3 than each rounding done on the 
+direct coordinates.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>points</strong>: numpy array of float (Nx4) indicating positions and basis indices of the points to consider</li>
+<li><strong>avec</strong>: numpy array of 3x3 float, new lattice vectors</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li>numpy array of Mx4 float, indicating positions and basis indices of the valid basis elements inside the new</li>
+</ul>
+<p class="last">unit cell.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.frac_to_abs">
+<code class="descclassname">chinook.slab.</code><code class="descname">frac_to_abs</code><span class="sig-paren">(</span><em>avec</em>, <em>vec</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.frac_to_abs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as abs_to_frac, but in opposite direction,from fractional to absolute coordinates</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>avec</strong>: numpy array of 3x3 float, lattice vectors, row-ordered</li>
+<li><strong>vec</strong>: numpy array of Nx3 float, input vectors</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>N x 3 array of float, vec in units of absolute coordinates (Angstrom)</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id45"><span class="problematic" id="id46">**</span></a><a href="#id47"><span class="problematic" id="id48">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.gen_slab">
+<code class="descclassname">chinook.slab.</code><code class="descname">gen_slab</code><span class="sig-paren">(</span><em>basis</em>, <em>vn</em>, <em>mint</em>, <em>minb</em>, <em>term</em>, <em>fine=(0</em>, <em>0)</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.gen_slab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Using the new basis defined for the surface unit cell, generate a slab
+of at least mint (minimum thickness), minb (minimum buffer) and terminated
+by orbital term. In principal the termination should be same on both top and
+bottom to avoid inversion symmetry breaking between the two lattice terminations.
+In certain cases, mint,minb may need to be tuned somewhat to get exactly the surface
+terminations you want.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>basis</strong>: list of instances of orbital objects</li>
+<li><strong>vn</strong>: numpy array of 3x3 float, surface unit cell lattice vectors</li>
+<li><strong>mint</strong>: float, minimum thickness of the slab</li>
+<li><strong>minb</strong>: float, minimum thickness of the vacuum buffer</li>
+<li><strong>term</strong>: tuple of 2 int, termination of the slab tuple (term[0] = top termination, term[1] = bottom termination)</li>
+<li><strong>fine</strong>: tuple of 2 float, fine adjustment of the termination to precisely specify terminating atoms</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>avec</strong>: numpy array of float 3x3, updated lattice vector for the SLAB unit cell</li>
+<li><strong>new_basis</strong>: array of new orbital basis objects, with slab-index corresponding to the original basis indexing,</li>
+</ul>
+<p class="last">and primary index corresponding to the order within the new slab basis</p>
+</dd>
+</dl>
+<p><a href="#id49"><span class="problematic" id="id50">**</span></a><a href="#id51"><span class="problematic" id="id52">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.gen_surface">
+<code class="descclassname">chinook.slab.</code><code class="descname">gen_surface</code><span class="sig-paren">(</span><em>avec</em>, <em>miller</em>, <em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.gen_surface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct the surface unit cell, to then be propagated along the 001 direction to form a slab
+<em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>avec</strong>: numpy array of 3x3 float, lattice vectors for original unit cell</li>
+<li><strong>miller</strong>: numpy array of 3 int, Miller indices indicating the surface orientation</li>
+<li><strong>basis</strong>: list of orbital objects, orbital basis for the original lattice</li>
+</ul>
+</div></blockquote>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>new_basis</strong>: list of orbitals, surface unit cell orbital basis</li>
+<li><strong>vn_b</strong>: numpy array of 3x3 float, the surface unit cell primitive lattice vectors</li>
+<li><strong>Rmat</strong>: numpy array of 3x3 float, rotation matrix, to be used in post-multiplication order</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id53"><span class="problematic" id="id54">**</span></a><a href="#id55"><span class="problematic" id="id56">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.iszero">
+<code class="descclassname">chinook.slab.</code><code class="descname">iszero</code><span class="sig-paren">(</span><em>a</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.iszero" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find where an iterable of numeric is zero, returns empty list if none found</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>a</strong>: numpy array of numeric</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>list of int, indices of iterable where value is zero</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id57"><span class="problematic" id="id58">**</span></a><a href="#id59"><span class="problematic" id="id60">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.mod_dict">
+<code class="descclassname">chinook.slab.</code><code class="descname">mod_dict</code><span class="sig-paren">(</span><em>surf_basis</em>, <em>av_i</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.mod_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define dictionary establishing connection between slab basis elements and the 
+bulk Hamiltonian. The slab_indices relate to the bulk model, we can then compile
+a list of <em>slab</em> orbital pairs (along with their connecting vectors) which should
+be related to a given bulk model hopping. The hopping is expressed in terms of the
+number of surface lattice vectors, rather than direct units of Angstrom.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>surf_basis</strong>: list of orbital objects, covering the slab model</li>
+<li><strong>av_i</strong>: numpy array of 3x3 float, inverse of the lattice vector matrix</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>cv_dict</strong>: dictionary with key-value pairs of</li>
+</ul>
+<p class="last">slab_index[i]-slab_index[j]:numpy.array([[i,j,mod_vec]…])</p>
+</dd>
+</dl>
+<p><a href="#id61"><span class="problematic" id="id62">**</span></a><a href="#id63"><span class="problematic" id="id64">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.nonzero">
+<code class="descclassname">chinook.slab.</code><code class="descname">nonzero</code><span class="sig-paren">(</span><em>a</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.nonzero" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find where an iterable of numeric is non-zero, returns empty list if none found</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>a</strong>: numpy array of numeric</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>list of int, indices of iterable where value is non-zero</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id65"><span class="problematic" id="id66">**</span></a><a href="#id67"><span class="problematic" id="id68">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.p_vecs">
+<code class="descclassname">chinook.slab.</code><code class="descname">p_vecs</code><span class="sig-paren">(</span><em>miller</em>, <em>avec</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.p_vecs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produce the vectors p, as defined by Ceder, to be used in defining spanning
+vectors for plane normal to the Miller axis</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>miller</strong>: numpy array of len 3 float</li>
+<li><strong>avec</strong>: numpy array of size 3x3 of float</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>pvecs</strong>: numpy array size 3x3 of float</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id69"><span class="problematic" id="id70">**</span></a><a href="#id71"><span class="problematic" id="id72">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.par">
+<code class="descclassname">chinook.slab.</code><code class="descname">par</code><span class="sig-paren">(</span><em>avec</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.par" title="Permalink to this definition">¶</a></dt>
+<dd><p>Definition of the parallelepiped, as well as a containing region within the 
+Cartesian projection of this form which can then be used to guarantee correct
+definition of the new cell basis. The parallelipiped is generated, and then
+its extremal coordinates established, from which a containing parallelepiped is
+then defined.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>avec</strong>: numpy array of 3x3 float</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>vert</strong>: numpy array  8x3 float vertices of parallelepiped</li>
+<li><strong>box_pts</strong>: numpy array 8 x 3 float vertices of containing box</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id73"><span class="problematic" id="id74">**</span></a><a href="#id75"><span class="problematic" id="id76">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.populate_box">
+<code class="descclassname">chinook.slab.</code><code class="descname">populate_box</code><span class="sig-paren">(</span><em>box</em>, <em>basis</em>, <em>avec</em>, <em>R</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.populate_box" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate the bounding box with points from the original lattice basis. These
+represent candidate orbitals to populate the surface-projected unit cell.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>box</strong>: numpy array of 8x3 float, vertices of corner of a box</li>
+<li><strong>basis</strong>: list of orbital objects</li>
+<li><strong>avec</strong>: numpy array of 3x3 float, lattice vectors</li>
+<li><strong>R</strong>: numpy array of 3x3 float, rotation matrix</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>basis_full</strong>: list of Nx4 float, representing instances of orbitals copies,</li>
+</ul>
+<p class="last">retaining only their position and their orbital basis index. These orbitals fill
+a container box larger than the region of interest.</p>
+</dd>
+</dl>
+<p><a href="#id77"><span class="problematic" id="id78">**</span></a><a href="#id79"><span class="problematic" id="id80">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.populate_par">
+<code class="descclassname">chinook.slab.</code><code class="descname">populate_par</code><span class="sig-paren">(</span><em>points</em>, <em>avec</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.populate_par" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill the box with basis points, keeping only those which reside in the new
+unit cell.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>points</strong>: numpy array of Nx4 float ([:3] give position, [3] gives index)</li>
+<li><strong>avec</strong>: numpy array of  3x3 float</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>new_points</strong>: Nx3 numpy array of float, coordinates of new orbitals</li>
+<li><strong>indices</strong>: Nx1 numpy array of float, indices in original basis</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id81"><span class="problematic" id="id82">**</span></a><a href="#id83"><span class="problematic" id="id84">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.region">
+<code class="descclassname">chinook.slab.</code><code class="descname">region</code><span class="sig-paren">(</span><em>num</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.region" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a symmetric grid of points in number of lattice vectors.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>num</strong>: int, grid will have size 2 num+1 in each direction</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li>numpy array of size ((2 num+1)^3,3) with centre value of first entry of</li>
+</ul>
+<p class="last">(-num,-num,-num),…,(0,0,0),…,(num,num,num)</p>
+</dd>
+</dl>
+<p><a href="#id85"><span class="problematic" id="id86">**</span></a><a href="#id87"><span class="problematic" id="id88">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.sorted_basis">
+<code class="descclassname">chinook.slab.</code><code class="descname">sorted_basis</code><span class="sig-paren">(</span><em>pts</em>, <em>inds</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.sorted_basis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Re-order the elements of the new basis, with preference to z-position followed
+by the original indexing</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>pts</strong>: numpy array of Nx3 float, orbital basis positions</li>
+<li><strong>inds</strong>: numpy array of N int, indices of orbitals, from original basis</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>labels_sorted</strong>: numpy array of Nx4 float, [x,y,z,index], in order of increasing z, and index</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id89"><span class="problematic" id="id90">**</span></a><a href="#id91"><span class="problematic" id="id92">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.unpack">
+<code class="descclassname">chinook.slab.</code><code class="descname">unpack</code><span class="sig-paren">(</span><em>Ham_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.unpack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduce a Hamiltonian object down to a list of matrix elements. Include the Hermitian conjugate terms</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Ham_obj</strong>: Hamiltonian object, c.f. <em>chinook.TB_lib.H_me</em></li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Hlist</strong>: list of Hamiltonian matrix elements</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id93"><span class="problematic" id="id94">**</span></a><a href="#id95"><span class="problematic" id="id96">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.slab.v_vecs">
+<code class="descclassname">chinook.slab.</code><code class="descname">v_vecs</code><span class="sig-paren">(</span><em>miller</em>, <em>avec</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.slab.v_vecs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for functions used to determine the vectors used to define the new,
+surface unit cell.</p>
+<dl class="docutils">
+<dt><em>args</em>: </dt>
+<dd><ul class="first last simple">
+<li><strong>miller</strong>: numpy array of 3 int, Miller indices for surface normal</li>
+<li><strong>avec</strong>: numpy array of 3x3 float, Lattice vectors</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>vvecs</strong>: new surface unit cell vectors numpy array of 3x3 float</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-chinook.surface_vector">
+<span id="surface-vector"></span><h2>surface_vector:<a class="headerlink" href="#module-chinook.surface_vector" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="chinook.surface_vector.ang_v1v2">
+<code class="descclassname">chinook.surface_vector.</code><code class="descname">ang_v1v2</code><span class="sig-paren">(</span><em>v1</em>, <em>v2</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.surface_vector.ang_v1v2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find angle between two vectors:</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>v1</strong>: numpy array of 3 float</li>
+<li><strong>v2</strong>: numpy array of 3 float</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>float, angle between the vectors</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id97"><span class="problematic" id="id98">**</span></a><a href="#id99"><span class="problematic" id="id100">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.surface_vector.are_parallel">
+<code class="descclassname">chinook.surface_vector.</code><code class="descname">are_parallel</code><span class="sig-paren">(</span><em>v1</em>, <em>v2</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.surface_vector.are_parallel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if two vectors are parallel:</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>v1</strong>: numpy array of 3 float</li>
+<li><strong>v2</strong>: numpy array of 3 float</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>boolean, True if parallel to within 1e-5 radians</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id101"><span class="problematic" id="id102">**</span></a><a href="#id103"><span class="problematic" id="id104">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.surface_vector.are_same">
+<code class="descclassname">chinook.surface_vector.</code><code class="descname">are_same</code><span class="sig-paren">(</span><em>v1</em>, <em>v2</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.surface_vector.are_same" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if two vectors are identical</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>v1</strong>: numpy array of 3 float</li>
+<li><strong>v2</strong>: numpy array of 3 float</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li>boolean, True if the two vectors are parallel and have same</li>
+</ul>
+<p class="last">length, both to within 1e-5</p>
+</dd>
+</dl>
+<p><a href="#id105"><span class="problematic" id="id106">**</span></a><a href="#id107"><span class="problematic" id="id108">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.surface_vector.find_v3">
+<code class="descclassname">chinook.surface_vector.</code><code class="descname">find_v3</code><span class="sig-paren">(</span><em>v1</em>, <em>v2</em>, <em>avec</em>, <em>maxlen</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.surface_vector.find_v3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the best out-of-plane surface unit cell vector. While we initialize with
+a fixed cutoff for maximum length, to avoid endless searching, we can slowly 
+increase on each iteration until a good choice is possible.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>v1</strong>, <strong>v2</strong>: numpy array of 3 float, in plane spanning vectors</li>
+<li><strong>avec</strong>: numpy array of 3x3 float, bulk lattice vectors</li>
+<li><strong>maxlen</strong>: float, max length tolerated for the vector we seek</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>v3_choice</strong>: the chosen unit cell vector</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id109"><span class="problematic" id="id110">**</span></a><a href="#id111"><span class="problematic" id="id112">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.surface_vector.initialize_search">
+<code class="descclassname">chinook.surface_vector.</code><code class="descname">initialize_search</code><span class="sig-paren">(</span><em>v1</em>, <em>v2</em>, <em>avec</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.surface_vector.initialize_search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Seed search for v3 with the nearest-neighbouring Bravais latice point
+which maximizes the projection out of plane of that spanned by v1 and v2.</p>
+<dl class="docutils">
+<dt><em>args</em>: </dt>
+<dd><ul class="first last simple">
+<li><strong>v1</strong>, <strong>v2</strong>: numpy array of 3 float, the spanning vectors for plane</li>
+<li><strong>avec</strong>: numpy array of 3x3 float</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li>numpy array of 3 float, the nearby Bravais lattice point which</li>
+</ul>
+<p class="last">maximizes the projection along the plane normal</p>
+</dd>
+</dl>
+<p><a href="#id113"><span class="problematic" id="id114">**</span></a><a href="#id115"><span class="problematic" id="id116">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.surface_vector.refine_search">
+<code class="descclassname">chinook.surface_vector.</code><code class="descname">refine_search</code><span class="sig-paren">(</span><em>v3i</em>, <em>v1</em>, <em>v2</em>, <em>avec</em>, <em>maxlen</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.surface_vector.refine_search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refine the search for the optimal v3–supercell lattice vector which both 
+minimizes its length, while maximizing orthogonality with v1 and v2</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>v3i</strong>: numpy array of 3 float, initial guess for v3</li>
+<li><strong>v1</strong>: numpy array of 3 float, in-plane supercell vector</li>
+<li><strong>v2</strong>: numpy array of 3 float, in-plane supercell vector</li>
+<li><strong>avec</strong>: numpy array of 3x3 float, bulk lattice vectors</li>
+<li><strong>maxlen</strong>: float, upper limit on how long of a third vector we can</li>
+</ul>
+<p class="last">reasonably tolerate. This becomes relevant for unusual Miller indices.</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>v3_opt</strong> list of numpy array of 3 float, list of viable options for</li>
+</ul>
+<p class="last">the out of plane surface unit cell vector</p>
+</dd>
+</dl>
+<p><a href="#id117"><span class="problematic" id="id118">**</span></a><a href="#id119"><span class="problematic" id="id120">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.surface_vector.score">
+<code class="descclassname">chinook.surface_vector.</code><code class="descname">score</code><span class="sig-paren">(</span><em>vlist</em>, <em>v1</em>, <em>v2</em>, <em>avec</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.surface_vector.score" title="Permalink to this definition">¶</a></dt>
+<dd><p>To select the ideal out-of-plane surface unit cell vector, score the 
+candidates based on both their length and their orthogonality with respect
+to the two in-plane spanning vectors. The lowest scoring candidate is selected
+as the ideal choice.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>vlist</strong>: list of len 3 numpy array of float, choices for out-of-plane</li>
+</ul>
+<p>vector</p>
+<ul class="last simple">
+<li><strong>v1</strong>, <strong>v2</strong>: numpy array of 3 float, in plane spanning vectors</li>
+<li><strong>avec</strong>: numpy array of 3x3 float, primitive unit cell vectors</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>numpy array of len 3, out of plane surface-projected lattice vector</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id121"><span class="problematic" id="id122">**</span></a><a href="#id123"><span class="problematic" id="id124">*</span></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-chinook.v3find">
+<span id="v3find"></span><h2>v3find:<a class="headerlink" href="#module-chinook.v3find" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="chinook.v3find.ang_v1v2">
+<code class="descclassname">chinook.v3find.</code><code class="descname">ang_v1v2</code><span class="sig-paren">(</span><em>v1</em>, <em>v2</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.v3find.ang_v1v2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find angle between two vectors, rounded to floating point precision.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>v1</strong>: numpy array of N float</li>
+<li><strong>v2</strong>: numpy array of N float</li>
+</ul>
+</dd>
+<dt><em>return</em>: </dt>
+<dd><ul class="first last simple">
+<li>float, angle in radians</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.v3find.are_parallel">
+<code class="descclassname">chinook.v3find.</code><code class="descname">are_parallel</code><span class="sig-paren">(</span><em>v1</em>, <em>v2</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.v3find.are_parallel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Are two vectors parallel?</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>v1</strong>: numpy array of N float</li>
+<li><strong>v2</strong>: numpy array of N float</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>boolean, True if parallel, to within 1e-5 radians, False otherwise</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.v3find.are_same">
+<code class="descclassname">chinook.v3find.</code><code class="descname">are_same</code><span class="sig-paren">(</span><em>v1</em>, <em>v2</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.v3find.are_same" title="Permalink to this definition">¶</a></dt>
+<dd><p>Are two vectors identical, i.e. parallel and of same length, to within 
+the precision of <em>are_parallel</em>?</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>v1</strong>: numpy array of N float</li>
+<li><strong>v2</strong>: numpy array of N float</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>boolean, True if identical, False otherwise.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.v3find.find_v3">
+<code class="descclassname">chinook.v3find.</code><code class="descname">find_v3</code><span class="sig-paren">(</span><em>v1</em>, <em>v2</em>, <em>avec</em>, <em>maxlen</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.v3find.find_v3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper function for finding the surface vector.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>v1</strong>: numpy array of 3 float, a spanning vector of the plane</li>
+<li><strong>v2</strong>: numpy array of 3 float, a spanning vector of the plane</li>
+<li><strong>avec</strong>: numpy array of 3x3 float</li>
+<li><strong>maxlen</strong>: float, longest accepted surface vector</li>
+</ul>
+</dd>
+<dt><em>return</em>: </dt>
+<dd><ul class="first last simple">
+<li>numpy array of 3 float, surface vector choice</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.v3find.initialize_search">
+<code class="descclassname">chinook.v3find.</code><code class="descname">initialize_search</code><span class="sig-paren">(</span><em>v1</em>, <em>v2</em>, <em>avec</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.v3find.initialize_search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Seed search for v3 with the nearest-neighbouring Bravais latice point which maximizes
+the projection out of plane of that spanned by v1 and v2</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>v1</strong>: numpy array of 3 float, a spanning vector of the plane</li>
+<li><strong>v2</strong>: numpy array of 3 float, a spanning vector of the plane</li>
+<li><strong>avec</strong>: numpy array of 3x3 float</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li>numpy array of float, the nearby Bravais lattice point which maximizes</li>
+</ul>
+<blockquote class="last">
+<div>the projection along the plane normal</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.v3find.refine_search">
+<code class="descclassname">chinook.v3find.</code><code class="descname">refine_search</code><span class="sig-paren">(</span><em>v3i</em>, <em>v1</em>, <em>v2</em>, <em>avec</em>, <em>maxlen</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.v3find.refine_search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refine the search for the optimal v3 which both minimalizes the length while
+maximizing orthogonality to v1 and v2</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>v3i</strong>: numpy array of 3 float, initial guess for the surface vector</li>
+<li><strong>v1</strong>: numpy array of 3 float, a spanning vector of the plane</li>
+<li><strong>v2</strong>: numpy array of 3 float, a spanning vector of the plane</li>
+<li><strong>avec</strong>: numpy array of 3x3 float</li>
+<li><strong>maxlen</strong>: float, longest vector accepted</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><strong>v3_opt</strong>: list of numpy array of 3 float, options for surface vector</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.v3find.score">
+<code class="descclassname">chinook.v3find.</code><code class="descname">score</code><span class="sig-paren">(</span><em>vlist</em>, <em>v1</em>, <em>v2</em>, <em>avec</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.v3find.score" title="Permalink to this definition">¶</a></dt>
+<dd><p>The possible surface vectors are scored based on their legnth and their orthogonality 
+to the in-plane vectors.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>vlist</strong>: list fo numpy array of 3 float, options for surface vector</li>
+<li><strong>v1</strong>: numpy array of 3 float, a spanning vector of the plane</li>
+<li><strong>v2</strong>: numpy array of 3 float, a spanning vector of the plane</li>
+<li><strong>avec</strong>: numpy array of 3x3 float</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>numpy array of 3 float, the best scoring vector option</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">chinook</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html#contact">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arpes.html">ARPES Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tightbinding.html">Tight Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operator.html">Model Diagnostics</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Slab Calculation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support Files</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="operator.html" title="previous chapter">Model Diagnostics</a></li>
+      <li>Next: <a href="support.html" title="next chapter">Support Files</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Ryan P. Day.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="_sources/slab.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
