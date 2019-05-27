@@ -290,6 +290,11 @@ class TB_model:
         else:
             return None
         
+    def append_H(self,new_elements):
+        if type(new_elements[0])!=list:
+            new_elements = [new_elements]
+        
+        
         
     def solve_H(self,Eonly = False):
         '''
@@ -323,7 +328,6 @@ class TB_model:
                 print('Large memory load: splitting diagonalization into {:d} segments'.format(N_partitions))
             else:
                 partition = False
-   #     partition = False
         if self.Kobj is not None:
             Hmat = np.zeros((len(self.Kobj.kpts),len(self.basis),len(self.basis)),dtype=complex) #initialize the Hamiltonian
             
@@ -390,6 +394,18 @@ class TB_model:
         ax.set_ylabel("Energy (eV)")
 
         return ax  
+    
+    def plot_unitcell(self):
+        edges = cell_edges(self.avec)
+        coord_dict = atom_coords(self.basis)
+
+        
+        fig = plt.figure()
+        ax = fig.add_subplot(111,projection='3d')
+        for ed in edges:
+            ax.plot(ed[:,0],ed[:,1],ed[:,2],c='k')
+        for atoms in coord_dict.keys():
+            ax.scatter(coord_dict[atoms][:,0],coord_dict[atoms][:,1],coord_dict[atoms][:,2],s=20)
           
             
 def gen_H_obj(htmp):
@@ -422,3 +438,38 @@ def gen_H_obj(htmp):
     Hlist.append(Hnow)
     return Hlist 
             
+        
+def cell_edges(avec):
+    
+    modvec = np.array([[np.mod(int(j/4),2),np.mod(int(j/2),2),np.mod(j,2)] for j in range(8)])
+    edges = []
+    for p1 in range(len(modvec)):
+        for p2 in range(p1,len(modvec)):
+            if np.linalg.norm(modvec[p1]-modvec[p2])==1:
+                edges.append([np.dot(avec.T,modvec[p1]),np.dot(avec.T,modvec[p2])])
+    edges = np.array(edges)
+    return edges
+
+
+def atom_coords(basis):
+    
+    coord_dict = {}
+    all_pos = [[o.atom,*o.pos] for o in basis]
+    for posns in all_pos:
+        if posns[0] not in coord_dict.keys():
+            coord_dict[posns[0]] = [np.array(posns[1:])]
+        else:
+
+            min_dist = np.array([np.sqrt((posns[1]-c[0])**2+(posns[2]-c[1])**2+(posns[3]-c[2])**2) for c in coord_dict[posns[0]]]).min()
+            if min_dist>0:
+                coord_dict[posns[0]].append(np.array(posns[1:]))
+    for atoms in coord_dict:
+        coord_dict[atoms] = np.array(coord_dict[atoms])
+    return coord_dict
+            
+       
+    
+    
+        
+    
+    
