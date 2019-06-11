@@ -1,29 +1,34 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Created on Thu Nov  9 21:38:24 2017
 
-#Created on Thu Nov  9 21:38:24 2017
-#@author: ryanday
-#MIT License
+@author: ryanday
 
-#Copyright (c) 2018 Ryan Patrick Day
+Slater Koster Library for generating a Hamiltonian of Slater-Koster
+MIT License
 
-#Permission is hereby granted, free of charge, to any person obtaining a copy
-#of this software and associated documentation files (the "Software"), to deal
-#in the Software without restriction, including without limitation the rights
-#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#copies of the Software, and to permit persons to whom the Software is
-#furnished to do so, subject to the following conditions:
+Copyright (c) 2018 Ryan Patrick Day
 
-#The above copyright notice and this permission notice shall be included in all
-#copies or substantial portions of the Software.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#SOFTWARE.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+"""
 import numpy as np
 import chinook.SlaterKoster as SK
 import chinook.rotation_lib as rot_lib
@@ -257,7 +262,8 @@ def Vlist_gen(V,pair):
    
     '''
     Select the relevant hopping matrix elements to be used in defining the value
-    of the Slater-Koster matrix elements for a given pair of orbitals
+    of the Slater-Koster matrix elements for a given pair of orbitals. Handles situation where
+    insufficient parameters have been passed to system.
     
     *args*:
         - **V**: dictionary of Slater-Koster hopping terms
@@ -270,9 +276,15 @@ def Vlist_gen(V,pair):
     
     ***
     '''
-    order = {'S':0,'P':1,'D':2,'F':3}
+    order = {'S':0,'P':1,'D':2,'F':3,0:'S',1:'P',2:'D',3:'F'}
     vstring = '{:d}{:d}{:d}{:d}{:d}{:d}'.format(*pair[:6])
     l = max(pair[4],pair[5])
+    if len(V.keys())<(l+1):
+        print('WARNING, insufficient number of Slater-Koster parameters passed: filling missing values with zeros.')
+        for l_index in range(l+1):
+            hopping_type = vstring+order[l_index]
+            if hopping_type not in V.keys():
+                V[hopping_type] = 0
     try:
         Vkeys = np.array(sorted([[l-order[vi[-1]],vi] for vi in V if vi[:-1]==vstring]))[:,1]
         Vvals = np.array([V[vk] for vk in Vkeys])
