@@ -238,7 +238,7 @@ def fatbs(proj,TB,Kobj=None,vlims=(0,1),Elims=(-1,1),degen=False):
     
 
 
-def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=True):
+def O_path(Operator,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=True):
     
     '''
     
@@ -246,7 +246,7 @@ def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=True):
     Option of summing over degenerate bands (for e.g. fat bands) with degen boolean flag
         
     *args*:
-        - **O**: matrix representation of the operator (numpy array len(basis), len(basis) of complex float)
+        - **Operator**: matrix representation of the operator (numpy array len(basis), len(basis) of complex float)
           
         - **TB**: Tight binding object from TB_lib
             
@@ -254,7 +254,7 @@ def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=True):
         
         - **Kobj**: Momentum object, as defined in *chinook.klib.py*
             
-        - **vlims**: tuple of 2 float, limits of the colorscale for plotting, default to (0,0)
+        - **vlims**: tuple of 2 float, limits of the colourscale for plotting, default to (0,0)
         if default value passed, will compute a reasonable range
             
         - **Elims**: tuple of 2 float, limits of vertical scale for plotting
@@ -267,7 +267,7 @@ def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=True):
     ***
     '''
     
-    if np.shape(O)!=(len(TB.basis),len(TB.basis)):
+    if np.shape(Operator)!=(len(TB.basis),len(TB.basis)):
         print('ERROR! Ensure your operator has the same dimension as the basis.')
         return None
     try:
@@ -284,7 +284,10 @@ def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=True):
                 print('ERROR! Please include a K-object, or diagonalize your tight-binding model over a k-path first to initialize the eigenvectors')
                 return None
             
-    right_product = np.einsum('ij,ljm->lim',O,TB.Evec)
+    #check if Hermitian
+    
+       
+    right_product = np.einsum('ij,ljm->lim',Operator,TB.Evec)
     O_vals = np.einsum('ijk,ijk->ik',np.conj(TB.Evec),right_product)
     O_vals = np.real(O_vals) #any Hermitian operator must have real-valued expectation value--discard any imaginary component
     if degen:
@@ -323,7 +326,7 @@ def O_path(O,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=True):
     return O_vals
 
 
-def degen_Ovals(O,E):
+def degen_Ovals(Oper_exp,Energy):
     
     '''
     In the presence of degeneracy, we want to average over the
@@ -332,25 +335,29 @@ def degen_Ovals(O,E):
     All degeneracies are found, and the expectation values averaged.
     
     *args*:
-        - **O**: numpy array of float, operator expectations
+        - **Oper_exp**: numpy array of float, operator expectations
         
-        - **E**: numpy array of float, energy eigenvalues.
+        - **Energy**: numpy array of float, energy eigenvalues.
     '''
     
-    O_copy = O.copy()
+    O_copy = Oper_exp.copy()
     tol = 1e-9
-    for ki in range(np.shape(O)[0]):
-        val = E[ki,0]
+    for ki in range(np.shape(Oper_exp)[0]):
+        val = Energy[ki,0]
         start = 0
         counter = 1
-        for bi in range(1,np.shape(O)[1]):
-            if abs(E[ki,bi]-val)<tol:
+        for bi in range(1,np.shape(Oper_exp)[1]):
+            if abs(Energy[ki,bi]-val)<tol:
                 counter+=1
-            elif (abs(E[ki,bi]-val)>=tol or bi==(np.shape(O)[1]-1)):
+           # if ki==0:
+            #    print(bi)
+            if abs(Energy[ki,bi]-val)>=tol or bi==(np.shape(Oper_exp)[1]-1):
+                #if bi==(np.shape(Oper_exp)[1]-1):
+                  #  print('lastbool',bi==(np.shape(Oper_exp)[1]-1))
                 O_copy[ki,start:start+counter] = np.mean(O_copy[ki,start:start+counter])
                 start = bi
                 counter = 1
-                val = E[ki,bi]
+                val = Energy[ki,bi]
     return O_copy                
 
 def O_surf(O,TB,ktuple,Ef,tol,vlims=(0,0)):
