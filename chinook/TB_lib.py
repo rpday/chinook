@@ -291,8 +291,22 @@ class TB_model:
             return None
         
     def append_H(self,new_elements):
+        '''
+        Add new terms to the Hamiltonian by hand. This directly modifies
+        the list of Hamiltonian matrix element, self.mat_els of the TB object.
+        
+        *args*
+            - **new_elements**: list of Hamiltonian matrix elements, either a single element [i,j,x_ij,y_ij,z_ij,H_ij(x,y,z)]
+            or as a list of such lists. Here i, j are the related orbital-indices.
+        '''
         if type(new_elements[0])!=list:
             new_elements = [new_elements]
+        for elmts in new_elements:
+            i,j = elmts[:2]
+            for Hme in self.mat_els:
+                if Hme.i==i and Hme.j==j:
+                    Hme.H.append(elmts[2:])
+        
         
         
         
