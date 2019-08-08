@@ -460,9 +460,9 @@ def gen_slab(basis,vn,mint,minb,term,fine=(0,0)):
         
         - **vn**: numpy array of 3x3 float, surface unit cell lattice vectors 
         
-        - **mint**: float, minimum thickness of the slab
+        - **mint**: float, minimum thickness of the slab, in Angstrom
         
-        - **minb**: float, minimum thickness of the vacuum buffer
+        - **minb**: float, minimum thickness of the vacuum buffer, in Angstrom
         
         - **term**: tuple of 2 int, termination of the slab tuple (term[0] = top termination, term[1] = bottom termination)
         
@@ -699,12 +699,17 @@ def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
         Htmp = Hdict[oi.slab_index] #access relevant hopping paths for the orbital in question
         for hi in Htmp: #iterate over all relevant hoppings
             
-            ncells = int(np.dot(hi[2:5]+surf_basis[hi[0]].pos-surf_basis[hi[1]].pos,si)[2]) #how many unit cells -- in the surface unit cell basis are jumped during this hopping--specifically, cells along the normal direction
-
+            ncells = int(np.dot(hi[2:5]-surf_basis[hi[1]].pos+surf_basis[hi[0]].pos,si)[2]) #how many unit cells -- in the surface unit cell basis are jumped during this hopping--specifically, cells along the normal direction
             Htmp_2 = [0]*6 #create empty hopping element, to be filled
 
             Htmp_2[0] = int(oi.index) #matrix row should be the SLAB BASIS INDEX
-            Htmp_2[1] = int((D+oi.index)/len(surf_basis))*len(surf_basis) + int(len(surf_basis)*ncells+hi[1]-D) #matrix column is
+            Htmp_2[1] = int((D+oi.index)/len(surf_basis))*len(surf_basis) + int(len(surf_basis)*ncells+hi[1]-D)
+            #matrix column is calculated as follows:
+            #the first orbital's slab index is often not zero, D is the place-holder for the actual start. Following this
+            # index increments monotonically, while slab_index is defined mod-len(surf_basis). To get the new 'j' index,
+            #we find first the 'surface-cell' number of 'i', defined as int((D+i)/len(surf))*len(surf). Then we increment
+            #by the integer number of surface-unit cells covered by the hopping vector, and further by the difference between
+            #the original o2 index j, and the starting slab_index D.
 
             Htmp_2[5] = hi[5]       
             try:
@@ -713,9 +718,7 @@ def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
 
                 if 0<=Htmp_2[1]<len(slab_basis) and 0<=Htmp_2[0]<len(slab_basis):
                     if Htmp_2[1]>=Htmp_2[0]:
-                       # Htmp_2 = H_conj(Htmp_2)
-                  
-                   # else:
+
                         Hnew.append(Htmp_2)  
 
             except IndexError:

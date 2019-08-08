@@ -1,31 +1,32 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Created on Sun Jun 18 15:46:21 2017
 
-#Created on Sun Jun 18 15:46:21 2017
+@author: ryanday
+MIT License
 
-#@author: ryanday
-#MIT License
+Copyright (c) 2018 Ryan Patrick Day
 
-#Copyright (c) 2018 Ryan Patrick Day
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-#Permission is hereby granted, free of charge, to any person obtaining a copy
-#of this software and associated documentation files (the "Software"), to deal
-#in the Software without restriction, including without limitation the rights
-#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#copies of the Software, and to permit persons to whom the Software is
-#furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-#The above copyright notice and this permission notice shall be included in all
-#copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
-#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#SOFTWARE.
-
+"""
 import numpy as np
 from math import factorial
 
@@ -64,7 +65,7 @@ def Y(l,m,theta,phi):
     
     if l == 0:
         if m==0:
-            return 0.5*np.sqrt(1.0/np.pi)
+            return 0.5*np.sqrt(1.0/np.pi)*value_one(theta,phi)
         else:
             return 0.0 
                
@@ -115,39 +116,23 @@ def Y(l,m,theta,phi):
     else:
         return 0.0
     
+    
+def value_one(theta,phi):
+    if type(theta)==np.ndarray:
+        out =np.ones(np.shape(theta))
+    if type(phi)==np.ndarray:
+        out = np.ones(np.shape(phi))
+    elif type(theta)!=np.ndarray and type(phi)!=np.ndarray:
+        out = 1.0
+    return out
+        
 
-def binomal_coefficient(a,b):
-    '''
-    Evaluation of the binomial coefficient (i.e. a choose b)
-
-    *args*:
-        - **a**: int, first value in binomial
-
-        - **b**: int, second value in binomial
-
-    *return*:
-        - float, ratio of factorials a!, a-b!, b!
-    '''
-
-    return factorial(a)/float(factorial(a-b)*factorial(b))
+def binom(a,b):
+    return factorial(a+b)/float(factorial(a-b)*factorial(b))
 
 def laguerre(x,l,j):
-    '''
-    Evaluation of associated laguerre polynomial
-    
-    *args*:
-        - **x**: float, number at which to evaluate the polynomial
-
-        - **l**: int, order of polynomial 
-
-        - **j**: int, degree of polynomial (i.e. sum over polyomials of power up to n)
-
-    *return*:
-        - **laguerre_value**: float, value of the polynomial
-
-    '''
-    laguerre_value = sum([((-1)**i)*(binom(l+j,j-i)*x**i/float(factorial(i))) for i in range(j+1)])
-    return laguerre_value
+    tmp = sum([((-1)**i)*(binom(l+j,j-i)*x**i/float(factorial(i))) for i in range(j+1)])
+    return tmp
 
 
 def gaunt(l,m,dl,dm):
@@ -157,17 +142,12 @@ def gaunt(l,m,dl,dm):
     These have been tested against the sympy package to confirm numerical accuracy for all l,m possible
     up to l=5. This function is equivalent, for the subset of dm, dl allowed to
     sympy.physics.wigner.gaunt(l,1,l+dl,m,dm,-(m+dm))
-    
-    *args*:
-        - **l**: int, orbital angular momentum quantum number
-        
-        - **m**: int, azimuthal angular momentum quantum number
-        
-        - **dl**: int, change in l (+/-1)
-        
-        - **dm**: int, change in azimuthal angular momentum (-1,0,1)
-    
-    *return*:
+    args:
+        l: int orbital angular momentum quantum number
+        m: int azimuthal angular momentum quantum number
+        dl: int change in l (+/-1)
+        dm: int change in azimuthal angular momentum (-1,0,1)
+    return:
         float Gaunt coefficient
     '''
     try:
@@ -198,24 +178,20 @@ def Yproj(basis):
     '''
     Define the unitary transformation rotating the basis of different inequivalent atoms in the
     basis to the basis of spherical harmonics for sake of defining L.S operator in basis of user
+    args: basis--list of orbital objects
     
-    *args*:
-        - **basis**: list, orbital objects
+    returns: dictionary of matrices for the different atoms and l-shells--keys are tuples of (atom,l)
+     
+    29/09/2018 added reference to the spin character 'sp' to handle rotated systems effectively
     
-    *return*: 
-        - **Umats**: dictionary of matrices for the different atoms and orbital-shells--keys are tuples of (atom,n,l,spin)    
     '''
-    normal_order = {0:{'':0},
-                    1:{'x':0,'y':1,'z':2},
-                    2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},
-                    3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
-
+    normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
     a = basis[0].atom
     n = basis[0].n
     l = basis[0].l
     sp = basis[0].spin
-    Umats = {}
-    Umat_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
+    M = {}
+    M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
     for b in basis:
         if np.linalg.norm(b.Dmat-np.identity(2*b.l+1))>0:
             Dmat = b.Dmat
@@ -226,45 +202,28 @@ def Yproj(basis):
 
         if b.atom==a and b.n==n and b.l==l and b.spin==sp:
             for p in b.proj:
-                Umat_tmp [l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
+                M_tmp[l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
                 
         else:
                 #If we are using a reduced basis, fill in orthonormalized projections for other states in the shell
                 #which have been ignored in our basis choice--these will still be relevant to the definition of the LS operator
-            Umat_tmp  = fillin(Umat_tmp ,l,Dmat)            
-            Umats[(a,n,l,sp)] = Umat_tmp 
-                ##Initialize the next Umat matrix               
+            M_tmp = fillin(M_tmp,l,Dmat)            
+            M[(a,n,l,sp)] = M_tmp
+                ##Initialize the next M matrix               
             a = b.atom
             n = b.n
             l = b.l
             sp = b.spin
-            Umat_tmp  = np.zeros((2*l+1,2*l+1),dtype=complex)
+            M_tmp = np.zeros((2*l+1,2*l+1),dtype=complex)
             for p in b.proj:
-                Umat_tmp [l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
+                M_tmp[l-int(p[-1]),normal_order[l][label]] = p[0]+1.0j*p[1]
     
-    Umat_tmp  = fillin(Umat_tmp ,l,loc_rot)
-    Umats[(a,n,l,sp)] = Umat_tmp 
+    M_tmp = fillin(M_tmp,l,loc_rot)
+    M[(a,n,l,sp)] = M_tmp
     
-    return Umats
+    return M
 
 def fillin(M,l,Dmat=None):
-    '''
-    When working with reduced basis sets, need to fill in the rest of the matrix
-    to account for the rest of the orbitals in the shell, which are not considered in the
-    model. (For example, for a t2g model of a d-orbital system, eg states (dx^2-y^2 and d3z^2-r^2) need
-    to be accounted for.
-
-    *args*:
-        - **M**: numpy array of complex float, unitary transformation, as filled so far--will have zero columns
-
-        - **l**: int, orbital quantum number
-
-    *kwargs*:
-        - **Dmat**: numpy array of complex float, Wigner D matrix indicating the local rotation
-
-    *return*:
-        **M**: numpy array of complex float, filled in unitary matrix.
-    '''
     normal_order_rev = {0:{0:''},1:{0:'x',1:'y',2:'z'},2:{0:'xz',1:'yz',2:'xy',3:'ZR',4:'XY'},3:{0:'z3',1:'xz2',2:'yz2',3:'xzy',4:'zXY',5:'xXY',6:'yXY'}}
 
     for m in range(2*l+1):
@@ -287,15 +246,27 @@ def fillin(M,l,Dmat=None):
 def GramSchmidt(a,b):
     '''
     Simple orthogonalization of two vectors, returns orthonormalized vector
-    
-    *args*:
-        - **a**: numpy array of numeric type, vector to orthogonalize
-
-        - **b**: numpy array of numeric type, vector to be orthogonal to.
-
-    *returns*: 
-        - **GS_a**: numpy array of same size, **a** vector, now Gram-Schmidt
-         orthonormalized to the **b** vector.
+    args: a,b -- np.array of same length
+    returns: tmp -- numpy array of same size, orthonormalized to the b vector
     '''
-    GS_a = a - np.dot(a,b)/np.dot(b,b)*b
-    return GS_a/np.linalg.norm(GS_a)
+    tmp = a - np.dot(a,b)/np.dot(b,b)*b
+    return tmp/np.linalg.norm(tmp)
+
+
+
+
+    
+
+    
+if __name__=="__main__":
+    x = np.linspace(0,5,100)
+    tmp = laguerre(x,5,0)
+#    th = np.random.random()*np.pi
+#    ph = np.random.random()*2*np.pi
+#    for i in range(4):
+#        for j in range(-i,i+1):
+#            Yme = Y(i,j,th,ph) 
+#            Ysc = sc.sph_harm(j,i,ph,th)
+#            diff = abs(Yme-Ysc)
+#            print i,j,diff
+#    

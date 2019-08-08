@@ -136,7 +136,7 @@ def sk_build(avec,basis,Vdict,cutoff,tol,renorm,offset):
         for i2 in index_orbitals:
             if index_orbitals[i1][index_orbitals[i1]>-1].min()<=index_orbitals[i2][index_orbitals[i2]>-1].min():
                 o1o2 = (i1[0],i2[0],i1[1],i2[1],i1[2],i2[2])
-                R12 = (np.array(i2[3:6])-np.array(i1[3:6]))
+                R12 = (np.array(i2[3:6])-np.array(i1[3:6])) 
                 SKmat = SK_matrices[o1o2]
         
                 for p in pts: #iterate over the points in the cluster
@@ -565,6 +565,17 @@ def FM_order(basis,dS):
      ***
      '''
     return [[bi.index,bi.index,0,0,0,-np.sign(bi.spin)*dS] for bi in basis]
+
+
+def Efield(basis,field,orbital_type='Slater'):
+    
+    '''
+    Define a set of matrix elements which introduce an electric field, treated at the level of a dipole operator.
+    
+    '''
+    return None
+    
+    
 
 
 

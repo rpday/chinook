@@ -221,7 +221,7 @@ class wavefunction:
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
-       # plt.colorbar(plots[-1],ax=ax)
+        plt.colorbar(plots[-1],ax=ax)
         return plots
             
 
