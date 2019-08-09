@@ -12,20 +12,20 @@ def readme():
         return f.read()
     f.close()
     
-setup(name= 'jerboa',
-      version = '2.0',
+setup(name= 'chinook',
+      version = '2.0.0',
       long_description=readme(),
       classifiers =[
-              'Development Status :: Beta ',
+              'Development Status ::4-Beta ',
               'License :: MIT License',
-              'Programming Language :: Python :: 3.6', 
-              'Topic :: Scientific :: Simulation ',
+              'Programming Language :: Python :: 3 :: Only', 
+              'Topic :: Scientific/Engineering :: Physics ',
               ],
       author = 'Ryan P. Day', 
-      author_email ='rday@phas.ubc.ca',
+      author_email ='ryanday7@gmail.com',
       license= 'MIT',
-      packages= ['jerboa'],
-      install_requires=['numpy','matplotlib','scipy','operator'],
+      packages= ['chinook'],
+      install_requires=['numpy','matplotlib','scipy','Tkinter','psutil'],
       include_package_data=True,
-      package_data = {'jerboa':['electron_configs.txt']}
+      package_data = {'chinook':['atomic_mass.txt','electron_configs.txt']}
       )
