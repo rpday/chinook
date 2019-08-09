@@ -303,9 +303,14 @@ class TB_model:
             new_elements = [new_elements]
         for elmts in new_elements:
             i,j = elmts[:2]
+            new_pair = True
             for Hme in self.mat_els:
                 if Hme.i==i and Hme.j==j:
                     Hme.H.append(elmts[2:])
+                    new_pair = False
+            if new_pair:
+                self.mat_els.append(H_me(i,j))
+                self.mat_els[-1].append_H(*elmts[2:])
         
         
         
@@ -329,7 +334,6 @@ class TB_model:
             eigenvectors
                 
         '''
-        partition = False
         if ps_found:
             mem_summary = psutil.virtual_memory()
             avail = mem_summary.available
@@ -341,6 +345,8 @@ class TB_model:
                 splits = [j*int(np.floor(len(self.Kobj.kpts)/N_partitions)) for j in range(N_partitions)]
                 splits.append(len(self.Kobj.kpts))
                 print('Large memory load: splitting diagonalization into {:d} segments'.format(N_partitions))
+            else:
+                partition = False
         if self.Kobj is not None:
             Hmat = np.zeros((len(self.Kobj.kpts),len(self.basis),len(self.basis)),dtype=complex) #initialize the Hamiltonian
             
