@@ -1,4 +1,4 @@
-Welcome to the UBC TB-ARPES package developed by Ryan Day at the University of British Columbia.
+Welcome to the chinook package developed by Ryan Day at the University of British Columbia.
 
 This package has been developed originally with the intention of simulating matrix-element effects in Angle-Resolved Photoemission Spectroscopy (ARPES) experiments.
 This objective has however required a substantial amount of code infrastructure for generating and diagnosing tight-binding models, and consequently,
