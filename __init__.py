@@ -29,7 +29,8 @@ SOFTWARE.
 """
 
 
-__all__ = ['adaptive_int','ARPES_lib','atomic_mass','build_lib','CG','cub2sph','direct_transition',
-           'electron_configs', 'FS','H_library','klib','operator_library','orbital','plt_sph_harm',
-           'PP_radial','rad_int_compare','RPA','SK','slab_gen','TB_lib','Tk_plot','Ylm','slab','parallelogram',
-           'inside','v3_def']
+__all__ = ['adaptive_int','angle_expt','ARPES_lib','atomic_mass','build_lib','CG','dos',
+           'electron_configs', 'FS_tetra','H_library','intensity_map','klib',
+           'lattice_lib','operator_library','orbital','orbital_plotting',
+           'radint_lib','rotation_lib','SlaterKoster','slab','surface_vector',
+           'TB_lib','tetrahedra','tilt','Tk_plot','v3find','wigner','Ylm']
