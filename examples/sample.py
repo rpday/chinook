@@ -41,11 +41,12 @@ arpes = {'cube':{'X':[-1,1,50],'Y':[-1,1,50],'kz':0.0,'E':[-1,0.1]},
         'resolution':{'E':0.01,'k':0.01}}
 
 
-basis = build_lib.gen_basis(basis)
-TB = build_lib.gen_TB(basis,hamiltonian,Kobj=build_lib.gen_K(momentum))
+#basis = build_lib.gen_basis(basis)
 
-TB.solve_H()
-TB.plotting()
+#TB = build_lib.gen_TB(basis,hamiltonian,Kobj=build_lib.gen_K(momentum))
+
+#TB.solve_H()
+#TB.plotting()
 #
 #experiment = arpes_lib.experiment(TB,arpes)
 #experiment.datacube()
