@@ -61,8 +61,8 @@ def make_radint_pointer(rad_dict,basis,Eb):
         'hv' (photon energy), 'W' (work function), and the rad_type
         (radial wavefunction type, as well as any relevant additional
         pars, c.f. *radint_lib.define_radial_wavefunctions*).
-        Note: *'rad_type'* is optional, as is *rad_args*, depending on choice
-        of radial wavefunction.
+        Note: *'rad_type'* is optional, (as is *rad_args*, depending on choice
+        of radial wavefunction.)
         
         - **basis**: list of orbitals in the basis
         
@@ -77,10 +77,9 @@ def make_radint_pointer(rad_dict,basis,Eb):
         
     ***   
     '''
-    
     radial_funcs = define_radial_wavefunctions(rad_dict,basis)
     fixed = True if ('rad_type' in rad_dict.keys() and rad_dict['rad_type']=='fixed') else False
-    B_dictionary = fill_radint_dic(Eb,radial_funcs,rad_dict['hv'],rad_dict['W'],fixed)
+    B_dictionary = fill_radint_dic(Eb,radial_funcs,rad_dict['hv'],rad_dict['W'],rad_dict['phase_shifts'],fixed)
     B_array,B_pointers = radint_dict_to_arr(B_dictionary,basis)
     
     return B_array,B_pointers
@@ -134,9 +133,15 @@ def define_radial_wavefunctions(rad_dict,basis):
 
                 - *'slater'*: default value, if *'rad_type'* is not passed,
                 Slater type orbitals assumed and evaluated for the integral
+                    - *'rad_args'*: dictionary of float, supplying optional final-state 
+                    phase shifts, accounting for scattering-type final states. keys of form
+                    'a-n-l-lp'. Radial integrals will be accordingly multiplied
                 
                 - *'hydrogenic'*: similar in execution to *'slater'*, 
                 but uses Hydrogenic orbitals--more realistic for light-atoms
+                    - *'rad_args'*: dictionary of float, supplying optional final-state 
+                    phase shifts, accounting for scattering-type final states. keys of form
+                    'a-n-l-lp'. Radial integrals will be accordingly multiplied
                 
                 - *'grid'*: radial wavefunctions evaluated on a grid of
                 radii. Requires also another key_value pair:
@@ -204,7 +209,7 @@ def define_radial_wavefunctions(rad_dict,basis):
     
     elif rad_dict['rad_type'].lower() == 'exec':
         if 'rad_args' not in rad_dict.keys():
-            print('ERROR: No "rad_args" key passing an executable to ARPES calculation.\n. Exiting.\n See Radial Integrals in the Manual for further details.\n')
+            print('ERROR: No "rad_args" key passing an executable to ARPES calculation.\n. Exiting.\n See Radial Integrals in the documentation for further details.\n')
             return None
         elif np.sum([o in rad_dict['rad_args'].keys() for o in orbitals])<len(orbitals):
             print('ERROR: Missing radial wavefunction functionss--confirm all atoms and orbital shells have a function.\n Exiting.\n')
@@ -216,11 +221,10 @@ def define_radial_wavefunctions(rad_dict,basis):
     
     elif rad_dict['rad_type'].lower() == 'fixed':    
         if 'rad_args' not in rad_dict.keys():
-            print('ERROR: Missing radial integral values.\n Exiting.\n See Radial Integrals in the Manual for further details.\n')
+            print('ERROR: Missing radial integral values.\n Exiting.\n See Radial Integrals in the documentation for further details.\n')
             return None
         for o in basis:
             lp = np.array([o.l-1,o.l+1])
-#            lp = lp[lp>=0]
             for lpi in lp:
                 ostr = '{:d}-{:d}-{:d}-{:d}'.format(o.atom,o.n,o.l,lpi)
                 if lpi>=0:
@@ -256,7 +260,7 @@ def gen_orb_labels(basis):
     return orbitals
     
 
-def radint_calc(k_norm,orbital_funcs):
+def radint_calc(k_norm,orbital_funcs,phase_shifts=None):
     
     '''
     Compute dictionary of radial integrals evaluated at a single |k| value
@@ -270,6 +274,9 @@ def radint_calc(k_norm,orbital_funcs):
         (as an argument for the spherical Bessel Function)
         
         - **orbital_funcs**: dictionary, radial wavefunction executables
+        
+    *kwargs*:
+        - **phase_shifts**: dictionary of phase shifts, to convey final state scattering
         
     *returns*:
         - **Bdic**: dictionary, key value pairs in form -- 'ATOM-N-L':*Bval*
@@ -286,6 +293,10 @@ def radint_calc(k_norm,orbital_funcs):
         L=[x for x in [l-1,l+1]]
         for lp in L:
             Blabel=o+'-'+str(lp)
+            if phase_shifts is None:
+                phase_factor = 1.0
+            else:
+                phase_factor = phase_shifts[Blabel]
             if Blabel not in Bdic.keys():
                 if lp<0:
                     tmp_B = 0.0
@@ -297,12 +308,12 @@ def radint_calc(k_norm,orbital_funcs):
                         
                     tol = 10.0**-10
                         
-                    tmp_B = adint.integrate(integrand,a,b,tol)
+                    tmp_B = phase_factor*adint.integrate(integrand,a,b,tol)
                        
                 Bdic[Blabel]=tmp_B
     return Bdic
 
-def fill_radint_dic(Eb,orbital_funcs,hv,W=0.0,fixed=False):
+def fill_radint_dic(Eb,orbital_funcs,hv,W=0.0,phase_shifts=None,fixed=False):
     
     '''
     Function for computing dictionary of radial integrals. 
@@ -320,6 +331,13 @@ def fill_radint_dic(Eb,orbital_funcs,hv,W=0.0,fixed=False):
         - **fixed**: bool, if True, constant radial integral for each scattering
         channel available: then the orbital_funcs dictionary already
         has the radial integral evaluated
+        - **hv**: float, photon energy of incident light.
+        
+    *kwargs*:
+        - **W**: float, work function
+        
+        - **phase_shifts**: dictionary for final state phase shifts, as an optional
+        extension beyond pure- free electron final states. For now, float type.
         
     *return*:
         - **Brad**: dictionary of executable interpolation grids
@@ -337,7 +355,7 @@ def fill_radint_dic(Eb,orbital_funcs,hv,W=0.0,fixed=False):
             BD_coarse={}
             for en in Brad_es:
                 k_coarse = np.sqrt(2.0*me/hb**2*((hv-W)+en)*q)*A #calculate full 3-D k vector at this surface k-point given the incident radiation wavelength, and the energy eigenvalue, note binding energy follows opposite sign convention
-                tmp_Bdic = (radint_calc(k_coarse,orbital_funcs) if ((hv-W)+en)>=0 else {})
+                tmp_Bdic = (radint_calc(k_coarse,orbital_funcs,phase_shifts) if ((hv-W)+en)>=0 else {})
                 for b in tmp_Bdic:
                     try:
                         BD_coarse[b].append(tmp_Bdic[b])
