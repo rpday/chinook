@@ -470,7 +470,6 @@ class experiment:
         B_eval = np.array([[b[0](self.pks[i,3]),b[1](self.pks[i,3])] for b in self.Bfuncs])
         pref = np.einsum('i,ij->ij',np.einsum('i,i->i',self.prefactors,self.Ev[int(self.pks[i,0]/nstates),:,int(self.pks[i,0]%nstates)]),B_eval[self.radint_pointers])  
         Gtmp = np.einsum('ij,ijkl->ikl',self.proj_arr,np.einsum('ijkl,ijkl->ijkl',Ylm_calls,self.Gbasis))
-
         if self.spin:
             Mtmp[0,:] = np.einsum('ij,ijk->k',pref[:int(len(self.basis)/2)],Gtmp[:int(len(self.basis)/2)])
             Mtmp[1,:] = np.einsum('ij,ijk->k',pref[int(len(self.basis)/2):],Gtmp[int(len(self.basis)/2):])
@@ -700,6 +699,9 @@ class experiment:
 
             - **Ig**: numpy array of float, resolution-broadened intensity map.
         '''
+        if not hasattr(self,'Mk'):
+            self.datacube()
+            
         if ARPES_dict is not None:
 
             self.update_pars(ARPES_dict)

@@ -303,9 +303,14 @@ class TB_model:
             new_elements = [new_elements]
         for elmts in new_elements:
             i,j = elmts[:2]
+            new_pair = True
             for Hme in self.mat_els:
                 if Hme.i==i and Hme.j==j:
                     Hme.H.append(elmts[2:])
+                    new_pair = False
+            if new_pair:
+                self.mat_els.append(H_me(i,j))
+                self.mat_els[-1].append_H(*elmts[2:])
         
         
         
