@@ -759,6 +759,10 @@ class experiment:
             self.maps = [imap.intensity_map(len(self.maps),Ig,self.cube,self.kz,self.T,self.hv,self.pol,self.dE,self.dk,self.SE_args,self.sarpes,self.ang)]
        
         return I,Ig
+    
+    def gen_imap(self,I_arr):
+        new_map = imap.intensity_map(len(self.maps),I_arr,self.cube,self.kz,self.T,self.hv,self.pol,self.dE,self.dk,self.SE_args,self.sarpes,self.ang)
+        return new_map
 
 
     def plot_intensity_map(self,plot_map,slice_select,plot_bands=False):
@@ -785,6 +789,7 @@ class experiment:
          '''
          fig,ax_img = plt.subplots()
          fig.set_tight_layout(False)
+         
 
          if type(slice_select[0]) is str:
              str_opts = [['x','kx'],['y','ky'],['energy','w','e']]
@@ -795,39 +800,60 @@ class experiment:
              x = np.linspace(*self.cube[dim])
              index = np.where(abs(x-slice_select[1])==abs(x-slice_select[1]).min())[0][0]
              slice_select = [dim,int(index)]
+         index_dict = {2:(0,1),1:(0,2),0:(1,2)}
+         
+         X,Y = np.meshgrid(np.linspace(*self.cube[index_dict[slice_select[0]][0]]),np.linspace(*self.cube[index_dict[slice_select[0]][1]]))
+         limits = np.zeros((3,2),dtype=int)
+         limits[:,1] = np.shape(plot_map)[1],np.shape(plot_map)[0],np.shape(plot_map)[2]
+         limits[slice_select[0]] = [slice_select[1],slice_select[1]+1]
 
+         
+         ax_xlimit = (self.cube[index_dict[slice_select[0]][0]][0],self.cube[index_dict[slice_select[0]][0]][1])
+         ax_ylimit = (self.cube[index_dict[slice_select[0]][1]][0],self.cube[index_dict[slice_select[0]][1]][1])
+         plottable  = np.squeeze(plot_map[limits[1,0]:limits[1,1],limits[0,0]:limits[0,1],limits[2,0]:limits[2,1]]).T
+         p = ax_img.pcolormesh(X,Y,plottable,cmap=cm.magma)
+         if plot_bands and slice_select[0]!=2:
+             k = np.linspace(*self.cube[index_dict[slice_select[0]][0]])
+             start = len(k)*slice_select[1]
+             for ii in range(len(self.TB.basis)):  
+                 ax_img.plot(k,self.TB.Eband[start:(start+len(k)),ii],alpha=0.4,c='w')
+            
+         ax_img.set_xlim(*ax_xlimit)
+         ax_img.set_ylim(*ax_ylimit)
+         
+         
 
-         if slice_select[0]==2: #FIXED ENERGY
-             X,Y = np.meshgrid(np.linspace(*self.cube[0]),np.linspace(*self.cube[1]))
-             p = ax_img.pcolormesh(X,Y,plot_map[:,:,slice_select[1]],cmap=cm.magma)  
-             ax_img.set_xlim(self.cube[0][0],self.cube[0][1])
-             ax_img.set_ylim(self.cube[1][0],self.cube[1][1])
-             
-         elif slice_select[0]==1: #FIXED KY
-             k = np.linspace(*self.cube[0])
-             X,Y = np.meshgrid(k,np.linspace(*self.cube[2]))
-             p = ax_img.pcolormesh(X,Y,plot_map[slice_select[1],:,:].T,cmap=cm.magma)   
-             if plot_bands:
-                 start = len(k)*slice_select[1]
-                 for ii in range(len(self.TB.basis)):  
-                     ax_img.plot(k,self.TB.Eband[start:(start+len(k)),ii],alpha=0.4,c='w')
-             
-             ax_img.set_xlim(self.cube[0][0],self.cube[0][1])                
-             ax_img.set_ylim(self.cube[2][0],self.cube[2][1])
-                     
-
-         elif slice_select[0]==0: # FIXED KX
-             k = np.linspace(*self.cube[1])
-             X,Y = np.meshgrid(k,np.linspace(*self.cube[2]))
-             p = ax_img.pcolormesh(X,Y,plot_map[:,slice_select[1],:].T,cmap=cm.magma)   
-             ax_img.set_xlim(self.cube[1][0],self.cube[1][1])
-             ax_img.set_ylim(self.cube[2][0],self.cube[2][1])
-             if plot_bands:
-                 for ii in range(len(self.TB.basis)):
-                     ax_img.plot(k,self.TB.Eband[slice_select[1]::self.cube[0][2],ii],c='w',alpha=0.4)
-              
-                
-        
+#         if slice_select[0]==2: #FIXED ENERGY
+#             X,Y = np.meshgrid(np.linspace(*self.cube[0]),np.linspace(*self.cube[1]))
+#             p = ax_img.pcolormesh(X,Y,plot_map[:,:,slice_select[1]],cmap=cm.magma)  
+#             ax_img.set_xlim(self.cube[0][0],self.cube[0][1])
+#             ax_img.set_ylim(self.cube[1][0],self.cube[1][1])
+#             
+#         elif slice_select[0]==1: #FIXED KY
+#             k = np.linspace(*self.cube[0])
+#             X,Y = np.meshgrid(k,np.linspace(*self.cube[2]))
+#             p = ax_img.pcolormesh(X,Y,plot_map[slice_select[1],:,:].T,cmap=cm.magma)   
+#             if plot_bands:
+#                 start = len(k)*slice_select[1]
+#                 for ii in range(len(self.TB.basis)):  
+#                     ax_img.plot(k,self.TB.Eband[start:(start+len(k)),ii],alpha=0.4,c='w')
+#             
+#             ax_img.set_xlim(self.cube[0][0],self.cube[0][1])                
+#             ax_img.set_ylim(self.cube[2][0],self.cube[2][1])
+#                     
+#
+#         elif slice_select[0]==0: # FIXED KX
+#             k = np.linspace(*self.cube[1])
+#             X,Y = np.meshgrid(k,np.linspace(*self.cube[2]))
+#             p = ax_img.pcolormesh(X,Y,plot_map[:,slice_select[1],:].T,cmap=cm.magma)   
+#             ax_img.set_xlim(self.cube[1][0],self.cube[1][1])
+#             ax_img.set_ylim(self.cube[2][0],self.cube[2][1])
+#             if plot_bands:
+#                 for ii in range(len(self.TB.basis)):
+#                     ax_img.plot(k,self.TB.Eband[slice_select[1]::self.cube[0][2],ii],c='w',alpha=0.4)
+#              
+#                
+#        
          plt.colorbar(p,ax=ax_img)
          plt.tight_layout()
 

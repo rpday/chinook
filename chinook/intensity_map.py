@@ -45,7 +45,10 @@ class intensity_map:
         self.pol = pol
         self.spin = spin
         self.Imat = Imat
-        self.rot = rot
+        try:
+            self.rot =rot*180/np.pi
+        except TypeError:
+            self.rot = 0.0
         self.self_energy = self_energy
         self.dE = dE
         self.dk = dk
@@ -66,20 +69,21 @@ class intensity_map:
         mydata = newfile.create_dataset('intensity/intensity_map',shape=np.shape(np.squeeze(self.Imat)),dtype='f',data=np.squeeze(self.Imat))
         mydata = self.build_h5meta(mydata)
         newfile.close()
+        return newfile
         
     def build_h5meta(self,mydata):
-        mydata.attr['Temperature (K)'] = self.T
-        mydata.attr['Photon Energy (eV)'] = self.hv
-        mydata.attr['Polarization (a.u.)'] = self.pol
-        mydata.attr['Spin Projection (a.u.)'] = self.spin
-        mydata.attr['Sample Azimuthal Rotation (deg)'] = self.rot*180/np.pi
-        mydata.attr['Self Energy Parameters'] = self.self_energy
-        mydata.attr['Energy Resolution (eV)'] = self.dE
-        mydata.attr['Momentum Resolution (1/A)'] = self.dk
-        mydata.attr['Notes'] = self.notes
-        mydata.attr['Momentum X (1/A)'] = self.ROI[0]
-        mydata.attr['Momentum Y (1/A)'] = self.ROI[1]
-        mydata.attr['Energy (eV)'] = self.ROI[2]
+        mydata.attrs['Temperature (K)'] = self.T
+        mydata.attrs['Photon Energy (eV)'] = self.hv
+        mydata.attrs['Polarization (a.u.)'] = self.pol
+        mydata.attrs['Spin Projection (a.u.)'] = 'ON' if self.spin else 'OFF'
+        mydata.attrs['Sample Azimuthal Rotation (deg)'] = self.rot*180/np.pi
+        mydata.attrs['Self Energy Parameters'] = self.self_energy
+        mydata.attrs['Energy Resolution (eV)'] = self.dE
+        mydata.attrs['Momentum Resolution (1/A)'] = self.dk
+        mydata.attrs['Notes'] = self.notes
+        mydata.attrs['Momentum X (1/A)'] = self.ROI[0]
+        mydata.attrs['Momentum Y (1/A)'] = self.ROI[1]
+        mydata.attrs['Energy (eV)'] = self.ROI[2]
         return mydata
         
         
@@ -192,3 +196,8 @@ class intensity_map:
             - *intensity_map* object with identical attributes to self.
         '''
         return intensity_map(self.index,self.Imat,self.ROI,self.T,self.hv,self.pol,self.dE,self.dk,self.self_energy,self.spin,self.rot)
+    
+    
+
+    
+    
