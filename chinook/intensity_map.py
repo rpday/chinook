@@ -29,13 +29,17 @@
 
 import numpy as np
 import datetime as dt
+try:
+    import h5py
+except ImportError:
+    print('Warning: no h5py found. Visit https://www.docs.h5py.org/en/stable/build.html for download instructions.\nProceed using text-file output only.')
+    
 
 class intensity_map:
     
-    def __init__(self,index,Imat,cube,kz,T,hv,pol,dE,dk,self_energy=None,spin=None,rot=0.0,notes=None):
+    def __init__(self,index,Imat,ROI,T,hv,pol,dE,dk,self_energy=None,spin=None,rot=0.0,notes=None):
         self.index = index
-        self.cube = cube
-        self.kz = kz
+        self.ROI = ROI
         self.T = T
         self.hv = hv
         self.pol = pol
@@ -49,6 +53,36 @@ class intensity_map:
             self.notes = notes
         else:
             self.notes = 'N/A'
+            
+            
+    def save_hd5f(self,directory):
+        '''
+        Save the dataset to an hdf5 file. 
+        
+        '''
+        
+        h5name = directory+'chinook_intensity.hdf5'
+        newfile = h5py.File(h5name,'a')
+        mydata = newfile.create_dataset('intensity/intensity_map',shape=np.shape(np.squeeze(self.Imat)),dtype='f',data=np.squeeze(self.Imat))
+        mydata = self.build_h5meta(mydata)
+        newfile.close()
+        
+    def build_h5meta(self,mydata):
+        mydata.attr['Temperature (K)'] = self.T
+        mydata.attr['Photon Energy (eV)'] = self.hv
+        mydata.attr['Polarization (a.u.)'] = self.pol
+        mydata.attr['Spin Projection (a.u.)'] = self.spin
+        mydata.attr['Sample Azimuthal Rotation (deg)'] = self.rot*180/np.pi
+        mydata.attr['Self Energy Parameters'] = self.self_energy
+        mydata.attr['Energy Resolution (eV)'] = self.dE
+        mydata.attr['Momentum Resolution (1/A)'] = self.dk
+        mydata.attr['Notes'] = self.notes
+        mydata.attr['Momentum X (1/A)'] = self.ROI[0]
+        mydata.attr['Momentum Y (1/A)'] = self.ROI[1]
+        mydata.attr['Energy (eV)'] = self.ROI[2]
+        return mydata
+        
+        
         
     def save_map(self,directory):
         '''
@@ -121,10 +155,10 @@ class intensity_map:
             tofile.write('Polarization: [{:s}, {:s}, {:s}]\n'.format(*self.pol.astype(str)))
             tofile.write('Energy Resolution: {:0.04f} eV\n'.format(self.dE))
             tofile.write('Momentum Resolution: {:0.04f} 1/A\n\n'.format(self.dk))
-            tofile.write('Kx Domain: {:0.04f} -> {:0.04f} 1/A, N = {:d}\n'.format(*self.cube[0]))
-            tofile.write('Ky Domain: {:0.04f} -> {:0.04f} 1/A, N = {:d}\n'.format(*self.cube[1]))
-            tofile.write('Kz: {:0.04f} 1/A\n'.format(self.kz))
-            tofile.write('Energy Domain: {:0.04f} -> {:0.04f} eV, N = {:d}\n\n'.format(*self.cube[2]))
+            tofile.write('Kx Domain: {:0.04f} -> {:0.04f} 1/A, N = {:d}\n'.format(*self.ROI[0]))
+            tofile.write('Ky Domain: {:0.04f} -> {:0.04f} 1/A, N = {:d}\n'.format(*self.ROI[1]))
+            tofile.write('Kz: {:0.04f} 1/A\n'.format(self.ROI[3][0]))
+            tofile.write('Energy Domain: {:0.04f} -> {:0.04f} eV, N = {:d}\n\n'.format(*self.ROI[2]))
             tofile.write('Sample Rotation: {:0.04f}\n'.format(self.rot))
             if self.spin is None:
                 tofile.write('Spin Projection: None\n')
@@ -139,7 +173,7 @@ class intensity_map:
                 tofile.write('Self Energy: {:0.04f}\n'.format(self.self_energy[1]))
             else:
                 if self.self_energy[0] == 'func':
-                    w = np.linspace(*self.cube[2])
+                    w = np.linspace(*self.ROI[2])
                     SE = self.self_energy[1](w)
                 else:
                     w = self.self_energy[1]
@@ -157,4 +191,4 @@ class intensity_map:
         *return*:
             - *intensity_map* object with identical attributes to self.
         '''
-        return intensity_map(self.index,self.Imat,self.cube,self.kz,self.T,self.hv,self.pol,self.dE,self.dk,self.self_energy,self.spin,self.rot)
+        return intensity_map(self.index,self.Imat,self.ROI,self.T,self.hv,self.pol,self.dE,self.dk,self.self_energy,self.spin,self.rot)
