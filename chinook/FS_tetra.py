@@ -44,6 +44,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from operator import itemgetter
+import warnings
+warnings.filterwarnings("error")
 
 
     
@@ -183,8 +185,9 @@ def FS_generate(TB,Nk,EF,degen = False):
         Fk=surfaces[bi]['pts']
 
         ax.plot_trisurf(Fk[:,0],Fk[:,1],Fk[:,2],cmap=cm.magma,triangles=surfaces[bi]['tris'],linewidth=0.1,edgecolor='w',alpha=1.0)
-    ax.grid('off')
-    ax.axis('off')
+    ax.grid(False)
+#    ax.axis('off')
+    ax.set_aspect(1)
     return surfaces
 
 
@@ -203,7 +206,13 @@ def heron(vert):
     
     L = [np.linalg.norm(vert[np.mod(j,3)]-vert[np.mod(j-1,3)]) for j in range(3)]
     S = 0.5*sum(L)
-    return np.sqrt(S*(S-L[0])*(S-L[1])*(S-L[2]))
+    
+    try:
+        area = np.sqrt(abs(S*(S-L[0])*(S-L[1])*(S-L[2])))
+    except RuntimeWarning:
+        print(S,L)
+        area = 0
+    return area
 
 
 def sim_tri(vert):

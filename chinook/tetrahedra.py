@@ -148,6 +148,9 @@ def mesh_tetra(avec,N):
         which partition the grid
         
     '''
+    
+    if type(N)==int:
+        N = (N,N,N)
     pts = gen_mesh(avec,N)
 
     ti = tet_inds()
