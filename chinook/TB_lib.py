@@ -312,7 +312,21 @@ class TB_model:
                 self.mat_els.append(H_me(i,j))
                 self.mat_els[-1].append_H(*elmts[2:])
         
-        
+    def unpack(self):
+        '''
+        Reduce a Hamiltonian object down to a list of matrix elements. Include the Hermitian conjugate terms
+    
+    
+        *return*:
+            - **Hlist**: list of Hamiltonian matrix elements
+            
+        ***
+        '''
+        Hlist =[]
+        for hij in self.mat_els:
+            for el in hij.H:
+                Hlist.append([hij.i,hij.j,*el])
+        return Hlist
         
         
     def solve_H(self,Eonly = False):

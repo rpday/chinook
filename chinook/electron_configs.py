@@ -198,9 +198,8 @@ def Slater_exec(Z_ind,orb):
     tmp = (2*xi)**ne*np.sqrt(2*xi/gamma(float(2*ne)+1))
     
     def lambda_gen():
-        
-        return lambda r: tmp*r**(ne-1)*np.exp(-xi*r)
-    
+
+        return lambda r: tmp*(r)**(ne-1)*np.exp(-xi*r)
     return lambda_gen()
   
     

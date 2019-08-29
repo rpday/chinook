@@ -1,4 +1,3 @@
-    
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -57,13 +56,13 @@ import chinook.tilt as tilt
 
 
 ####PHYSICAL CONSTANTS RELEVANT TO CALCULATION#######
-hb = 6.626e-34/(2*np.pi)
-c  = 3.0e8
-q = 1.602e-19
-A = 1.0e-10
-me = 9.11e-31
-mN = 1.67e-27
-kb = 1.38e-23
+hb = 6.626*10**-34/(2*np.pi)
+c  = 3.0*10**8
+q = 1.602*10**-19
+A = 10.0**-10
+me = 9.11*10**-31
+mN = 1.67*10**-27
+kb = 1.38*10**-23
 
 
 
@@ -114,8 +113,11 @@ class experiment:
             Requires very large calculation to see improvement over single core.
             
             - *'slab'*: boolean, will truncate the eigenfunctions beyond the penetration depth (specifically 4x penetration depth), default is False
+
             - *'ang'*: float, rotation of sample about normal emission i.e. z-axis (radian), default is 0.0
+
             - *'W'*: float, work function (eV), default is 4.0 
+
     
     ***            
     '''
@@ -182,10 +184,6 @@ class experiment:
             self.rad_args = ARPES_dict['rad_args']
         except KeyError:
             self.rad_args = None
-        try:    
-            self.phase_shifts = ARPES_dict['phase_shifts']
-        except KeyError:
-            self.phase_shifts = None
         try:
             self.slit = ARPES_dict['slit']
         except KeyError:
@@ -210,9 +208,13 @@ class experiment:
             - **ARPES_dict**: dictionary, specifically containing
                 
                 - *'resolution'*: dictionary with 'E':float and 'k':float
+
                 - *'T'*: float, temperature, a negative value will suppress the Fermi function
+
                 - *'spin'*: list of [int, numpy array of 3 float] indicating projection and spin vector
+
                 - *'SE'*: various types accepted, see *SE_gen* for details
+
                 - *'pol'*: numpy array of 3 complex float, polarization of light
         
         *kwargs*:
@@ -254,8 +256,6 @@ class experiment:
                 self.rad_type = ARPES_dict['rad_type']
             if 'rad_args' in ARPES_dict.keys():
                 self.rad_args = ARPES_dict['rad_args']
-            if 'phase_shifts' in ARPES_dict.keys():
-                self.phase_shifts = ARPES_dict['phase_shifts']
             if 'Vo' in ARPES_dict.keys():
                 self.Vo = ARPES_dict['Vo']
             if 'kz' in ARPES_dict.keys():
@@ -270,6 +270,7 @@ class experiment:
         Diagonalize the Hamiltonian over the desired range of momentum, reshaping the 
         band-energies into a 1-dimensional array. If the user has not selected a energy
         grain for calculation, automatically calculate this.
+
         *return*:
             None, however *experiment* attributes *X*, *Y*, *ph*, *TB.Kobj*, *Eb*, *Ev*, *cube*
             are modified.
@@ -390,6 +391,7 @@ class experiment:
         *kwargs*:
             - **ARPES_dict**: can optionally pass a dictionary of experimental parameters, to update those defined
             in the initialization of the *experiment* object.
+
         *return*:
             - boolean, True if function finishes successfully.
         '''      
@@ -424,7 +426,7 @@ class experiment:
         self.Gbasis = Gmats[self.orbital_pointers]
         self.proj_arr = projection_map(self.basis)
         
-        rad_dict = {'hv':self.hv,'W':self.W,'rad_type':self.rad_type,'rad_args':self.rad_args,'phase_shifts':self.phase_shifts}
+        rad_dict = {'hv':self.hv,'W':self.W,'rad_type':self.rad_type,'rad_args':self.rad_args}
         self.Bfuncs,self.radint_pointers = radint_lib.make_radint_pointer(rad_dict,self.basis,dig_range)
 
 
@@ -468,7 +470,6 @@ class experiment:
         B_eval = np.array([[b[0](self.pks[i,3]),b[1](self.pks[i,3])] for b in self.Bfuncs])
         pref = np.einsum('i,ij->ij',np.einsum('i,i->i',self.prefactors,self.Ev[int(self.pks[i,0]/nstates),:,int(self.pks[i,0]%nstates)]),B_eval[self.radint_pointers])  
         Gtmp = np.einsum('ij,ijkl->ikl',self.proj_arr,np.einsum('ijkl,ijkl->ijkl',Ylm_calls,self.Gbasis))
-
         if self.spin:
             Mtmp[0,:] = np.einsum('ij,ijk->k',pref[:int(len(self.basis)/2)],Gtmp[:int(len(self.basis)/2)])
             Mtmp[1,:] = np.einsum('ij,ijk->k',pref[int(len(self.basis)/2):],Gtmp[int(len(self.basis)/2):])
@@ -520,8 +521,10 @@ class experiment:
         '''
         Wrapper function for use in multiprocessing, to run each of the processes
         as a serial matrix element calculation over a sublist of state indices.
+
         *args*:
             - **ilist**: list of int, all state indices for execution.
+
         *return*:
             - **Mk_out**: numpy array of complex float with shape (len(ilist), 2,3)
         '''
@@ -663,6 +666,7 @@ class experiment:
     def T_distribution(self):
         '''
         Compute the Fermi-distribution for a fixed temperature, over the domain of energy of interest
+
         *return*:
             - **fermi**: numpy array of float, same length as energy domain array defined by *cube[2]* attribute.
         '''
@@ -692,8 +696,12 @@ class experiment:
         
         *return*:
             - **I**: numpy array of float, raw intensity map.
+
             - **Ig**: numpy array of float, resolution-broadened intensity map.
         '''
+        if not hasattr(self,'Mk'):
+            self.datacube()
+            
         if ARPES_dict is not None:
 
             self.update_pars(ARPES_dict)
@@ -751,6 +759,10 @@ class experiment:
             self.maps = [imap.intensity_map(len(self.maps),Ig,self.cube,self.kz,self.T,self.hv,self.pol,self.dE,self.dk,self.SE_args,self.sarpes,self.ang)]
        
         return I,Ig
+    
+    def gen_imap(self,I_arr):
+        new_map = imap.intensity_map(len(self.maps),I_arr,self.cube,self.kz,self.T,self.hv,self.pol,self.dE,self.dk,self.SE_args,self.sarpes,self.ang)
+        return new_map
 
 
     def plot_intensity_map(self,plot_map,slice_select,plot_bands=False):
@@ -761,6 +773,7 @@ class experiment:
         
         *args*:
             - **plot_map**: numpy array of shape (self.cube[0],self.cube[1],self.cube[2]) of float
+
             - **slice_select**: list of either [int,int] or [str,float], corresponding to 
             dimension, index or label, value. The former option takes dimensions 0,1,2 while
             the latter can handle 'x', 'kx', 'y', 'ky', 'energy', 'w', or 'e', and is not
@@ -768,12 +781,15 @@ class experiment:
             
             - **plot_bands**: boolean, option to overlay a constant-momentum cut with
             the dispersion calculated from tight-binding
+
         *return*:
             - **fig**: matplotlib figure object
+
             - **ax**: matplotlib axis object
          '''
          fig,ax_img = plt.subplots()
          fig.set_tight_layout(False)
+         
 
          if type(slice_select[0]) is str:
              str_opts = [['x','kx'],['y','ky'],['energy','w','e']]
@@ -784,39 +800,60 @@ class experiment:
              x = np.linspace(*self.cube[dim])
              index = np.where(abs(x-slice_select[1])==abs(x-slice_select[1]).min())[0][0]
              slice_select = [dim,int(index)]
+         index_dict = {2:(0,1),1:(0,2),0:(1,2)}
+         
+         X,Y = np.meshgrid(np.linspace(*self.cube[index_dict[slice_select[0]][0]]),np.linspace(*self.cube[index_dict[slice_select[0]][1]]))
+         limits = np.zeros((3,2),dtype=int)
+         limits[:,1] = np.shape(plot_map)[1],np.shape(plot_map)[0],np.shape(plot_map)[2]
+         limits[slice_select[0]] = [slice_select[1],slice_select[1]+1]
 
+         
+         ax_xlimit = (self.cube[index_dict[slice_select[0]][0]][0],self.cube[index_dict[slice_select[0]][0]][1])
+         ax_ylimit = (self.cube[index_dict[slice_select[0]][1]][0],self.cube[index_dict[slice_select[0]][1]][1])
+         plottable  = np.squeeze(plot_map[limits[1,0]:limits[1,1],limits[0,0]:limits[0,1],limits[2,0]:limits[2,1]]).T
+         p = ax_img.pcolormesh(X,Y,plottable,cmap=cm.magma)
+         if plot_bands and slice_select[0]!=2:
+             k = np.linspace(*self.cube[index_dict[slice_select[0]][0]])
+             start = len(k)*slice_select[1]
+             for ii in range(len(self.TB.basis)):  
+                 ax_img.plot(k,self.TB.Eband[start:(start+len(k)),ii],alpha=0.4,c='w')
+            
+         ax_img.set_xlim(*ax_xlimit)
+         ax_img.set_ylim(*ax_ylimit)
+         
+         
 
-         if slice_select[0]==2: #FIXED ENERGY
-             X,Y = np.meshgrid(np.linspace(*self.cube[0]),np.linspace(*self.cube[1]))
-             p = ax_img.pcolormesh(X,Y,plot_map[:,:,slice_select[1]],cmap=cm.magma)  
-             ax_img.set_xlim(self.cube[0][0],self.cube[0][1])
-             ax_img.set_ylim(self.cube[1][0],self.cube[1][1])
-             
-         elif slice_select[0]==1: #FIXED KY
-             k = np.linspace(*self.cube[0])
-             X,Y = np.meshgrid(k,np.linspace(*self.cube[2]))
-             p = ax_img.pcolormesh(X,Y,plot_map[slice_select[1],:,:].T,cmap=cm.magma)   
-             if plot_bands:
-                 start = len(k)*slice_select[1]
-                 for ii in range(len(self.TB.basis)):  
-                     ax_img.plot(k,self.TB.Eband[start:(start+len(k)),ii],alpha=0.4,c='w')
-             
-             ax_img.set_xlim(self.cube[0][0],self.cube[0][1])                
-             ax_img.set_ylim(self.cube[2][0],self.cube[2][1])
-                     
-
-         elif slice_select[0]==0: # FIXED KX
-             k = np.linspace(*self.cube[1])
-             X,Y = np.meshgrid(k,np.linspace(*self.cube[2]))
-             p = ax_img.pcolormesh(X,Y,plot_map[:,slice_select[1],:].T,cmap=cm.magma)   
-             ax_img.set_xlim(self.cube[1][0],self.cube[1][1])
-             ax_img.set_ylim(self.cube[2][0],self.cube[2][1])
-             if plot_bands:
-                 for ii in range(len(self.TB.basis)):
-                     ax_img.plot(k,self.TB.Eband[slice_select[1]::self.cube[0][2],ii],c='w',alpha=0.4)
-              
-                
-        
+#         if slice_select[0]==2: #FIXED ENERGY
+#             X,Y = np.meshgrid(np.linspace(*self.cube[0]),np.linspace(*self.cube[1]))
+#             p = ax_img.pcolormesh(X,Y,plot_map[:,:,slice_select[1]],cmap=cm.magma)  
+#             ax_img.set_xlim(self.cube[0][0],self.cube[0][1])
+#             ax_img.set_ylim(self.cube[1][0],self.cube[1][1])
+#             
+#         elif slice_select[0]==1: #FIXED KY
+#             k = np.linspace(*self.cube[0])
+#             X,Y = np.meshgrid(k,np.linspace(*self.cube[2]))
+#             p = ax_img.pcolormesh(X,Y,plot_map[slice_select[1],:,:].T,cmap=cm.magma)   
+#             if plot_bands:
+#                 start = len(k)*slice_select[1]
+#                 for ii in range(len(self.TB.basis)):  
+#                     ax_img.plot(k,self.TB.Eband[start:(start+len(k)),ii],alpha=0.4,c='w')
+#             
+#             ax_img.set_xlim(self.cube[0][0],self.cube[0][1])                
+#             ax_img.set_ylim(self.cube[2][0],self.cube[2][1])
+#                     
+#
+#         elif slice_select[0]==0: # FIXED KX
+#             k = np.linspace(*self.cube[1])
+#             X,Y = np.meshgrid(k,np.linspace(*self.cube[2]))
+#             p = ax_img.pcolormesh(X,Y,plot_map[:,slice_select[1],:].T,cmap=cm.magma)   
+#             ax_img.set_xlim(self.cube[1][0],self.cube[1][1])
+#             ax_img.set_ylim(self.cube[2][0],self.cube[2][1])
+#             if plot_bands:
+#                 for ii in range(len(self.TB.basis)):
+#                     ax_img.plot(k,self.TB.Eband[slice_select[1]::self.cube[0][2],ii],c='w',alpha=0.4)
+#              
+#                
+#        
          plt.colorbar(p,ax=ax_img)
          plt.tight_layout()
 
@@ -827,9 +864,11 @@ class experiment:
         '''
         Generate the Tkinter gui for exploring the experimental parameter-space
         associated with the present experiment.
+
         *args*:
             - **ARPES_dict**: dictionary of experimental parameters, c.f. the 
             *__init__* function for details.
+
         *return*:
             - **Tk_win**: Tkinter window.
         '''
@@ -847,9 +886,12 @@ class experiment:
     def write_map(self,_map,directory):
         '''
         Write the intensity maps to a series of text files in the indicated directory.
+
         *args*:
             - **_map**: numpy array of float to write to file
+
             - **directory**: string, name of directory + the file-lead name 
+
         *return*:
             - boolean, True
         '''
@@ -905,6 +947,7 @@ class experiment:
             - **filename**: string indicating destination of file
             
             - **mat**: numpy array of float, two dimensional
+
         *return*:
             - boolean, True
         
@@ -942,8 +985,10 @@ def con_ferm(ekbt):
     Typical values in the relevant domain for execution of the Fermi distribution will
     result in an overflow associated with 64-bit float. To circumvent, set fermi-function
     to zero when the argument of the exponential in the denominator is too large.
+
     *args*:
         - **ekbt**: float, (E-u)/kbT in terms of eV
+
     *return*:
         - **fermi**: float, evaluation of Fermi function.
     '''
@@ -962,8 +1007,10 @@ def pol_2_sph(pol):
     return polarization vector in spherical harmonics -- order being Y_11, Y_10, Y_1-1.
     If an array of polarization vectors is passed, use the einsum function to broadcast over
     all vectors.
+
     *args*:
         - **pol**: numpy array of 3 complex float, polarization vector in Cartesian coordinates (x,y,z)
+
     *return*:
         - numpy array of 3 complex float, transformed polarization vector.
     '''
@@ -1002,9 +1049,12 @@ def poly(input_x,poly_args):
 def progress_bar(N,Nmax):
     '''
     Utility function, generate string to print matrix element calculation progress.
+
     *args*:
         - **N**: int, number of iterations complete
+
         - **Nmax**: int, total number of iterations to complete
+
     *return*:
         - **st**: string, progress status
     '''
@@ -1023,6 +1073,7 @@ def progress_bar(N,Nmax):
 def G_dic():
     '''
     Initialize the gaunt coefficients associated with all possible transitions relevant
+
     *return*:
         - **Gdict**: dictionary with keys as a string representing (l,l',m,dm) "ll'mdm" and values complex float.
         All unacceptable transitions set to zero.
@@ -1048,10 +1099,14 @@ def all_Y(basis):
     
     *args*:
         - **basis**: list of orbital objects
+
     *return*:
         - **l_args**: numpy array of int, of shape len(*lm_inds*),3,2, with the latter two indicating the final state orbital angular momentum
+
         - **m_args**: numpy array of int, of shape len(*lm_inds*),3,2, with the latter two indicating the final state azimuthal angular momentum
+
         - **g_arr**: numpy array of float, shape len(*lm_inds*),3,2, providing the related Gaunt coefficients.
+
         - **orb_point**: numpy array of int, matching the related sub-array of *l_args*, *m_args*, *g_arr* related to each orbital in basis
     '''
     maxproj = max([len(o.proj) for o in basis])
@@ -1085,10 +1140,13 @@ def projection_map(basis):
     the second dimension of this array corresponds to the largest of the sets of projections associated with
     a given orbital. This will in practice remain a modest number of order 1, since at worst we assume f-orbitals,
     in which case the projection can be no larger than 7 long. So output will be at worst len(basis)x7 complex float
+
     *args*:
         - **basis**: list of orbital objects
+
     *return*:
         - **projarr**: numpy array of complex float
+
     '''
     
     maxproj = max([len(o.proj) for o in basis])
@@ -1108,9 +1166,12 @@ def Gmat_make(lm,Gdictionary):
     '''
     Use the dictionary of relevant Gaunt coefficients to generate a small 2x3 array of  
     float which carries the relevant Gaunt coefficients for a given initial state.
+
     *args*:
         - **lm**: tuple of 2 int, initial state orbital angular momentum and azimuthal angular momentum
+
         - **Gdictionary**: pre-calculated dictionary of Gaunt coefficients, with key-values associated with "ll'mdm"
+
     *return*:
         - **mats**: numpy array of float 2x3
     '''
@@ -1208,4 +1269,6 @@ def gen_SE_KK(w,SE_args):
         return re_interp(w) + im_interp(w)*1.0j
     
     
+###
 
+    
