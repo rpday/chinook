@@ -47,7 +47,13 @@ from multiprocessing.dummy import Pool as ThreadPool
 import chinook.klib as K_lib
 import chinook.orbital as olib
 import chinook.radint_lib as radint_lib
+
 import chinook.Tk_plot as Tk_plot
+
+if Tk_plot.tk_query():
+    tk_found = True
+else:
+    tk_found = False
 import chinook.Ylm as Ylm 
 import chinook.rotation_lib as rotlib
 import chinook.intensity_map as imap
@@ -872,9 +878,13 @@ class experiment:
         *return*:
             - **Tk_win**: Tkinter window.
         '''
-        TK_win = Tk_plot.plot_intensity_interface(self)
-        return TK_win
+        if tk_found:
+            TK_win = Tk_plot.plot_intensity_interface(self)
         
+            return TK_win
+        else:
+            print('This tool is not active without tkinter')
+            return None
         
         
 ###############################################################################    
