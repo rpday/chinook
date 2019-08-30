@@ -232,7 +232,7 @@ def fillin(M,l,Dmat=None):
             for pi in projdict[str(l)+normal_order_rev[l][m]]: 
                 proj[l-int(pi[-1])] = pi[0]+1.0j*pi[1] #fill the column with generic projection for this orbital (this will be a dummy)
             if type(Dmat)==np.ndarray:
-                print('l: {:d},'.format(l),'Dmat: ',Dmat,'proj: ',proj)
+#                print('l: {:d},'.format(l),'Dmat: ',Dmat,'proj: ',proj)
                 proj = np.dot(Dmat,proj)
             for mp in range(2*l+1): #Orthogonalize against the user-defined projections
                 if mp!=m:

@@ -32,7 +32,7 @@ import numpy as np
 
 import sys
 if sys.version_info<(3,0):
-    print('Warning: This software requires Python 3.0 or higher. Please update your Python instance before proceeding')
+    raise ('This software requires Python 3.0 or higher. Please update your Python installation before proceeding')
 else:
     import chinook.orbital as olib
     import chinook.TB_lib as TBlib
@@ -94,9 +94,10 @@ def gen_basis(basis):
             if len(basis['orient'][a])==1:
                 basis['orient'][a] = [basis['orient'][a] for i in range(len(basis['orbs'][a]))]
             elif len(basis['orient'][a])<len(basis['orbs'][a]):
-                print('ORIENT ERROR: pass either 1 orientation per orbital for a given atom, or a single orientation for all orbitals on atom')
+                raise ValueError ('ORIENT ERROR: pass either 1 orientation per orbital for a given atom, or a single orientation for all orbitals on atom')
+                return None
     if not all_present:
-        print('BASIS GENERATION ERROR!!!!\n Ensure atoms, atomic numbers, orbitals, positions are all passed to gen_basis in the basis dictionary.\nSee gen_basis.__doc__ for details.')
+        raise ValueError ('BASIS GENERATION ERROR!!!! Ensure atoms, atomic numbers, orbitals, positions are all passed to gen_basis in the basis dictionary. See gen_basis.__doc__ for details.')
         return None
     else:
         for a in list(enumerate(basis['atoms'])):
@@ -142,9 +143,12 @@ def gen_K(Kdic):
     
     if 'labels' not in Kdic.keys():
         Kdic['labels'] = ['K{:d}'.format(i) for i in range(len(Kdic['pts']))]
-    required = ['type','avec','pts','grain']
+    required = ['type','pts','grain']
     if not recur_product([ri in Kdic.keys() for ri in required]):
-        print('K-PATH GENERATION ERROR!!! \n see documentation for gen_K to ensure all required arguments are passed in k-dictionary')
+        raise KeyError('Invalid K-dictionary format. See documentation for gen_K to ensure all required arguments are passed in k-dictionary')
+        return None
+    if Kdic['type'] == 'F' and 'avec' not in Kdic.keys():
+        raise KeyError('Invalid K-dictionary format. Must pass lattice vectors for fractional coordinates')
         return None
     else:
         if Kdic['type']=='F':
@@ -211,22 +215,22 @@ def gen_TB(basis_dict,hamiltonian_dict,Kobj=None,slab_dict=None):
     '''
     if 'spin' not in hamiltonian_dict.keys():
         # if omitted, assume no spin-degree of freedom desired
-        print('Warning: no spin-information entered, assuming no spin-degree of freedom in the following. See build_lib.py for details if spin is desired.')
+        print('No spin-information entered, assuming no spin-degree of freedom in the following. See build_lib.py for details if spin is desired.')
         hamiltonian_dict['spin']={'bool':False}
     required = ['type','cutoff','renorm','offset','tol']
     
     if not recur_product([ri in hamiltonian_dict.keys() for ri in required]):
-        print('HAMILTONIAN ERROR: ensure all requisite arguments passed in the Hamiltonian dictionary. see gen_TB documentation for details.')
+        raise ValueError ('Ensure all requisite arguments passed in the Hamiltonian dictionary. see gen_TB documentation for details.')
         return None
     else:
         if hamiltonian_dict['type']=='SK' and ('V' not in hamiltonian_dict.keys() or 'avec' not in hamiltonian_dict.keys()):
-            print('HAMILTONIAN ERROR: PLEASE INCLUDE THE DICTIONARY OF Slater-Koster elements as "V" in the Hamiltonian dictionary, and lattice vectors "avec" as numpy array of 3x3 float.')
+            raise ValueError ('PLEASE INCLUDE THE DICTIONARY OF Slater-Koster elements as "V" in the Hamiltonian dictionary, and lattice vectors "avec" as numpy array of 3x3 float.')
             return None
         elif hamiltonian_dict['type']=='txt' and 'filename' not in hamiltonian_dict.keys():
-            print('HAMILTONIAN ERROR: no "filename" included in Hamiltonian dictionary keys for text-based Hamiltonian entry.')
+            raise ValueError ('No "filename" included in Hamiltonian dictionary keys for text-based Hamiltonian entry.')
             return None
         elif hamiltonian_dict['type']=='list' and 'list' not in hamiltonian_dict.keys():
-            print('HAMILTONIAN ERROR: no "list" included in Hamiltonian dictionary keys for list-based Hamiltonian entry.')
+            raise KeyError ('No "list" included in Hamiltonian dictionary keys for list-based Hamiltonian entry.')
             return None
         else:
             if type(slab_dict)==dict:

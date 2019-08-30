@@ -403,10 +403,9 @@ class TB_model:
         try:
             Emin,Emax = np.amin(self.Eband),np.amax(self.Eband)
         except AttributeError:
-            print('Warning: Bandstructure and energies have not yet been defined. Diagonalizing now.')
+            print('Bandstructure and energies have not yet been defined. Diagonalizing now.')
             self.solve_H()
             Emin,Emax = np.amin(self.Eband),np.amax(self.Eband)
-            print('Diagonalization complete. Proceeding to plotting.')
             
         fig=plt.figure()
         fig.set_tight_layout(False)
