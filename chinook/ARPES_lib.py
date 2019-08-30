@@ -190,6 +190,11 @@ class experiment:
             self.rad_args = ARPES_dict['rad_args']
         except KeyError:
             self.rad_args = None
+            
+        try:
+            self.phase_shifts= ARPES_dict['phase_shifts']
+        except KeyError:
+            self.phase_shifts = None
         try:
             self.slit = ARPES_dict['slit']
         except KeyError:
@@ -432,7 +437,7 @@ class experiment:
         self.Gbasis = Gmats[self.orbital_pointers]
         self.proj_arr = projection_map(self.basis)
         
-        rad_dict = {'hv':self.hv,'W':self.W,'rad_type':self.rad_type,'rad_args':self.rad_args}
+        rad_dict = {'hv':self.hv,'W':self.W,'rad_type':self.rad_type,'rad_args':self.rad_args,'phase_shifts':self.phase_shifts}
         self.Bfuncs,self.radint_pointers = radint_lib.make_radint_pointer(rad_dict,self.basis,dig_range)
 
 
