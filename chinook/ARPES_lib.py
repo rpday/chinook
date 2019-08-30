@@ -811,7 +811,10 @@ class experiment:
              x = np.linspace(*self.cube[dim])
              index = np.where(abs(x-slice_select[1])==abs(x-slice_select[1]).min())[0][0]
              slice_select = [dim,int(index)]
-         index_dict = {2:(0,1),1:(0,2),0:(1,2)}
+       
+        
+        #new option
+         index_dict = {2:(0,1),1:(2,0),0:(2,1)}
          
          X,Y = np.meshgrid(np.linspace(*self.cube[index_dict[slice_select[0]][0]]),np.linspace(*self.cube[index_dict[slice_select[0]][1]]))
          limits = np.zeros((3,2),dtype=int)
@@ -821,7 +824,7 @@ class experiment:
          
          ax_xlimit = (self.cube[index_dict[slice_select[0]][0]][0],self.cube[index_dict[slice_select[0]][0]][1])
          ax_ylimit = (self.cube[index_dict[slice_select[0]][1]][0],self.cube[index_dict[slice_select[0]][1]][1])
-         plottable  = np.squeeze(plot_map[limits[1,0]:limits[1,1],limits[0,0]:limits[0,1],limits[2,0]:limits[2,1]]).T
+         plottable  = np.squeeze(plot_map[limits[1,0]:limits[1,1],limits[0,0]:limits[0,1],limits[2,0]:limits[2,1]])
          p = ax_img.pcolormesh(X,Y,plottable,cmap=cm.magma)
          if plot_bands and slice_select[0]!=2:
              k = np.linspace(*self.cube[index_dict[slice_select[0]][0]])
@@ -831,7 +834,7 @@ class experiment:
             
          ax_img.set_xlim(*ax_xlimit)
          ax_img.set_ylim(*ax_ylimit)
-         
+#         
          
 
 #         if slice_select[0]==2: #FIXED ENERGY
