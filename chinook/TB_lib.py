@@ -66,7 +66,7 @@ class H_me:
     in memory alone.
     ***
     '''
-    def __init__(self,i,j):
+    def __init__(self,i,j,executable=False):
         '''
         Initialize the H_me object, the related basis indices and an empty list
         of hopping elements.
@@ -76,41 +76,49 @@ class H_me:
             
         ***
         '''
+        self.executable = executable
         self.i = i
         self.j = j
         self.H = []
     
-    def append_H(self,R0,R1,R2,H):
+    def append_H(self,H,R0=0,R1=0,R2=0):
         '''
         Add a new hopping path to the coupling of the parent orbitals.
         
         *args*:
+            - **H**: complex float, matrix element strength, or if self.exectype,
+            should be an executable 
+            
             - **R0**, **R1**, **R2**: float connecting vector in cartesian
             coordinate frame--this is the TOTAL vector, not the relevant 
             lattice vectors only
             
-            - **H**: complex float, matrix element strength
             
         *return*:
             - directly modifies the Hamiltonian list for these matrix
             coordinates
         '''
-        
-        self.H.append([R0,R1,R2,H])
-        
+        if not self.executable:
+            self.H.append([R0,R1,R2,H])
+        else:
+            self.H.append(H)
         
     def H2Hk(self):  
         '''
         Transform the list of hopping elements into a Fourier-series expansion 
         of the Hamiltonian. This is run during diagonalization for each
-        matrix element index
+        matrix element index. If running a low-energy Hamiltonian, executable functions are
+        simply summed for each basis index i,j, rather than computing a Fourier series. x is
+        implicitly a numpy array of Nx3: it is essential that the executable conform to this input type.
         
         *return*:
             - lambda function of a numpy array of float of length 3
             
         ***
         '''
-        return lambda x: sum([complex(m[-1])*np.exp(1.0j*np.dot(x,np.array([m[0],m[1],m[2]]))) for m in self.H])
+        if not self.executable:
+            return lambda x: sum([complex(m[-1])*np.exp(1.0j*np.dot(x,np.array([m[0],m[1],m[2]]))) for m in self.H])
+        return lambda x: sum([m(x) for m in self.H])
         
     def clean_H(self):
         
@@ -260,6 +268,7 @@ class TB_model:
         
         ***
         '''
+        executable = False
         if type(H_args)==dict:
             try:
                 ham_list = []
@@ -269,20 +278,24 @@ class TB_model:
                     ham_list = Hlib.txt_build(H_args['filename'],H_args['cutoff'],H_args['renorm'],H_args['offset'],H_args['tol'])
                 elif H_args['type'] == "list":
                     ham_list = H_args['list']
-                if H_args['spin']['bool']:
-                    ham_spin_double = Hlib.spin_double(ham_list,len(self.basis))
-                    ham_list = ham_list + ham_spin_double   
-                    if H_args['spin']['soc']:
-                        ham_so = Hlib.SO(self.basis)
-                        ham_list = ham_list + ham_so
-                    if 'order' in H_args['spin']:
-                        if H_args['spin']['order']=='F':
-                            ham_FM = Hlib.FM_order(self.basis,H_args['spin']['dS'])
-                            ham_list = ham_list + ham_FM
-                        elif H_args['spin']['order']=='A':
-                            ham_AF = Hlib.AFM_order(self.basis,H_args['spin']['dS'],H_args['spin']['p_up'],H_args['spin']['p_dn'])
-                            ham_list = ham_list + ham_AF
-                H_obj = gen_H_obj(ham_list)
+                elif H_args['type'] == 'exec':
+                    ham_list = H_args['exec']
+                    executable = True
+                if 'spin' in H_args.keys():
+                    if H_args['spin']['bool']:
+                        ham_spin_double = Hlib.spin_double(ham_list,len(self.basis))
+                        ham_list = ham_list + ham_spin_double   
+                        if H_args['spin']['soc']:
+                            ham_so = Hlib.SO(self.basis)
+                            ham_list = ham_list + ham_so
+                        if 'order' in H_args['spin']:
+                            if H_args['spin']['order']=='F':
+                                ham_FM = Hlib.FM_order(self.basis,H_args['spin']['dS'])
+                                ham_list = ham_list + ham_FM
+                            elif H_args['spin']['order']=='A':
+                                ham_AF = Hlib.AFM_order(self.basis,H_args['spin']['dS'],H_args['spin']['p_up'],H_args['spin']['p_dn'])
+                                ham_list = ham_list + ham_AF
+                H_obj = gen_H_obj(ham_list,executable)
                 return H_obj
             except KeyError:
                 print('Invalid dictionary input for Hamiltonian generation.')
@@ -440,7 +453,7 @@ class TB_model:
             ax.scatter(coord_dict[atoms][:,0],coord_dict[atoms][:,1],coord_dict[atoms][:,2],s=20)
           
             
-def gen_H_obj(htmp):
+def gen_H_obj(htmp,executable=False):
     '''
     Take a list of Hamiltonian matrix elements in list format:
     [i,j,Rij[0],Rij[1],Rij[2],Hij(R)] and generate a list of **H_me**
@@ -451,27 +464,45 @@ def gen_H_obj(htmp):
     *args*:
         - **htmp**: list of numeric-type values (mixed integer[:2], float[2:5], complex-float[-1])
     
+    *kwargs*:
+        - **executable**: boolean, if True, we don't have a standard Fourier-type Hamiltonian,
+        but perhaps a low-energy expansion. In this case, the htmp elements are
+        
     *return*:
         - **Hlist**: list of Hamiltonian matrix element, **H_me** objects
     '''
-
-    htmp = sorted(htmp,key=itemgetter(0,1,2,3,4))
+    if not executable:
+        htmp = sorted(htmp,key=itemgetter(0,1,2,3,4))
+    else:
+        htmp = sorted(htmp,key=itemgetter(0,1))
     
     Hlist = []
-    Hnow = H_me(0,0)
+    Hnow = H_me(htmp[0][0],htmp[0][1],executable=executable)
     Rij = np.zeros(3)
     
     for h in htmp:
         if h[0]!=Hnow.i or h[1]!=Hnow.j:
             Hlist.append(Hnow)
-            Hnow = H_me(int(np.real(h[0])),int(np.real(h[1])))
-        Rij = np.real(h[2:5])
-        Hnow.append_H(*Rij,h[5])
+            Hnow = H_me(int(np.real(h[0])),int(np.real(h[1])),executable=executable)
+        if not executable:
+            Rij = np.real(h[2:5])
+            Hnow.append_H(H=h[5],*Rij)
+        else:
+            Hnow.append_H(H=h[2])
     Hlist.append(Hnow)
     return Hlist 
             
         
 def cell_edges(avec):
+    '''
+    Define set of line segments which enclose the unit cell. 
+    
+    *args*:
+        - **avec**: numpy array of 3x3 float
+        
+    *return*:
+        - **edges**: numpy array of 12 x 6, endpoints of the 12 edges of the unit cell parallelepiped
+    '''
     
     modvec = np.array([[np.mod(int(j/4),2),np.mod(int(j/2),2),np.mod(j,2)] for j in range(8)])
     edges = []
@@ -484,6 +515,17 @@ def cell_edges(avec):
 
 
 def atom_coords(basis):
+    '''
+    Define a dictionary organizing the distinct coordinates of instances of each
+    atomic species in the basis
+    
+    *args*:
+        - **basis**: list of orbital objects
+        
+    *return*:
+        - **dictionary with integer keys, numpy array of float values. atom:locations are
+        encoded in this way.
+    '''
     
     coord_dict = {}
     all_pos = [[o.atom,*o.pos] for o in basis]
