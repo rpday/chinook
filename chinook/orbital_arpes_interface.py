@@ -59,14 +59,9 @@ class interface:
         self.axes = [np.linspace(*self.experiment.cube[1]),np.linspace(*self.experiment.cube[0]),np.linspace(*self.experiment.cube[2])]
         self.state_coords = np.array([self.axes[1][self.experiment.pks[:,2].astype(int)],self.axes[0][self.experiment.pks[:,1].astype(int)],self.experiment.pks[:,3]])
         self.state_coords[2,:] = self.bin_energy() #energy is discretized according to the energy mesh values to allow for state selection from angular maps
-        
-        self.aspects = [(self.experiment.cube[2][1]-self.experiment.cube[2][0])/(self.experiment.cube[0][1]-self.experiment.cube[0][0]),
-                        (self.experiment.cube[2][1]-self.experiment.cube[2][0])/(self.experiment.cube[1][1]-self.experiment.cube[1][0]),
-                        (self.experiment.cube[0][1]-self.experiment.cube[0][0])/(self.experiment.cube[1][1]-self.experiment.cube[1][0])]
 
-        self.extents = [[self.axes[2][0],self.axes[2][-1],self.axes[1][-1],self.axes[1][0]],
-                         [self.axes[2][0],self.axes[2][-1],self.axes[0][-1],self.axes[0][0]],
-                          [self.axes[0][0],self.axes[0][-1],self.axes[1][-1],self.axes[1][0]]]
+        self.aspects = [(self.experiment.cube[self.other_dims[ii][0]][1]-self.experiment.cube[self.other_dims[ii][0]][0])/(self.experiment.cube[self.other_dims[ii][1]][1]-self.experiment.cube[self.other_dims[ii][1]][0]) for ii in range(3)]        
+        self.extents = [[self.axes[self.other_dims[ii][0]][0],self.axes[self.other_dims[ii][0]][-1],self.axes[self.other_dims[ii][1]][0],self.axes[self.other_dims[ii][1]][-1]] for ii in range(3)]
         
         self.dim = 0
         self.indx = int(len(self.axes[0])/2)
@@ -83,10 +78,12 @@ class interface:
         
         self.fig = plt.figure(figsize=(10,6))
         self.fig.canvas.set_window_title('Chinook Orbital Mapper')
+        
         self.ax1 = plt.subplot2grid((10,17),(0,0),rowspan=10,colspan=9,fig=self.fig)
-        self.ax2 = plt.subplot2grid((10,17),(0,11),rowspan=5,colspan=5,projection='3d',fig=self.fig)
-        self.ax3 = plt.subplot2grid((10,17),(6,11),rowspan=1,colspan=5,fig=self.fig)
-        self.ax4 = plt.subplot2grid((10,17),(7,11),rowspan=3,colspan=5,fig=self.fig)        
+        self.ax2 = plt.subplot2grid((10,17),(0,10),rowspan=5,colspan=5,projection='3d',fig=self.fig)
+        self.ax2b = plt.subplot2grid((10,17),(0,16),rowspan=5,colspan=1,fig=self.fig)
+        self.ax3 = plt.subplot2grid((10,17),(6,10),rowspan=1,colspan=7,fig=self.fig)
+        self.ax4 = plt.subplot2grid((10,17),(7,10),rowspan=3,colspan=7,fig=self.fig)
 
         self.img = self.ax1.imshow(self.Imat[self.indx,:,:],cmap=cm.magma,extent=self.extents[self.dim])
         
@@ -108,7 +105,7 @@ class interface:
         self.bands, = self.ax1.plot(self.plot_peaks[0,:],self.plot_peaks[1,:],marker='o',linestyle='',markersize=2,c='w',alpha=0.1)
         self.orbital_plottable.vector = self.experiment.Ev[int(self.experiment.pks[self.cursor_index,0]/len(self.experiment.TB.basis)),:,int(self.experiment.pks[self.cursor_index,0]%len(self.experiment.TB.basis))]
         self.verts,self.triangles,self.colours = self.orbital_plottable.triangulate_wavefunction(self.plot_grain,plotting=False)
-        self.orb_plot = self.orbital_plottable.plot_wavefunction(self.verts,self.triangles,self.colours,plot_ax = self.ax2)
+        self.orb_plot = self.orbital_plottable.plot_wavefunction(self.verts,self.triangles,self.colours,plot_ax = self.ax2,cbar_ax=self.ax2b)
         
         
         
@@ -193,7 +190,7 @@ class interface:
                 self.verts,self.triangles,self.colours = self.orbital_plottable.triangulate_wavefunction(self.plot_grain,plotting=False)
                 for o in range(len(self.orb_plot)):
                     self.orb_plot[o].remove()
-                self.orb_plot = self.orbital_plottable.plot_wavefunction(self.verts,self.triangles,self.colours,plot_ax = self.ax2)
+                self.orb_plot = self.orbital_plottable.plot_wavefunction(self.verts,self.triangles,self.colours,plot_ax = self.ax2,cbar_ax=self.ax2b)
                 self.fig.canvas.draw()
                 plt.show()
                 
@@ -220,8 +217,12 @@ class interface:
             the cursor event.
         '''
         ind1,ind2 = self.other_dims[self.dim]
-        
-        avail_states = np.where(self.state_coords[self.dim,:]==self.axes[self.dim][self.indx])[0]
+        print('cursor',cursor)
+        print('dim',self.dim)
+        print('indx',self.indx)
+        print('state_coords',np.shape(self.state_coords))
+        avail_states = np.where(self.state_coords[self.dim+1,:]==self.axes[self.dim+1][self.indx])[0]
+        print(len(avail_states))
         distance = np.linalg.norm((self.state_coords[(ind1,ind2),:][:,avail_states].T-cursor),axis=1)
         self.cursor_index = avail_states[np.where(distance==distance.min())[0][0]]
         self.ax1.set_title('X: {:0.04f}, Y: {:0.04f}'.format(*self.state_coords[(ind1,ind2),self.cursor_index]))
@@ -259,9 +260,9 @@ class interface:
         '''
         
         fine_pts = self.state_coords[2,:]
-        coarse_pts = np.array([self.axes[2][int((fine_pts[ii]-self.axes[2][0])/(self.axes[2][1]-self.axes[2][0]))] for ii in range(len(fine_pts))])
+        coarse_pts = np.array([self.axes[2][int((fine_pts[ii]-self.axes[2][0])/(self.axes[2][1]-self.axes[2][0]))] if (fine_pts[ii]<self.axes[2].max() and fine_pts[ii]>self.axes[2].min()) else -1 for ii in range(len(fine_pts))])
         return coarse_pts
 
 
 if __name__ == "__main__":
-    plotimg = interface(experiment)
+    plotimg = interface(expmt)
