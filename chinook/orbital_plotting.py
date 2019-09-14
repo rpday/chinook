@@ -153,7 +153,7 @@ class wavefunction:
         
                 
             
-    def triangulate_wavefunction(self,n,plotting=True):
+    def triangulate_wavefunction(self,n,plotting=True,ax=None):
         '''
         Plot the wavefunction stored in the class attributes as self.vector as a projection
         over the basis of spherical harmonics. The radial wavefunctions are not explicitly included,
@@ -165,6 +165,12 @@ class wavefunction:
             - **n**: int, number of angles in the mesh: Theta from 0 to pi is divided 2n times, and
             Phi from 0 to 2pi is divided 4n times
             
+        *kwargs*:
+            - **plotting**: boolean, turn on/off to display plot
+            
+            - **ax**: matplotlib Axes, for plotting on existing plot
+            
+            
         *return*:
             - **vertices**: numpy array of float, shape (len(centres), len(th)*len(ph), 3) locations of vertices
             
@@ -172,6 +178,7 @@ class wavefunction:
             
             - **colours**: numpy array of float, of shape (len(centres),len(triangles)) encoding the orbital phase for each surface patch of the plotting
         
+            - **ax**: matplotlib Axes, for further modifications
         '''
         th,ph = make_angle_mesh(n)
         all_Ylm = self.calc_Ylm(th,ph)
@@ -200,29 +207,49 @@ class wavefunction:
         colours = np.array(colours)
         if plotting:
             
-            _ = self.plot_wavefunction(vertices,triangulations,colours)
+            _,ax = self.plot_wavefunction(vertices,triangulations,colours,plot_ax=ax)
             
-        return vertices,triangulations,colours
+        return vertices,triangulations,colours,ax
     
     
-    def plot_wavefunction(self,vertices,triangulations,colours,plot_ax = None):
+    def plot_wavefunction(self,vertices,triangulations,colours,plot_ax = None,cbar_ax= None):
+        '''
+        Plotting function, for visualizing orbitals.
+        
+        *args*:
+            - **vertices**: numpy array of float, shape (len(centres), len(th)*len(ph), 3) locations of vertices
+            
+            - **triangulations**: numpy array of int, indicating the vertices connecting each surface patch
+            
+            - **colours**: numpy array of float, of shape (len(centres),len(triangles)) encoding the orbital phase for each surface patch of the plotting
+        
+            - **plot_ax**: matplotlib Axes, for plotting on existing axes
+            
+            - **cbar_ax**: matplotlib Axes, for use in drawing colourbar
+            
+        *return*:
+            - **plots**: list of plotted surfaces
+            
+            - **plot_ax**: matplotlib Axes, for further modifications
+            
+            '''
         ncentres = len(self.centres)
         plots = []
         if plot_ax is None:
             fig = plt.figure()
-            ax = fig.add_subplot(111,projection='3d')
-        else:
-            ax = plot_ax
+            plot_ax = fig.add_subplot(111,projection='3d')
+
         for ni in range(ncentres):
-            plots.append(ax.plot_trisurf(vertices[ni,:,0],vertices[ni,:,1],vertices[ni,:,2],triangles=triangulations.triangles,cmap=cm.hsv,antialiased=True,edgecolors='w',linewidth=0.2))
+            plots.append(plot_ax.plot_trisurf(vertices[ni,:,0],vertices[ni,:,1],vertices[ni,:,2],triangles=triangulations.triangles,cmap=cm.hsv,antialiased=True,edgecolors='w',linewidth=0.2))
             plots[-1].set_array(colours[ni])
             plots[-1].set_clim(-np.pi,np.pi)
             
-        ax.set_xlabel('X')
-        ax.set_ylabel('Y')
-        ax.set_zlabel('Z')
-        plt.colorbar(plots[-1],ax=ax)
-        return plots
+        plot_ax.set_xlabel('X')
+        plot_ax.set_ylabel('Y')
+        plot_ax.set_zlabel('Z')
+        plt.colorbar(plots[-1],ax=plot_ax,cax=cbar_ax)
+        
+        return plots,plot_ax
             
 
 def make_angle_mesh(n):

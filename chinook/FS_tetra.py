@@ -51,7 +51,7 @@ warnings.filterwarnings("error")
     
 
 
-def EF_tetra(TB,NK,EF,degen=False):
+def EF_tetra(TB,NK,EF,degen=False,origin=None):
     
     '''
     Generate a tetrahedra mesh of k-points which span the BZ with even distribution
@@ -69,6 +69,9 @@ def EF_tetra(TB,NK,EF,degen=False):
         - **degen**: bool, flag for whether the bands are two-fold degenerate, as for 
         Kramers degeneracy
         
+        - **origin**: numpy array of 3 float,  corresponding to the desired centre of the 
+        plotted Brillouin zone
+        
     *return*:
         - **surfaces**: dictionary of dictionaries: Each key-value pair corresponds
         to a different band index. For each case, the value is a dictionary with key-value
@@ -81,6 +84,11 @@ def EF_tetra(TB,NK,EF,degen=False):
     '''
     
     kpts,tetra = tetrahedra.mesh_tetra(TB.avec,NK)
+    if origin is not None:
+        com = np.mean(kpts,axis=0)
+        shift = origin-com
+        kpts+=shift
+
     TB.Kobj.kpts = kpts
     TB.solve_H()
     if degen:
@@ -93,18 +101,19 @@ def EF_tetra(TB,NK,EF,degen=False):
 
     for bi in surfaces.keys(): #iterate only over bands which have Fermi surface
         for ki in range(len(tetra)):
-            E_tmp = TB.Eband[tetra[ki],bi]
+            E_tmp = TB.Eband[tetra[ki],bi] #vertex energies
 
             register = np.zeros((4,2))
             register[:,1] = tetra[ki]
             register[:,0] = E_tmp
-            register = np.array(sorted(register,key=itemgetter(0)))
-            kinds = register[:,1].astype(int)
-            t = register[:,0]
+            register = np.array(sorted(register,key=itemgetter(0))) #sort corners based on energies
+            kinds = register[:,1].astype(int) #indices
+            t = register[:,0] #energies
 
-            if t[0]<=EF and EF<=t[3]: #Fermi level is inside this tetrahedra
+            if t[0]<=EF and EF<=t[3]: #if True, Fermi level cuts through this tetrahedra
+                k = kpts[kinds] #get k-coordinates
                 if t[0]<=EF<t[1]:
-                    k = kpts[kinds]
+                    
                     t5 = k[0]+(EF-t[0])/(t[2]-t[0])*(k[2]-k[0])
                     t6 = k[0] + (EF-t[0])/(t[3]-t[0])*(k[3]-k[0])
                     t7 = k[0] + (EF-t[0])/(t[1]-t[0])*(k[1]-k[0])
@@ -112,7 +121,7 @@ def EF_tetra(TB,NK,EF,degen=False):
                     tri = [np.around([t5,t6,t7],4)]
                     
                 elif t[1]<=EF<t[2]:
-                    k = kpts[kinds]
+                
                     t5 = k[0]+(EF-t[0])/(t[2]-t[0])*(k[2]-k[0])
                     t6 = k[0] + (EF-t[0])/(t[3]-t[0])*(k[3]-k[0])
                     t7 = k[1] +(EF-t[1])/(t[3]-t[1])*(k[3]-k[1])
@@ -120,7 +129,7 @@ def EF_tetra(TB,NK,EF,degen=False):
                     tri = np.around(sim_tri([t5,t6,t7,t8]),4)
                 
                 elif t[2]<=EF<=t[3]:
-                    k = kpts[kinds]
+                    
                     t5 = k[0] + (EF-t[0])/(t[3]-t[0])*(k[3]-k[0])
                     t6 = k[1] + (EF-t[1])/(t[3]-t[1])*(k[3]-k[1])
                     t7 = k[2] + (EF-t[2])/(t[3]-t[2])*(k[3]-k[2])
@@ -150,7 +159,7 @@ def EF_tetra(TB,NK,EF,degen=False):
 
 
 
-def FS_generate(TB,Nk,EF,degen = False):
+def FS_generate(TB,Nk,EF,degen = False,origin=None,ax=None):
     
     '''
     Wrapper function for computing Fermi surface triangulation, and then plotting
@@ -166,6 +175,12 @@ def FS_generate(TB,Nk,EF,degen = False):
     *kwargs*:
         - **degen**: bool, flag for whether the bands are two-fold degenerate, as for 
         Kramers degeneracy
+        
+        - **origin**: numpy array of 3 float,  corresponding to the desired centre of the 
+        plotted Brillouin zone
+        
+        - **ax**: matplotlib Axes, option for plotting onto existing Axes
+
     
     *return*:
         - **surfaces**: dictionary of dictionaries: Each key-value pair corresponds
@@ -175,20 +190,24 @@ def FS_generate(TB,Nk,EF,degen = False):
             - *'pts'*: numpy array of Nx3 float, the N coordinates of EF crossing
             
             - *'tris'*: numpy array of Nx3 int, the triangulation of the surface
+            
+        - **ax**: matplotlib Axes, for further modification
+
     ***
     '''
     
-    surfaces = EF_tetra(TB,Nk,EF,degen)
-    fig = plt.figure()
-    ax = fig.add_subplot(111,projection='3d')
+    surfaces = EF_tetra(TB,Nk,EF,degen,origin)
+    if ax is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111,projection='3d')
     for bi in surfaces:
         Fk=surfaces[bi]['pts']
 
         ax.plot_trisurf(Fk[:,0],Fk[:,1],Fk[:,2],cmap=cm.magma,triangles=surfaces[bi]['tris'],linewidth=0.1,edgecolor='w',alpha=1.0)
-    ax.grid(False)
+   # ax.grid(False)
 #    ax.axis('off')
-    ax.set_aspect(1)
-    return surfaces
+   # ax.set_aspect(1)
+    return surfaces,ax
 
 
 def heron(vert):

@@ -398,7 +398,7 @@ class TB_model:
             
         
         
-    def plotting(self,win_min=None,win_max=None): #plots the band structure. Takes in Latex-format labels for the symmetry points indicated in the main code
+    def plotting(self,win_min=None,win_max=None,ax=None): #plots the band structure. Takes in Latex-format labels for the symmetry points indicated in the main code
         '''
         Plotting routine for a tight-binding model evaluated over some path in k.
         If the model has not yet been diagonalized, it is done automatically
@@ -408,6 +408,8 @@ class TB_model:
             - **win_min**, **win_max**: float, vertical axis limits for plotting
             in units of eV. If not passed, a reasonable choice is made which 
             covers the entire eigenspectrum.
+        
+            - **ax**: matplotlib Axes, for plotting on existing Axes
             
         *return*:
             - **ax**: matplotlib axes object
@@ -419,10 +421,12 @@ class TB_model:
             print('Bandstructure and energies have not yet been defined. Diagonalizing now.')
             self.solve_H()
             Emin,Emax = np.amin(self.Eband),np.amax(self.Eband)
+        
+        if ax is None:
+            fig=plt.figure()
+            fig.set_tight_layout(False)
+            ax=fig.add_subplot(111)
             
-        fig=plt.figure()
-        fig.set_tight_layout(False)
-        ax=fig.add_subplot(111)
         ax.axhline(y=0,color='k',lw=1.5,ls='--')
         for b in self.Kobj.kcut_brk:
             ax.axvline(x = b,color = 'k',ls='--',lw=1.5)
@@ -440,7 +444,19 @@ class TB_model:
 
         return ax  
     
-    def plot_unitcell(self):
+    def plot_unitcell(self,ax=None):
+        
+        '''
+        Utility script for visualizing the lattice and orbital basis.
+        Distinct atoms are drawn in different colours
+        
+        *kwargs*:
+            - **ax**: matplotlib Axes, for plotting on existing Axes
+            
+        *return*:
+            - **ax**: matplotlib Axes, for further modifications to plot
+        
+        '''
         edges = cell_edges(self.avec)
         coord_dict = atom_coords(self.basis)
 
@@ -451,9 +467,12 @@ class TB_model:
             ax.plot(ed[:,0],ed[:,1],ed[:,2],c='k')
         for atoms in coord_dict.keys():
             ax.scatter(coord_dict[atoms][:,0],coord_dict[atoms][:,1],coord_dict[atoms][:,2],s=20)
+            
+        return ax
           
             
 def gen_H_obj(htmp,executable=False):
+    
     '''
     Take a list of Hamiltonian matrix elements in list format:
     [i,j,Rij[0],Rij[1],Rij[2],Hij(R)] and generate a list of **H_me**
@@ -477,7 +496,7 @@ def gen_H_obj(htmp,executable=False):
         htmp = sorted(htmp,key=itemgetter(0,1))
     
     Hlist = []
-    Hnow = H_me(htmp[0][0],htmp[0][1],executable=executable)
+    Hnow = H_me(int(htmp[0][0]),int(htmp[0][1]),executable=executable)
     Rij = np.zeros(3)
     
     for h in htmp:
@@ -486,7 +505,7 @@ def gen_H_obj(htmp,executable=False):
             Hnow = H_me(int(np.real(h[0])),int(np.real(h[1])),executable=executable)
         if not executable:
             Rij = np.real(h[2:5])
-            Hnow.append_H(H=h[5],*Rij)
+            Hnow.append_H(H=h[5],R0=Rij[0],R1=Rij[1],R2=Rij[2])
         else:
             Hnow.append_H(H=h[2])
     Hlist.append(Hnow)

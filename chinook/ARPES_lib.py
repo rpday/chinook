@@ -687,7 +687,7 @@ class experiment:
             fermi = np.ones(self.cube[2][2])
         return fermi
 
-    def spectral(self,ARPES_dict=None,slice_select=None,add_map = False,plot_bands=False):
+    def spectral(self,ARPES_dict=None,slice_select=None,add_map = False,plot_bands=False,ax=None):
         
         '''
         Take the matrix elements and build a simulated ARPES spectrum. 
@@ -704,11 +704,15 @@ class experiment:
             otherwise, the intensity map is overwritten
             
             - **plot_bands**: boolean, plot bandstructure from tight-binding over the intensity map
+            
+            - **ax**: matplotlib Axes, only relevant if **slice_select**, option to pass existing Axes to plot onto
         
         *return*:
             - **I**: numpy array of float, raw intensity map.
 
             - **Ig**: numpy array of float, resolution-broadened intensity map.
+            
+            - **ax**: matplotlib Axes, for further modifications to plot only if **slice_select** True
         '''
         if not hasattr(self,'Mk'):
             self.datacube()
@@ -762,21 +766,23 @@ class experiment:
         Ig = nd.gaussian_filter(I,(kyg,kxg,wg))
         
         if slice_select!=None:
-            ax_img = self.plot_intensity_map(Ig,slice_select,plot_bands)
+            ax_img = self.plot_intensity_map(Ig,slice_select,plot_bands,ax)
         
         if add_map:
             self.maps.append(imap.intensity_map(len(self.maps),Ig,self.cube,self.kz,self.T,self.hv,self.pol,self.dE,self.dk,self.SE_args,self.sarpes,self.ang))
         else:
             self.maps = [imap.intensity_map(len(self.maps),Ig,self.cube,self.kz,self.T,self.hv,self.pol,self.dE,self.dk,self.SE_args,self.sarpes,self.ang)]
-       
-        return I,Ig
+        if slice_select:
+            return I,Ig,ax_img
+        else:
+            return I,Ig
     
     def gen_imap(self,I_arr):
         new_map = imap.intensity_map(len(self.maps),I_arr,self.cube,self.kz,self.T,self.hv,self.pol,self.dE,self.dk,self.SE_args,self.sarpes,self.ang)
         return new_map
 
 
-    def plot_intensity_map(self,plot_map,slice_select,plot_bands=False):
+    def plot_intensity_map(self,plot_map,slice_select,plot_bands=False,ax=None):
          '''
         Plot a slice of the intensity map computed in *spectral*. The user selects either
         an array index along one of the axes, or the fixed value of interest, allowing
@@ -792,11 +798,12 @@ class experiment:
             
             - **plot_bands**: boolean, option to overlay a constant-momentum cut with
             the dispersion calculated from tight-binding
+            
+            - **ax**: matplotlib Axes, for option to plot onto existing Axes
 
         *return*:
-            - **fig**: matplotlib figure object
 
-            - **ax**: matplotlib axis object
+            - **ax_img**: matplotlib axis object
          '''
          fig,ax_img = plt.subplots()
          fig.set_tight_layout(False)
@@ -811,6 +818,8 @@ class experiment:
              x = np.linspace(*self.cube[dim])
              index = np.where(abs(x-slice_select[1])==abs(x-slice_select[1]).min())[0][0]
              slice_select = [dim,int(index)]
+             
+        
        
         
         #new option
@@ -827,47 +836,18 @@ class experiment:
          plottable  = np.squeeze(plot_map[limits[1,0]:limits[1,1],limits[0,0]:limits[0,1],limits[2,0]:limits[2,1]])
          p = ax_img.pcolormesh(X,Y,plottable,cmap=cm.magma)
          if plot_bands and slice_select[0]!=2:
-             k = np.linspace(*self.cube[index_dict[slice_select[0]][0]])
-             start = len(k)*slice_select[1]
+             k = np.linspace(*self.cube[index_dict[slice_select[0]][1]])
+             if slice_select[0]==1:                 
+                 indices = np.array([len(k)*slice_select[1] + ii for ii in range(len(k))])
+             elif slice_select[0]==0:
+                 indices = np.array([slice_select[1] + ii*self.cube[0][2] for ii in range(len(k))])
              for ii in range(len(self.TB.basis)):  
-                 ax_img.plot(k,self.TB.Eband[start:(start+len(k)),ii],alpha=0.4,c='w')
-            
+                 ax_img.plot(self.TB.Eband[indices,ii],k,alpha=0.4,c='w')
+#            
          ax_img.set_xlim(*ax_xlimit)
          ax_img.set_ylim(*ax_ylimit)
-#         
          
 
-#         if slice_select[0]==2: #FIXED ENERGY
-#             X,Y = np.meshgrid(np.linspace(*self.cube[0]),np.linspace(*self.cube[1]))
-#             p = ax_img.pcolormesh(X,Y,plot_map[:,:,slice_select[1]],cmap=cm.magma)  
-#             ax_img.set_xlim(self.cube[0][0],self.cube[0][1])
-#             ax_img.set_ylim(self.cube[1][0],self.cube[1][1])
-#             
-#         elif slice_select[0]==1: #FIXED KY
-#             k = np.linspace(*self.cube[0])
-#             X,Y = np.meshgrid(k,np.linspace(*self.cube[2]))
-#             p = ax_img.pcolormesh(X,Y,plot_map[slice_select[1],:,:].T,cmap=cm.magma)   
-#             if plot_bands:
-#                 start = len(k)*slice_select[1]
-#                 for ii in range(len(self.TB.basis)):  
-#                     ax_img.plot(k,self.TB.Eband[start:(start+len(k)),ii],alpha=0.4,c='w')
-#             
-#             ax_img.set_xlim(self.cube[0][0],self.cube[0][1])                
-#             ax_img.set_ylim(self.cube[2][0],self.cube[2][1])
-#                     
-#
-#         elif slice_select[0]==0: # FIXED KX
-#             k = np.linspace(*self.cube[1])
-#             X,Y = np.meshgrid(k,np.linspace(*self.cube[2]))
-#             p = ax_img.pcolormesh(X,Y,plot_map[:,slice_select[1],:].T,cmap=cm.magma)   
-#             ax_img.set_xlim(self.cube[1][0],self.cube[1][1])
-#             ax_img.set_ylim(self.cube[2][0],self.cube[2][1])
-#             if plot_bands:
-#                 for ii in range(len(self.TB.basis)):
-#                     ax_img.plot(k,self.TB.Eband[slice_select[1]::self.cube[0][2],ii],c='w',alpha=0.4)
-#              
-#                
-#        
          plt.colorbar(p,ax=ax_img)
          plt.tight_layout()
 

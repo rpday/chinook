@@ -19,7 +19,7 @@
 
 #THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 #IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#FITNESS FOR A ▲ICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 #AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 #LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
@@ -238,7 +238,7 @@ def fatbs(proj,TB,Kobj=None,vlims=(0,1),Elims=(-1,1),degen=False):
     
 
 
-def O_path(Operator,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=True):
+def O_path(Operator,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=True,ax=None):
     
     '''
     
@@ -260,9 +260,13 @@ def O_path(Operator,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=Tru
         - **Elims**: tuple of 2 float, limits of vertical scale for plotting
             
         - **degen**: bool, True if bands are degenerate, sum over adjacent bands
+        
+        - **ax**: matplotlib Axes, option for plotting onto existing Axes
 
     *return*:
         - **O_vals**: the numpy array of float, (len Kobj x len basis) expectation values 
+        
+        - **ax**: matplotlib Axes, allowing for user to further modify
     
     ***
     '''
@@ -295,10 +299,11 @@ def O_path(Operator,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=Tru
 
 
     rcParams.update({'font.size':14})
-    fig = plt.figure()
-    fig.set_tight_layout(False)
-
-    ax=fig.add_subplot(111)
+    
+    if ax is None:
+        fig = plt.figure()
+        fig.set_tight_layout(False)
+        ax=fig.add_subplot(111)
 
     for b in TB.Kobj.kcut_brk:
         plt.axvline(x = b,color = 'grey',ls='--',lw=1.0)
@@ -323,7 +328,7 @@ def O_path(Operator,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=Tru
         plt.colorbar(O_line,ax=ax)
         plt.ylabel("Energy (eV)")
         
-    return O_vals
+    return O_vals,ax
 
 
 def degen_Ovals(Oper_exp,Energy):
@@ -349,18 +354,16 @@ def degen_Ovals(Oper_exp,Energy):
         for bi in range(1,np.shape(Oper_exp)[1]):
             if abs(Energy[ki,bi]-val)<tol:
                 counter+=1
-           # if ki==0:
-            #    print(bi)
+
             if abs(Energy[ki,bi]-val)>=tol or bi==(np.shape(Oper_exp)[1]-1):
-                #if bi==(np.shape(Oper_exp)[1]-1):
-                  #  print('lastbool',bi==(np.shape(Oper_exp)[1]-1))
+
                 O_copy[ki,start:start+counter] = np.mean(O_copy[ki,start:start+counter])
                 start = bi
                 counter = 1
                 val = Energy[ki,bi]
     return O_copy                
 
-def O_surf(O,TB,ktuple,Ef,tol,vlims=(0,0)):
+def O_surf(O,TB,ktuple,Ef,tol,vlims=(0,0),ax=None):
     
     '''
     Compute and plot the expectation value of an user-defined operator over
@@ -379,11 +382,17 @@ def O_surf(O,TB,ktuple,Ef,tol,vlims=(0,0)):
     *kwargs*:
         - **vlims**: limits for the colourscale (optional argument), will choose 
         a reasonable set of limits if none passed by user
+        
+        - **ax**: matplotlib Axes, option for plotting onto existing Axes
+
 
     *return*:
         - **pts**: the numpy array of expectation values, of shape Nx3, with first
         two dimensions the kx,ky coordinates of the point, and the third the expectation
         value.
+        
+        - **ax**: matplotlib Axes, allowing for further user modifications
+
         
     ***
     '''
@@ -408,11 +417,11 @@ def O_surf(O,TB,ktuple,Ef,tol,vlims=(0,0)):
     ax.scatter(pts[:,0],pts[:,1],c=pts[:,2],cmap=cmap,s=200,vmin=vlims[0],vmax=vlims[1])
     ax.scatter(pts[:,0],pts[:,1],c='k',s=5)
     
-    return pts
+    return pts,ax
 
 
 
-def FS(TB,ktuple,Ef,tol):
+def FS(TB,ktuple,Ef,tol,ax=None):
     
     '''
     A simplified form of Fermi surface extraction, for proper calculation of this,
@@ -428,6 +437,9 @@ def FS(TB,ktuple,Ef,tol):
         - **Ef**: float, energy of interest, eV
         
         - **tol**: float, energy tolerance, float
+        
+        - **ax**: matplotlib Axes, option for plotting onto existing Axes
+
     
     *return*:
         - **pts**: numpy array of len(N) x 3 indicating x,y, band index
@@ -435,6 +447,8 @@ def FS(TB,ktuple,Ef,tol):
         - **TB.Eband**: numpy array of float, energy spectrum
         
         - **TB.Evec**: numpy array of complex float, eigenvectors
+        
+        - **ax**: matplotlib Axes, for further user modification
     
     ***
     '''
@@ -456,10 +470,11 @@ def FS(TB,ktuple,Ef,tol):
             pts.append([X[inds],Y[inds],ei])
     
     pts = np.array(pts)
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.scatter(pts[:,0],pts[:,1])
-    return pts,TB.Eband,TB.Evec
+    if ax is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.scatter(pts[:,0],pts[:,1])
+    return pts,TB.Eband,TB.Evec,ax
     
     
 ####################SOME STANDARD OPERATORS FOLLOW HERE: ######################
