@@ -14,6 +14,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Support Files" href="support.html" />
@@ -427,8 +428,8 @@ terminations you want.</p>
 <dd><ul class="first last simple">
 <li><strong>basis</strong>: list of instances of orbital objects</li>
 <li><strong>vn</strong>: numpy array of 3x3 float, surface unit cell lattice vectors</li>
-<li><strong>mint</strong>: float, minimum thickness of the slab</li>
-<li><strong>minb</strong>: float, minimum thickness of the vacuum buffer</li>
+<li><strong>mint</strong>: float, minimum thickness of the slab, in Angstrom</li>
+<li><strong>minb</strong>: float, minimum thickness of the vacuum buffer, in Angstrom</li>
 <li><strong>term</strong>: tuple of 2 int, termination of the slab tuple (term[0] = top termination, term[1] = bottom termination)</li>
 <li><strong>fine</strong>: tuple of 2 float, fine adjustment of the termination to precisely specify terminating atoms</li>
 </ul>

@@ -86,7 +86,7 @@ The momentum arguments get passed as a dictionary:
                      'avec':avec,
                      'grain':100,
                      'pts':[L,G,X],
-                     'labels':['L','$\Gamma$','X']}
+                     'labels':['L','$\\Gamma$','X']}
 
 Here we are using *F* or fractional units for momentum space (as opposed to *A* absolute units of inverse Angstrom) to define our k-path. This requires also that we pass then the unit cell vectors. The *grain* sets the number of points between each high-symmetry point we want to evaluate at. The endpoints of interest are passed similar to what we did with the basis positions, as a list of numpy arrays, which I have pre-defined for tidier code. Finally, we have an option to provide labels for when we go ultimately to plot our bandstructure over this k-path. I can now set the k-path for my tight-binding model:
 ::

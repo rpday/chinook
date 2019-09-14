@@ -14,6 +14,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="Slab Calculation" href="slab.html" />
@@ -247,25 +248,6 @@ along with the relevant quantum numbers:</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.wigner.rotate_orbital_test">
-<code class="descclassname">chinook.wigner.</code><code class="descname">rotate_orbital_test</code><span class="sig-paren">(</span><em>projection</em>, <em>rotation</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.wigner.rotate_orbital_test" title="Permalink to this definition">¶</a></dt>
-<dd><p>Diagnostic test for the rotation of orbitals using the Wigner matrices
-defined here.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first simple">
-<li><strong>projection</strong>: numpy array of Nx4 float indicating orbital projection</li>
-</ul>
-<p>in spherical harmonics. Each row being [Re(proj), Im(proj), l,m]</p>
-<ul class="simple">
-<li><strong>rotation</strong>: numpy array of 3x3 float, or list of len 3 numpy array float, and</li>
-</ul>
-<p class="last">angle (float).</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
 <dt id="chinook.wigner.s_lims">
 <code class="descclassname">chinook.wigner.</code><code class="descname">s_lims</code><span class="sig-paren">(</span><em>j</em>, <em>m</em>, <em>mp</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.wigner.s_lims" title="Permalink to this definition">¶</a></dt>
 <dd><p>Limits for summation in definition of Wigner’s little d-matrix</p>
@@ -319,66 +301,34 @@ which are related by the Wigner D matrix during the rotation</p>
 <p><a href="#id41"><span class="problematic" id="id42">**</span></a><a href="#id43"><span class="problematic" id="id44">*</span></a></p>
 </dd></dl>
 
-<dl class="function">
-<dt id="chinook.wigner.symm_D">
-<code class="descclassname">chinook.wigner.</code><code class="descname">symm_D</code><span class="sig-paren">(</span><em>l</em>, <em>A</em>, <em>B</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.wigner.symm_D" title="Permalink to this definition">¶</a></dt>
-<dd><p>For testing purposes only, generate the Wigner Big D matrix using the 
-sympy package, for comparison.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first simple">
-<li><strong>l</strong>: int (or half integer) angular momentum</li>
-<li><strong>Euler_A</strong>, <strong>Euler_B</strong>, <strong>Euler_y</strong>: float z-y-z Euler angles defining</li>
-</ul>
-<p class="last">the rotation</p>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>Dmat</strong>: 2j+1 x 2j+1 numpy array of complex float</li>
-</ul>
-</dd>
-</dl>
-<p><a href="#id45"><span class="problematic" id="id46">**</span></a><a href="#id47"><span class="problematic" id="id48">*</span></a></p>
-</dd></dl>
-
-<dl class="function">
-<dt id="chinook.wigner.testing">
-<code class="descclassname">chinook.wigner.</code><code class="descname">testing</code><span class="sig-paren">(</span><em>j</em>, <em>Euler_A</em>, <em>Euler_B</em>, <em>Euler_y</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.wigner.testing" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test function comparing rotation via Wigner matrices here, against the
-D matrices defined in the sympy library.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first simple">
-<li><strong>j</strong>: (half-) int, orbital angular momentum</li>
-<li><strong>Euler_A</strong>, <strong>Euler_B</strong>, <strong>Euler_y</strong>: float z-y-z Euler angles defining</li>
-</ul>
-<p class="last">the rotation</p>
-</dd>
-</dl>
-</dd></dl>
-
 </div>
 <div class="section" id="module-chinook.Ylm">
 <span id="ylm"></span><h2>Ylm:<a class="headerlink" href="#module-chinook.Ylm" title="Permalink to this headline">¶</a></h2>
+<p>Created on Sun Jun 18 15:46:21 2017</p>
+<p>&#64;author: ryanday
+MIT License</p>
+<p>Copyright (c) 2018 Ryan Patrick Day</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
 <dl class="function">
 <dt id="chinook.Ylm.GramSchmidt">
 <code class="descclassname">chinook.Ylm.</code><code class="descname">GramSchmidt</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.Ylm.GramSchmidt" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simple orthogonalization of two vectors, returns orthonormalized vector</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>a</strong>: numpy array of numeric type, vector to orthogonalize</li>
-<li><strong>b</strong>: numpy array of numeric type, vector to be orthogonal to.</li>
-</ul>
-</dd>
-<dt><em>returns</em>: </dt>
-<dd><ul class="first simple">
-<li><strong>GS_a</strong>: numpy array of same size, <strong>a</strong> vector, now Gram-Schmidt</li>
-</ul>
-<blockquote class="last">
-<div>orthonormalized to the <strong>b</strong> vector.</div></blockquote>
-</dd>
-</dl>
+<dd><p>Simple orthogonalization of two vectors, returns orthonormalized vector
+args: a,b – np.array of same length
+returns: tmp – numpy array of same size, orthonormalized to the b vector</p>
 </dd></dl>
 
 <dl class="function">
@@ -391,7 +341,7 @@ Can be vectorized with numpy.vectorize() to allow array-like input</p>
 <dt><em>args</em>:</dt>
 <dd><ul class="first last simple">
 <li><strong>l</strong>: int orbital angular momentum, up to l=4 supported</li>
-<li><strong>m</strong>: int, azimuthal angular momentum <a href="#id49"><span class="problematic" id="id50">|</span></a>m|&lt;=l</li>
+<li><strong>m</strong>: int, azimuthal angular momentum <a href="#id45"><span class="problematic" id="id46">|</span></a>m|&lt;=l</li>
 <li><strong>theta</strong>: float, angle in spherical coordinates, radian measured from the z-axis [0,pi]</li>
 <li><strong>phi</strong>: float, angle in spherical coordinates, radian measured from the x-axis [0,2pi]</li>
 </ul>
@@ -408,62 +358,10 @@ Can be vectorized with numpy.vectorize() to allow array-like input</p>
 <dt id="chinook.Ylm.Yproj">
 <code class="descclassname">chinook.Ylm.</code><code class="descname">Yproj</code><span class="sig-paren">(</span><em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.Ylm.Yproj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define the unitary transformation rotating the basis of different inequivalent atoms in the
-basis to the basis of spherical harmonics for sake of defining L.S operator in basis of user</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>basis</strong>: list, orbital objects</li>
-</ul>
-</dd>
-<dt><em>return</em>: </dt>
-<dd><ul class="first last simple">
-<li><strong>Umats</strong>: dictionary of matrices for the different atoms and orbital-shells–keys are tuples of (atom,n,l,spin)</li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="chinook.Ylm.binomal_coefficient">
-<code class="descclassname">chinook.Ylm.</code><code class="descname">binomal_coefficient</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.Ylm.binomal_coefficient" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluation of the binomial coefficient (i.e. a choose b)</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>a</strong>: int, first value in binomial</li>
-<li><strong>b</strong>: int, second value in binomial</li>
-</ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
-<li>float, ratio of factorials a!, a-b!, b!</li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="chinook.Ylm.fillin">
-<code class="descclassname">chinook.Ylm.</code><code class="descname">fillin</code><span class="sig-paren">(</span><em>M</em>, <em>l</em>, <em>Dmat=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.Ylm.fillin" title="Permalink to this definition">¶</a></dt>
-<dd><p>When working with reduced basis sets, need to fill in the rest of the matrix
-to account for the rest of the orbitals in the shell, which are not considered in the
-model. (For example, for a t2g model of a d-orbital system, eg states (dx^2-y^2 and d3z^2-r^2) need
-to be accounted for.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>M</strong>: numpy array of complex float, unitary transformation, as filled so far–will have zero columns</li>
-<li><strong>l</strong>: int, orbital quantum number</li>
-</ul>
-</dd>
-<dt><em>kwargs</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>Dmat</strong>: numpy array of complex float, Wigner D matrix indicating the local rotation</li>
-</ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><strong>M</strong>: numpy array of complex float, filled in unitary matrix.</dd>
-</dl>
+basis to the basis of spherical harmonics for sake of defining L.S operator in basis of user
+args: basis–list of orbital objects</p>
+<p>returns: dictionary of matrices for the different atoms and l-shells–keys are tuples of (atom,l)</p>
+<p>29/09/2018 added reference to the spin character ‘sp’ to handle rotated systems effectively</p>
 </dd></dl>
 
 <dl class="function">
@@ -473,38 +371,16 @@ to be accounted for.</p>
 Gaunt coefficients required for dipole-allowed transitions (dl = +/-1) for arbitrary m,l and dm
 These have been tested against the sympy package to confirm numerical accuracy for all l,m possible
 up to l=5. This function is equivalent, for the subset of dm, dl allowed to
-sympy.physics.wigner.gaunt(l,1,l+dl,m,dm,-(m+dm))</p>
+sympy.physics.wigner.gaunt(l,1,l+dl,m,dm,-(m+dm))
+args:</p>
+<blockquote>
+<div>l: int orbital angular momentum quantum number
+m: int azimuthal angular momentum quantum number
+dl: int change in l (+/-1)
+dm: int change in azimuthal angular momentum (-1,0,1)</div></blockquote>
 <dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>l</strong>: int, orbital angular momentum quantum number</li>
-<li><strong>m</strong>: int, azimuthal angular momentum quantum number</li>
-<li><strong>dl</strong>: int, change in l (+/-1)</li>
-<li><strong>dm</strong>: int, change in azimuthal angular momentum (-1,0,1)</li>
-</ul>
-</dd>
-<dt><em>return</em>:</dt>
+<dt>return:</dt>
 <dd>float Gaunt coefficient</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="chinook.Ylm.laguerre">
-<code class="descclassname">chinook.Ylm.</code><code class="descname">laguerre</code><span class="sig-paren">(</span><em>x</em>, <em>l</em>, <em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.Ylm.laguerre" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluation of associated laguerre polynomial</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>x</strong>: float, number at which to evaluate the polynomial</li>
-<li><strong>l</strong>: int, order of polynomial</li>
-<li><strong>j</strong>: int, degree of polynomial (i.e. sum over polyomials of power up to n)</li>
-</ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>laguerre_value</strong>: float, value of the polynomial</li>
-</ul>
-</dd>
 </dl>
 </dd></dl>
 

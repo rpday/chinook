@@ -110,7 +110,7 @@
                  <span class="s1">&#39;avec&#39;</span><span class="p">:</span><span class="n">avec</span><span class="p">,</span>
                  <span class="s1">&#39;grain&#39;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span>
                  <span class="s1">&#39;pts&#39;</span><span class="p">:[</span><span class="n">L</span><span class="p">,</span><span class="n">G</span><span class="p">,</span><span class="n">X</span><span class="p">],</span>
-                 <span class="s1">&#39;labels&#39;</span><span class="p">:[</span><span class="s1">&#39;L&#39;</span><span class="p">,</span><span class="s1">&#39;$\Gamma$&#39;</span><span class="p">,</span><span class="s1">&#39;X&#39;</span><span class="p">]}</span>
+                 <span class="s1">&#39;labels&#39;</span><span class="p">:[</span><span class="s1">&#39;L&#39;</span><span class="p">,</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">Gamma$&#39;</span><span class="p">,</span><span class="s1">&#39;X&#39;</span><span class="p">]}</span>
 </pre></div>
 </div>
 <p>Here we are using <em>F</em> or fractional units for momentum space (as opposed to <em>A</em> absolute units of inverse Angstrom) to define our k-path. This requires also that we pass then the unit cell vectors. The <em>grain</em> sets the number of points between each high-symmetry point we want to evaluate at. The endpoints of interest are passed similar to what we did with the basis positions, as a list of numpy arrays, which I have pre-defined for tidier code. Finally, we have an option to provide labels for when we go ultimately to plot our bandstructure over this k-path. I can now set the k-path for my tight-binding model:</p>

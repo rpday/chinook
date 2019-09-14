@@ -14,6 +14,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
    
@@ -421,7 +422,7 @@ associated with the present experiment.</p>
 
 <dl class="method">
 <dt id="chinook.ARPES_lib.experiment.plot_intensity_map">
-<code class="descname">plot_intensity_map</code><span class="sig-paren">(</span><em>plot_map</em>, <em>slice_select</em>, <em>plot_bands=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.plot_intensity_map" title="Permalink to this definition">¶</a></dt>
+<code class="descname">plot_intensity_map</code><span class="sig-paren">(</span><em>plot_map</em>, <em>slice_select</em>, <em>plot_bands=False</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.plot_intensity_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot a slice of the intensity map computed in <em>spectral</em>. The user selects either
 an array index along one of the axes, or the fixed value of interest, allowing
 either integer, or float selection.</p>
@@ -437,15 +438,18 @@ case-sensitive.</p>
 <ul class="simple">
 <li><strong>plot_bands</strong>: boolean, option to overlay a constant-momentum cut with</li>
 </ul>
-<p class="last">the dispersion calculated from tight-binding</p>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>fig</strong>: matplotlib figure object</li>
-<li><strong>ax</strong>: matplotlib axis object</li>
+<p>the dispersion calculated from tight-binding</p>
+<ul class="last simple">
+<li><strong>ax</strong>: matplotlib Axes, for option to plot onto existing Axes</li>
 </ul>
 </dd>
 </dl>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>ax_img</strong>: matplotlib axis object</li>
+</ul>
+</div></blockquote>
 </dd></dl>
 
 <dl class="method">
@@ -511,7 +515,7 @@ computed into the desired basis direction.</p>
 
 <dl class="method">
 <dt id="chinook.ARPES_lib.experiment.spectral">
-<code class="descname">spectral</code><span class="sig-paren">(</span><em>ARPES_dict=None</em>, <em>slice_select=None</em>, <em>add_map=False</em>, <em>plot_bands=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.spectral" title="Permalink to this definition">¶</a></dt>
+<code class="descname">spectral</code><span class="sig-paren">(</span><em>ARPES_dict=None</em>, <em>slice_select=None</em>, <em>add_map=False</em>, <em>plot_bands=False</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.spectral" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take the matrix elements and build a simulated ARPES spectrum. 
 The user has several options here for the self-energy to be used,  c.f. <em>SE_gen()</em> for details.
 Gaussian resolution broadening is the last operation performed, to be consistent with the
@@ -526,12 +530,14 @@ practical experiment.</p>
 <p>otherwise, the intensity map is overwritten</p>
 <ul class="last simple">
 <li><strong>plot_bands</strong>: boolean, plot bandstructure from tight-binding over the intensity map</li>
+<li><strong>ax</strong>: matplotlib Axes, only relevant if <strong>slice_select</strong>, option to pass existing Axes to plot onto</li>
 </ul>
 </dd>
 <dt><em>return</em>:</dt>
 <dd><ul class="first last simple">
 <li><strong>I</strong>: numpy array of float, raw intensity map.</li>
 <li><strong>Ig</strong>: numpy array of float, resolution-broadened intensity map.</li>
+<li><strong>ax</strong>: matplotlib Axes, for further modifications to plot only if <strong>slice_select</strong> True</li>
 </ul>
 </dd>
 </dl>
@@ -1578,7 +1584,7 @@ shells.</p>
 <span id="fs-tetra"></span><h2>FS_tetra:<a class="headerlink" href="#module-chinook.FS_tetra" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="chinook.FS_tetra.EF_tetra">
-<code class="descclassname">chinook.FS_tetra.</code><code class="descname">EF_tetra</code><span class="sig-paren">(</span><em>TB</em>, <em>NK</em>, <em>EF</em>, <em>degen=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.FS_tetra.EF_tetra" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">chinook.FS_tetra.</code><code class="descname">EF_tetra</code><span class="sig-paren">(</span><em>TB</em>, <em>NK</em>, <em>EF</em>, <em>degen=False</em>, <em>origin=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.FS_tetra.EF_tetra" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a tetrahedra mesh of k-points which span the BZ with even distribution
 Diagonalize over this mesh and then compute the resulting density of states as
 prescribed in the above paper.</p>
@@ -1594,7 +1600,11 @@ prescribed in the above paper.</p>
 <dd><ul class="first simple">
 <li><strong>degen</strong>: bool, flag for whether the bands are two-fold degenerate, as for</li>
 </ul>
-<p class="last">Kramers degeneracy</p>
+<p>Kramers degeneracy</p>
+<ul class="simple">
+<li><strong>origin</strong>: numpy array of 3 float,  corresponding to the desired centre of the</li>
+</ul>
+<p class="last">plotted Brillouin zone</p>
 </dd>
 <dt><em>return</em>:</dt>
 <dd><ul class="first simple">
@@ -1615,7 +1625,7 @@ pairs:</p>
 
 <dl class="function">
 <dt id="chinook.FS_tetra.FS_generate">
-<code class="descclassname">chinook.FS_tetra.</code><code class="descname">FS_generate</code><span class="sig-paren">(</span><em>TB</em>, <em>Nk</em>, <em>EF</em>, <em>degen=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.FS_tetra.FS_generate" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">chinook.FS_tetra.</code><code class="descname">FS_generate</code><span class="sig-paren">(</span><em>TB</em>, <em>Nk</em>, <em>EF</em>, <em>degen=False</em>, <em>origin=None</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.FS_tetra.FS_generate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper function for computing Fermi surface triangulation, and then plotting
 the result.</p>
 <dl class="docutils">
@@ -1630,7 +1640,14 @@ the result.</p>
 <dd><ul class="first simple">
 <li><strong>degen</strong>: bool, flag for whether the bands are two-fold degenerate, as for</li>
 </ul>
-<p class="last">Kramers degeneracy</p>
+<p>Kramers degeneracy</p>
+<ul class="simple">
+<li><strong>origin</strong>: numpy array of 3 float,  corresponding to the desired centre of the</li>
+</ul>
+<p>plotted Brillouin zone</p>
+<ul class="last simple">
+<li><strong>ax</strong>: matplotlib Axes, option for plotting onto existing Axes</li>
+</ul>
 </dd>
 <dt><em>return</em>:</dt>
 <dd><ul class="first simple">
@@ -1638,12 +1655,15 @@ the result.</p>
 </ul>
 <p>to a different band index. For each case, the value is a dictionary with key-value
 pairs:</p>
-<blockquote class="last">
+<blockquote>
 <div><ul class="simple">
 <li><em>‘pts’</em>: numpy array of Nx3 float, the N coordinates of EF crossing</li>
 <li><em>‘tris’</em>: numpy array of Nx3 int, the triangulation of the surface</li>
 </ul>
 </div></blockquote>
+<ul class="last simple">
+<li><strong>ax</strong>: matplotlib Axes, for further modification</li>
+</ul>
 </dd>
 </dl>
 <p><a href="#id89"><span class="problematic" id="id90">**</span></a><a href="#id91"><span class="problematic" id="id92">*</span></a></p>
@@ -1693,6 +1713,26 @@ triangles decomposed.</p>
 </div>
 <div class="section" id="module-chinook.H_library">
 <span id="h-library"></span><h2>H_library:<a class="headerlink" href="#module-chinook.H_library" title="Permalink to this headline">¶</a></h2>
+<p>Created on Thu Nov  9 21:38:24 2017</p>
+<p>&#64;author: ryanday</p>
+<p>Slater Koster Library for generating a Hamiltonian of Slater-Koster
+MIT License</p>
+<p>Copyright (c) 2018 Ryan Patrick Day</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
 <dl class="function">
 <dt id="chinook.H_library.AFM_order">
 <code class="descclassname">chinook.H_library.</code><code class="descname">AFM_order</code><span class="sig-paren">(</span><em>basis</em>, <em>dS</em>, <em>p_up</em>, <em>p_dn</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.AFM_order" title="Permalink to this definition">¶</a></dt>
@@ -1714,6 +1754,12 @@ orbitals of different spin character, on the designated sites.</p>
 </dd>
 </dl>
 <p><a href="#id101"><span class="problematic" id="id102">**</span></a><a href="#id103"><span class="problematic" id="id104">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.H_library.Efield">
+<code class="descclassname">chinook.H_library.</code><code class="descname">Efield</code><span class="sig-paren">(</span><em>basis</em>, <em>field</em>, <em>orbital_type='Slater'</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.Efield" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a set of matrix elements which introduce an electric field, treated at the level of a dipole operator.</p>
 </dd></dl>
 
 <dl class="function">
@@ -1832,7 +1878,8 @@ weighted by the factor value, and slotted into a len(<strong>basis</strong>)xlen
 <dt id="chinook.H_library.Vlist_gen">
 <code class="descclassname">chinook.H_library.</code><code class="descname">Vlist_gen</code><span class="sig-paren">(</span><em>V</em>, <em>pair</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.Vlist_gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Select the relevant hopping matrix elements to be used in defining the value
-of the Slater-Koster matrix elements for a given pair of orbitals</p>
+of the Slater-Koster matrix elements for a given pair of orbitals. Handles situation where
+insufficient parameters have been passed to system.</p>
 <dl class="docutils">
 <dt><em>args</em>:</dt>
 <dd><ul class="first last simple">
@@ -2075,6 +2122,83 @@ o1,o2,x12,xy12,z12,t12, output in form [o1,o2,x12,y12,z12,t12]</p>
 </div>
 <div class="section" id="module-chinook.intensity_map">
 <span id="intensity-map"></span><h2>intensity_map:<a class="headerlink" href="#module-chinook.intensity_map" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="chinook.intensity_map.intensity_map">
+<em class="property">class </em><code class="descclassname">chinook.intensity_map.</code><code class="descname">intensity_map</code><span class="sig-paren">(</span><em>index</em>, <em>Imat</em>, <em>cube</em>, <em>kz</em>, <em>T</em>, <em>hv</em>, <em>pol</em>, <em>dE</em>, <em>dk</em>, <em>self_energy=None</em>, <em>spin=None</em>, <em>rot=0.0</em>, <em>notes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.intensity_map.intensity_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class intended for organizing information regarding a specific ARPES 
+calculation. To be used for both plotting in python, as well as exporting
+to either .txt or .hdf5 formats.</p>
+<dl class="method">
+<dt id="chinook.intensity_map.intensity_map.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.intensity_map.intensity_map.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy-by-value of the intensity map object. 
+<em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>intensity_map</em> object with identical attributes to self.</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.intensity_map.intensity_map.save_map">
+<code class="descname">save_map</code><span class="sig-paren">(</span><em>directory</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.intensity_map.intensity_map.save_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the intensity map: if 2D, just a single file, if 3D, each constant-energy
+slice is saved separately.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>directory</strong>: string, directory for saving intensity map to</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>boolean</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.intensity_map.intensity_map.write_2D_Imat">
+<code class="descname">write_2D_Imat</code><span class="sig-paren">(</span><em>filename</em>, <em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.intensity_map.intensity_map.write_2D_Imat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sub-function for producing the textfiles associated with a 2dimensional numpy array of float</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>filename</strong>: string, indicating destination of file</li>
+<li><strong>index</strong>: int, energy index of map to save, if -1, then just a 2D map, and save the whole</li>
+</ul>
+<p class="last">thing</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>boolean</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.intensity_map.intensity_map.write_meta">
+<code class="descname">write_meta</code><span class="sig-paren">(</span><em>destination</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.intensity_map.intensity_map.write_meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write meta-data file for ARPES intensity calculation.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>destination</strong>: string, file-lead</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>boolean</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-chinook.klib">
 <span id="klib"></span><h2>klib:<a class="headerlink" href="#module-chinook.klib" title="Permalink to this headline">¶</a></h2>
@@ -2291,11 +2415,72 @@ are within the first-Brillouin zone</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-chinook.matplotlib_plotter">
+<span id="matplotlib-plotter"></span><h2>matplotlib_plotter:<a class="headerlink" href="#module-chinook.matplotlib_plotter" title="Permalink to this headline">¶</a></h2>
+<p>Created on Thu Sep 12 14:53:36 2019</p>
+<p>&#64;author: rday</p>
+<dl class="class">
+<dt id="chinook.matplotlib_plotter.interface">
+<em class="property">class </em><code class="descclassname">chinook.matplotlib_plotter.</code><code class="descname">interface</code><span class="sig-paren">(</span><em>experiment</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.matplotlib_plotter.interface" title="Permalink to this definition">¶</a></dt>
+<dd><p>This interactive tool is intended for exploring the dataset associated
+with an ARPES simulation using chinook.
+The user can scan through the datacube in each dimension.
+This uses matplotlib natively rather than alternative gui systems in python like Tkinter,
+which makes it a bit more robust across platforms.</p>
+<dl class="method">
+<dt id="chinook.matplotlib_plotter.interface.bin_energy">
+<code class="descname">bin_energy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.matplotlib_plotter.interface.bin_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translate the exact energy value for the band peaks into the discrete
+binning of the intensity map, to allow for cursor queries to be processed.</p>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>coarse_pts</strong>: numpy array of float, same lengths as <em>self.state_coords</em>,</li>
+</ul>
+<p class="last">but sampled over a discrete grid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.matplotlib_plotter.interface.find_cursor">
+<code class="descname">find_cursor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.matplotlib_plotter.interface.find_cursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find nearest point to the desired cursor position, as clicked by the
+user. The cursor event coordinates are compared against the peak positions
+from the tight-binding calculation, and a best choice within the plotted 
+slice is selected.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>cursor</strong>: tuple of 2 float, indicating the column and row of the</li>
+</ul>
+<p class="last">event, in units of the data-set scaling (e.g. 1/A or eV)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.matplotlib_plotter.interface.plot_img">
+<code class="descname">plot_img</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.matplotlib_plotter.interface.plot_img" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the plotted intensity map slice. The plotted bandstructure states are also displayed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.matplotlib_plotter.interface.run_gui">
+<code class="descname">run_gui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.matplotlib_plotter.interface.run_gui" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execution of the matplotlib gui. The figure is initialized, along with all widgets and 
+chosen datasets. The user has access to both the slice of ARPES data plotted, in addition
+to the orbital projection plotted in upper right panel.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-chinook.operator_library">
 <span id="operator-library"></span><h2>operator_library:<a class="headerlink" href="#module-chinook.operator_library" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="chinook.operator_library.FS">
-<code class="descclassname">chinook.operator_library.</code><code class="descname">FS</code><span class="sig-paren">(</span><em>TB</em>, <em>ktuple</em>, <em>Ef</em>, <em>tol</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.FS" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">chinook.operator_library.</code><code class="descname">FS</code><span class="sig-paren">(</span><em>TB</em>, <em>ktuple</em>, <em>Ef</em>, <em>tol</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.FS" title="Permalink to this definition">¶</a></dt>
 <dd><p>A simplified form of Fermi surface extraction, for proper calculation of this,
 <em>chinook.FS_tetra.py</em> is preferred. This finds all points in kmesh within a 
 tolerance of the constant energy level.</p>
@@ -2309,6 +2494,7 @@ tolerance of the constant energy level.</p>
 <ul class="last simple">
 <li><strong>Ef</strong>: float, energy of interest, eV</li>
 <li><strong>tol</strong>: float, energy tolerance, float</li>
+<li><strong>ax</strong>: matplotlib Axes, option for plotting onto existing Axes</li>
 </ul>
 </dd>
 <dt><em>return</em>:</dt>
@@ -2316,6 +2502,7 @@ tolerance of the constant energy level.</p>
 <li><strong>pts</strong>: numpy array of len(N) x 3 indicating x,y, band index</li>
 <li><strong>TB.Eband</strong>: numpy array of float, energy spectrum</li>
 <li><strong>TB.Evec</strong>: numpy array of complex float, eigenvectors</li>
+<li><strong>ax</strong>: matplotlib Axes, for further user modification</li>
 </ul>
 </dd>
 </dl>
@@ -2445,13 +2632,13 @@ The nonzero elements are on the upper diagonal</p>
 
 <dl class="function">
 <dt id="chinook.operator_library.O_path">
-<code class="descclassname">chinook.operator_library.</code><code class="descname">O_path</code><span class="sig-paren">(</span><em>O</em>, <em>TB</em>, <em>Kobj=None</em>, <em>vlims=(0</em>, <em>0)</em>, <em>Elims=(-10</em>, <em>10)</em>, <em>degen=False</em>, <em>plot=True</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.O_path" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">chinook.operator_library.</code><code class="descname">O_path</code><span class="sig-paren">(</span><em>Operator</em>, <em>TB</em>, <em>Kobj=None</em>, <em>vlims=(0</em>, <em>0)</em>, <em>Elims=(-10</em>, <em>10)</em>, <em>degen=False</em>, <em>plot=True</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.O_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute and plot the expectation value of an user-defined operator along a k-path
 Option of summing over degenerate bands (for e.g. fat bands) with degen boolean flag</p>
 <dl class="docutils">
 <dt><em>args</em>:</dt>
 <dd><ul class="first last simple">
-<li><strong>O</strong>: matrix representation of the operator (numpy array len(basis), len(basis) of complex float)</li>
+<li><strong>Operator</strong>: matrix representation of the operator (numpy array len(basis), len(basis) of complex float)</li>
 <li><strong>TB</strong>: Tight binding object from TB_lib</li>
 </ul>
 </dd>
@@ -2460,18 +2647,20 @@ Option of summing over degenerate bands (for e.g. fat bands) with degen boolean 
 <blockquote>
 <div><ul class="simple">
 <li><strong>Kobj</strong>: Momentum object, as defined in <em>chinook.klib.py</em></li>
-<li><strong>vlims</strong>: tuple of 2 float, limits of the colorscale for plotting, default to (0,0)</li>
+<li><strong>vlims</strong>: tuple of 2 float, limits of the colourscale for plotting, default to (0,0)</li>
 </ul>
 <p>if default value passed, will compute a reasonable range</p>
 <ul class="simple">
 <li><strong>Elims</strong>: tuple of 2 float, limits of vertical scale for plotting</li>
 <li><strong>degen</strong>: bool, True if bands are degenerate, sum over adjacent bands</li>
+<li><strong>ax</strong>: matplotlib Axes, option for plotting onto existing Axes</li>
 </ul>
 </div></blockquote>
 <dl class="docutils">
 <dt><em>return</em>:</dt>
 <dd><ul class="first last simple">
 <li><strong>O_vals</strong>: the numpy array of float, (len Kobj x len basis) expectation values</li>
+<li><strong>ax</strong>: matplotlib Axes, allowing for user to further modify</li>
 </ul>
 </dd>
 </dl>
@@ -2480,7 +2669,7 @@ Option of summing over degenerate bands (for e.g. fat bands) with degen boolean 
 
 <dl class="function">
 <dt id="chinook.operator_library.O_surf">
-<code class="descclassname">chinook.operator_library.</code><code class="descname">O_surf</code><span class="sig-paren">(</span><em>O</em>, <em>TB</em>, <em>ktuple</em>, <em>Ef</em>, <em>tol</em>, <em>vlims=(0</em>, <em>0)</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.O_surf" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">chinook.operator_library.</code><code class="descname">O_surf</code><span class="sig-paren">(</span><em>O</em>, <em>TB</em>, <em>ktuple</em>, <em>Ef</em>, <em>tol</em>, <em>vlims=(0</em>, <em>0)</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.O_surf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute and plot the expectation value of an user-defined operator over
 a surface of constant-binding energy</p>
 <p>Option of summing over degenerate bands (for e.g. fat bands) with degen boolean flag</p>
@@ -2500,14 +2689,20 @@ a surface of constant-binding energy</p>
 <dd><ul class="first simple">
 <li><strong>vlims</strong>: limits for the colourscale (optional argument), will choose</li>
 </ul>
-<p class="last">a reasonable set of limits if none passed by user</p>
+<p>a reasonable set of limits if none passed by user</p>
+<ul class="last simple">
+<li><strong>ax</strong>: matplotlib Axes, option for plotting onto existing Axes</li>
+</ul>
 </dd>
 <dt><em>return</em>:</dt>
 <dd><ul class="first simple">
 <li><strong>pts</strong>: the numpy array of expectation values, of shape Nx3, with first</li>
 </ul>
-<p class="last">two dimensions the kx,ky coordinates of the point, and the third the expectation
+<p>two dimensions the kx,ky coordinates of the point, and the third the expectation
 value.</p>
+<ul class="last simple">
+<li><strong>ax</strong>: matplotlib Axes, allowing for further user modifications</li>
+</ul>
 </dd>
 </dl>
 <p><a href="#id225"><span class="problematic" id="id226">**</span></a><a href="#id227"><span class="problematic" id="id228">*</span></a></p>
@@ -2556,7 +2751,7 @@ or none at all.</p>
 
 <dl class="function">
 <dt id="chinook.operator_library.degen_Ovals">
-<code class="descclassname">chinook.operator_library.</code><code class="descname">degen_Ovals</code><span class="sig-paren">(</span><em>O</em>, <em>E</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.degen_Ovals" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">chinook.operator_library.</code><code class="descname">degen_Ovals</code><span class="sig-paren">(</span><em>Oper_exp</em>, <em>Energy</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.degen_Ovals" title="Permalink to this definition">¶</a></dt>
 <dd><p>In the presence of degeneracy, we want to average over the
 evaluated orbital expectation values–numerically, the degenerate 
 subspace can be arbitrarily diagonalized during numpy.linalg.eigh. 
@@ -2564,8 +2759,8 @@ All degeneracies are found, and the expectation values averaged.</p>
 <dl class="docutils">
 <dt><em>args</em>:</dt>
 <dd><ul class="first last simple">
-<li><strong>O</strong>: numpy array of float, operator expectations</li>
-<li><strong>E</strong>: numpy array of float, energy eigenvalues.</li>
+<li><strong>Oper_exp</strong>: numpy array of float, operator expectations</li>
+<li><strong>Energy</strong>: numpy array of float, energy eigenvalues.</li>
 </ul>
 </dd>
 </dl>
@@ -2932,8 +3127,31 @@ aa more convenient vector form of the projections themselves, as lists of comple
 </dd></dl>
 
 <dl class="method">
+<dt id="chinook.orbital_plotting.wavefunction.plot_wavefunction">
+<code class="descname">plot_wavefunction</code><span class="sig-paren">(</span><em>vertices</em>, <em>triangulations</em>, <em>colours</em>, <em>plot_ax=None</em>, <em>cbar_ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital_plotting.wavefunction.plot_wavefunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plotting function, for visualizing orbitals.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>vertices</strong>: numpy array of float, shape (len(centres), len(th)*len(ph), 3) locations of vertices</li>
+<li><strong>triangulations</strong>: numpy array of int, indicating the vertices connecting each surface patch</li>
+<li><strong>colours</strong>: numpy array of float, of shape (len(centres),len(triangles)) encoding the orbital phase for each surface patch of the plotting</li>
+<li><strong>plot_ax</strong>: matplotlib Axes, for plotting on existing axes</li>
+<li><strong>cbar_ax</strong>: matplotlib Axes, for use in drawing colourbar</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>plots</strong>: list of plotted surfaces</li>
+<li><strong>plot_ax</strong>: matplotlib Axes, for further modifications</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="chinook.orbital_plotting.wavefunction.triangulate_wavefunction">
-<code class="descname">triangulate_wavefunction</code><span class="sig-paren">(</span><em>n</em>, <em>plotting=True</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital_plotting.wavefunction.triangulate_wavefunction" title="Permalink to this definition">¶</a></dt>
+<code class="descname">triangulate_wavefunction</code><span class="sig-paren">(</span><em>n</em>, <em>plotting=True</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital_plotting.wavefunction.triangulate_wavefunction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the wavefunction stored in the class attributes as self.vector as a projection
 over the basis of spherical harmonics. The radial wavefunctions are not explicitly included,
 in the event of multiple basis atom sites, the length scale is set by the mean interatomic 
@@ -2946,11 +3164,18 @@ sets the smoothness of the orbital projection by the integer argument <em>n</em>
 </ul>
 <p class="last">Phi from 0 to 2pi is divided 4n times</p>
 </dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>plotting</strong>: boolean, turn on/off to display plot</li>
+<li><strong>ax</strong>: matplotlib Axes, for plotting on existing plot</li>
+</ul>
+</dd>
 <dt><em>return</em>:</dt>
 <dd><ul class="first last simple">
 <li><strong>vertices</strong>: numpy array of float, shape (len(centres), len(th)*len(ph), 3) locations of vertices</li>
 <li><strong>triangulations</strong>: numpy array of int, indicating the vertices connecting each surface patch</li>
 <li><strong>colours</strong>: numpy array of float, of shape (len(centres),len(triangles)) encoding the orbital phase for each surface patch of the plotting</li>
+<li><strong>ax</strong>: matplotlib Axes, for further modifications</li>
 </ul>
 </dd>
 </dl>
@@ -2978,11 +3203,27 @@ the radial integrals</p>
 <div><ul class="simple">
 <li><em>‘slater’</em>: default value, if <em>‘rad_type’</em> is not passed,</li>
 </ul>
-<p>Slater type orbitals assumed and evaluated for the integral</p>
+<dl class="docutils">
+<dt>Slater type orbitals assumed and evaluated for the integral</dt>
+<dd><ul class="first simple">
+<li><em>‘rad_args’</em>: dictionary of float, supplying optional final-state</li>
+</ul>
+<p class="last">phase shifts, accounting for scattering-type final states. keys of form
+‘a-n-l-lp’. Radial integrals will be accordingly multiplied</p>
+</dd>
+</dl>
 <ul class="simple">
 <li><em>‘hydrogenic’</em>: similar in execution to <em>‘slater’</em>,</li>
 </ul>
-<p>but uses Hydrogenic orbitals–more realistic for light-atoms</p>
+<dl class="docutils">
+<dt>but uses Hydrogenic orbitals–more realistic for light-atoms</dt>
+<dd><ul class="first simple">
+<li><em>‘rad_args’</em>: dictionary of float, supplying optional final-state</li>
+</ul>
+<p class="last">phase shifts, accounting for scattering-type final states. keys of form
+‘a-n-l-lp’. Radial integrals will be accordingly multiplied</p>
+</dd>
+</dl>
 <ul class="simple">
 <li><em>‘grid’</em>: radial wavefunctions evaluated on a grid of</li>
 </ul>
@@ -3034,7 +3275,7 @@ and complex float values for the radial integrals.</p>
 
 <dl class="function">
 <dt id="chinook.radint_lib.fill_radint_dic">
-<code class="descclassname">chinook.radint_lib.</code><code class="descname">fill_radint_dic</code><span class="sig-paren">(</span><em>Eb</em>, <em>orbital_funcs</em>, <em>hv</em>, <em>W=0.0</em>, <em>fixed=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.radint_lib.fill_radint_dic" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">chinook.radint_lib.</code><code class="descname">fill_radint_dic</code><span class="sig-paren">(</span><em>Eb</em>, <em>orbital_funcs</em>, <em>hv</em>, <em>W=0.0</em>, <em>phase_shifts=None</em>, <em>fixed=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.radint_lib.fill_radint_dic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function for computing dictionary of radial integrals. 
 Can pass either an array of binding energies or a single binding
 energy as a float. In either case, returns a dictionary however 
@@ -3051,7 +3292,15 @@ used by either writing <strong>Bdic[‘key’]</strong> or
 <li><strong>fixed</strong>: bool, if True, constant radial integral for each scattering</li>
 </ul>
 <p class="last">channel available: then the orbital_funcs dictionary already
-has the radial integral evaluated</p>
+has the radial integral evaluated
+- <strong>hv</strong>: float, photon energy of incident light.</p>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>W</strong>: float, work function</li>
+<li><strong>phase_shifts</strong>: dictionary for final state phase shifts, as an optional</li>
+</ul>
+<p class="last">extension beyond pure- free electron final states. For now, float type.</p>
 </dd>
 <dt><em>return</em>:</dt>
 <dd><ul class="first last simple">
@@ -3154,8 +3403,8 @@ interpolation of these integrations.</p>
 <p>‘hv’ (photon energy), ‘W’ (work function), and the rad_type
 (radial wavefunction type, as well as any relevant additional
 pars, c.f. <em>radint_lib.define_radial_wavefunctions</em>).
-Note: <em>‘rad_type’</em> is optional, as is <em>rad_args</em>, depending on choice
-of radial wavefunction.</p>
+Note: <em>‘rad_type’</em> is optional, (as is <em>rad_args</em>, depending on choice
+of radial wavefunction.)</p>
 <ul class="simple">
 <li><strong>basis</strong>: list of orbitals in the basis</li>
 <li><strong>Eb</strong>: tuple of 2 floats indicating the range of energy of</li>
@@ -3175,8 +3424,8 @@ of radial wavefunction.</p>
 
 <dl class="function">
 <dt id="chinook.radint_lib.radint_calc">
-<code class="descclassname">chinook.radint_lib.</code><code class="descname">radint_calc</code><span class="sig-paren">(</span><em>k_norm</em>, <em>orbital_funcs</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.radint_lib.radint_calc" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute dictionary of radial integrals evaluated at a single <a href="#id523"><span class="problematic" id="id524">|k|</span></a> value
+<code class="descclassname">chinook.radint_lib.</code><code class="descname">radint_calc</code><span class="sig-paren">(</span><em>k_norm</em>, <em>orbital_funcs</em>, <em>phase_shifts=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.radint_lib.radint_calc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute dictionary of radial integrals evaluated at a single <a href="#id525"><span class="problematic" id="id526">|k|</span></a> value
 for the whole basis. Will avoid redundant integrations by checking for
 the presence of an identical dictionary key. The integration is done
 as a simple adaptive integration algorithm, defined in the 
@@ -3189,6 +3438,11 @@ as a simple adaptive integration algorithm, defined in the
 <p>(as an argument for the spherical Bessel Function)</p>
 <ul class="last simple">
 <li><strong>orbital_funcs</strong>: dictionary, radial wavefunction executables</li>
+</ul>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>phase_shifts</strong>: dictionary of phase shifts, to convey final state scattering</li>
 </ul>
 </dd>
 <dt><em>returns</em>:</dt>
@@ -3731,8 +3985,8 @@ terminations you want.</p>
 <dd><ul class="first last simple">
 <li><strong>basis</strong>: list of instances of orbital objects</li>
 <li><strong>vn</strong>: numpy array of 3x3 float, surface unit cell lattice vectors</li>
-<li><strong>mint</strong>: float, minimum thickness of the slab</li>
-<li><strong>minb</strong>: float, minimum thickness of the vacuum buffer</li>
+<li><strong>mint</strong>: float, minimum thickness of the slab, in Angstrom</li>
+<li><strong>minb</strong>: float, minimum thickness of the vacuum buffer, in Angstrom</li>
 <li><strong>term</strong>: tuple of 2 int, termination of the slab tuple (term[0] = top termination, term[1] = bottom termination)</li>
 <li><strong>fine</strong>: tuple of 2 float, fine adjustment of the termination to precisely specify terminating atoms</li>
 </ul>
@@ -4280,7 +4534,7 @@ as the ideal choice.</p>
 <span id="tb-lib"></span><h2>TB_lib:<a class="headerlink" href="#module-chinook.TB_lib" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="chinook.TB_lib.H_me">
-<em class="property">class </em><code class="descclassname">chinook.TB_lib.</code><code class="descname">H_me</code><span class="sig-paren">(</span><em>i</em>, <em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.H_me" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">chinook.TB_lib.</code><code class="descname">H_me</code><span class="sig-paren">(</span><em>i</em>, <em>j</em>, <em>executable=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.H_me" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class contains the relevant executables and data structure pertaining 
 to generation of the Hamiltonian matrix elements for a single set of 
 coupled basis orbitals. Its attributes include integer values 
@@ -4298,7 +4552,9 @@ in memory alone.
 <code class="descname">H2Hk</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.H_me.H2Hk" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transform the list of hopping elements into a Fourier-series expansion 
 of the Hamiltonian. This is run during diagonalization for each
-matrix element index</p>
+matrix element index. If running a low-energy Hamiltonian, executable functions are
+simply summed for each basis index i,j, rather than computing a Fourier series. x is
+implicitly a numpy array of Nx3: it is essential that the executable conform to this input type.</p>
 <dl class="docutils">
 <dt><em>return</em>:</dt>
 <dd><ul class="first last simple">
@@ -4311,18 +4567,19 @@ matrix element index</p>
 
 <dl class="method">
 <dt id="chinook.TB_lib.H_me.append_H">
-<code class="descname">append_H</code><span class="sig-paren">(</span><em>R0</em>, <em>R1</em>, <em>R2</em>, <em>H</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.H_me.append_H" title="Permalink to this definition">¶</a></dt>
+<code class="descname">append_H</code><span class="sig-paren">(</span><em>H</em>, <em>R0=0</em>, <em>R1=0</em>, <em>R2=0</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.H_me.append_H" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new hopping path to the coupling of the parent orbitals.</p>
 <dl class="docutils">
 <dt><em>args</em>:</dt>
 <dd><ul class="first simple">
+<li><strong>H</strong>: complex float, matrix element strength, or if self.exectype,</li>
+</ul>
+<p>should be an executable</p>
+<ul class="simple">
 <li><strong>R0</strong>, <strong>R1</strong>, <strong>R2</strong>: float connecting vector in cartesian</li>
 </ul>
-<p>coordinate frame–this is the TOTAL vector, not the relevant 
+<p class="last">coordinate frame–this is the TOTAL vector, not the relevant 
 lattice vectors only</p>
-<ul class="last simple">
-<li><strong>H</strong>: complex float, matrix element strength</li>
-</ul>
 </dd>
 <dt><em>return</em>:</dt>
 <dd><ul class="first simple">
@@ -4372,6 +4629,21 @@ element list. This function is run automatically during slab generation.</p>
 <dd><p>The <strong>TB_model</strong> object carries the model basis as a list of <strong>orbital</strong>
 objects, as well as the model Hamiltonian, as a list of <strong>H_me</strong>.</p>
 <dl class="method">
+<dt id="chinook.TB_lib.TB_model.append_H">
+<code class="descname">append_H</code><span class="sig-paren">(</span><em>new_elements</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.TB_model.append_H" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add new terms to the Hamiltonian by hand. This directly modifies
+the list of Hamiltonian matrix element, self.mat_els of the TB object.</p>
+<dl class="docutils">
+<dt><em>args</em></dt>
+<dd><ul class="first simple">
+<li><strong>new_elements</strong>: list of Hamiltonian matrix elements, either a single element [i,j,x_ij,y_ij,z_ij,H_ij(x,y,z)]</li>
+</ul>
+<p class="last">or as a list of such lists. Here i, j are the related orbital-indices.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="chinook.TB_lib.TB_model.build_ham">
 <code class="descname">build_ham</code><span class="sig-paren">(</span><em>H_args</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.TB_model.build_ham" title="Permalink to this definition">¶</a></dt>
 <dd><p>Buld the Hamiltonian using functions from <strong>chinook.H_library.py</strong></p>
@@ -4407,8 +4679,27 @@ and a list of form [R0,R1,R2,Re(H)+1.0jIm(H)]</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="chinook.TB_lib.TB_model.plot_unitcell">
+<code class="descname">plot_unitcell</code><span class="sig-paren">(</span><em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.TB_model.plot_unitcell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility script for visualizing the lattice and orbital basis.
+Distinct atoms are drawn in different colours</p>
+<dl class="docutils">
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>ax</strong>: matplotlib Axes, for plotting on existing Axes</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>ax</strong>: matplotlib Axes, for further modifications to plot</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="chinook.TB_lib.TB_model.plotting">
-<code class="descname">plotting</code><span class="sig-paren">(</span><em>win_min=None</em>, <em>win_max=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.TB_model.plotting" title="Permalink to this definition">¶</a></dt>
+<code class="descname">plotting</code><span class="sig-paren">(</span><em>win_min=None</em>, <em>win_max=None</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.TB_model.plotting" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plotting routine for a tight-binding model evaluated over some path in k.
 If the model has not yet been diagonalized, it is done automatically
 before proceeding.</p>
@@ -4417,8 +4708,11 @@ before proceeding.</p>
 <dd><ul class="first simple">
 <li><strong>win_min</strong>, <strong>win_max</strong>: float, vertical axis limits for plotting</li>
 </ul>
-<p class="last">in units of eV. If not passed, a reasonable choice is made which 
+<p>in units of eV. If not passed, a reasonable choice is made which 
 covers the entire eigenspectrum.</p>
+<ul class="last simple">
+<li><strong>ax</strong>: matplotlib Axes, for plotting on existing Axes</li>
+</ul>
 </dd>
 <dt><em>return</em>:</dt>
 <dd><ul class="first last simple">
@@ -4461,11 +4755,63 @@ up the k-path into sequential diagonalizations.</p>
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="chinook.TB_lib.TB_model.unpack">
+<code class="descname">unpack</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.TB_model.unpack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduce a Hamiltonian object down to a list of matrix elements. Include the Hermitian conjugate terms</p>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Hlist</strong>: list of Hamiltonian matrix elements</li>
+</ul>
+</dd>
+</dl>
+<p><a href="#id471"><span class="problematic" id="id472">**</span></a><a href="#id473"><span class="problematic" id="id474">*</span></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.TB_lib.atom_coords">
+<code class="descclassname">chinook.TB_lib.</code><code class="descname">atom_coords</code><span class="sig-paren">(</span><em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.atom_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a dictionary organizing the distinct coordinates of instances of each
+atomic species in the basis</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>basis</strong>: list of orbital objects</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><a href="#id475"><span class="problematic" id="id476">**</span></a>dictionary with integer keys, numpy array of float values. atom:locations are</li>
+</ul>
+<p class="last">encoded in this way.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="chinook.TB_lib.cell_edges">
+<code class="descclassname">chinook.TB_lib.</code><code class="descname">cell_edges</code><span class="sig-paren">(</span><em>avec</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.cell_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define set of line segments which enclose the unit cell.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>avec</strong>: numpy array of 3x3 float</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>edges</strong>: numpy array of 12 x 6, endpoints of the 12 edges of the unit cell parallelepiped</li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="chinook.TB_lib.gen_H_obj">
-<code class="descclassname">chinook.TB_lib.</code><code class="descname">gen_H_obj</code><span class="sig-paren">(</span><em>htmp</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.gen_H_obj" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">chinook.TB_lib.</code><code class="descname">gen_H_obj</code><span class="sig-paren">(</span><em>htmp</em>, <em>executable=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.gen_H_obj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take a list of Hamiltonian matrix elements in list format:
 [i,j,Rij[0],Rij[1],Rij[2],Hij(R)] and generate a list of <strong>H_me</strong>
 objects instead. This collects all related matrix elements for a given
@@ -4476,6 +4822,12 @@ an input array of momentum</p>
 <dd><ul class="first last simple">
 <li><strong>htmp</strong>: list of numeric-type values (mixed integer[:2], float[2:5], complex-float[-1])</li>
 </ul>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>executable</strong>: boolean, if True, we don’t have a standard Fourier-type Hamiltonian,</li>
+</ul>
+<p class="last">but perhaps a low-energy expansion. In this case, the htmp elements are</p>
 </dd>
 <dt><em>return</em>:</dt>
 <dd><ul class="first last simple">
@@ -4501,7 +4853,7 @@ the main diagonal for tetrahedral partitioning of the cube</p>
 <p class="last"><strong>cube</strong>: numpy array of 8 corners (8x3) float</p>
 </dd>
 </dl>
-<p><a href="#id471"><span class="problematic" id="id472">**</span></a><a href="#id473"><span class="problematic" id="id474">*</span></a></p>
+<p><a href="#id477"><span class="problematic" id="id478">**</span></a><a href="#id479"><span class="problematic" id="id480">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -4553,7 +4905,7 @@ for an input point, we can extract its neighbours easily.</p>
 <p class="last">unit cube.</p>
 </dd>
 </dl>
-<p><a href="#id475"><span class="problematic" id="id476">**</span></a><a href="#id477"><span class="problematic" id="id478">*</span></a></p>
+<p><a href="#id481"><span class="problematic" id="id482">**</span></a><a href="#id483"><span class="problematic" id="id484">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -4572,7 +4924,7 @@ for an input point, we can extract its neighbours easily.</p>
 </ul>
 </dd>
 </dl>
-<p><a href="#id479"><span class="problematic" id="id480">**</span></a><a href="#id481"><span class="problematic" id="id482">*</span></a></p>
+<p><a href="#id485"><span class="problematic" id="id486">**</span></a><a href="#id487"><span class="problematic" id="id488">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -4591,12 +4943,12 @@ edge points as starting points, so that all cubes are within the grid.</p>
 </dd>
 <dt><em>return</em>:</dt>
 <dd><ul class="first simple">
-<li><a href="#id483"><span class="problematic" id="id484">**</span></a>numpy array of int, len 8 corresponding to the re-numbering of the</li>
+<li><a href="#id489"><span class="problematic" id="id490">**</span></a>numpy array of int, len 8 corresponding to the re-numbering of the</li>
 </ul>
 <p class="last">corners of the cube.</p>
 </dd>
 </dl>
-<p><a href="#id485"><span class="problematic" id="id486">**</span></a><a href="#id487"><span class="problematic" id="id488">*</span></a></p>
+<p><a href="#id491"><span class="problematic" id="id492">**</span></a><a href="#id493"><span class="problematic" id="id494">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -4630,7 +4982,7 @@ of a set of neighbouring points on a grid, we divide into a set of covering
 tetrahedra which span the volume of the cube.</p>
 </dd>
 </dl>
-<p><a href="#id489"><span class="problematic" id="id490">**</span></a><a href="#id491"><span class="problematic" id="id492">*</span></a></p>
+<p><a href="#id495"><span class="problematic" id="id496">**</span></a><a href="#id497"><span class="problematic" id="id498">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -4919,7 +5271,7 @@ in defining the matrix elements of Wigner’s small d-matrix</p>
 </ul>
 </dd>
 </dl>
-<p><a href="#id493"><span class="problematic" id="id494">**</span></a><a href="#id495"><span class="problematic" id="id496">*</span></a></p>
+<p><a href="#id499"><span class="problematic" id="id500">**</span></a><a href="#id501"><span class="problematic" id="id502">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -4942,7 +5294,7 @@ Z”(A)-Y’(B)-Z(y)</p>
 </ul>
 </dd>
 </dl>
-<p><a href="#id497"><span class="problematic" id="id498">**</span></a><a href="#id499"><span class="problematic" id="id500">*</span></a></p>
+<p><a href="#id503"><span class="problematic" id="id504">**</span></a><a href="#id505"><span class="problematic" id="id506">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -4967,7 +5319,7 @@ along with the relevant quantum numbers:</p>
 </ul>
 </dd>
 </dl>
-<p><a href="#id501"><span class="problematic" id="id502">**</span></a><a href="#id503"><span class="problematic" id="id504">*</span></a></p>
+<p><a href="#id507"><span class="problematic" id="id508">**</span></a><a href="#id509"><span class="problematic" id="id510">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -4986,26 +5338,7 @@ along with the relevant quantum numbers:</p>
 </ul>
 </dd>
 </dl>
-<p><a href="#id505"><span class="problematic" id="id506">**</span></a><a href="#id507"><span class="problematic" id="id508">*</span></a></p>
-</dd></dl>
-
-<dl class="function">
-<dt id="chinook.wigner.rotate_orbital_test">
-<code class="descclassname">chinook.wigner.</code><code class="descname">rotate_orbital_test</code><span class="sig-paren">(</span><em>projection</em>, <em>rotation</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.wigner.rotate_orbital_test" title="Permalink to this definition">¶</a></dt>
-<dd><p>Diagnostic test for the rotation of orbitals using the Wigner matrices
-defined here.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first simple">
-<li><strong>projection</strong>: numpy array of Nx4 float indicating orbital projection</li>
-</ul>
-<p>in spherical harmonics. Each row being [Re(proj), Im(proj), l,m]</p>
-<ul class="simple">
-<li><strong>rotation</strong>: numpy array of 3x3 float, or list of len 3 numpy array float, and</li>
-</ul>
-<p class="last">angle (float).</p>
-</dd>
-</dl>
+<p><a href="#id511"><span class="problematic" id="id512">**</span></a><a href="#id513"><span class="problematic" id="id514">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -5028,7 +5361,7 @@ defined here.</p>
 <p class="last">summation</p>
 </dd>
 </dl>
-<p><a href="#id509"><span class="problematic" id="id510">**</span></a><a href="#id511"><span class="problematic" id="id512">*</span></a></p>
+<p><a href="#id515"><span class="problematic" id="id516">**</span></a><a href="#id517"><span class="problematic" id="id518">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -5059,69 +5392,37 @@ which are related by the Wigner D matrix during the rotation</p>
 </ul>
 </dd>
 </dl>
-<p><a href="#id513"><span class="problematic" id="id514">**</span></a><a href="#id515"><span class="problematic" id="id516">*</span></a></p>
-</dd></dl>
-
-<dl class="function">
-<dt id="chinook.wigner.symm_D">
-<code class="descclassname">chinook.wigner.</code><code class="descname">symm_D</code><span class="sig-paren">(</span><em>l</em>, <em>A</em>, <em>B</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.wigner.symm_D" title="Permalink to this definition">¶</a></dt>
-<dd><p>For testing purposes only, generate the Wigner Big D matrix using the 
-sympy package, for comparison.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first simple">
-<li><strong>l</strong>: int (or half integer) angular momentum</li>
-<li><strong>Euler_A</strong>, <strong>Euler_B</strong>, <strong>Euler_y</strong>: float z-y-z Euler angles defining</li>
-</ul>
-<p class="last">the rotation</p>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>Dmat</strong>: 2j+1 x 2j+1 numpy array of complex float</li>
-</ul>
-</dd>
-</dl>
-<p><a href="#id517"><span class="problematic" id="id518">**</span></a><a href="#id519"><span class="problematic" id="id520">*</span></a></p>
-</dd></dl>
-
-<dl class="function">
-<dt id="chinook.wigner.testing">
-<code class="descclassname">chinook.wigner.</code><code class="descname">testing</code><span class="sig-paren">(</span><em>j</em>, <em>Euler_A</em>, <em>Euler_B</em>, <em>Euler_y</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.wigner.testing" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test function comparing rotation via Wigner matrices here, against the
-D matrices defined in the sympy library.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first simple">
-<li><strong>j</strong>: (half-) int, orbital angular momentum</li>
-<li><strong>Euler_A</strong>, <strong>Euler_B</strong>, <strong>Euler_y</strong>: float z-y-z Euler angles defining</li>
-</ul>
-<p class="last">the rotation</p>
-</dd>
-</dl>
+<p><a href="#id519"><span class="problematic" id="id520">**</span></a><a href="#id521"><span class="problematic" id="id522">*</span></a></p>
 </dd></dl>
 
 </div>
 <div class="section" id="module-chinook.Ylm">
 <span id="ylm"></span><h2>Ylm:<a class="headerlink" href="#module-chinook.Ylm" title="Permalink to this headline">¶</a></h2>
+<p>Created on Sun Jun 18 15:46:21 2017</p>
+<p>&#64;author: ryanday
+MIT License</p>
+<p>Copyright (c) 2018 Ryan Patrick Day</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
 <dl class="function">
 <dt id="chinook.Ylm.GramSchmidt">
 <code class="descclassname">chinook.Ylm.</code><code class="descname">GramSchmidt</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.Ylm.GramSchmidt" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simple orthogonalization of two vectors, returns orthonormalized vector</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>a</strong>: numpy array of numeric type, vector to orthogonalize</li>
-<li><strong>b</strong>: numpy array of numeric type, vector to be orthogonal to.</li>
-</ul>
-</dd>
-<dt><em>returns</em>: </dt>
-<dd><ul class="first simple">
-<li><strong>GS_a</strong>: numpy array of same size, <strong>a</strong> vector, now Gram-Schmidt</li>
-</ul>
-<blockquote class="last">
-<div>orthonormalized to the <strong>b</strong> vector.</div></blockquote>
-</dd>
-</dl>
+<dd><p>Simple orthogonalization of two vectors, returns orthonormalized vector
+args: a,b – np.array of same length
+returns: tmp – numpy array of same size, orthonormalized to the b vector</p>
 </dd></dl>
 
 <dl class="function">
@@ -5134,7 +5435,7 @@ Can be vectorized with numpy.vectorize() to allow array-like input</p>
 <dt><em>args</em>:</dt>
 <dd><ul class="first last simple">
 <li><strong>l</strong>: int orbital angular momentum, up to l=4 supported</li>
-<li><strong>m</strong>: int, azimuthal angular momentum <a href="#id521"><span class="problematic" id="id522">|</span></a>m|&lt;=l</li>
+<li><strong>m</strong>: int, azimuthal angular momentum <a href="#id523"><span class="problematic" id="id524">|</span></a>m|&lt;=l</li>
 <li><strong>theta</strong>: float, angle in spherical coordinates, radian measured from the z-axis [0,pi]</li>
 <li><strong>phi</strong>: float, angle in spherical coordinates, radian measured from the x-axis [0,2pi]</li>
 </ul>
@@ -5151,62 +5452,10 @@ Can be vectorized with numpy.vectorize() to allow array-like input</p>
 <dt id="chinook.Ylm.Yproj">
 <code class="descclassname">chinook.Ylm.</code><code class="descname">Yproj</code><span class="sig-paren">(</span><em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.Ylm.Yproj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define the unitary transformation rotating the basis of different inequivalent atoms in the
-basis to the basis of spherical harmonics for sake of defining L.S operator in basis of user</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>basis</strong>: list, orbital objects</li>
-</ul>
-</dd>
-<dt><em>return</em>: </dt>
-<dd><ul class="first last simple">
-<li><strong>Umats</strong>: dictionary of matrices for the different atoms and orbital-shells–keys are tuples of (atom,n,l,spin)</li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="chinook.Ylm.binomal_coefficient">
-<code class="descclassname">chinook.Ylm.</code><code class="descname">binomal_coefficient</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.Ylm.binomal_coefficient" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluation of the binomial coefficient (i.e. a choose b)</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>a</strong>: int, first value in binomial</li>
-<li><strong>b</strong>: int, second value in binomial</li>
-</ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
-<li>float, ratio of factorials a!, a-b!, b!</li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="chinook.Ylm.fillin">
-<code class="descclassname">chinook.Ylm.</code><code class="descname">fillin</code><span class="sig-paren">(</span><em>M</em>, <em>l</em>, <em>Dmat=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.Ylm.fillin" title="Permalink to this definition">¶</a></dt>
-<dd><p>When working with reduced basis sets, need to fill in the rest of the matrix
-to account for the rest of the orbitals in the shell, which are not considered in the
-model. (For example, for a t2g model of a d-orbital system, eg states (dx^2-y^2 and d3z^2-r^2) need
-to be accounted for.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>M</strong>: numpy array of complex float, unitary transformation, as filled so far–will have zero columns</li>
-<li><strong>l</strong>: int, orbital quantum number</li>
-</ul>
-</dd>
-<dt><em>kwargs</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>Dmat</strong>: numpy array of complex float, Wigner D matrix indicating the local rotation</li>
-</ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><strong>M</strong>: numpy array of complex float, filled in unitary matrix.</dd>
-</dl>
+basis to the basis of spherical harmonics for sake of defining L.S operator in basis of user
+args: basis–list of orbital objects</p>
+<p>returns: dictionary of matrices for the different atoms and l-shells–keys are tuples of (atom,l)</p>
+<p>29/09/2018 added reference to the spin character ‘sp’ to handle rotated systems effectively</p>
 </dd></dl>
 
 <dl class="function">
@@ -5216,38 +5465,16 @@ to be accounted for.</p>
 Gaunt coefficients required for dipole-allowed transitions (dl = +/-1) for arbitrary m,l and dm
 These have been tested against the sympy package to confirm numerical accuracy for all l,m possible
 up to l=5. This function is equivalent, for the subset of dm, dl allowed to
-sympy.physics.wigner.gaunt(l,1,l+dl,m,dm,-(m+dm))</p>
+sympy.physics.wigner.gaunt(l,1,l+dl,m,dm,-(m+dm))
+args:</p>
+<blockquote>
+<div>l: int orbital angular momentum quantum number
+m: int azimuthal angular momentum quantum number
+dl: int change in l (+/-1)
+dm: int change in azimuthal angular momentum (-1,0,1)</div></blockquote>
 <dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>l</strong>: int, orbital angular momentum quantum number</li>
-<li><strong>m</strong>: int, azimuthal angular momentum quantum number</li>
-<li><strong>dl</strong>: int, change in l (+/-1)</li>
-<li><strong>dm</strong>: int, change in azimuthal angular momentum (-1,0,1)</li>
-</ul>
-</dd>
-<dt><em>return</em>:</dt>
+<dt>return:</dt>
 <dd>float Gaunt coefficient</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="chinook.Ylm.laguerre">
-<code class="descclassname">chinook.Ylm.</code><code class="descname">laguerre</code><span class="sig-paren">(</span><em>x</em>, <em>l</em>, <em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.Ylm.laguerre" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluation of associated laguerre polynomial</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>x</strong>: float, number at which to evaluate the polynomial</li>
-<li><strong>l</strong>: int, order of polynomial</li>
-<li><strong>j</strong>: int, degree of polynomial (i.e. sum over polyomials of power up to n)</li>
-</ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>laguerre_value</strong>: float, value of the polynomial</li>
-</ul>
-</dd>
 </dl>
 </dd></dl>
 

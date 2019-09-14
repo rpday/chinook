@@ -70,6 +70,12 @@ klib:
 .. automodule:: chinook.klib
    :members:
 
+matplotlib_plotter:
+===================
+
+.. automodule:: chinook.matplotlib_plotter
+   :members:
+
 operator_library:
 =================
 

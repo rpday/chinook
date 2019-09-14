@@ -14,6 +14,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Slab Calculation" href="slab.html" />
@@ -718,13 +719,13 @@ The nonzero elements are on the upper diagonal</p>
 
 <dl class="function">
 <dt id="chinook.operator_library.O_path">
-<code class="descclassname">chinook.operator_library.</code><code class="descname">O_path</code><span class="sig-paren">(</span><em>O</em>, <em>TB</em>, <em>Kobj=None</em>, <em>vlims=(0</em>, <em>0)</em>, <em>Elims=(-10</em>, <em>10)</em>, <em>degen=False</em>, <em>plot=True</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.O_path" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">chinook.operator_library.</code><code class="descname">O_path</code><span class="sig-paren">(</span><em>Operator</em>, <em>TB</em>, <em>Kobj=None</em>, <em>vlims=(0</em>, <em>0)</em>, <em>Elims=(-10</em>, <em>10)</em>, <em>degen=False</em>, <em>plot=True</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.O_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute and plot the expectation value of an user-defined operator along a k-path
 Option of summing over degenerate bands (for e.g. fat bands) with degen boolean flag</p>
 <dl class="docutils">
 <dt><em>args</em>:</dt>
 <dd><ul class="first last simple">
-<li><strong>O</strong>: matrix representation of the operator (numpy array len(basis), len(basis) of complex float)</li>
+<li><strong>Operator</strong>: matrix representation of the operator (numpy array len(basis), len(basis) of complex float)</li>
 <li><strong>TB</strong>: Tight binding object from TB_lib</li>
 </ul>
 </dd>
@@ -733,7 +734,7 @@ Option of summing over degenerate bands (for e.g. fat bands) with degen boolean 
 <blockquote>
 <div><ul class="simple">
 <li><strong>Kobj</strong>: Momentum object, as defined in <em>chinook.klib.py</em></li>
-<li><strong>vlims</strong>: tuple of 2 float, limits of the colorscale for plotting, default to (0,0)</li>
+<li><strong>vlims</strong>: tuple of 2 float, limits of the colourscale for plotting, default to (0,0)</li>
 </ul>
 <p>if default value passed, will compute a reasonable range</p>
 <ul class="simple">
@@ -829,7 +830,7 @@ or none at all.</p>
 
 <dl class="function">
 <dt id="chinook.operator_library.degen_Ovals">
-<code class="descclassname">chinook.operator_library.</code><code class="descname">degen_Ovals</code><span class="sig-paren">(</span><em>O</em>, <em>E</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.degen_Ovals" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">chinook.operator_library.</code><code class="descname">degen_Ovals</code><span class="sig-paren">(</span><em>Oper_exp</em>, <em>Energy</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.operator_library.degen_Ovals" title="Permalink to this definition">¶</a></dt>
 <dd><p>In the presence of degeneracy, we want to average over the
 evaluated orbital expectation values–numerically, the degenerate 
 subspace can be arbitrarily diagonalized during numpy.linalg.eigh. 
@@ -837,8 +838,8 @@ All degeneracies are found, and the expectation values averaged.</p>
 <dl class="docutils">
 <dt><em>args</em>:</dt>
 <dd><ul class="first last simple">
-<li><strong>O</strong>: numpy array of float, operator expectations</li>
-<li><strong>E</strong>: numpy array of float, energy eigenvalues.</li>
+<li><strong>Oper_exp</strong>: numpy array of float, operator expectations</li>
+<li><strong>Energy</strong>: numpy array of float, energy eigenvalues.</li>
 </ul>
 </dd>
 </dl>

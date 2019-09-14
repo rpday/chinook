@@ -14,6 +14,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tight Binding" href="tightbinding.html" />
@@ -424,7 +425,7 @@ associated with the present experiment.</p>
 
 <dl class="method">
 <dt id="chinook.ARPES_lib.experiment.plot_intensity_map">
-<code class="descname">plot_intensity_map</code><span class="sig-paren">(</span><em>plot_map</em>, <em>slice_select</em>, <em>plot_bands=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.plot_intensity_map" title="Permalink to this definition">¶</a></dt>
+<code class="descname">plot_intensity_map</code><span class="sig-paren">(</span><em>plot_map</em>, <em>slice_select</em>, <em>plot_bands=False</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.plot_intensity_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot a slice of the intensity map computed in <em>spectral</em>. The user selects either
 an array index along one of the axes, or the fixed value of interest, allowing
 either integer, or float selection.</p>
@@ -440,15 +441,18 @@ case-sensitive.</p>
 <ul class="simple">
 <li><strong>plot_bands</strong>: boolean, option to overlay a constant-momentum cut with</li>
 </ul>
-<p class="last">the dispersion calculated from tight-binding</p>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>fig</strong>: matplotlib figure object</li>
-<li><strong>ax</strong>: matplotlib axis object</li>
+<p>the dispersion calculated from tight-binding</p>
+<ul class="last simple">
+<li><strong>ax</strong>: matplotlib Axes, for option to plot onto existing Axes</li>
 </ul>
 </dd>
 </dl>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>ax_img</strong>: matplotlib axis object</li>
+</ul>
+</div></blockquote>
 </dd></dl>
 
 <dl class="method">
@@ -514,7 +518,7 @@ computed into the desired basis direction.</p>
 
 <dl class="method">
 <dt id="chinook.ARPES_lib.experiment.spectral">
-<code class="descname">spectral</code><span class="sig-paren">(</span><em>ARPES_dict=None</em>, <em>slice_select=None</em>, <em>add_map=False</em>, <em>plot_bands=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.spectral" title="Permalink to this definition">¶</a></dt>
+<code class="descname">spectral</code><span class="sig-paren">(</span><em>ARPES_dict=None</em>, <em>slice_select=None</em>, <em>add_map=False</em>, <em>plot_bands=False</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.ARPES_lib.experiment.spectral" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take the matrix elements and build a simulated ARPES spectrum. 
 The user has several options here for the self-energy to be used,  c.f. <em>SE_gen()</em> for details.
 Gaussian resolution broadening is the last operation performed, to be consistent with the
@@ -529,12 +533,14 @@ practical experiment.</p>
 <p>otherwise, the intensity map is overwritten</p>
 <ul class="last simple">
 <li><strong>plot_bands</strong>: boolean, plot bandstructure from tight-binding over the intensity map</li>
+<li><strong>ax</strong>: matplotlib Axes, only relevant if <strong>slice_select</strong>, option to pass existing Axes to plot onto</li>
 </ul>
 </dd>
 <dt><em>return</em>:</dt>
 <dd><ul class="first last simple">
 <li><strong>I</strong>: numpy array of float, raw intensity map.</li>
 <li><strong>Ig</strong>: numpy array of float, resolution-broadened intensity map.</li>
+<li><strong>ax</strong>: matplotlib Axes, for further modifications to plot only if <strong>slice_select</strong> True</li>
 </ul>
 </dd>
 </dl>
@@ -809,10 +815,150 @@ in which case the projection can be no larger than 7 long. So output will be at 
 </div>
 <div class="section" id="module-chinook.intensity_map">
 <span id="intensity-map"></span><h2>intensity_map:<a class="headerlink" href="#module-chinook.intensity_map" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="chinook.intensity_map.intensity_map">
+<em class="property">class </em><code class="descclassname">chinook.intensity_map.</code><code class="descname">intensity_map</code><span class="sig-paren">(</span><em>index</em>, <em>Imat</em>, <em>cube</em>, <em>kz</em>, <em>T</em>, <em>hv</em>, <em>pol</em>, <em>dE</em>, <em>dk</em>, <em>self_energy=None</em>, <em>spin=None</em>, <em>rot=0.0</em>, <em>notes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.intensity_map.intensity_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class intended for organizing information regarding a specific ARPES 
+calculation. To be used for both plotting in python, as well as exporting
+to either .txt or .hdf5 formats.</p>
+<dl class="method">
+<dt id="chinook.intensity_map.intensity_map.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.intensity_map.intensity_map.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy-by-value of the intensity map object. 
+<em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>intensity_map</em> object with identical attributes to self.</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.intensity_map.intensity_map.save_map">
+<code class="descname">save_map</code><span class="sig-paren">(</span><em>directory</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.intensity_map.intensity_map.save_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the intensity map: if 2D, just a single file, if 3D, each constant-energy
+slice is saved separately.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>directory</strong>: string, directory for saving intensity map to</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>boolean</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.intensity_map.intensity_map.write_2D_Imat">
+<code class="descname">write_2D_Imat</code><span class="sig-paren">(</span><em>filename</em>, <em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.intensity_map.intensity_map.write_2D_Imat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sub-function for producing the textfiles associated with a 2dimensional numpy array of float</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>filename</strong>: string, indicating destination of file</li>
+<li><strong>index</strong>: int, energy index of map to save, if -1, then just a 2D map, and save the whole</li>
+</ul>
+<p class="last">thing</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>boolean</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.intensity_map.intensity_map.write_meta">
+<code class="descname">write_meta</code><span class="sig-paren">(</span><em>destination</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.intensity_map.intensity_map.write_meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write meta-data file for ARPES intensity calculation.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>destination</strong>: string, file-lead</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>boolean</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="module-chinook.radint_lib">
-<span id="radint-lib"></span><h2>radint_lib:<a class="headerlink" href="#module-chinook.radint_lib" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<div class="section" id="matplotlib-plotter">
+<h2>matplotlib_plotter:<a class="headerlink" href="#matplotlib-plotter" title="Permalink to this headline">¶</a></h2>
+<p>A built-in data-explorer is included in chinook, built using matplotlib to ensure cross platform stability. The figure below shows an example screen capture for a calculation on <span class="math notranslate nohighlight">\(Sr_2IrO_4\)</span>. The user has the ability to scan through the momentum and energy axes of the dataset, and the cursor can be used actively to select momentum- and energy- distribution curves in the side and lower panels. A scatterplot of the bare dispersion, as computed from the Hamiltonian diagonalization is plotted overtop the intensity map.</p>
+<a class="reference internal image-reference" href="_images/matplotlib_plotter.png"><img alt="_images/matplotlib_plotter.png" src="_images/matplotlib_plotter.png" style="width: 600px;" /></a>
+<span class="target" id="module-chinook.matplotlib_plotter"></span><p>Created on Thu Sep 12 14:53:36 2019</p>
+<p>&#64;author: rday</p>
+<dl class="class">
+<dt id="chinook.matplotlib_plotter.interface">
+<em class="property">class </em><code class="descclassname">chinook.matplotlib_plotter.</code><code class="descname">interface</code><span class="sig-paren">(</span><em>experiment</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.matplotlib_plotter.interface" title="Permalink to this definition">¶</a></dt>
+<dd><p>This interactive tool is intended for exploring the dataset associated
+with an ARPES simulation using chinook.
+The user can scan through the datacube in each dimension.
+This uses matplotlib natively rather than alternative gui systems in python like Tkinter,
+which makes it a bit more robust across platforms.</p>
+<dl class="method">
+<dt id="chinook.matplotlib_plotter.interface.bin_energy">
+<code class="descname">bin_energy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.matplotlib_plotter.interface.bin_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translate the exact energy value for the band peaks into the discrete
+binning of the intensity map, to allow for cursor queries to be processed.</p>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>coarse_pts</strong>: numpy array of float, same lengths as <em>self.state_coords</em>,</li>
+</ul>
+<p class="last">but sampled over a discrete grid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.matplotlib_plotter.interface.find_cursor">
+<code class="descname">find_cursor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.matplotlib_plotter.interface.find_cursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find nearest point to the desired cursor position, as clicked by the
+user. The cursor event coordinates are compared against the peak positions
+from the tight-binding calculation, and a best choice within the plotted 
+slice is selected.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>cursor</strong>: tuple of 2 float, indicating the column and row of the</li>
+</ul>
+<p class="last">event, in units of the data-set scaling (e.g. 1/A or eV)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.matplotlib_plotter.interface.plot_img">
+<code class="descname">plot_img</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.matplotlib_plotter.interface.plot_img" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the plotted intensity map slice. The plotted bandstructure states are also displayed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="chinook.matplotlib_plotter.interface.run_gui">
+<code class="descname">run_gui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.matplotlib_plotter.interface.run_gui" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execution of the matplotlib gui. The figure is initialized, along with all widgets and 
+chosen datasets. The user has access to both the slice of ARPES data plotted, in addition
+to the orbital projection plotted in upper right panel.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="radint-lib">
+<h2>radint_lib:<a class="headerlink" href="#radint-lib" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-chinook.radint_lib"></span><dl class="function">
 <dt id="chinook.radint_lib.define_radial_wavefunctions">
 <code class="descclassname">chinook.radint_lib.</code><code class="descname">define_radial_wavefunctions</code><span class="sig-paren">(</span><em>rad_dict</em>, <em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.radint_lib.define_radial_wavefunctions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define the executable radial wavefunctions for computation of
@@ -829,11 +975,27 @@ the radial integrals</p>
 <div><ul class="simple">
 <li><em>‘slater’</em>: default value, if <em>‘rad_type’</em> is not passed,</li>
 </ul>
-<p>Slater type orbitals assumed and evaluated for the integral</p>
+<dl class="docutils">
+<dt>Slater type orbitals assumed and evaluated for the integral</dt>
+<dd><ul class="first simple">
+<li><em>‘rad_args’</em>: dictionary of float, supplying optional final-state</li>
+</ul>
+<p class="last">phase shifts, accounting for scattering-type final states. keys of form
+‘a-n-l-lp’. Radial integrals will be accordingly multiplied</p>
+</dd>
+</dl>
 <ul class="simple">
 <li><em>‘hydrogenic’</em>: similar in execution to <em>‘slater’</em>,</li>
 </ul>
-<p>but uses Hydrogenic orbitals–more realistic for light-atoms</p>
+<dl class="docutils">
+<dt>but uses Hydrogenic orbitals–more realistic for light-atoms</dt>
+<dd><ul class="first simple">
+<li><em>‘rad_args’</em>: dictionary of float, supplying optional final-state</li>
+</ul>
+<p class="last">phase shifts, accounting for scattering-type final states. keys of form
+‘a-n-l-lp’. Radial integrals will be accordingly multiplied</p>
+</dd>
+</dl>
 <ul class="simple">
 <li><em>‘grid’</em>: radial wavefunctions evaluated on a grid of</li>
 </ul>
@@ -885,7 +1047,7 @@ and complex float values for the radial integrals.</p>
 
 <dl class="function">
 <dt id="chinook.radint_lib.fill_radint_dic">
-<code class="descclassname">chinook.radint_lib.</code><code class="descname">fill_radint_dic</code><span class="sig-paren">(</span><em>Eb</em>, <em>orbital_funcs</em>, <em>hv</em>, <em>W=0.0</em>, <em>fixed=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.radint_lib.fill_radint_dic" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">chinook.radint_lib.</code><code class="descname">fill_radint_dic</code><span class="sig-paren">(</span><em>Eb</em>, <em>orbital_funcs</em>, <em>hv</em>, <em>W=0.0</em>, <em>phase_shifts=None</em>, <em>fixed=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.radint_lib.fill_radint_dic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function for computing dictionary of radial integrals. 
 Can pass either an array of binding energies or a single binding
 energy as a float. In either case, returns a dictionary however 
@@ -902,7 +1064,15 @@ used by either writing <strong>Bdic[‘key’]</strong> or
 <li><strong>fixed</strong>: bool, if True, constant radial integral for each scattering</li>
 </ul>
 <p class="last">channel available: then the orbital_funcs dictionary already
-has the radial integral evaluated</p>
+has the radial integral evaluated
+- <strong>hv</strong>: float, photon energy of incident light.</p>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>W</strong>: float, work function</li>
+<li><strong>phase_shifts</strong>: dictionary for final state phase shifts, as an optional</li>
+</ul>
+<p class="last">extension beyond pure- free electron final states. For now, float type.</p>
 </dd>
 <dt><em>return</em>:</dt>
 <dd><ul class="first last simple">
@@ -1005,8 +1175,8 @@ interpolation of these integrations.</p>
 <p>‘hv’ (photon energy), ‘W’ (work function), and the rad_type
 (radial wavefunction type, as well as any relevant additional
 pars, c.f. <em>radint_lib.define_radial_wavefunctions</em>).
-Note: <em>‘rad_type’</em> is optional, as is <em>rad_args</em>, depending on choice
-of radial wavefunction.</p>
+Note: <em>‘rad_type’</em> is optional, (as is <em>rad_args</em>, depending on choice
+of radial wavefunction.)</p>
 <ul class="simple">
 <li><strong>basis</strong>: list of orbitals in the basis</li>
 <li><strong>Eb</strong>: tuple of 2 floats indicating the range of energy of</li>
@@ -1026,7 +1196,7 @@ of radial wavefunction.</p>
 
 <dl class="function">
 <dt id="chinook.radint_lib.radint_calc">
-<code class="descclassname">chinook.radint_lib.</code><code class="descname">radint_calc</code><span class="sig-paren">(</span><em>k_norm</em>, <em>orbital_funcs</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.radint_lib.radint_calc" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">chinook.radint_lib.</code><code class="descname">radint_calc</code><span class="sig-paren">(</span><em>k_norm</em>, <em>orbital_funcs</em>, <em>phase_shifts=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.radint_lib.radint_calc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute dictionary of radial integrals evaluated at a single <a href="#id55"><span class="problematic" id="id56">|k|</span></a> value
 for the whole basis. Will avoid redundant integrations by checking for
 the presence of an identical dictionary key. The integration is done
@@ -1040,6 +1210,11 @@ as a simple adaptive integration algorithm, defined in the
 <p>(as an argument for the spherical Bessel Function)</p>
 <ul class="last simple">
 <li><strong>orbital_funcs</strong>: dictionary, radial wavefunction executables</li>
+</ul>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>phase_shifts</strong>: dictionary of phase shifts, to convey final state scattering</li>
 </ul>
 </dd>
 <dt><em>returns</em>:</dt>
