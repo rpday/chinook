@@ -72,7 +72,13 @@ class H_me:
         of hopping elements.
         
         *args*:
+
             - **i**, **j**: int, basis indices
+
+        *kwargs*:
+
+            - **executable**: boolean, True if using unconventional, executable form of Hamiltonian rather
+            than standard tij type tight-binding model
             
         ***
         '''
@@ -86,6 +92,7 @@ class H_me:
         Add a new hopping path to the coupling of the parent orbitals.
         
         *args*:
+
             - **H**: complex float, matrix element strength, or if self.exectype,
             should be an executable 
             
@@ -95,8 +102,11 @@ class H_me:
             
             
         *return*:
+
             - directly modifies the Hamiltonian list for these matrix
             coordinates
+
+        ***
         '''
         if not self.executable:
             self.H.append([R0,R1,R2,H])
@@ -112,6 +122,7 @@ class H_me:
         implicitly a numpy array of Nx3: it is essential that the executable conform to this input type.
         
         *return*:
+
             - lambda function of a numpy array of float of length 3
             
         ***
@@ -130,6 +141,7 @@ class H_me:
         The Hamiltonian list is not itself directly modified. 
         
         *return*:
+
             - list of hopping vectors and associated Hamiltonian matrix
             element strengths
             
@@ -154,7 +166,9 @@ class H_me:
         Copy by value of the **H_me** object
 
         *return*:
+
             - **H_copy**: duplicate **H_me** object
+       
         ***
         '''
         
@@ -174,7 +188,8 @@ class TB_model:
         '''
         Initialize the tight-binding model object.
         
-        *args*:   
+        *args*:  
+
             - **basis**: list of orbital objects
                     
             - **H_args**: dictionary for Hamiltonian build:
@@ -209,6 +224,7 @@ class TB_model:
              'soc':boolean, 'lam': dictionary of integer:float pairs
         
         *kwargs*:
+
             - **Kobj**: momentum object, as defined in *chinook.klib.py*
             
         ***
@@ -229,6 +245,7 @@ class TB_model:
         Copy by value of the **TB_model** object
         
         *return*:
+
             - **TB_copy**: duplicate of the **TB_model** object.
         '''
         
@@ -258,10 +275,12 @@ class TB_model:
         Buld the Hamiltonian using functions from **chinook.H_library.py**
 
         *args*:
+
             - **H_args**: dictionary, containing all relevant information for
             defining the Hamiltonian list. For details, see **TB_model.__init__**.
             
         *return*:
+
             - sorted list of matrix element objects. These objects have 
             i,j attributes referencing the orbital basis indices, 
             and a list of form [R0,R1,R2,Re(H)+1.0jIm(H)]
@@ -308,9 +327,12 @@ class TB_model:
         Add new terms to the Hamiltonian by hand. This directly modifies
         the list of Hamiltonian matrix element, self.mat_els of the TB object.
         
-        *args*
+        *args*:
+
             - **new_elements**: list of Hamiltonian matrix elements, either a single element [i,j,x_ij,y_ij,z_ij,H_ij(x,y,z)]
             or as a list of such lists. Here i, j are the related orbital-indices.
+        
+        ***
         '''
         if type(new_elements[0])!=list:
             new_elements = [new_elements]
@@ -331,6 +353,7 @@ class TB_model:
     
     
         *return*:
+
             - **Hlist**: list of Hamiltonian matrix elements
             
         ***
@@ -354,12 +377,14 @@ class TB_model:
         up the k-path into sequential diagonalizations.
         
         *return*:
+
             - **self.Eband**: numpy array of float, shape(len(self.Kobj.kpts),len(self.basis)),
             eigenvalues
             
             - **self.Evec**: numpy array of complex float, shape(len(self.Kobj.kpts),len(self.basis),len(self.basis))
             eigenvectors
                 
+        ***
         '''
         if ps_found:
             mem_summary = psutil.virtual_memory()
@@ -405,6 +430,7 @@ class TB_model:
         before proceeding.
         
         *kwargs*:
+
             - **win_min**, **win_max**: float, vertical axis limits for plotting
             in units of eV. If not passed, a reasonable choice is made which 
             covers the entire eigenspectrum.
@@ -412,8 +438,10 @@ class TB_model:
             - **ax**: matplotlib Axes, for plotting on existing Axes
             
         *return*:
+
             - **ax**: matplotlib axes object
         
+        ***
         '''
         try:
             Emin,Emax = np.amin(self.Eband),np.amax(self.Eband)
@@ -451,11 +479,14 @@ class TB_model:
         Distinct atoms are drawn in different colours
         
         *kwargs*:
+
             - **ax**: matplotlib Axes, for plotting on existing Axes
             
         *return*:
+
             - **ax**: matplotlib Axes, for further modifications to plot
         
+        ***
         '''
         edges = cell_edges(self.avec)
         coord_dict = atom_coords(self.basis)
@@ -481,14 +512,19 @@ def gen_H_obj(htmp,executable=False):
     an input array of momentum
     
     *args*:
+
         - **htmp**: list of numeric-type values (mixed integer[:2], float[2:5], complex-float[-1])
     
     *kwargs*:
+
         - **executable**: boolean, if True, we don't have a standard Fourier-type Hamiltonian,
         but perhaps a low-energy expansion. In this case, the htmp elements are
         
     *return*:
+
         - **Hlist**: list of Hamiltonian matrix element, **H_me** objects
+    
+    ***
     '''
     if not executable:
         htmp = sorted(htmp,key=itemgetter(0,1,2,3,4))
@@ -513,14 +549,19 @@ def gen_H_obj(htmp,executable=False):
             
         
 def cell_edges(avec):
+
     '''
     Define set of line segments which enclose the unit cell. 
     
     *args*:
+
         - **avec**: numpy array of 3x3 float
         
     *return*:
+
         - **edges**: numpy array of 12 x 6, endpoints of the 12 edges of the unit cell parallelepiped
+    
+    ***
     '''
     
     modvec = np.array([[np.mod(int(j/4),2),np.mod(int(j/2),2),np.mod(j,2)] for j in range(8)])
@@ -539,11 +580,15 @@ def atom_coords(basis):
     atomic species in the basis
     
     *args*:
+
         - **basis**: list of orbital objects
         
     *return*:
+
         - **dictionary with integer keys, numpy array of float values. atom:locations are
-        encoded in this way.
+        encoded in this way
+
+    ***.
     '''
     
     coord_dict = {}

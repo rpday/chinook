@@ -32,9 +32,11 @@ def fact(N):
     Recursive factorial function for non-negative integers.
     
     *args*:
+
         - **N**: int, or int-like float
         
     *return*:
+
         - factorial of **N**
         
     ***
@@ -53,6 +55,7 @@ def s_lims(j,m,mp):
     Limits for summation in definition of Wigner's little d-matrix
     
     *args*:
+
         - **j**: int,(or half-integer) total angular momentum quantum number
         
         - **m**: int, (or half-integer) initial azimuthal angular momentum quantum number
@@ -61,6 +64,7 @@ def s_lims(j,m,mp):
         quantum number coupled to by rotation
         
     *return*:
+
         - list of int, viable candidates which result in well-defined factorials in 
         summation
     
@@ -85,6 +89,7 @@ def small_D(j,mp,m,Euler_B):
     The limits for this summation are defined by s_lims(j,m,mp). 
     
     *args*:
+
         - **j**, **mp** ,**m** -- integer (or half-integer) angular momentum 
         quantum numbers for the orbital angular momentum, and its azimuthal projections
         which are related by the Wigner D matrix during the rotation
@@ -92,6 +97,7 @@ def small_D(j,mp,m,Euler_B):
         - **Euler_B**: float, angle of rotation in radians, for the y-rotation
     
     *return*:
+
         - float representing the matrix element of Wigner's small d-matrix
     
     ***
@@ -113,12 +119,14 @@ def Wd_denominator(j,m,mp,sp):
     in defining the matrix elements of Wigner's small d-matrix
     
     *args*:
+
         - **j**, **m**, **mp**: integer (or half-integer) angular momentum 
         quantum numbers
         
         - **s**: int, the index of the summation
         
     *return*:
+
         - int, product of factorials
     
     ***
@@ -134,12 +142,14 @@ def big_D_element(j,mp,m,Euler_A,Euler_B,Euler_y):
     along with the relevant quantum numbers:
         
     *args*: 
+
         - **j**, **mp**, **m**: integer (half-integer) angular momentum quantum numbers
         
         - **Euler_A**, **Euler_B**, **Euler_y**: float z-y-z Euler angles defining
         the rotation
         
     *return*:
+
         - complex float corresponding to the [mp,m] matrix element
     
     ***
@@ -154,12 +164,14 @@ def WignerD(l,Euler_A,Euler_B,Euler_y):
     Z"(A)-Y'(B)-Z(y)
     
     *args*:
+
         - **l**: int (or half integer) angular momentum
         
         - **Euler_A**, **Euler_B**, **Euler_y**: float z-y-z Euler angles defining
         the rotation
     
     *return*:
+    
         - **Dmat**: 2j+1 x 2j+1 numpy array of complex float
     
     ***

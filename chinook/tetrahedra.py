@@ -13,9 +13,11 @@ def not_point(point):
     Inverse of point, defined in an N-dimensional binary coordinate frame
     
     *args*:
+
         - **point**: int or numpy array of int between 0 and 1
     
     *return*:
+
         - numpy array of int, NOT gate applied to the binary vector point
 
     ***
@@ -29,9 +31,11 @@ def neighbours(point):
     for an input point, we can extract its neighbours easily.
     
     *args*:
+
         - **point**: numpy array of 3 int, all either 0 or 1
     
     *return*:
+
         - numpy array of 3x3 int, indicating the neighbours of **point** on the
         unit cube.
         
@@ -46,6 +50,7 @@ def corners():
     the main diagonal for tetrahedral partitioning of the cube
     
     *return*:
+
         **main**: tuple of 2 integers indicating the cube coordinates
         
         **cube**: numpy array of 8 corners (8x3) float
@@ -66,10 +71,10 @@ def tetrahedra():
     dotted with some basis vector set to put them into the proper coordinate frame.
     
     *return*:
+
         - **tetra**: numpy array of 6 x 4 x 3 int, indicating the corners
         of the 6 tetrahedra
         
-    ***
     ***
     '''
     main,cube = corners()
@@ -100,6 +105,7 @@ def tet_inds():
       to define the spanning tetrahedra over the larger k-mesh
     
     *return*:
+
         - **tetra_inds**: numpy array of integer (6x4), with each
         row containing the index of the 4 tetrahedral vertices. Together, for
         of a set of neighbouring points on a grid, we divide into a set of covering
@@ -141,11 +147,13 @@ def mesh_tetra(avec,N):
         over the Brillouin zone.
         
     *return*:
+
         - **pts**: numpy array of Mx3 float, indicating the points in momentum space
         at the vertices of the mesh
         
         - **mesh_tet**: numpy array of Lx4 int, indicating the L-tetrahedra
         which partition the grid
+
         
     '''
     
@@ -184,6 +192,7 @@ def propagate(i,Nr,Nc):
     edge points as starting points, so that all cubes are within the grid.
     
     *args*:
+
         - **i**: int, index of origin
         
         - **Nr**: int, number of rows in grid
@@ -191,6 +200,7 @@ def propagate(i,Nr,Nc):
         - **Nc**: int, number of columns in grid
         
     *return*:
+    
         - **numpy array of int, len 8 corresponding to the re-numbering of the
         corners of the cube.
     

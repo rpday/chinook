@@ -31,6 +31,11 @@ import numpy as np
 import datetime as dt
 
 class intensity_map:
+
+    '''
+    Class for organization and saving of data, as well as metadata related to
+    a specific ARPES calculation.
+    '''
     
     def __init__(self,index,Imat,cube,kz,T,hv,pol,dE,dk,self_energy=None,spin=None,rot=0.0,notes=None):
         self.index = index
@@ -51,15 +56,21 @@ class intensity_map:
             self.notes = 'N/A'
         
     def save_map(self,directory):
+
         '''
+
         Save the intensity map: if 2D, just a single file, if 3D, each constant-energy
-        slice is saved separately.
+        slice is saved separately. Saved as .txt file
 
         *args*:
+
             - **directory**: string, directory for saving intensity map to
         
         *return*:
+
             - boolean
+
+        ***
         '''
         self.write_meta(directory+'_meta.txt')
         dim_min = min([a for a in np.shape(self.Imat)])
@@ -73,18 +84,22 @@ class intensity_map:
         return True
     
     def write_2D_Imat(self,filename,index):
+        
         '''
         Sub-function for producing the textfiles associated with a 2dimensional numpy array of float
 
         *args*:
+
             - **filename**: string, indicating destination of file
             
             - **index**: int, energy index of map to save, if -1, then just a 2D map, and save the whole
             thing
             
         *return*:
+
             - boolean
         
+        ***
         '''
         if index>-1:
             imat = self.Imat[:,:,index]
@@ -101,14 +116,19 @@ class intensity_map:
         return True
     
     def write_meta(self,destination):
+        
         '''
         Write meta-data file for ARPES intensity calculation.
         
         *args*:
+
             - **destination**: string, file-lead
             
         *return*:
+
             - boolean
+
+        ***
         '''
         
         with open(destination,'w') as tofile:
@@ -152,9 +172,14 @@ class intensity_map:
         
         
     def copy(self):
+
         '''
         Copy-by-value of the intensity map object. 
+
         *return*:
+
             - *intensity_map* object with identical attributes to self.
+
+        ***
         '''
         return intensity_map(self.index,self.Imat,self.cube,self.kz,self.T,self.hv,self.pol,self.dE,self.dk,self.self_energy,self.spin,self.rot)

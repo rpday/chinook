@@ -40,7 +40,10 @@ class interface:
         the y-direction. 
         
         *args*:
+
             - **experiment**: ARPES experiment object, as defined in *chinook.ARPES_lib*
+        
+        ***
         '''
         self.experiment = experiment
         self.slice_dict = {'Fixed Kx':1,'Fixed Ky':0,'Fixed Energy':2}
@@ -64,6 +67,7 @@ class interface:
         self.run_gui()
     
     def run_gui(self):
+
         '''
         Execution of the matplotlib gui. The figure is initialized, along with all widgets and 
         chosen datasets. The user has access to both the slice of ARPES data plotted, in addition
@@ -109,13 +113,16 @@ class interface:
         
         ## SLIDER FUNCTION ##
         def img_slide(val):
+
             '''
             User requests another slice of the image to be displayed using the 
             slider widget. Image is updated with the requested dataset.
             
             *args*:
+
                 - **val**: float, slider value chosen
-            
+
+            ***
             '''
             self.indx = int((val-self.axes[self.dim][0])/(self.axes[self.dim][1]-self.axes[self.dim][0]))
             self.plot_img()
@@ -127,14 +134,17 @@ class interface:
         ## SLICE SELECTION RADIO BUTTON FUNCTION ##
         def button_click(label):
             '''
+
             User requests plotting of intensity map along an alternative axis.
             The intensity map is regenerated with axes scaled to reflect the 
             extent of data within the new plane.
             
             *args*:
+
                 - **label**: string, radio-button label associated with the 
                 possible slice directions
-                
+
+            ***    
             '''
             self.dim = self.slice_dict[label]  
             
@@ -171,16 +181,19 @@ class interface:
             self.fig.canvas.draw()
         
         def onclick(event):
+
             '''
             User selects a point of interest in the intensity map, and the 
             corresponding orbital eigenvector is displayed in the upper right 
             panel of the window.
             
             *args*:
+
                 - **event**: button_press_event associated with mouse query 
                 within the frame of self.ax1. All other mouse events are
                 disregarded.
-            
+
+            ***
             '''
             if event.inaxes==self.ax1.axes:
                 coords = np.array([event.xdata,event.ydata])
@@ -199,6 +212,7 @@ class interface:
         plt.show()
         
     def find_cursor(self):
+
         '''
         Find nearest point to the desired cursor position, as clicked by the
         user. The cursor event coordinates are compared against the peak positions
@@ -206,10 +220,11 @@ class interface:
         slice is selected.
         
         *args*:
+
             - **cursor**: tuple of 2 float, indicating the column and row of the
             event, in units of the data-set scaling (e.g. 1/A or eV)
         
-       
+        ***
         '''
         ind1,ind2 = self.other_dims[self.dim] #columns,rows
         cursor = self.cursor_location
@@ -250,9 +265,12 @@ class interface:
         
         
     def plot_img(self):
+
         '''
-        Update the plotted intensity map slice. The plotted bandstructure states are also displayed.
+        Update the plotted intensity map slice. The plotted bandstructure states are 
+        also displayed.
         
+        ***
         '''
         ind1,ind2 = self.other_dims[self.dim]
         self.plot_peaks = self.state_coords[(ind1,ind2),:][:,np.where(self.state_coords[self.dim,:]==self.axes[self.dim][self.indx])[0]]
@@ -270,13 +288,17 @@ class interface:
             self.img.set_clim(vmin = self.Imat[:,:,self.indx].min()*0.8,vmax=self.Imat[:,:,self.indx].max()*1.2)
             
     def bin_energy(self):
+
         '''
         Translate the exact energy value for the band peaks into the discrete
         binning of the intensity map, to allow for cursor queries to be processed.
         
         *return*:
+
             - **coarse_pts**: numpy array of float, same lengths as *self.state_coords*,
             but sampled over a discrete grid.
+
+        ***
         '''
         
         fine_pts = self.state_coords[2,:]

@@ -48,9 +48,11 @@ class wavefunction:
     represents a projection onto the same orbital basis set as defined previously.
     
     *args*:
+
         - **basis**: list of orbital objects
         
         - **vector**: numpy array of complex float, eigenvector projected onto the basis orbitals
+   
     '''
     
     def __init__(self,basis,vector):
@@ -64,6 +66,17 @@ class wavefunction:
             print('ERROR: incompatible basis and vector input. Check that both have same length.')
         
     def redefine_vector(self,vector):
+
+        '''
+        Update vector definition
+
+        *args*:
+
+            - **vector**: numpy array of complex float, same length as self.vector
+
+        ***
+        '''
+
         try:
             self.vector[:] = vector
         except ValueError:
@@ -77,6 +90,7 @@ class wavefunction:
         aa more convenient vector form of the projections themselves, as lists of complex float
         
         *return*:
+
             - **all_lm**: list of int, l,m pairs of all spherical harmonics relevant to calculation
             
             - **lm_pointers**: list of int, pointer indices relating each basis orbital projection to the 
@@ -85,6 +99,7 @@ class wavefunction:
             - **projectors**: list of arrays of complex float, providing the complex projection of basis
             onto the related spherical harmonics
         
+        ***
         '''
         all_lm = []
         lm_pointers = []
@@ -116,6 +131,7 @@ class wavefunction:
         Create a Pointer array of basis indices and the centres of these basis orbitals.
         
         *return*:
+
             - **all_centres**: list of numpy array of length 3, indicating unique positions in the basis set
             
             - **centre_pointers**: list of int, indicating the indices of position array, associated with the
@@ -142,11 +158,15 @@ class wavefunction:
     
     
     def calc_Ylm(self,th,ph):
+
         '''
         Calculate all spherical harmonics needed for present calculation
         
         *return*:
+
             - numpy array of complex float, of shape (len(self.harmonics),len(th))
+        
+        ***
         '''
         return np.array([Ylm.Y(int(lm[0]),int(lm[1]),th,ph) for lm in self.harmonics])
         
@@ -154,6 +174,7 @@ class wavefunction:
                 
             
     def triangulate_wavefunction(self,n,plotting=True,ax=None):
+
         '''
         Plot the wavefunction stored in the class attributes as self.vector as a projection
         over the basis of spherical harmonics. The radial wavefunctions are not explicitly included,
@@ -162,16 +183,19 @@ class wavefunction:
         sets the smoothness of the orbital projection by the integer argument *n*
         
         *args*:
+
             - **n**: int, number of angles in the mesh: Theta from 0 to pi is divided 2n times, and
             Phi from 0 to 2pi is divided 4n times
             
         *kwargs*:
+
             - **plotting**: boolean, turn on/off to display plot
             
             - **ax**: matplotlib Axes, for plotting on existing plot
             
             
         *return*:
+
             - **vertices**: numpy array of float, shape (len(centres), len(th)*len(ph), 3) locations of vertices
             
             - **triangulations**: numpy array of int, indicating the vertices connecting each surface patch
@@ -179,6 +203,8 @@ class wavefunction:
             - **colours**: numpy array of float, of shape (len(centres),len(triangles)) encoding the orbital phase for each surface patch of the plotting
         
             - **ax**: matplotlib Axes, for further modifications
+        
+        ***
         '''
         th,ph = make_angle_mesh(n)
         all_Ylm = self.calc_Ylm(th,ph)
@@ -217,6 +243,7 @@ class wavefunction:
         Plotting function, for visualizing orbitals.
         
         *args*:
+
             - **vertices**: numpy array of float, shape (len(centres), len(th)*len(ph), 3) locations of vertices
             
             - **triangulations**: numpy array of int, indicating the vertices connecting each surface patch
@@ -228,11 +255,13 @@ class wavefunction:
             - **cbar_ax**: matplotlib Axes, for use in drawing colourbar
             
         *return*:
+
             - **plots**: list of plotted surfaces
             
             - **plot_ax**: matplotlib Axes, for further modifications
             
-            '''
+        ***
+        '''
         ncentres = len(self.centres)
         plots = []
         if plot_ax is None:
@@ -257,12 +286,16 @@ def make_angle_mesh(n):
     Quick utility function for generating an angular mesh over spherical surface
     
     *args*:
+
         - **n**: int, number of divisions of the angular space
         
     *return*:
+
         - **th**: numpy array of 2n float from 0 to pi
         
         - **ph**: numpy array of 4n float from 0 to 2pi
+    
+    ***
     '''
     th = np.linspace(0,np.pi,2*n)
     ph = np.linspace(0,2*np.pi,4*n)
@@ -272,20 +305,26 @@ def make_angle_mesh(n):
 
 
 def col_phase(vals):
+
     '''
     Define the phase of a complex number
     
     *args*:
+
         - **vals**: complex float, or numpy array of complex float
         
     *return*:
+
         - float, or numpy array of float of same shape as vals, from -pi to pi
+    
+    ***
     '''
     x,y=np.real(vals),np.imag(vals)
     return np.arctan2(y,x)
 
 
 def rephase_wavefunctions(vecs,index=-1):
+
     '''
     The wavefunction at different k-points can choose an arbitrary phase, as can 
     a subspace of degenerate eigenstates. As such, it is often advisable to choose
@@ -296,13 +335,18 @@ def rephase_wavefunctions(vecs,index=-1):
     for this rephasing to work.
     
     *args*:
+
         - **vecs**: numpy array of complex float, ordered as rows:vector index, columns: basis index
         
     *kwargs*:
+
         - **index**: int, optional choice of basis phase selection
         
     *return*:
+
         - **rephase**: numpy array of complex float of same shape as *vecs*
+    
+    ***
     '''
     
     rephase = np.copy(vecs)

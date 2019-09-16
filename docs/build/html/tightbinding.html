@@ -1,73 +1,293 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Tight Binding &#8212; chinook 1.0 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tight Binding &mdash; chinook 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Model Diagnostics" href="operator.html" />
-    <link rel="prev" title="ARPES Simulation" href="arpes.html" />
+    <link rel="prev" title="ARPES Simulation" href="arpes.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
    
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
-  </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
           
 
-          <div class="body" role="main">
+          
+            <a href="index.html" class="icon icon-home"> chinook
+          
+
+          
+            
+            <img src="_static/chinook_header_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arpes.html">ARPES Simulation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tight Binding</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#slater-koster-models">Slater-Koster Models:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hamiltonian-construction">Hamiltonian Construction:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#executable-hamiltonians">Executable Hamiltonians:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-build_lib">Model Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-H_library">Hamiltonian Library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-klib">Momentum Library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-orbital">Orbital Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-SlaterKoster">Slater Koster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-TB_lib">Tight-Binding Library</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="operator.html">Model Diagnostics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slab.html">Slab Calculation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html#contact">Contact</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">chinook</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Tight Binding</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/tightbinding.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="toctree-wrapper compound">
 </div>
 <div class="section" id="tight-binding">
 <h1>Tight Binding<a class="headerlink" href="#tight-binding" title="Permalink to this headline">¶</a></h1>
 <p>The user tight-binding model contains all relevant information regarding the orbital basis, the model Hamiltonian (in addition to eigenvalues/eigenvectors), as well as the momentum domain of interest. In addition, the tight-binding class contains all relevant methods required to extract this information.</p>
-<div class="section" id="module-chinook.build_lib">
-<span id="build-lib"></span><h2>build_lib:<a class="headerlink" href="#module-chinook.build_lib" title="Permalink to this headline">¶</a></h2>
-<p>Created on Sat Nov 18 11:15:35 2017</p>
-<p>&#64;author: ryanday</p>
-<p>MIT License</p>
-<p>Copyright (c) 2018 Ryan Patrick Day</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the “Software”), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</p>
+<p>The user has a reasonable amount of flexibility in the format which they would use to generate the model Hamiltonian. This is intended to accommodate various programs which can be used to generate a tight-binding Hamiltonian (for example Wannier90), as well as the different presentations used in publications (Slater-Koster <span class="math notranslate nohighlight">\(V_{lmk}\)</span> , <span class="math notranslate nohighlight">\(t_{ij}\)</span> ), as well as alternative Hamiltonian types, such as low-energy effective models which do not adhere to the full translational symmetry required by Bloch’s theorem. These latter models do however provide a highly useful and physically transparent parameterization of the system Hamiltonian for narrow regions of momentum space near high-symmetry points. For these reasons, there are 4 general categories of Hamiltonian inputs we accept. The first three are described as: <em>Slater-Koster</em>, <em>list</em>, and <em>text</em> input. The last is described generically as <em>executable</em>.</p>
+<p>While in principal a tight-binding Hamiltonian can be passed in the acceptable form for any of the above, the last option also supports these low-energy theories described above.</p>
+<div class="section" id="slater-koster-models">
+<h2>Slater-Koster Models:<a class="headerlink" href="#slater-koster-models" title="Permalink to this headline">¶</a></h2>
+<p>In their 1954 PRB paper, Slater and Koster presented a fairly simple framework for defining the tight-binding model associated with hoppings between localized atomic-like orbitals on neighbouring lattice sites. To define the overlap for a pair of basis states with orbital angular momentum <span class="math notranslate nohighlight">\(l_1\)</span> and <span class="math notranslate nohighlight">\(l_2\)</span> for an arbitrary lattice geometry, we require only <span class="math notranslate nohighlight">\((min( l_1, l_2 ) + 1)\)</span> parameters. For example, for <span class="math notranslate nohighlight">\(l_1=l_2=1\)</span> we define <span class="math notranslate nohighlight">\(V_{pp\sigma},\ V_{pp\pi}\)</span>. Intuitively, these parameters correspond to overlap integrals between the two orbitals when the lobes of the ‘p’ orbitals are aligned parallel to the connecting vector ( <span class="math notranslate nohighlight">\(\sigma\)</span>) and aligned perpendicular to the connecting vector ( <span class="math notranslate nohighlight">\(\pi\)</span> ). One can often use the frequently published table of Slater-Koster parameters to then define general rules for how these two parameters should be combined for a specific lattice geometry to arrive at the hopping amplitude between each pair of lattice sites.</p>
+<p>This table is however restrictive as it provides rules for only hoppings between non-distorted cubic harmonics. One can alternatively take advantage of the representation of the orbital states in the basis of spherical harmonics <span class="math notranslate nohighlight">\(Y_{l}^{m}(\Omega)\)</span> to rotate an arbitrary pair of basis states into a common representation, and then rotate the frame of reference to align the bond-direction with a designated quantization axis: here the <span class="math notranslate nohighlight">\(\hat z\)</span> vector. A diagonal Hamiltonian matrix filled with the associated <span class="math notranslate nohighlight">\(V_{l_1l_2\gamma}\)</span> can then be applied. The rotation and basis transformation can be undone, ultimately producing a matrix of Hamiltonian parameters for the entire orbital shell along the designated bond vector. Mathematically, the procedure is represented by</p>
+<div class="math notranslate nohighlight">
+\[\left&lt;\psi|H|\phi\right&gt; = \left&lt;\psi| U^{\dagger} R^{-1}(\theta,\phi) V_{SK} R(\theta,\phi) U |\phi\right&gt;\]</div>
+<p>This formalism then allows for fast and user-friendly generation of a Hamiltonian over an arbitrary basis and geometry. Given only the <span class="math notranslate nohighlight">\(V_{l_1,l_2,\gamma}\)</span> parameters and the lattice geometry, a full tight-binding Hamiltonian can be built.</p>
+<p>The Slater-Koster parameters are passed in the form of a dictionary, with the keys taking the form of <span class="math notranslate nohighlight">\(a_1 a_2 n_1 n_2 l_1 l_2 \gamma\)</span>. For example, if I have two distinct atoms in my basis, where I have the Carbon 2p and Iron 3d <span class="math notranslate nohighlight">\(e_g\)</span> orbitals, the dictionary may look like shown here</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">V_SK</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;021&#39;</span><span class="p">:</span><span class="mf">3.0</span><span class="p">,</span><span class="s1">&#39;13XY&#39;</span><span class="p">:</span><span class="mf">0.0</span><span class="p">,</span><span class="s1">&#39;13ZR&#39;</span><span class="p">:</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span>
+<span class="s1">&#39;002211S&#39;</span><span class="p">:</span><span class="mf">1.0</span><span class="p">,</span><span class="s1">&#39;002211P&#39;</span><span class="p">:</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span>
+<span class="s1">&#39;012312S&#39;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span><span class="s1">&#39;012312P&#39;</span><span class="p">:</span><span class="mf">0.6</span><span class="p">,</span>
+<span class="s1">&#39;113322S&#39;</span><span class="p">:</span><span class="mf">0.05</span><span class="p">,</span><span class="s1">&#39;113322P&#39;</span><span class="p">:</span><span class="mf">0.7</span><span class="p">,</span><span class="s1">&#39;113322D&#39;</span><span class="p">:</span><span class="o">-</span><span class="mf">0.03</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>In the first line I have written the on-site terms. While in a simple case I may have a single onsite energy for each orbital shell, here I have distinguished the onsite energy of the <span class="math notranslate nohighlight">\(d_{x^2-y^2}\)</span> and <span class="math notranslate nohighlight">\(d_{3z^2-r^2}\)</span> states. In the second-fourth lines, I have written the p-p, p-d, and d-d hopping amplitudes.</p>
+<p>In many models, hopping beyond nearest neighbours are relevant, and will typically not have the same strength as the nearest neighbour terms. In these cases, we can pass a list of dictionaries to <em>H_dict</em>. For example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">H_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;SK&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;V&#39;</span><span class="p">:[</span><span class="n">SK_dict1</span><span class="p">,</span><span class="n">SK_dict2</span><span class="p">],</span>
+                <span class="s1">&#39;cutoff&#39;</span><span class="p">:[</span><span class="mf">3.5</span><span class="p">,</span><span class="mf">5.0</span><span class="p">],</span>
+                <span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>To include these next-nearest neighbour terms, I specify a list of hopping dictionaries, in addition to a list of cutoff distances, indicating the range of connecting vectors each of the indicated dictionaries should apply to. For this case, for connecting vectors where <span class="math notranslate nohighlight">\(|R_{ij}|&lt;3.5\)</span> we use <em>SK_dict1</em>, whereas for <span class="math notranslate nohighlight">\(3.5\leq |R_{ij}|&lt;5.0\)</span> we use <em>SK_dict2</em>.</p>
+</div>
+<div class="section" id="hamiltonian-construction">
+<h2>Hamiltonian Construction:<a class="headerlink" href="#hamiltonian-construction" title="Permalink to this headline">¶</a></h2>
+<p>From these matrices, we proceed to build a list of <em>H_me</em> objects. This class is the standard representation of the Hamiltonian in <em>chinook</em>. Each instance of <em>H_me</em> carries integers labelling the associated basis indices. For example <span class="math notranslate nohighlight">\(\left&lt;\phi_3|H|\phi_7\right&gt;\)</span> will be stored with <em>H_me</em>.i = 3, <em>H_me</em>.j = 7. We note here that the Hermiticity of the Hamiltonian allows one to explicitly define only the upper or lower diagonal of the Hamiltonian. Consequently, in <em>chinook</em>, we use only the <em>upper</em> diagonal, that is <span class="math notranslate nohighlight">\(i\leq j\)</span>.</p>
+<p>In addition to basis indices, the <em>H_me</em> object carries the functional information of the matrix element in its <em>H_me.H</em> attribute. This will be a list  of connecting vectors and hopping strengths in the case of a standard tight-binding model, or a list of python executables otherwise.</p>
+<p>In standard format then one might have</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TB</span><span class="o">.</span><span class="n">mat_els</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">i</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">TB</span><span class="o">.</span><span class="n">mat_els</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">j</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">TB</span><span class="o">.</span><span class="n">mat_els</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">H</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">],</span>
+                <span class="p">[</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">3.7</span><span class="p">],</span>
+                <span class="p">[</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">3.7</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>This is the 10-th element in our model’s list <em>TB.mat_els</em> of <em>H_me</em> objects. This <em>H_me</em> instance contains an on-site term of strength 2.0, and a cosine-like hopping term along the <span class="math notranslate nohighlight">\(x\)</span> -axis of strength 3.7 eV. A closer consideration of the <em>H</em> attribute reveals the essential information. Each element of the list is a length-4 list of float, containing <span class="math notranslate nohighlight">\(\vec{R_{ij}^n}\)</span> and <span class="math notranslate nohighlight">\(t_{ij}^n\)</span>. Ultimately, the full matrix element will be expressed as</p>
+<div class="math notranslate nohighlight">
+\[H_{ij}(\vec{k}) = \sum_{n} t_{ij}^n e^{i\vec{k}\cdot\vec{R_{ij}^n}}\]</div>
+<p>For this reason, if one does not have access to a suitable Slater-Koster representation of the tight-binding model, we can bypass the methods described above, passing a list of prepared matrix elements directly to the generator of the <em>H_me</em> objects. To accommodate this, we then also accept Hamiltonian input in the form of <em>list</em>, where each element of the list is written as for example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Hlist</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">3.7</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The elements then correspond to basis index 1, basis index 2, connecting vector x, y, and z components, and finally the <span class="math notranslate nohighlight">\(t_{ij}\)</span> value.
+Similarly, a textfile of this form is also acceptable, with each line in the textfile being a comma-separated list of values</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">3.7</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>A list of <em>H_me</em> objects can then be built as above.</p>
+</div>
+<div class="section" id="executable-hamiltonians">
+<h2>Executable Hamiltonians:<a class="headerlink" href="#executable-hamiltonians" title="Permalink to this headline">¶</a></h2>
+<p>The <em>executable</em> type Hamiltonian will ultimately require a slightly modified form of the input, as we do not intend to express the matrix elements as a Fourier transform of the real-space Hamiltonian in the same way as above.</p>
+<p>In this form, we should have</p>
+<div class="math notranslate nohighlight">
+\[H_{ij}(\vec{k}) = \sum_{n} f_n(\vec{k})\]</div>
+<p>This then requires a modified form of <em>H_me.H</em>. By contrast with the above,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TB</span><span class="o">.</span><span class="n">mat_els</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">H</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">,</span><span class="n">my_hopping_func</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>where <em>my_hopping_func</em> is a user-defined executable. It could be for example a 2nd order polynomial, or any other function of momentum. The essential point is that the executables <em>must</em> take an Nx3 array of float as their only argument. This allows for these Hamiltonians to fit seamlessly into the <em>chinook</em> framework.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Automated tools for building these Hamiltonians are currently in the process of being built. Proceed with caution, and notify the developers of any unexpected performance.</p>
+</div>
+<p>For advanced users who would like to take advantage of this functionality now,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">H_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;exec&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;exec&#39;</span><span class="p">:</span><span class="n">exec_list</span><span class="p">,</span>
+                <span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>where the item</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">exec_list</span> <span class="o">=</span> <span class="p">[[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">my_func1</span><span class="p">],</span>
+<span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">my_func2</span><span class="p">],</span>
+<span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The tuple of integers preceding the name of the executable corresponds to the basis indices. Here <em>my_func1</em> applies to the diagonal elements of my first basis member, and <em>my_func2</em> to the coupling of my first and second basis elements. As always, indexing in python is 0-based.</p>
+<p>For the construction of the executable functions, we recommend the use of python’s <em>lambda</em> functions. For example, to define a function which evaluates to <span class="math notranslate nohighlight">\(\alpha k_x^2 + \beta k_y^2\)</span> , one may define</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_func_generator</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span><span class="n">beta</span><span class="p">):</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">kvec</span><span class="p">:</span> <span class="n">alpha</span><span class="o">*</span><span class="n">k</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">beta</span><span class="o">*</span><span class="n">k</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c1">#Define specific parameters for my executable functions</span>
+<span class="n">a1</span> <span class="o">=</span> <span class="mf">2.3</span>
+<span class="n">b1</span> <span class="o">=</span> <span class="mf">0.7</span>
+
+<span class="n">a2</span> <span class="o">=</span> <span class="mf">5.6</span>
+<span class="n">b2</span> <span class="o">=</span> <span class="mf">0.9</span>
+
+<span class="c1">#Define my executables</span>
+<span class="n">my_func1</span> <span class="o">=</span> <span class="n">my_func_generator</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span><span class="n">b1</span><span class="p">)</span>
+<span class="n">my_func2</span> <span class="o">=</span> <span class="n">my_func_generator</span><span class="p">(</span><span class="n">a2</span><span class="p">,</span><span class="n">b2</span><span class="p">)</span>
+
+<span class="c1">#Populate a list of executables</span>
+<span class="n">exec_list</span> <span class="o">=</span> <span class="p">[[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">my_func1</span><span class="p">],</span>
+<span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">my_func2</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>Please stay tuned for further developments which will facilitate more convenient construction of these Hamiltonians.</p>
+<p>Below, we include the relevant documentation to the construction of tight-binding models.</p>
+</div>
+<div class="section" id="module-build_lib">
+<span id="model-initialization"></span><h2>Model Initialization<a class="headerlink" href="#module-build_lib" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="chinook.build_lib.gen_K">
-<code class="descclassname">chinook.build_lib.</code><code class="descname">gen_K</code><span class="sig-paren">(</span><em>Kdic</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.build_lib.gen_K" title="Permalink to this definition">¶</a></dt>
+<dt id="build_lib.gen_K">
+<code class="descclassname">build_lib.</code><code class="descname">gen_K</code><span class="sig-paren">(</span><em>Kdic</em><span class="sig-paren">)</span><a class="headerlink" href="#build_lib.gen_K" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate k-path for TB model to be diagonalized along.</p>
-<dl class="docutils">
-<dt><em>args</em>: </dt>
-<dd><ul class="first last">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul>
 <li><p class="first"><strong>Kdic</strong>: dictionary for generation of kpath with:</p>
 <blockquote>
 <div><ul class="simple">
@@ -89,24 +309,23 @@ SOFTWARE.</p>
 </div></blockquote>
 </li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><strong>Kobj</strong>: K-object including necessary attributes to be read by the <strong>TB_model</strong></dd>
-</dl>
-<p><a href="#id1"><span class="problematic" id="id2">**</span></a><a href="#id3"><span class="problematic" id="id4">*</span></a></p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><strong>Kobj</strong>: K-object including necessary attributes to be read by the <strong>TB_model</strong></div></blockquote>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.build_lib.gen_TB">
-<code class="descclassname">chinook.build_lib.</code><code class="descname">gen_TB</code><span class="sig-paren">(</span><em>basis_dict</em>, <em>hamiltonian_dict</em>, <em>Kobj=None</em>, <em>slab_dict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.build_lib.gen_TB" title="Permalink to this definition">¶</a></dt>
+<dt id="build_lib.gen_TB">
+<code class="descclassname">build_lib.</code><code class="descname">gen_TB</code><span class="sig-paren">(</span><em>basis_dict</em>, <em>hamiltonian_dict</em>, <em>Kobj=None</em>, <em>slab_dict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#build_lib.gen_TB" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build a Tight-Binding Model using the user-input dictionaries</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>basis_dict</strong>: dictionary, including the <em>‘bulk’</em> key value pair</li>
 </ul>
 <p>generated by <strong>gen_basis</strong></p>
-<ul class="last">
+<ul>
 <li><p class="first"><strong>hamiltonian_dict</strong>: dictionary,</p>
 <blockquote>
 <div><ul class="simple">
@@ -151,21 +370,21 @@ SOFTWARE.</p>
 </div></blockquote>
 </li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><strong>TB_model</strong>: tight-binding object, as defined in <strong>chinook.TB_lib.py</strong></dd>
-</dl>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><strong>TB_model</strong>: tight-binding object, as defined in <strong>chinook.TB_lib.py</strong></div></blockquote>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.build_lib.gen_basis">
-<code class="descclassname">chinook.build_lib.</code><code class="descname">gen_basis</code><span class="sig-paren">(</span><em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.build_lib.gen_basis" title="Permalink to this definition">¶</a></dt>
+<dt id="build_lib.gen_basis">
+<code class="descclassname">build_lib.</code><code class="descname">gen_basis</code><span class="sig-paren">(</span><em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#build_lib.gen_basis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a list of orbital objects as the input basis for a tight-binding model.
 User passes a basis dictionary, function returns a modified version of this
 same dictionary, with the list of orbitals now appended as the <em>‘bulk’</em> entry</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul>
 <li><p class="first"><strong>basis</strong>–dictionary with keys:</p>
 <blockquote>
 <div><ul class="simple">
@@ -204,173 +423,148 @@ for more details, c.f. <strong>chinook.orbital.py</strong></p>
 </div></blockquote>
 </li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>basis</strong> dictionary, modified to include the <strong>bulk</strong> list of orbital</li>
 </ul>
-<p class="last">objects</p>
-</dd>
-</dl>
+<p>objects</p>
+</div></blockquote>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a><a href="#id3"><span class="problematic" id="id4">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="build_lib.recur_product">
+<code class="descclassname">build_lib.</code><code class="descname">recur_product</code><span class="sig-paren">(</span><em>elements</em><span class="sig-paren">)</span><a class="headerlink" href="#build_lib.recur_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function: Recursive evaluation of the product of all elements in a list</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>elements</strong>: list of numeric type</li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>product of all elements of <strong>elements</strong></li>
+</ul>
+</div></blockquote>
 <p><a href="#id5"><span class="problematic" id="id6">**</span></a><a href="#id7"><span class="problematic" id="id8">*</span></a></p>
 </dd></dl>
 
-<dl class="function">
-<dt id="chinook.build_lib.recur_product">
-<code class="descclassname">chinook.build_lib.</code><code class="descname">recur_product</code><span class="sig-paren">(</span><em>elements</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.build_lib.recur_product" title="Permalink to this definition">¶</a></dt>
-<dd><p>Utility function: Recursive evaluation of the product of all elements in a list</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>elements</strong>: list of numeric type</li>
-</ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
-<li>product of all elements of <strong>elements</strong></li>
-</ul>
-</dd>
-</dl>
-<p><a href="#id9"><span class="problematic" id="id10">**</span></a><a href="#id11"><span class="problematic" id="id12">*</span></a></p>
-</dd></dl>
-
 </div>
-<div class="section" id="module-chinook.H_library">
-<span id="h-library"></span><h2>H_library:<a class="headerlink" href="#module-chinook.H_library" title="Permalink to this headline">¶</a></h2>
-<p>Created on Thu Nov  9 21:38:24 2017</p>
-<p>&#64;author: ryanday</p>
-<p>Slater Koster Library for generating a Hamiltonian of Slater-Koster
-MIT License</p>
-<p>Copyright (c) 2018 Ryan Patrick Day</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the “Software”), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</p>
+<div class="section" id="module-H_library">
+<span id="hamiltonian-library"></span><h2>Hamiltonian Library<a class="headerlink" href="#module-H_library" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="chinook.H_library.AFM_order">
-<code class="descclassname">chinook.H_library.</code><code class="descname">AFM_order</code><span class="sig-paren">(</span><em>basis</em>, <em>dS</em>, <em>p_up</em>, <em>p_dn</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.AFM_order" title="Permalink to this definition">¶</a></dt>
+<dt id="H_library.AFM_order">
+<code class="descclassname">H_library.</code><code class="descname">AFM_order</code><span class="sig-paren">(</span><em>basis</em>, <em>dS</em>, <em>p_up</em>, <em>p_dn</em><span class="sig-paren">)</span><a class="headerlink" href="#H_library.AFM_order" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add antiferromagnetism to the tight-binding model, by adding a different on-site energy to 
 orbitals of different spin character, on the designated sites.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>basis</strong>: list, orbital objects</li>
 <li><strong>dS</strong>: float, size of spin-splitting (eV)</li>
 <li><strong>p_up</strong>, <strong>p_dn</strong>: numpy array of float indicating the orbital positions</li>
 </ul>
-<p class="last">for the AFM order</p>
-</dd>
-<dt><em>return</em>: </dt>
-<dd><ul class="first last simple">
+<p>for the AFM order</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>h_AF</strong>: list of matrix elements, as conventionally arranged [[o1,o2,0,0,0,H12],…]</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
+<p><a href="#id9"><span class="problematic" id="id10">**</span></a><a href="#id11"><span class="problematic" id="id12">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="H_library.FM_order">
+<code class="descclassname">H_library.</code><code class="descname">FM_order</code><span class="sig-paren">(</span><em>basis</em>, <em>dS</em><span class="sig-paren">)</span><a class="headerlink" href="#H_library.FM_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add ferromagnetism to the system. Take dS to assume that the splitting puts 
+spin-up lower in energy by dS,and viceversa for spin-down. This directly
+modifies the <em>TB_model</em>’s <strong>mat_els</strong> attribute</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>basis</strong>: list, of orbital objects in basis</li>
+<li><strong>dS</strong>: float, energy of the spin splitting (eV)</li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>list of matrix elements [[o1,o2,0,0,0,H12],…]</li>
+</ul>
+</div></blockquote>
 <p><a href="#id13"><span class="problematic" id="id14">**</span></a><a href="#id15"><span class="problematic" id="id16">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.H_library.Efield">
-<code class="descclassname">chinook.H_library.</code><code class="descname">Efield</code><span class="sig-paren">(</span><em>basis</em>, <em>field</em>, <em>orbital_type='Slater'</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.Efield" title="Permalink to this definition">¶</a></dt>
-<dd><p>Define a set of matrix elements which introduce an electric field, treated at the level of a dipole operator.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="chinook.H_library.FM_order">
-<code class="descclassname">chinook.H_library.</code><code class="descname">FM_order</code><span class="sig-paren">(</span><em>basis</em>, <em>dS</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.FM_order" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add ferromagnetism to the system. Take dS to assume that the splitting puts 
-spin-up lower in energy by dS,and viceversa for spin-down. This directly
-modifies the <em>TB_model</em>’s <strong>mat_els</strong> attribute</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>basis</strong>: list, of orbital objects in basis</li>
-<li><strong>dS</strong>: float, energy of the spin splitting (eV)</li>
-</ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
-<li>list of matrix elements [[o1,o2,0,0,0,H12],…]</li>
-</ul>
-</dd>
-</dl>
-<p><a href="#id17"><span class="problematic" id="id18">**</span></a><a href="#id19"><span class="problematic" id="id20">*</span></a></p>
-</dd></dl>
-
-<dl class="function">
-<dt id="chinook.H_library.Lm">
-<code class="descclassname">chinook.H_library.</code><code class="descname">Lm</code><span class="sig-paren">(</span><em>l</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.Lm" title="Permalink to this definition">¶</a></dt>
+<dt id="H_library.Lm">
+<code class="descclassname">H_library.</code><code class="descname">Lm</code><span class="sig-paren">(</span><em>l</em><span class="sig-paren">)</span><a class="headerlink" href="#H_library.Lm" title="Permalink to this definition">¶</a></dt>
 <dd><p>L- operator in the l,m_l basis, organized with 
-(0,0) = <a href="#id21"><span class="problematic" id="id22">|</span></a>l,l&gt;… (2l,2l) = <a href="#id23"><span class="problematic" id="id24">|</span></a>l,-l&gt;</p>
+(0,0) = <a href="#id17"><span class="problematic" id="id18">|</span></a>l,l&gt;… (2l,2l) = <a href="#id19"><span class="problematic" id="id20">|</span></a>l,-l&gt;</p>
 <p>The nonzero elements are on the upper diagonal</p>
-<dl class="docutils">
-<dt><em>arg</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>arg</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>l</strong>: int orbital angular momentum</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>M</strong>: numpy array (2l+1,2l+1) of real float</li>
 </ul>
-</dd>
-</dl>
-<p><a href="#id25"><span class="problematic" id="id26">**</span></a><a href="#id27"><span class="problematic" id="id28">*</span></a></p>
+</div></blockquote>
+<p><a href="#id21"><span class="problematic" id="id22">**</span></a><a href="#id23"><span class="problematic" id="id24">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.H_library.Lp">
-<code class="descclassname">chinook.H_library.</code><code class="descname">Lp</code><span class="sig-paren">(</span><em>l</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.Lp" title="Permalink to this definition">¶</a></dt>
+<dt id="H_library.Lp">
+<code class="descclassname">H_library.</code><code class="descname">Lp</code><span class="sig-paren">(</span><em>l</em><span class="sig-paren">)</span><a class="headerlink" href="#H_library.Lp" title="Permalink to this definition">¶</a></dt>
 <dd><p>L+ operator in the <span class="math notranslate nohighlight">\(l\)</span>, <span class="math notranslate nohighlight">\(m_l\)</span> basis, organized with 
-(0,0) = <a href="#id29"><span class="problematic" id="id30">|</span></a>l,l&gt;… (2l,2l) = <a href="#id31"><span class="problematic" id="id32">|</span></a>l,-l&gt;
+(0,0) = <a href="#id25"><span class="problematic" id="id26">|</span></a>l,l&gt;… (2l,2l) = <a href="#id27"><span class="problematic" id="id28">|</span></a>l,-l&gt;
 The nonzero elements are on the upper diagonal</p>
-<dl class="docutils">
-<dt><em>arg</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>arg</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>l</strong>: int orbital angular momentum</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>M</strong>: numpy array (2l+1,2l+1) of real float</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
+<p><a href="#id29"><span class="problematic" id="id30">**</span></a><a href="#id31"><span class="problematic" id="id32">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="H_library.Lz">
+<code class="descclassname">H_library.</code><code class="descname">Lz</code><span class="sig-paren">(</span><em>l</em><span class="sig-paren">)</span><a class="headerlink" href="#H_library.Lz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lz operator in the l,:math:<cite>m_l</cite> basis</p>
+<p><em>arg</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>l</strong>: int orbital angular momentum</li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>numpy array (2*l+1,2*l+1)</li>
+</ul>
+</div></blockquote>
 <p><a href="#id33"><span class="problematic" id="id34">**</span></a><a href="#id35"><span class="problematic" id="id36">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.H_library.Lz">
-<code class="descclassname">chinook.H_library.</code><code class="descname">Lz</code><span class="sig-paren">(</span><em>l</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.Lz" title="Permalink to this definition">¶</a></dt>
-<dd><p>Lz operator in the l,:math:<cite>m_l</cite> basis</p>
-<dl class="docutils">
-<dt><em>arg</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>l</strong>: int orbital angular momentum</li>
-</ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
-<li>numpy array (2*l+1,2*l+1)</li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="chinook.H_library.SO">
-<code class="descclassname">chinook.H_library.</code><code class="descname">SO</code><span class="sig-paren">(</span><em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.SO" title="Permalink to this definition">¶</a></dt>
+<dt id="H_library.SO">
+<code class="descclassname">H_library.</code><code class="descname">SO</code><span class="sig-paren">(</span><em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#H_library.SO" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate L.S  matrix-elements for a given basis. 
 This is generic to all l, except the normal_order, which is defined here up to 
 and including the f electrons.
@@ -383,35 +577,34 @@ for S, (-1,0,1) = S1-S2 with S1,2 = +/- 1 here</p>
 transformed into the basis of the tight-binding model.
 The nonzero terms will then just be used along with the spin and
 weighted by the factor value, and slotted into a len(<strong>basis</strong>)xlen(<strong>basis</strong>) matrix <strong>HSO</strong></p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>basis</strong>: list of orbital objects</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>HSO</strong>: list of matrix elements in standard format [o1,o2,0,0,0,H12]</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 <p><a href="#id37"><span class="problematic" id="id38">**</span></a><a href="#id39"><span class="problematic" id="id40">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.H_library.Vlist_gen">
-<code class="descclassname">chinook.H_library.</code><code class="descname">Vlist_gen</code><span class="sig-paren">(</span><em>V</em>, <em>pair</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.Vlist_gen" title="Permalink to this definition">¶</a></dt>
+<dt id="H_library.Vlist_gen">
+<code class="descclassname">H_library.</code><code class="descname">Vlist_gen</code><span class="sig-paren">(</span><em>V</em>, <em>pair</em><span class="sig-paren">)</span><a class="headerlink" href="#H_library.Vlist_gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Select the relevant hopping matrix elements to be used in defining the value
 of the Slater-Koster matrix elements for a given pair of orbitals. Handles situation where
 insufficient parameters have been passed to system.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>V</strong>: dictionary of Slater-Koster hopping terms</li>
 <li><strong>pair</strong>: tuple of int defining the orbitals to be paired, (a1,a2,n1,n2,l1,l2)</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 <p><em>return</em>:</p>
 <blockquote>
 <div><ul class="simple">
@@ -422,23 +615,24 @@ insufficient parameters have been passed to system.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.H_library.cluster_init">
-<code class="descclassname">chinook.H_library.</code><code class="descname">cluster_init</code><span class="sig-paren">(</span><em>Vdict</em>, <em>cutoff</em>, <em>avec</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.cluster_init" title="Permalink to this definition">¶</a></dt>
+<dt id="H_library.cluster_init">
+<code class="descclassname">H_library.</code><code class="descname">cluster_init</code><span class="sig-paren">(</span><em>Vdict</em>, <em>cutoff</em>, <em>avec</em><span class="sig-paren">)</span><a class="headerlink" href="#H_library.cluster_init" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a cluster of neighbouring lattice points to use
 in defining the hopping paths–ensuring that it extends
 sufficiently far enough to capture even the largest hopping vectors.
 Also reforms the SK dictionary and cutoff lengths to be in list format.
 Returns an array of lattice points which go safely to the edge of the cutoff range.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>Vdict</strong>: dictionary, or list of dictionaries of Slater Koster matrix elements</li>
 <li><strong>cutoff</strong>: float, or list of float</li>
 <li><strong>avec</strong>: numpy array of 3x3 float</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>Vdict</strong>: list of length 1 if a single dictionary passed, else unmodified</li>
 <li><strong>cutoff</strong>: numpy array, append 0 to the beginning of the cutoff list,</li>
 </ul>
@@ -446,44 +640,43 @@ Returns an array of lattice points which go safely to the edge of the cutoff ran
 <ul class="simple">
 <li><strong>pts</strong>: numpy array of lattice vector indices for a region of lattice points around</li>
 </ul>
-<p class="last">the origin.</p>
-</dd>
-</dl>
+<p>the origin.</p>
+</div></blockquote>
 <p><a href="#id45"><span class="problematic" id="id46">**</span></a><a href="#id47"><span class="problematic" id="id48">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.H_library.index_ordering">
-<code class="descclassname">chinook.H_library.</code><code class="descname">index_ordering</code><span class="sig-paren">(</span><em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.index_ordering" title="Permalink to this definition">¶</a></dt>
+<dt id="H_library.index_ordering">
+<code class="descclassname">H_library.</code><code class="descname">index_ordering</code><span class="sig-paren">(</span><em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#H_library.index_ordering" title="Permalink to this definition">¶</a></dt>
 <dd><p>We use an universal ordering convention for defining the Slater-Koster matrices
 which may (and most likely will) not match the ordering chosen by the user.
 To account for this, we define a dictionary which gives the ordering, relative 
 to the normal order convention defined here, associated with a given a-n-l shell
 at each site in the lattice basis.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>basis</strong>: list of orbital objects</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>indexing</strong>: dictionary of key-value pairs (a,n,l,x,y,z):numpy.array([…])</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 <p><a href="#id49"><span class="problematic" id="id50">**</span></a><a href="#id51"><span class="problematic" id="id52">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.H_library.mat_els">
-<code class="descclassname">chinook.H_library.</code><code class="descname">mat_els</code><span class="sig-paren">(</span><em>Rij</em>, <em>SKmat</em>, <em>tol</em>, <em>i1</em>, <em>i2</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.mat_els" title="Permalink to this definition">¶</a></dt>
+<dt id="H_library.mat_els">
+<code class="descclassname">H_library.</code><code class="descname">mat_els</code><span class="sig-paren">(</span><em>Rij</em>, <em>SKmat</em>, <em>tol</em>, <em>i1</em>, <em>i2</em><span class="sig-paren">)</span><a class="headerlink" href="#H_library.mat_els" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract the pertinent, and non-zero elements of the Slater-Koster matrix
 and transform to the conventional form of Hamiltonian list entries
 (o1,o2,Rij0,Rij1,Rij2,H12(Rij))</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>Rij</strong>: numpy array of 3 float, relevant connecting vector</li>
 <li><strong>SKmat</strong>: numpy array of float, matrix of hopping elements</li>
 </ul>
@@ -492,9 +685,8 @@ and transform to the conventional form of Hamiltonian list entries
 <li><strong>tol</strong>: float, minimum hopping included in model</li>
 <li><strong>i1</strong>, <strong>i2</strong>: int,int, proper index ordering for the relevant</li>
 </ul>
-<p class="last">instance of the orbital shells involved in hopping</p>
-</dd>
-</dl>
+<p>instance of the orbital shells involved in hopping</p>
+</div></blockquote>
 <p><em>return</em>:</p>
 <blockquote>
 <div><ul class="simple">
@@ -502,83 +694,85 @@ and transform to the conventional form of Hamiltonian list entries
 </ul>
 <p>ordered SKmat, in form [[o1,o2,x12,y12,z12,H12],…]</p>
 </div></blockquote>
+<p><a href="#id53"><span class="problematic" id="id54">**</span></a><a href="#id55"><span class="problematic" id="id56">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.H_library.mirror_SK">
-<code class="descclassname">chinook.H_library.</code><code class="descname">mirror_SK</code><span class="sig-paren">(</span><em>SK_in</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.mirror_SK" title="Permalink to this definition">¶</a></dt>
+<dt id="H_library.mirror_SK">
+<code class="descclassname">H_library.</code><code class="descname">mirror_SK</code><span class="sig-paren">(</span><em>SK_in</em><span class="sig-paren">)</span><a class="headerlink" href="#H_library.mirror_SK" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a list of values which is the input appended with its mirror 
 reflection. The mirror boundary condition suppresses the duplicate of the
 last value. e.g. [0,1,2,3,4] –&gt; [0,1,2,3,4,3,2,1,0], 
 [‘r’,’a’,’c’,’e’,’c’,’a’,’r’] –&gt; [‘r’,’a’,’c’,’e’,’c’,’a’,’r’,’a’,’c’,’e’,’c’,’a’,’r’]
 Intended here to take an array of Slater-Koster hopping terms and reflect about 
 its last entry i.e. [Vsps,Vspp] -&gt; [Vsps,Vspp,Vsps]</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>SK_in</strong>: iterable, of arbitrary length and data-type</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li>list of values with same data-type as input</li>
 </ul>
-</dd>
-</dl>
-<p><a href="#id53"><span class="problematic" id="id54">**</span></a><a href="#id55"><span class="problematic" id="id56">*</span></a></p>
-</dd></dl>
-
-<dl class="function">
-<dt id="chinook.H_library.on_site">
-<code class="descclassname">chinook.H_library.</code><code class="descname">on_site</code><span class="sig-paren">(</span><em>basis</em>, <em>V</em>, <em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.on_site" title="Permalink to this definition">¶</a></dt>
-<dd><p>On-site matrix element calculation. Try both anl and alabel formats,
-if neither is defined, default the onsite energy to 0.0 eV</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>basis</strong>: list of orbitals defining the tight-binding basis</li>
-<li><strong>V</strong>: dictionary, Slater Koster terms</li>
-<li><strong>offset</strong>: float, EF shift</li>
-</ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>Ho</strong>: list of Hamiltonian matrix elements</li>
-</ul>
-</dd>
-</dl>
+</div></blockquote>
 <p><a href="#id57"><span class="problematic" id="id58">**</span></a><a href="#id59"><span class="problematic" id="id60">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.H_library.region">
-<code class="descclassname">chinook.H_library.</code><code class="descname">region</code><span class="sig-paren">(</span><em>num</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.region" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a symmetric grid of points in number of lattice vectors.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
-<li><strong>num</strong>: int, grid will have size 2*num+1 in each direction</li>
+<dt id="H_library.on_site">
+<code class="descclassname">H_library.</code><code class="descname">on_site</code><span class="sig-paren">(</span><em>basis</em>, <em>V</em>, <em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#H_library.on_site" title="Permalink to this definition">¶</a></dt>
+<dd><p>On-site matrix element calculation. Try both anl and alabel formats,
+if neither is defined, default the onsite energy to 0.0 eV</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>basis</strong>: list of orbitals defining the tight-binding basis</li>
+<li><strong>V</strong>: dictionary, Slater Koster terms</li>
+<li><strong>offset</strong>: float, EF shift</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first simple">
-<li>numpy array of size ((2*num+1)**3,3) with centre value of first entry</li>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>Ho</strong>: list of Hamiltonian matrix elements</li>
 </ul>
-<p class="last">of (-num,-num,-num),…,(0,0,0),…,(num,num,num)</p>
-</dd>
-</dl>
+</div></blockquote>
+<p><a href="#id61"><span class="problematic" id="id62">**</span></a><a href="#id63"><span class="problematic" id="id64">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.H_library.sk_build">
-<code class="descclassname">chinook.H_library.</code><code class="descname">sk_build</code><span class="sig-paren">(</span><em>avec</em>, <em>basis</em>, <em>Vdict</em>, <em>cutoff</em>, <em>tol</em>, <em>renorm</em>, <em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.sk_build" title="Permalink to this definition">¶</a></dt>
+<dt id="H_library.region">
+<code class="descclassname">H_library.</code><code class="descname">region</code><span class="sig-paren">(</span><em>num</em><span class="sig-paren">)</span><a class="headerlink" href="#H_library.region" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a symmetric grid of points in number of lattice vectors.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>num</strong>: int, grid will have size 2*num+1 in each direction</li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>numpy array of size ((2*num+1)**3,3) with centre value of first entry</li>
+</ul>
+<p>of (-num,-num,-num),…,(0,0,0),…,(num,num,num)</p>
+</div></blockquote>
+<p><a href="#id65"><span class="problematic" id="id66">**</span></a><a href="#id67"><span class="problematic" id="id68">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="H_library.sk_build">
+<code class="descclassname">H_library.</code><code class="descname">sk_build</code><span class="sig-paren">(</span><em>avec</em>, <em>basis</em>, <em>Vdict</em>, <em>cutoff</em>, <em>tol</em>, <em>renorm</em>, <em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#H_library.sk_build" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build SK model from using D-matrices, rather than a list of SK terms from table.
 This can handle orbitals of arbitrary orbital angular momentum in principal, 
 but right now implemented for up to and including f-electrons. 
 NOTE: f-hoppings require thorough testing</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>avec</strong>: numpy array 3x3 float, lattice vectors</li>
 <li><strong>basis</strong>: list of orbital objects</li>
 <li><strong>Vdict</strong>: dictionary, or list of dictionaries, of Slater-Koster integrals/ on-site energies</li>
@@ -586,192 +780,194 @@ NOTE: f-hoppings require thorough testing</p>
 <li><strong>tol</strong>: float, threshold value below which hoppings are neglected</li>
 <li><strong>offset</strong>: float, offset for Fermi level</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>H_raw</strong>: list of Hamiltonian matrix elements, in form [o1,o2,x12,y12,z12,t12]</li>
 </ul>
-</dd>
-</dl>
-<p><a href="#id61"><span class="problematic" id="id62">**</span></a><a href="#id63"><span class="problematic" id="id64">*</span></a></p>
+</div></blockquote>
+<p><a href="#id69"><span class="problematic" id="id70">**</span></a><a href="#id71"><span class="problematic" id="id72">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.H_library.spin_double">
-<code class="descclassname">chinook.H_library.</code><code class="descname">spin_double</code><span class="sig-paren">(</span><em>H</em>, <em>lb</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.spin_double" title="Permalink to this definition">¶</a></dt>
+<dt id="H_library.spin_double">
+<code class="descclassname">H_library.</code><code class="descname">spin_double</code><span class="sig-paren">(</span><em>H</em>, <em>lb</em><span class="sig-paren">)</span><a class="headerlink" href="#H_library.spin_double" title="Permalink to this definition">¶</a></dt>
 <dd><p>Duplicate the kinetic Hamiltonian terms to extend over the spin-duplicated 
 orbitals, which are by construction in same order and appended to end of the
 original basis.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>H</strong>: list, Hamiltonian matrix elements [[o1,o2,x,y,z,H12],…]</li>
 <li><strong>lb</strong>: int, length of basis before spin duplication</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>h2</strong> modified copy of <strong>H</strong>, filled with kinetic terms for both</li>
 </ul>
-<p class="last">spin species</p>
-</dd>
-</dl>
-<p><a href="#id65"><span class="problematic" id="id66">**</span></a><a href="#id67"><span class="problematic" id="id68">*</span></a></p>
+<p>spin species</p>
+</div></blockquote>
+<p><a href="#id73"><span class="problematic" id="id74">**</span></a><a href="#id75"><span class="problematic" id="id76">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.H_library.txt_build">
-<code class="descclassname">chinook.H_library.</code><code class="descname">txt_build</code><span class="sig-paren">(</span><em>filename</em>, <em>cutoff</em>, <em>renorm</em>, <em>offset</em>, <em>tol</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.H_library.txt_build" title="Permalink to this definition">¶</a></dt>
+<dt id="H_library.txt_build">
+<code class="descclassname">H_library.</code><code class="descname">txt_build</code><span class="sig-paren">(</span><em>filename</em>, <em>cutoff</em>, <em>renorm</em>, <em>offset</em>, <em>tol</em><span class="sig-paren">)</span><a class="headerlink" href="#H_library.txt_build" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build Hamiltonian from textfile, input is of form
 o1,o2,x12,xy12,z12,t12, output in form [o1,o2,x12,y12,z12,t12]</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>filename</strong>: string, name of file</li>
 <li><strong>cutoff</strong>: float, maximum distance of hopping allowed, Angstrom</li>
 <li><strong>renorm</strong>: float, renormalization of the bandstructure</li>
 <li><strong>offset</strong>: float, energy offset of chemical potential, electron volts</li>
 <li><strong>tol</strong>: float, minimum Hamiltonian matrix element amplitude</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>Hlist</strong>: the list of Hamiltonian matrix elements</li>
 </ul>
-</dd>
-</dl>
-<p><a href="#id69"><span class="problematic" id="id70">**</span></a><a href="#id71"><span class="problematic" id="id72">*</span></a></p>
+</div></blockquote>
+<p><a href="#id77"><span class="problematic" id="id78">**</span></a><a href="#id79"><span class="problematic" id="id80">*</span></a></p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-chinook.klib">
-<span id="klib"></span><h2>klib:<a class="headerlink" href="#module-chinook.klib" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-klib">
+<span id="momentum-library"></span><h2>Momentum Library<a class="headerlink" href="#module-klib" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="chinook.klib.b_zone">
-<code class="descclassname">chinook.klib.</code><code class="descname">b_zone</code><span class="sig-paren">(</span><em>a_vec</em>, <em>N</em>, <em>show=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.klib.b_zone" title="Permalink to this definition">¶</a></dt>
+<dt id="klib.b_zone">
+<code class="descclassname">klib.</code><code class="descname">b_zone</code><span class="sig-paren">(</span><em>a_vec</em>, <em>N</em>, <em>show=False</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.b_zone" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a mesh of points over the Brillouin zone. 
 Each of the cardinal axes are divided by the same number of points 
 (so points are not necessarily evenly spaced along each axis).</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>a_vec</strong>: numpy array of size 3x3 float</li>
 <li><strong>N</strong>: int mesh density</li>
 </ul>
-</dd>
-<dt><em>kwargs</em>:     </dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>show</strong>: boolean for optional plotting of the mesh points</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>m_pts</strong>: numpy array of mesh points (float), shape (len(m_pts),3)</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
+<p><a href="#id81"><span class="problematic" id="id82">**</span></a><a href="#id83"><span class="problematic" id="id84">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.klib.bvectors">
-<code class="descclassname">chinook.klib.</code><code class="descname">bvectors</code><span class="sig-paren">(</span><em>a_vec</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.klib.bvectors" title="Permalink to this definition">¶</a></dt>
+<dt id="klib.bvectors">
+<code class="descclassname">klib.</code><code class="descname">bvectors</code><span class="sig-paren">(</span><em>a_vec</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.bvectors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define the reciprocal lattice vectors corresponding to the direct lattice 
 in real space</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>a_vec</strong>: numpy array of 3x3 float, lattice vectors</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>b_vec</strong>: numpy array of 3x3 float, reciprocal lattice vectors</li>
 </ul>
-</dd>
-</dl>
-<p><a href="#id73"><span class="problematic" id="id74">**</span></a><a href="#id75"><span class="problematic" id="id76">*</span></a></p>
+</div></blockquote>
+<p><a href="#id85"><span class="problematic" id="id86">**</span></a><a href="#id87"><span class="problematic" id="id88">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.klib.kmesh">
-<code class="descclassname">chinook.klib.</code><code class="descname">kmesh</code><span class="sig-paren">(</span><em>ang</em>, <em>X</em>, <em>Y</em>, <em>kz</em>, <em>Vo=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.klib.kmesh" title="Permalink to this definition">¶</a></dt>
+<dt id="klib.kmesh">
+<code class="descclassname">klib.</code><code class="descname">kmesh</code><span class="sig-paren">(</span><em>ang</em>, <em>X</em>, <em>Y</em>, <em>kz</em>, <em>Vo=None</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.kmesh" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take a mesh of kx and ky with fixed kz and generate a Nx3 array of points
 which rotates the mesh about the z axis by <strong>ang</strong>. N is the flattened shape
 of <strong>X</strong> and <strong>Y</strong>.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>ang</strong>: float, angle of rotation</li>
 <li><strong>X</strong>: numpy array of float, one coordinate of meshgrid</li>
 <li><strong>Y</strong>: numpy array of float, second coordinate of meshgrid</li>
 <li><strong>kz</strong>: float, third dimension of momentum path, fixed</li>
 </ul>
-</dd>
-<dt><em>kwargs</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>Vo</strong>: parameters necessary for inclusion of inner potential</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>k_arr</strong>: numpy array of shape Nx3 float, rotated  kpoint array.</li>
 <li><strong>ph</strong>: numpy array of N float, angles of the in-plane momentum</li>
 </ul>
-<p class="last">points, before rotation.</p>
-</dd>
-</dl>
-<p><a href="#id77"><span class="problematic" id="id78">**</span></a><a href="#id79"><span class="problematic" id="id80">*</span></a></p>
+<p>points, before rotation.</p>
+</div></blockquote>
+<p><a href="#id89"><span class="problematic" id="id90">**</span></a><a href="#id91"><span class="problematic" id="id92">*</span></a></p>
 </dd></dl>
 
 <dl class="class">
-<dt id="chinook.klib.kpath">
-<em class="property">class </em><code class="descclassname">chinook.klib.</code><code class="descname">kpath</code><span class="sig-paren">(</span><em>pts</em>, <em>grain=None</em>, <em>labels=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.klib.kpath" title="Permalink to this definition">¶</a></dt>
+<dt id="klib.kpath">
+<em class="property">class </em><code class="descclassname">klib.</code><code class="descname">kpath</code><span class="sig-paren">(</span><em>pts</em>, <em>grain=None</em>, <em>labels=None</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.kpath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Momentum object, defining a path in reciprocal space, for use in defining the 
 Hamiltonian at different points in the Brillouin zone.
-<a href="#id81"><span class="problematic" id="id82">**</span></a><a href="#id83"><span class="problematic" id="id84">*</span></a></p>
+<a href="#id93"><span class="problematic" id="id94">**</span></a><a href="#id95"><span class="problematic" id="id96">*</span></a></p>
 <dl class="method">
-<dt id="chinook.klib.kpath.points">
-<code class="descname">points</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.klib.kpath.points" title="Permalink to this definition">¶</a></dt>
+<dt id="klib.kpath.points">
+<code class="descname">points</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#klib.kpath.points" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use the endpoints of kpath defined in <strong>kpath.pts</strong> to create numpy array
 of len(3) float which cover the entire path, based on method by I.S. Elfimov.</p>
-<dl class="docutils">
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>kpath.kpts</strong>: numpy array of float, len(<strong>kpath.pts</strong>)(1+**kpath.grain**) by 3</li>
 </ul>
-</dd>
-</dl>
-<p><a href="#id85"><span class="problematic" id="id86">**</span></a><a href="#id87"><span class="problematic" id="id88">*</span></a></p>
+</div></blockquote>
+<p><a href="#id97"><span class="problematic" id="id98">**</span></a><a href="#id99"><span class="problematic" id="id100">*</span></a></p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.klib.kz_kpt">
-<code class="descclassname">chinook.klib.</code><code class="descname">kz_kpt</code><span class="sig-paren">(</span><em>hv</em>, <em>kpt</em>, <em>W</em>, <em>V</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.klib.kz_kpt" title="Permalink to this definition">¶</a></dt>
+<dt id="klib.kz_kpt">
+<code class="descclassname">klib.</code><code class="descname">kz_kpt</code><span class="sig-paren">(</span><em>hv</em>, <em>kpt</em>, <em>W</em>, <em>V</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.kz_kpt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract the kz associated with a given in-plane momentum, photon energy, 
 work function and inner potential</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>hv</strong>: float, photon energ in eV</li>
 <li><strong>kpt</strong>: float, in plane momentum, inverse Angstrom</li>
 <li><strong>W</strong>: float, work function in eV</li>
 <li><strong>V</strong>: float, inner potential in eV</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>kz</strong>: float, out of plane momentum, inverse Angstrom</li>
 </ul>
-</dd>
-</dl>
-<p><a href="#id89"><span class="problematic" id="id90">**</span></a><a href="#id91"><span class="problematic" id="id92">*</span></a></p>
+</div></blockquote>
+<p><a href="#id101"><span class="problematic" id="id102">**</span></a><a href="#id103"><span class="problematic" id="id104">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.klib.mesh_reduce">
-<code class="descclassname">chinook.klib.</code><code class="descname">mesh_reduce</code><span class="sig-paren">(</span><em>blatt</em>, <em>mesh</em>, <em>inds=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.klib.mesh_reduce" title="Permalink to this definition">¶</a></dt>
+<dt id="klib.mesh_reduce">
+<code class="descclassname">klib.</code><code class="descname">mesh_reduce</code><span class="sig-paren">(</span><em>blatt</em>, <em>mesh</em>, <em>inds=False</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.mesh_reduce" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determine and select only k-points corresponding to the first Brillouin
 zone, by simply classifying points on the basis
 of whether or not the closest lattice point is the origin. 
@@ -779,132 +975,145 @@ By construction, the origin is index 13 of the blatt.
 If it is not, return error. Option to take only the indices of
 the mesh which we want, rather than the actual array points
 –this is relevant for tetrahedral interpolation methods</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>blatt</strong>: numpy array of len(27,3), nearest reciprocal lattice vector points</li>
 <li><strong>mesh</strong>: numpy array of (N,3) float, defining a mesh of k points, before</li>
 </ul>
-<p class="last">being reduced to contain only the Brillouin zone.</p>
-</dd>
-<dt><em>kwargs</em>: </dt>
-<dd><ul class="first simple">
+<p>being reduced to contain only the Brillouin zone.</p>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>inds</strong>: option to pass a list of bool, indicating the</li>
 </ul>
-<p class="last">indices one wants to keep, instead of autogenerating the mesh</p>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+<p>indices one wants to keep, instead of autogenerating the mesh</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>bz_pts</strong>: numpy array of (M,3) float, Brillouin zone points</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
+<p><a href="#id105"><span class="problematic" id="id106">**</span></a><a href="#id107"><span class="problematic" id="id108">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.klib.plt_pts">
-<code class="descclassname">chinook.klib.</code><code class="descname">plt_pts</code><span class="sig-paren">(</span><em>pts</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.klib.plt_pts" title="Permalink to this definition">¶</a></dt>
+<dt id="klib.plt_pts">
+<code class="descclassname">klib.</code><code class="descname">plt_pts</code><span class="sig-paren">(</span><em>pts</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.plt_pts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot an array of points iin 3D</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>pts</strong>: numpy array shape N x 3</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>ax</strong>: matplotlib Axes, for plotting on existing figure</li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>ax</strong>: matplotlib Axes, for further modifications.</li>
+</ul>
+</div></blockquote>
+<p><a href="#id109"><span class="problematic" id="id110">**</span></a><a href="#id111"><span class="problematic" id="id112">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.klib.raw_mesh">
-<code class="descclassname">chinook.klib.</code><code class="descname">raw_mesh</code><span class="sig-paren">(</span><em>blatt</em>, <em>N</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.klib.raw_mesh" title="Permalink to this definition">¶</a></dt>
+<dt id="klib.raw_mesh">
+<code class="descclassname">klib.</code><code class="descname">raw_mesh</code><span class="sig-paren">(</span><em>blatt</em>, <em>N</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.raw_mesh" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define a mesh of points filling the region of k-space bounded by the set
 of reciprocal lattice points generated by <em>bvectors</em>.
 These will be further reduced by <em>mesh_reduce</em> to find points which
 are within the first-Brillouin zone</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>blatt</strong>: numpy array of 27x3 float</li>
 <li><strong>N</strong>: int, or iterable of len 3, defines a coarse estimation</li>
 </ul>
-<p class="last">of number of k-points</p>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+<p>of number of k-points</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>mesh</strong>: numpy array of mesh points, size set roughly by N</li>
 </ul>
-</dd>
-</dl>
-<p><a href="#id93"><span class="problematic" id="id94">**</span></a><a href="#id95"><span class="problematic" id="id96">*</span></a></p>
+</div></blockquote>
+<p><a href="#id113"><span class="problematic" id="id114">**</span></a><a href="#id115"><span class="problematic" id="id116">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.klib.region">
-<code class="descclassname">chinook.klib.</code><code class="descname">region</code><span class="sig-paren">(</span><em>num</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.klib.region" title="Permalink to this definition">¶</a></dt>
+<dt id="klib.region">
+<code class="descclassname">klib.</code><code class="descname">region</code><span class="sig-paren">(</span><em>num</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.region" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a symmetric grid of points in number of lattice vectors.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>num</strong>: int, grid will have size 2 num+1 in each direction</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li>numpy array of size ((2 num+1)**3,3) with centre value of</li>
 </ul>
-<p class="last">first entry of (-num,-num,-num),…,(0,0,0),…,(num,num,num)</p>
-</dd>
-</dl>
-<p><a href="#id97"><span class="problematic" id="id98">**</span></a><a href="#id99"><span class="problematic" id="id100">*</span></a></p>
+<p>first entry of (-num,-num,-num),…,(0,0,0),…,(num,num,num)</p>
+</div></blockquote>
+<p><a href="#id117"><span class="problematic" id="id118">**</span></a><a href="#id119"><span class="problematic" id="id120">*</span></a></p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-chinook.orbital">
-<span id="orbital"></span><h2>orbital:<a class="headerlink" href="#module-chinook.orbital" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-orbital">
+<span id="orbital-objects"></span><h2>Orbital Objects<a class="headerlink" href="#module-orbital" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="chinook.orbital.fact">
-<code class="descclassname">chinook.orbital.</code><code class="descname">fact</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital.fact" title="Permalink to this definition">¶</a></dt>
+<dt id="orbital.fact">
+<code class="descclassname">orbital.</code><code class="descname">fact</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#orbital.fact" title="Permalink to this definition">¶</a></dt>
 <dd><p>Recursive factorial function, works for any non-negative integer.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>n</strong>: int, or integer-float</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li>int, recursively evaluates the factorial of the initial input value.</li>
 </ul>
-</dd>
-</dl>
-<p><a href="#id101"><span class="problematic" id="id102">**</span></a><a href="#id103"><span class="problematic" id="id104">*</span></a></p>
+</div></blockquote>
+<p><a href="#id121"><span class="problematic" id="id122">**</span></a><a href="#id123"><span class="problematic" id="id124">*</span></a></p>
 </dd></dl>
 
 <dl class="class">
-<dt id="chinook.orbital.orbital">
-<em class="property">class </em><code class="descclassname">chinook.orbital.</code><code class="descname">orbital</code><span class="sig-paren">(</span><em>atom, index, label, pos, Z, orient=[0.0], spin=1, lam=0.0, sigma=1.0, slab_index=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital.orbital" title="Permalink to this definition">¶</a></dt>
+<dt id="orbital.orbital">
+<em class="property">class </em><code class="descclassname">orbital.</code><code class="descname">orbital</code><span class="sig-paren">(</span><em>atom, index, label, pos, Z, orient=[0.0], spin=1, lam=0.0, sigma=1.0, slab_index=None</em><span class="sig-paren">)</span><a class="headerlink" href="#orbital.orbital" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <strong>orbital</strong> object carries all essential details of the elements of the
 model Hamiltonian basis, for both generation of the tight-binding model, in
 addition to the evaluation of expectation values and ARPES intensity.</p>
 <dl class="method">
-<dt id="chinook.orbital.orbital.copy">
-<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital.orbital.copy" title="Permalink to this definition">¶</a></dt>
+<dt id="orbital.orbital.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orbital.orbital.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy by value method for orbital object</p>
-<dl class="docutils">
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>orbital_copy</strong>: duplicate of <strong>orbital</strong> object</li>
 </ul>
-</dd>
-</dl>
-<p><a href="#id105"><span class="problematic" id="id106">**</span></a><a href="#id107"><span class="problematic" id="id108">*</span></a></p>
+</div></blockquote>
+<p><a href="#id125"><span class="problematic" id="id126">**</span></a><a href="#id127"><span class="problematic" id="id128">*</span></a></p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.orbital.rot_projection">
-<code class="descclassname">chinook.orbital.</code><code class="descname">rot_projection</code><span class="sig-paren">(</span><em>l</em>, <em>proj</em>, <em>rotation</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital.rot_projection" title="Permalink to this definition">¶</a></dt>
+<dt id="orbital.rot_projection">
+<code class="descclassname">orbital.</code><code class="descname">rot_projection</code><span class="sig-paren">(</span><em>l</em>, <em>proj</em>, <em>rotation</em><span class="sig-paren">)</span><a class="headerlink" href="#orbital.rot_projection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Go through a projection array, and apply the intended transformation to
 the Ylm projections in order.
 Define Euler angles in the z-y-z convention
@@ -912,9 +1121,9 @@ THIS WILL BE A COUNTERCLOCKWISE ROTATION ABOUT a vector BY angle gamma
 expressed in radians. Note that we always define spin in the lab-frame, so
 spin degrees of freedom are not rotated when we rotate the orbital degrees
 of freedom.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>l</strong>: int,orbital angular momentum</li>
 <li><strong>proj</strong>: numpy array of shape Nx4 of float, each element is</li>
 </ul>
@@ -922,100 +1131,100 @@ of freedom.</p>
 <ul class="simple">
 <li><strong>rotation</strong>: float, or list, defining rotation of orbital. If float,</li>
 </ul>
-<p class="last">assume rotation about z-axis. If list, first element is a numpy array 
+<p>assume rotation about z-axis. If list, first element is a numpy array 
 of len 3, indicating rotation vector, and second element is float, angle.</p>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>proj</strong>: numpy array of Mx4 float, as above, but modified, and may</li>
 </ul>
 <p>now include additional, or fewer elements than input <em>proj</em>.</p>
 <ul class="simple">
 <li><strong>Dmat</strong>: numpy array of (2l+1)x(2l+1) complex float indicating the</li>
 </ul>
-<p class="last">Wigner Big-D matrix associated with the rotation of this orbital shell
+<p>Wigner Big-D matrix associated with the rotation of this orbital shell
 about the intended axis.</p>
-</dd>
-</dl>
-<p><a href="#id109"><span class="problematic" id="id110">**</span></a><a href="#id111"><span class="problematic" id="id112">*</span></a></p>
+</div></blockquote>
+<p><a href="#id129"><span class="problematic" id="id130">**</span></a><a href="#id131"><span class="problematic" id="id132">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.orbital.slab_basis_copy">
-<code class="descclassname">chinook.orbital.</code><code class="descname">slab_basis_copy</code><span class="sig-paren">(</span><em>basis</em>, <em>new_posns</em>, <em>new_inds</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital.slab_basis_copy" title="Permalink to this definition">¶</a></dt>
+<dt id="orbital.slab_basis_copy">
+<code class="descclassname">orbital.</code><code class="descname">slab_basis_copy</code><span class="sig-paren">(</span><em>basis</em>, <em>new_posns</em>, <em>new_inds</em><span class="sig-paren">)</span><a class="headerlink" href="#orbital.slab_basis_copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy elements of a slab basis into a new list of
 orbitals, with modified positions and index ordering.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>basis</strong>: list or orbital objects</li>
 <li><strong>new_posns</strong>: numpy array of len(basis)x3 float, new positions for</li>
 </ul>
 <p>orbital</p>
-<ul class="last simple">
+<ul class="simple">
 <li><strong>new_inds</strong>: numpy array of len(basis) int, new indices for orbitals</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>new_basis</strong>: list of duplicated orbitals following modification.</li>
 </ul>
-</dd>
-</dl>
-<p><a href="#id113"><span class="problematic" id="id114">**</span></a><a href="#id115"><span class="problematic" id="id116">*</span></a></p>
+</div></blockquote>
+<p><a href="#id133"><span class="problematic" id="id134">**</span></a><a href="#id135"><span class="problematic" id="id136">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.orbital.sort_basis">
-<code class="descclassname">chinook.orbital.</code><code class="descname">sort_basis</code><span class="sig-paren">(</span><em>basis</em>, <em>slab</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital.sort_basis" title="Permalink to this definition">¶</a></dt>
+<dt id="orbital.sort_basis">
+<code class="descclassname">orbital.</code><code class="descname">sort_basis</code><span class="sig-paren">(</span><em>basis</em>, <em>slab</em><span class="sig-paren">)</span><a class="headerlink" href="#orbital.sort_basis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Utility script for organizing an orbital basis that is out of sequence</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>basis</strong>: list of orbital objects</li>
 <li><strong>slab</strong>: bool, True or False if this is for sorting a slab</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>orb_basis</strong>: list of sorted orbital objects (by orbital.index value)</li>
 </ul>
-</dd>
-</dl>
-<p><a href="#id117"><span class="problematic" id="id118">**</span></a><a href="#id119"><span class="problematic" id="id120">*</span></a></p>
+</div></blockquote>
+<p><a href="#id137"><span class="problematic" id="id138">**</span></a><a href="#id139"><span class="problematic" id="id140">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.orbital.spin_double">
-<code class="descclassname">chinook.orbital.</code><code class="descname">spin_double</code><span class="sig-paren">(</span><em>basis</em>, <em>lamdict</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.orbital.spin_double" title="Permalink to this definition">¶</a></dt>
+<dt id="orbital.spin_double">
+<code class="descclassname">orbital.</code><code class="descname">spin_double</code><span class="sig-paren">(</span><em>basis</em>, <em>lamdict</em><span class="sig-paren">)</span><a class="headerlink" href="#orbital.spin_double" title="Permalink to this definition">¶</a></dt>
 <dd><p>Double the size of a basis to introduce spin to the problem.
 Go through the basis and create an identical copy with opposite spin and 
 incremented index such that the orbital basis order puts spin down in the first
 N/2 orbitals, and spin up in the second N/2.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>basis</strong>: list of orbital objects</li>
 <li><strong>lamdict</strong>: dictionary of int:float pairs providing the</li>
 </ul>
-<p class="last">spin-orbit coupling strength for the different inequivalent atoms in 
+<p>spin-orbit coupling strength for the different inequivalent atoms in 
 basis.</p>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li>doubled basis carrying all required spin information</li>
 </ul>
-</dd>
-</dl>
-<p><a href="#id121"><span class="problematic" id="id122">**</span></a><a href="#id123"><span class="problematic" id="id124">*</span></a></p>
+</div></blockquote>
+<p><a href="#id141"><span class="problematic" id="id142">**</span></a><a href="#id143"><span class="problematic" id="id144">*</span></a></p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-chinook.SlaterKoster">
-<span id="slaterkoster"></span><h2>SlaterKoster:<a class="headerlink" href="#module-chinook.SlaterKoster" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-SlaterKoster">
+<span id="slater-koster"></span><h2>Slater Koster<a class="headerlink" href="#module-SlaterKoster" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="chinook.SlaterKoster.SK_cub">
-<code class="descclassname">chinook.SlaterKoster.</code><code class="descname">SK_cub</code><span class="sig-paren">(</span><em>Ymats</em>, <em>l1</em>, <em>l2</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.SlaterKoster.SK_cub" title="Permalink to this definition">¶</a></dt>
+<dt id="SlaterKoster.SK_cub">
+<code class="descclassname">SlaterKoster.</code><code class="descname">SK_cub</code><span class="sig-paren">(</span><em>Ymats</em>, <em>l1</em>, <em>l2</em><span class="sig-paren">)</span><a class="headerlink" href="#SlaterKoster.SK_cub" title="Permalink to this definition">¶</a></dt>
 <dd><p>In order to generate a set of independent Lambda functions for rapid 
 generation of Hamiltonian matrix elements, one must nest the 
 definition of the lambda functions within another function. In this way,
@@ -1040,56 +1249,56 @@ matrix can be defined as the following operation:</p>
 <p>6. Output matrix of hopping elements between all orbitals in the shell 
 to fill Hamiltonian</p>
 </div></blockquote>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>Ymats</strong>: list of numpy arrays corresponding to the relevant</li>
 </ul>
 <p>transformation from cubic to spherical harmonic basis</p>
 <ul class="simple">
 <li><strong>l1</strong>, <strong>l2</strong>: int orbital angular momentum channels relevant</li>
 </ul>
-<p class="last">to a given hopping pair</p>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first simple">
+<p>to a given hopping pair</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li>lambda function for the SK-matrix between these orbital shells,</li>
 </ul>
-<p class="last">for arbitrary hopping strength and direction.</p>
-</dd>
-</dl>
-<p><a href="#id125"><span class="problematic" id="id126">**</span></a><a href="#id127"><span class="problematic" id="id128">*</span></a></p>
+<p>for arbitrary hopping strength and direction.</p>
+</div></blockquote>
+<p><a href="#id145"><span class="problematic" id="id146">**</span></a><a href="#id147"><span class="problematic" id="id148">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.SlaterKoster.SK_full">
-<code class="descclassname">chinook.SlaterKoster.</code><code class="descname">SK_full</code><span class="sig-paren">(</span><em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.SlaterKoster.SK_full" title="Permalink to this definition">¶</a></dt>
+<dt id="SlaterKoster.SK_full">
+<code class="descclassname">SlaterKoster.</code><code class="descname">SK_full</code><span class="sig-paren">(</span><em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#SlaterKoster.SK_full" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a dictionary of lambda functions which take as keys the
 atom,orbital for both first and second element. 
 Formatting is a1a2n1n2l1l2, same as for SK dictionary entries</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>basis</strong>: list of orbital objects composing the TB-basis</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>SK_funcs</strong>: a dictionary of hopping matrix functions</li>
 </ul>
-<p class="last">(lambda functions with args EA,EB,Ey,V as Euler angles and potential (V))
+<p>(lambda functions with args EA,EB,Ey,V as Euler angles and potential (V))
 which can be executed for various hopping paths and potential strengths
 The keys of the dictionary will be organized similar to the way the SK
 parameters are passed, labelled by a1a2n1n2l1l2, which completely
 defines a given orbital-orbital coupling</p>
-</dd>
-</dl>
-<p><a href="#id129"><span class="problematic" id="id130">**</span></a><a href="#id131"><span class="problematic" id="id132">*</span></a></p>
+</div></blockquote>
+<p><a href="#id149"><span class="problematic" id="id150">**</span></a><a href="#id151"><span class="problematic" id="id152">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.SlaterKoster.Vmat">
-<code class="descclassname">chinook.SlaterKoster.</code><code class="descname">Vmat</code><span class="sig-paren">(</span><em>l1</em>, <em>l2</em>, <em>V</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.SlaterKoster.Vmat" title="Permalink to this definition">¶</a></dt>
+<dt id="SlaterKoster.Vmat">
+<code class="descclassname">SlaterKoster.</code><code class="descname">Vmat</code><span class="sig-paren">(</span><em>l1</em>, <em>l2</em>, <em>V</em><span class="sig-paren">)</span><a class="headerlink" href="#SlaterKoster.Vmat" title="Permalink to this definition">¶</a></dt>
 <dd><p>For Slater-Koster matrix element generation, a potential matrix is
 sandwiched in between the two bond-rotating Dmatrices. It should be 
 of the shape 2*l1+1 x 2*l2+1, and have the V_l,l’,D terms along the 
@@ -1100,28 +1309,28 @@ axis. For channels where the orbital angular momentum change involves a
 change in parity, the potential should change sign, as per Slater Koster’s
 original definition from 1954. This is taken care of automatically in 
 the Wigner formalism I use here, no need to have exceptions</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>l1</strong>, <strong>l2</strong>: int orbital angular momentum of initial and final states</li>
 <li><strong>V</strong>: numpy array of float – length should be min(<strong>l1</strong> ,**l2**)*2+1</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>Vm</strong>: numpy array of float, shape 2 <strong>l1</strong> +1 x 2 <strong>l2</strong> +1</li>
 </ul>
-</dd>
-</dl>
-<p><a href="#id133"><span class="problematic" id="id134">**</span></a><a href="#id135"><span class="problematic" id="id136">*</span></a></p>
+</div></blockquote>
+<p><a href="#id153"><span class="problematic" id="id154">**</span></a><a href="#id155"><span class="problematic" id="id156">*</span></a></p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-chinook.TB_lib">
-<span id="tb-lib"></span><h2>TB_lib:<a class="headerlink" href="#module-chinook.TB_lib" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-TB_lib">
+<span id="tight-binding-library"></span><h2>Tight-Binding Library<a class="headerlink" href="#module-TB_lib" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="chinook.TB_lib.H_me">
-<em class="property">class </em><code class="descclassname">chinook.TB_lib.</code><code class="descname">H_me</code><span class="sig-paren">(</span><em>i</em>, <em>j</em>, <em>executable=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.H_me" title="Permalink to this definition">¶</a></dt>
+<dt id="TB_lib.H_me">
+<em class="property">class </em><code class="descclassname">TB_lib.</code><code class="descname">H_me</code><span class="sig-paren">(</span><em>i</em>, <em>j</em>, <em>executable=False</em><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.H_me" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class contains the relevant executables and data structure pertaining 
 to generation of the Hamiltonian matrix elements for a single set of 
 coupled basis orbitals. Its attributes include integer values 
@@ -1133,193 +1342,192 @@ Python’s flexible protocol for equivalency and passing variables by
 reference/value require definition of a copy operator which allows one to
 produce safely, a copy of the object rather than its coordinates 
 in memory alone.
-<a href="#id137"><span class="problematic" id="id138">**</span></a><a href="#id139"><span class="problematic" id="id140">*</span></a></p>
+<a href="#id157"><span class="problematic" id="id158">**</span></a><a href="#id159"><span class="problematic" id="id160">*</span></a></p>
 <dl class="method">
-<dt id="chinook.TB_lib.H_me.H2Hk">
-<code class="descname">H2Hk</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.H_me.H2Hk" title="Permalink to this definition">¶</a></dt>
+<dt id="TB_lib.H_me.H2Hk">
+<code class="descname">H2Hk</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.H_me.H2Hk" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transform the list of hopping elements into a Fourier-series expansion 
 of the Hamiltonian. This is run during diagonalization for each
 matrix element index. If running a low-energy Hamiltonian, executable functions are
 simply summed for each basis index i,j, rather than computing a Fourier series. x is
 implicitly a numpy array of Nx3: it is essential that the executable conform to this input type.</p>
-<dl class="docutils">
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li>lambda function of a numpy array of float of length 3</li>
 </ul>
-</dd>
-</dl>
-<p><a href="#id141"><span class="problematic" id="id142">**</span></a><a href="#id143"><span class="problematic" id="id144">*</span></a></p>
+</div></blockquote>
+<p><a href="#id161"><span class="problematic" id="id162">**</span></a><a href="#id163"><span class="problematic" id="id164">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
-<dt id="chinook.TB_lib.H_me.append_H">
-<code class="descname">append_H</code><span class="sig-paren">(</span><em>H</em>, <em>R0=0</em>, <em>R1=0</em>, <em>R2=0</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.H_me.append_H" title="Permalink to this definition">¶</a></dt>
+<dt id="TB_lib.H_me.append_H">
+<code class="descname">append_H</code><span class="sig-paren">(</span><em>H</em>, <em>R0=0</em>, <em>R1=0</em>, <em>R2=0</em><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.H_me.append_H" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new hopping path to the coupling of the parent orbitals.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>H</strong>: complex float, matrix element strength, or if self.exectype,</li>
 </ul>
 <p>should be an executable</p>
 <ul class="simple">
 <li><strong>R0</strong>, <strong>R1</strong>, <strong>R2</strong>: float connecting vector in cartesian</li>
 </ul>
-<p class="last">coordinate frame–this is the TOTAL vector, not the relevant 
+<p>coordinate frame–this is the TOTAL vector, not the relevant 
 lattice vectors only</p>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li>directly modifies the Hamiltonian list for these matrix</li>
 </ul>
-<p class="last">coordinates</p>
-</dd>
-</dl>
+<p>coordinates</p>
+</div></blockquote>
+<p><a href="#id165"><span class="problematic" id="id166">**</span></a><a href="#id167"><span class="problematic" id="id168">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
-<dt id="chinook.TB_lib.H_me.clean_H">
-<code class="descname">clean_H</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.H_me.clean_H" title="Permalink to this definition">¶</a></dt>
+<dt id="TB_lib.H_me.clean_H">
+<code class="descname">clean_H</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.H_me.clean_H" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove all duplicate instances of hopping elements in the matrix 
 element list. This function is run automatically during slab generation.</p>
 <p>The Hamiltonian list is not itself directly modified.</p>
-<dl class="docutils">
-<dt><em>return</em>:</dt>
-<dd><ul class="first simple">
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li>list of hopping vectors and associated Hamiltonian matrix</li>
 </ul>
-<p class="last">element strengths</p>
-</dd>
-</dl>
-<p><a href="#id145"><span class="problematic" id="id146">**</span></a><a href="#id147"><span class="problematic" id="id148">*</span></a></p>
+<p>element strengths</p>
+</div></blockquote>
+<p><a href="#id169"><span class="problematic" id="id170">**</span></a><a href="#id171"><span class="problematic" id="id172">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
-<dt id="chinook.TB_lib.H_me.copy">
-<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.H_me.copy" title="Permalink to this definition">¶</a></dt>
+<dt id="TB_lib.H_me.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.H_me.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy by value of the <strong>H_me</strong> object</p>
-<dl class="docutils">
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>H_copy</strong>: duplicate <strong>H_me</strong> object</li>
 </ul>
-</dd>
-</dl>
-<p><a href="#id149"><span class="problematic" id="id150">**</span></a><a href="#id151"><span class="problematic" id="id152">*</span></a></p>
+</div></blockquote>
+<p><a href="#id173"><span class="problematic" id="id174">**</span></a><a href="#id175"><span class="problematic" id="id176">*</span></a></p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="chinook.TB_lib.TB_model">
-<em class="property">class </em><code class="descclassname">chinook.TB_lib.</code><code class="descname">TB_model</code><span class="sig-paren">(</span><em>basis</em>, <em>H_args</em>, <em>Kobj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.TB_model" title="Permalink to this definition">¶</a></dt>
+<dt id="TB_lib.TB_model">
+<em class="property">class </em><code class="descclassname">TB_lib.</code><code class="descname">TB_model</code><span class="sig-paren">(</span><em>basis</em>, <em>H_args</em>, <em>Kobj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.TB_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <strong>TB_model</strong> object carries the model basis as a list of <strong>orbital</strong>
 objects, as well as the model Hamiltonian, as a list of <strong>H_me</strong>.</p>
 <dl class="method">
-<dt id="chinook.TB_lib.TB_model.append_H">
-<code class="descname">append_H</code><span class="sig-paren">(</span><em>new_elements</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.TB_model.append_H" title="Permalink to this definition">¶</a></dt>
+<dt id="TB_lib.TB_model.append_H">
+<code class="descname">append_H</code><span class="sig-paren">(</span><em>new_elements</em><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.TB_model.append_H" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add new terms to the Hamiltonian by hand. This directly modifies
 the list of Hamiltonian matrix element, self.mat_els of the TB object.</p>
-<dl class="docutils">
-<dt><em>args</em></dt>
-<dd><ul class="first simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>new_elements</strong>: list of Hamiltonian matrix elements, either a single element [i,j,x_ij,y_ij,z_ij,H_ij(x,y,z)]</li>
 </ul>
-<p class="last">or as a list of such lists. Here i, j are the related orbital-indices.</p>
-</dd>
-</dl>
+<p>or as a list of such lists. Here i, j are the related orbital-indices.</p>
+</div></blockquote>
+<p><a href="#id177"><span class="problematic" id="id178">**</span></a><a href="#id179"><span class="problematic" id="id180">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
-<dt id="chinook.TB_lib.TB_model.build_ham">
-<code class="descname">build_ham</code><span class="sig-paren">(</span><em>H_args</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.TB_model.build_ham" title="Permalink to this definition">¶</a></dt>
+<dt id="TB_lib.TB_model.build_ham">
+<code class="descname">build_ham</code><span class="sig-paren">(</span><em>H_args</em><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.TB_model.build_ham" title="Permalink to this definition">¶</a></dt>
 <dd><p>Buld the Hamiltonian using functions from <strong>chinook.H_library.py</strong></p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>H_args</strong>: dictionary, containing all relevant information for</li>
 </ul>
-<p class="last">defining the Hamiltonian list. For details, see <strong>TB_model.__init__</strong>.</p>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first simple">
+<p>defining the Hamiltonian list. For details, see <strong>TB_model.__init__</strong>.</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li>sorted list of matrix element objects. These objects have</li>
 </ul>
-<p class="last">i,j attributes referencing the orbital basis indices, 
+<p>i,j attributes referencing the orbital basis indices, 
 and a list of form [R0,R1,R2,Re(H)+1.0jIm(H)]</p>
-</dd>
-</dl>
-<p><a href="#id153"><span class="problematic" id="id154">**</span></a><a href="#id155"><span class="problematic" id="id156">*</span></a></p>
+</div></blockquote>
+<p><a href="#id181"><span class="problematic" id="id182">**</span></a><a href="#id183"><span class="problematic" id="id184">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
-<dt id="chinook.TB_lib.TB_model.copy">
-<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.TB_model.copy" title="Permalink to this definition">¶</a></dt>
+<dt id="TB_lib.TB_model.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.TB_model.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy by value of the <strong>TB_model</strong> object</p>
-<dl class="docutils">
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>TB_copy</strong>: duplicate of the <strong>TB_model</strong> object.</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </dd></dl>
 
 <dl class="method">
-<dt id="chinook.TB_lib.TB_model.plot_unitcell">
-<code class="descname">plot_unitcell</code><span class="sig-paren">(</span><em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.TB_model.plot_unitcell" title="Permalink to this definition">¶</a></dt>
+<dt id="TB_lib.TB_model.plot_unitcell">
+<code class="descname">plot_unitcell</code><span class="sig-paren">(</span><em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.TB_model.plot_unitcell" title="Permalink to this definition">¶</a></dt>
 <dd><p>Utility script for visualizing the lattice and orbital basis.
 Distinct atoms are drawn in different colours</p>
-<dl class="docutils">
-<dt><em>kwargs</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>ax</strong>: matplotlib Axes, for plotting on existing Axes</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>ax</strong>: matplotlib Axes, for further modifications to plot</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
+<p><a href="#id185"><span class="problematic" id="id186">**</span></a><a href="#id187"><span class="problematic" id="id188">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
-<dt id="chinook.TB_lib.TB_model.plotting">
-<code class="descname">plotting</code><span class="sig-paren">(</span><em>win_min=None</em>, <em>win_max=None</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.TB_model.plotting" title="Permalink to this definition">¶</a></dt>
+<dt id="TB_lib.TB_model.plotting">
+<code class="descname">plotting</code><span class="sig-paren">(</span><em>win_min=None</em>, <em>win_max=None</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.TB_model.plotting" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plotting routine for a tight-binding model evaluated over some path in k.
 If the model has not yet been diagonalized, it is done automatically
 before proceeding.</p>
-<dl class="docutils">
-<dt><em>kwargs</em>:</dt>
-<dd><ul class="first simple">
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>win_min</strong>, <strong>win_max</strong>: float, vertical axis limits for plotting</li>
 </ul>
 <p>in units of eV. If not passed, a reasonable choice is made which 
 covers the entire eigenspectrum.</p>
-<ul class="last simple">
+<ul class="simple">
 <li><strong>ax</strong>: matplotlib Axes, for plotting on existing Axes</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>ax</strong>: matplotlib axes object</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
+<p><a href="#id189"><span class="problematic" id="id190">**</span></a><a href="#id191"><span class="problematic" id="id192">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
-<dt id="chinook.TB_lib.TB_model.print_basis_summary">
-<code class="descname">print_basis_summary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.TB_model.print_basis_summary" title="Permalink to this definition">¶</a></dt>
+<dt id="TB_lib.TB_model.print_basis_summary">
+<code class="descname">print_basis_summary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.TB_model.print_basis_summary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Very basic print function for printing a summary
 of the orbital basis, including their label, atomic species, position
 and spin character.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="chinook.TB_lib.TB_model.solve_H">
-<code class="descname">solve_H</code><span class="sig-paren">(</span><em>Eonly=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.TB_model.solve_H" title="Permalink to this definition">¶</a></dt>
+<dt id="TB_lib.TB_model.solve_H">
+<code class="descname">solve_H</code><span class="sig-paren">(</span><em>Eonly=False</em><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.TB_model.solve_H" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function diagonalizes the Hamiltonian over an array of momentum vectors.
 It uses the <strong>mat_el</strong> objects to quickly define lambda functions of 
 momentum, which are then filled into the array and diagonalized.
@@ -1328,173 +1536,155 @@ SVD algorithms require memory of 2*order*(4*order + 1) ~ 8*order^2. The matrices
 complex float, so this should be 16 bytes per entry: so len(k)*(2048*order**2). If 
 the diagonalization is requesting more than 85% of the available memory, then split
 up the k-path into sequential diagonalizations.</p>
-<dl class="docutils">
-<dt><em>return</em>:</dt>
-<dd><ul class="first simple">
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>self.Eband</strong>: numpy array of float, shape(len(self.Kobj.kpts),len(self.basis)),</li>
 </ul>
 <p>eigenvalues</p>
 <ul class="simple">
 <li><strong>self.Evec</strong>: numpy array of complex float, shape(len(self.Kobj.kpts),len(self.basis),len(self.basis))</li>
 </ul>
-<p class="last">eigenvectors</p>
-</dd>
-</dl>
+<p>eigenvectors</p>
+</div></blockquote>
+<p><a href="#id193"><span class="problematic" id="id194">**</span></a><a href="#id195"><span class="problematic" id="id196">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
-<dt id="chinook.TB_lib.TB_model.unpack">
-<code class="descname">unpack</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.TB_model.unpack" title="Permalink to this definition">¶</a></dt>
+<dt id="TB_lib.TB_model.unpack">
+<code class="descname">unpack</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.TB_model.unpack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reduce a Hamiltonian object down to a list of matrix elements. Include the Hermitian conjugate terms</p>
-<dl class="docutils">
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>Hlist</strong>: list of Hamiltonian matrix elements</li>
 </ul>
-</dd>
-</dl>
-<p><a href="#id157"><span class="problematic" id="id158">**</span></a><a href="#id159"><span class="problematic" id="id160">*</span></a></p>
+</div></blockquote>
+<p><a href="#id197"><span class="problematic" id="id198">**</span></a><a href="#id199"><span class="problematic" id="id200">*</span></a></p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.TB_lib.atom_coords">
-<code class="descclassname">chinook.TB_lib.</code><code class="descname">atom_coords</code><span class="sig-paren">(</span><em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.atom_coords" title="Permalink to this definition">¶</a></dt>
+<dt id="TB_lib.atom_coords">
+<code class="descclassname">TB_lib.</code><code class="descname">atom_coords</code><span class="sig-paren">(</span><em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.atom_coords" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define a dictionary organizing the distinct coordinates of instances of each
 atomic species in the basis</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>basis</strong>: list of orbital objects</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first simple">
-<li><a href="#id161"><span class="problematic" id="id162">**</span></a>dictionary with integer keys, numpy array of float values. atom:locations are</li>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a href="#id201"><span class="problematic" id="id202">**</span></a>dictionary with integer keys, numpy array of float values. atom:locations are</li>
 </ul>
-<p class="last">encoded in this way.</p>
-</dd>
-</dl>
+<p>encoded in this way</p>
+</div></blockquote>
+<p><a href="#id203"><span class="problematic" id="id204">**</span></a><a href="#id205"><span class="problematic" id="id206">*</span></a>.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.TB_lib.cell_edges">
-<code class="descclassname">chinook.TB_lib.</code><code class="descname">cell_edges</code><span class="sig-paren">(</span><em>avec</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.cell_edges" title="Permalink to this definition">¶</a></dt>
+<dt id="TB_lib.cell_edges">
+<code class="descclassname">TB_lib.</code><code class="descname">cell_edges</code><span class="sig-paren">(</span><em>avec</em><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.cell_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define set of line segments which enclose the unit cell.</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>avec</strong>: numpy array of 3x3 float</li>
 </ul>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>edges</strong>: numpy array of 12 x 6, endpoints of the 12 edges of the unit cell parallelepiped</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
+<p><a href="#id207"><span class="problematic" id="id208">**</span></a><a href="#id209"><span class="problematic" id="id210">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="chinook.TB_lib.gen_H_obj">
-<code class="descclassname">chinook.TB_lib.</code><code class="descname">gen_H_obj</code><span class="sig-paren">(</span><em>htmp</em>, <em>executable=False</em><span class="sig-paren">)</span><a class="headerlink" href="#chinook.TB_lib.gen_H_obj" title="Permalink to this definition">¶</a></dt>
+<dt id="TB_lib.gen_H_obj">
+<code class="descclassname">TB_lib.</code><code class="descname">gen_H_obj</code><span class="sig-paren">(</span><em>htmp</em>, <em>executable=False</em><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.gen_H_obj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take a list of Hamiltonian matrix elements in list format:
 [i,j,Rij[0],Rij[1],Rij[2],Hij(R)] and generate a list of <strong>H_me</strong>
 objects instead. This collects all related matrix elements for a given
 orbital-pair for convenient generation of the matrix Hamiltonians over
 an input array of momentum</p>
-<dl class="docutils">
-<dt><em>args</em>:</dt>
-<dd><ul class="first last simple">
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>htmp</strong>: list of numeric-type values (mixed integer[:2], float[2:5], complex-float[-1])</li>
 </ul>
-</dd>
-<dt><em>kwargs</em>:</dt>
-<dd><ul class="first simple">
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>executable</strong>: boolean, if True, we don’t have a standard Fourier-type Hamiltonian,</li>
 </ul>
-<p class="last">but perhaps a low-energy expansion. In this case, the htmp elements are</p>
-</dd>
-<dt><em>return</em>:</dt>
-<dd><ul class="first last simple">
+<p>but perhaps a low-energy expansion. In this case, the htmp elements are</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
 <li><strong>Hlist</strong>: list of Hamiltonian matrix element, <strong>H_me</strong> objects</li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
+<p><a href="#id211"><span class="problematic" id="id212">**</span></a><a href="#id213"><span class="problematic" id="id214">*</span></a></p>
 </dd></dl>
 
 </div>
 </div>
 
 
+           </div>
+           
           </div>
-          
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="operator.html" class="btn btn-neutral float-right" title="Model Diagnostics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="arpes.html" class="btn btn-neutral float-left" title="ARPES Simulation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Ryan P. Day
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">chinook</a></h1>
+
+    </section>
+
+  </div>
+  
 
 
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
 
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="license.html#contact">Contact</a></li>
-<li class="toctree-l1"><a class="reference internal" href="arpes.html">ARPES Simulation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Tight Binding</a></li>
-<li class="toctree-l1"><a class="reference internal" href="operator.html">Model Diagnostics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="slab.html">Slab Calculation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="support.html">Support Files</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="arpes.html" title="previous chapter">ARPES Simulation</a></li>
-      <li>Next: <a href="operator.html" title="next chapter">Model Diagnostics</a></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2019, Ryan P. Day.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
-      
-      |
-      <a href="_sources/tightbinding.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
-
+  
+  
     
+   
 
-    
-  </body>
+</body>
 </html>

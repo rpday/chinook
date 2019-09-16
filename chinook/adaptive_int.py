@@ -50,6 +50,7 @@ def general_Bnl_integrand(func,kn,lp):
     Standard form of executable integrand in the e.r approximation of the matrix element
     
     *args*:
+
         - **func**: executable function of position (float), in units of Angstrom
         
         - **kn**: float, norm of the k vector (in inverse Angstrom)
@@ -57,6 +58,7 @@ def general_Bnl_integrand(func,kn,lp):
         - **lp**: int, final state angular momentum quantum number
     
     *return*:
+
         - executable function of float (position)
     
     ***
@@ -75,6 +77,7 @@ def rect(func,a,b):
     evaluated as a rough rectangle
     
     *args*:
+
         - **func**: executable to evaluate
         
         - **a**: float, start of interval
@@ -82,6 +85,7 @@ def rect(func,a,b):
         - **b**: float, end of interval
         
     *return*: 
+
         - **recsum**: (complex) float approximated area of the region under
         function between **a** and **b**
     
@@ -100,6 +104,7 @@ def recursion(func,a,b,tol,currsum):
     result has converged
     
     *args*:
+
         - **func**: executable
         
         - **a**: float, start of interval
@@ -111,6 +116,7 @@ def recursion(func,a,b,tol,currsum):
         - **currsum**: (complex) float, current evaluation for the integral
         
     *return*: 
+
         - recursive call to the function if not converged, otherwise the result as complex (or real) float
     
     ***
@@ -130,6 +136,7 @@ def integrate(func,a,b,tol):
     to the integral.
     
     *args*:
+
         - **func**: executable
         
         - **a**: float, start of interval
@@ -140,6 +147,7 @@ def integrate(func,a,b,tol):
        
     
     *return*:
+    
         - **Q**: (complex) float, value of the integral
     
     ***

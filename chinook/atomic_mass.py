@@ -34,13 +34,17 @@ a_file = 'atomic_mass.txt'
 filename = pkg_resources.resource_filename(__name__,a_file)
 def get_mass_from_number(N_at):
     '''
+
     Pull atomic mass for the indicated atomic number
     
     *args*:
+
         - **N_at**: int, atomic number
         
     *return*:
+
         - float, atomic mass, in atomic mass units
+    
     ***
     '''
     try:
@@ -55,11 +59,14 @@ def get_el_from_number(N_at):
     Get symbol for element, given the atomic number
     
     *args*:
+
         - **N_at**: int, atomic number
     
     *return*:
+
         - string, symbol for element
     
+    ***
     '''
     
     try:
@@ -71,14 +78,17 @@ def get_el_from_number(N_at):
 def get_num_from_el(el):
     
     '''
+
     Get atomic number from the symbol for the associated element. Returns 0 for
     invalid entry.
     
     *args*:
+
         - **el**: string, symbol for element    
     
     *return*:
-        - int, atomic number.
+
+        - **Z**: int, atomic number.
     
     '''
     Z  = -1

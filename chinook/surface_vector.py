@@ -31,11 +31,13 @@ def ang_v1v2(v1,v2):
     Find angle between two vectors:
         
     *args*:
+
         - **v1**: numpy array of 3 float
         
         - **v2**: numpy array of 3 float
         
     *return*:
+
         - float, angle between the vectors
         
     ***
@@ -49,11 +51,13 @@ def are_parallel(v1,v2):
     Determine if two vectors are parallel:
         
     *args*:
+
         - **v1**: numpy array of 3 float
         
         - **v2**: numpy array of 3 float
         
     *return*:
+
         - boolean, True if parallel to within 1e-5 radians
    
     ***
@@ -71,13 +75,16 @@ def are_same(v1,v2):
     Determine if two vectors are identical
     
     *args*:
+
         - **v1**: numpy array of 3 float
         
         - **v2**: numpy array of 3 float
         
     *return*:
+
         - boolean, True if the two vectors are parallel and have same
         length, both to within 1e-5
+
     ***
     '''
     
@@ -98,11 +105,13 @@ def initialize_search(v1,v2,avec):
     which maximizes the projection out of plane of that spanned by v1 and v2.
     
     *args*: 
+
         - **v1**, **v2**: numpy array of 3 float, the spanning vectors for plane 
     
         - **avec**: numpy array of 3x3 float
         
     *return*:
+
         - numpy array of 3 float, the nearby Bravais lattice point which
         maximizes the projection along the plane normal
         
@@ -121,6 +130,7 @@ def refine_search(v3i,v1,v2,avec,maxlen):
     minimizes its length, while maximizing orthogonality with v1 and v2
     
     *args*:
+
         - **v3i**: numpy array of 3 float, initial guess for v3
         
         - **v1**: numpy array of 3 float, in-plane supercell vector
@@ -133,6 +143,7 @@ def refine_search(v3i,v1,v2,avec,maxlen):
         reasonably tolerate. This becomes relevant for unusual Miller indices.
         
     *return*:
+
         - **v3_opt** list of numpy array of 3 float, list of viable options for 
         the out of plane surface unit cell vector
         
@@ -176,6 +187,7 @@ def score(vlist,v1,v2,avec):
     as the ideal choice.
     
     *args*:
+
         - **vlist**: list of len 3 numpy array of float, choices for out-of-plane
         vector
         
@@ -184,7 +196,9 @@ def score(vlist,v1,v2,avec):
         - **avec**: numpy array of 3x3 float, primitive unit cell vectors
         
     *return*:
+
         - numpy array of len 3, out of plane surface-projected lattice vector
+   
     ***
     '''
     nv = np.cross(v1,v2)
@@ -209,6 +223,7 @@ def find_v3(v1,v2,avec,maxlen):
     increase on each iteration until a good choice is possible.
     
     *args*:
+
         - **v1**, **v2**: numpy array of 3 float, in plane spanning vectors
         
         - **avec**: numpy array of 3x3 float, bulk lattice vectors
@@ -216,6 +231,7 @@ def find_v3(v1,v2,avec,maxlen):
         - **maxlen**: float, max length tolerated for the vector we seek
         
     *return*:
+    
         - **v3_choice**: the chosen unit cell vector
         
     ***

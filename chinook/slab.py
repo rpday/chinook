@@ -1,31 +1,31 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Jul 14 11:21:25 2018
 
-@author: rday
+#Created on Sat Jul 14 11:21:25 2018
 
-MIT License
+#@author: rday
 
-Copyright (c) 2018 Ryan Patrick Day
+#MIT License
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+#Copyright (c) 2018 Ryan Patrick Day
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is
+#furnished to do so, subject to the following conditions:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
+#The above copyright notice and this permission notice shall be included in all
+#copies or substantial portions of the Software.
+
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#SOFTWARE.
+
 
 
 
@@ -46,9 +46,11 @@ def GCD(a,b):
     Then find the maximal common element of their divisors.
     
     *args*:
+
         - **a**, **b**: int
     
     *return*:
+
         - int, GCD of **a**, **b**
     
     ***
@@ -62,9 +64,11 @@ def LCM(a,b):
     product of the two input, divided by their greatest common denominator.
     
     *args*:
+
         - **a**, **b**: int
     
     *return*:
+
         - int, LCM of **a** and **b**
     
     ***
@@ -76,9 +80,11 @@ def divisors(a):
     Iterate through all integer divisors of integer input
     
     *args*:
+
         - **a**: int
     
     *return*:
+
         list of int, divisors of **a**
         
     ***
@@ -94,9 +100,11 @@ def LCM_3(a,b,c):
     integers, itself just the LCM of one of the numbers, and the LCM of the other two. 
     
     *args*:
+
         - **a**, **b**, **c**: int
         
     *return*:
+
         int, LCM of the three numbers
         
     ***
@@ -109,9 +117,11 @@ def iszero(a):
     Find where an iterable of numeric is zero, returns empty list if none found
     
     *args*:
+
         - **a**: numpy array of numeric
         
     *return*:
+
         - list of int, indices of iterable where value is zero
         
     ***
@@ -124,9 +134,11 @@ def nonzero(a):
     Find where an iterable of numeric is non-zero, returns empty list if none found
     
     *args*:
+
         - **a**: numpy array of numeric
         
     *return*:
+
         - list of int, indices of iterable where value is non-zero
     
     ***
@@ -145,13 +157,16 @@ def abs_to_frac(avec,vec):
     Note this function can be used to broadcast over N vectors you would like to transform
     
     *args*:
+
         - **avec**: numpy array of 3x3 float lattice vectors, ordered by rows
         
         - **vec**: numpy array of Nx3 float, vectors to be transformed to 
         fractional coordinates
         
      *return*:
+
          - Nx3 array of float, vectors translated into basis of lattice vectors    
+    
     ***
     '''
     return np.dot(vec,np.linalg.inv(avec))
@@ -161,12 +176,15 @@ def frac_to_abs(avec,vec):
     Same as abs_to_frac, but in opposite direction,from fractional to absolute coordinates
     
     *args*:
+
         - **avec**: numpy array of 3x3 float, lattice vectors, row-ordered 
         
         - **vec**: numpy array of Nx3 float, input vectors
         
     *return*:
+
         -  N x 3 array of float, vec in units of absolute coordinates (Angstrom)
+    
     ***    
     '''
     return np.dot(vec,avec)
@@ -178,12 +196,15 @@ def p_vecs(miller,avec):
     vectors for plane normal to the Miller axis
     
     *args*:
+
         - **miller**: numpy array of len 3 float
         
         - **avec**: numpy array of size 3x3 of float
     
     *return*:
+
         - **pvecs**: numpy array size 3x3 of float
+    
     ***
     '''
     n_zero = nonzero(miller)
@@ -218,12 +239,15 @@ def v_vecs(miller,avec):
     surface unit cell.
 
     *args*: 
+
         - **miller**: numpy array of 3 int, Miller indices for surface normal
         
         - **avec**: numpy array of 3x3 float, Lattice vectors
     
     *return*:
+
         - **vvecs**: new surface unit cell vectors numpy array of 3x3 float
+    
     '''
     pvecs = p_vecs(miller,avec)
     vvecs = np.zeros((3,3))
@@ -242,9 +266,11 @@ def basal_plane(vvecs):
     In this way we conveniently re-orient the v1,v2 axes into the Cartesian x,y plane.
     
     *args*:
+
         - **vvecs**: numpy array 3x3 float
     
     *return*:
+
         - **vvec_prime**: numpy array 3x3 of float, rotated v vectors
         
         - **Rmat**: numpy array of 3x3 float, rotation matrix to send original
@@ -279,12 +305,15 @@ def par(avec):
     then defined.
     
     *args*:
+
         - **avec**: numpy array of 3x3 float
     
     *return*:
+
         - **vert**: numpy array  8x3 float vertices of parallelepiped
         
         - **box_pts**: numpy array 8 x 3 float vertices of containing box
+    
     ***
     '''
     pts = np.array([[int(i/4),int(np.mod(i/2,2)),int(np.mod(i,2))] for i in range(8)])
@@ -301,6 +330,7 @@ def populate_box(box,basis,avec,R):
     represent candidate orbitals to populate the surface-projected unit cell.
     
     *args*:
+
         - **box**: numpy array of 8x3 float, vertices of corner of a box
         
         - **basis**: list of orbital objects
@@ -310,6 +340,7 @@ def populate_box(box,basis,avec,R):
         - **R**: numpy array of 3x3 float, rotation matrix
         
     *return*:
+
         - **basis_full**: list of Nx4 float, representing instances of orbitals copies,
         retaining only their position and their orbital basis index. These orbitals fill
         a container box larger than the region of interest.
@@ -340,14 +371,17 @@ def populate_par(points,avec):
     unit cell.
     
     *args*:
+
         - **points**: numpy array of Nx4 float ([:3] give position, [3] gives index)
         
         - **avec**: numpy array of  3x3 float
         
     *return*:
+
         - **new_points**: Nx3 numpy array of float, coordinates of new orbitals
         
         - **indices**: Nx1 numpy array of float, indices in original basis
+    
     ***   
     '''
 
@@ -368,15 +402,17 @@ def frac_inside(points,avec):
     direct coordinates.
     
     *args*:
+
         - **points**: numpy array of float (Nx4) indicating positions and basis indices of the points to consider
         
         - **avec**: numpy array of 3x3 float, new lattice vectors
         
     *return*:
+
         - numpy array of Mx4 float, indicating positions and basis indices of the valid basis elements inside the new
         unit cell.
     
-    
+    ***
     '''
     fpoints = np.around(abs_to_frac(avec,points[:,:3]),4)
     bool_coords = np.array([True if (fp.min()>=0 and fp.max()<1) else False for fp in fpoints])
@@ -387,7 +423,9 @@ def frac_inside(points,avec):
 def gen_surface(avec,miller,basis):
     '''
     Construct the surface unit cell, to then be propagated along the 001 direction to form a slab
+    
     *args*:
+
         - **avec**: numpy array of 3x3 float, lattice vectors for original unit cell
         
         - **miller**: numpy array of 3 int, Miller indices indicating the surface orientation
@@ -395,6 +433,7 @@ def gen_surface(avec,miller,basis):
         - **basis**: list of orbital objects, orbital basis for the original lattice
     
     *return*:
+
         - **new_basis**: list of orbitals, surface unit cell orbital basis
         
         - **vn_b**: numpy array of 3x3 float, the surface unit cell primitive lattice vectors
@@ -431,11 +470,13 @@ def sorted_basis(pts,inds):
     by the original indexing
     
     *args*:
+
         - **pts**: numpy array of Nx3 float, orbital basis positions
         
         - **inds**: numpy array of N int, indices of orbitals, from original basis
         
     *return*:
+
         - **labels_sorted**: numpy array of Nx4 float, [x,y,z,index], in order of increasing z, and index
 
     ***    
@@ -456,6 +497,7 @@ def gen_slab(basis,vn,mint,minb,term,fine=(0,0)):
     terminations you want.
     
     *args*:
+
         - **basis**: list of instances of orbital objects 
         
         - **vn**: numpy array of 3x3 float, surface unit cell lattice vectors 
@@ -469,10 +511,12 @@ def gen_slab(basis,vn,mint,minb,term,fine=(0,0)):
         - **fine**: tuple of 2 float, fine adjustment of the termination to precisely specify terminating atoms
         
     *return*:
+
         - **avec**: numpy array of float 3x3, updated lattice vector for the SLAB unit cell
         
         - **new_basis**: array of new orbital basis objects, with slab-index corresponding to the original basis indexing,
         and primary index corresponding to the order within the new slab basis
+    
     ***
     '''
     pts = []
@@ -518,11 +562,14 @@ def region(num):
     Generate a symmetric grid of points in number of lattice vectors. 
     
     *args*:
+
         - **num**: int, grid will have size 2 num+1 in each direction
     
     *return*:
+
         - numpy array of size ((2 num+1)^3,3) with centre value of first entry of
         (-num,-num,-num),...,(0,0,0),...,(num,num,num)
+   
     ***
     '''
     num_symm = 2*num+1
@@ -534,9 +581,11 @@ def unpack(Ham_obj):
     Reduce a Hamiltonian object down to a list of matrix elements. Include the Hermitian conjugate terms
 
     *args*:
+
         - **Ham_obj**: Hamiltonian object, c.f. *chinook.TB_lib.H_me*
 
     *return*:
+
         - **Hlist**: list of Hamiltonian matrix elements
         
     ***
@@ -561,6 +610,7 @@ def H_surf(surf_basis,avec,H_bulk,Rmat,lenbasis):
     new list, organizing corresponding to the new basis listing.
     
     *args*:
+
         - **surf_basis**: list of orbitals in the surface unit cell
         
         - **avec**: numpy array 3x3 of float, surface unit cell vectors
@@ -575,6 +625,7 @@ def H_surf(surf_basis,avec,H_bulk,Rmat,lenbasis):
         - **lenbasis**: int, length of bulk basis
         
     *return*:
+
         - Hamiltonian object, written in the basis of the surface unit cell,
         and its coordinate frame, rather than those of the bulk system
         
@@ -623,6 +674,7 @@ def H_surf(surf_basis,avec,H_bulk,Rmat,lenbasis):
     return Hobj
 
 def Hobj_to_dict(Hobj,basis):
+   
     '''
     Associate a list of matrix elements with each orbital in the original basis. 
     The hopping paths are given not as direct units,but as number of unit-vectors
@@ -636,12 +688,14 @@ def Hobj_to_dict(Hobj,basis):
     If the path goes into the vacuum buffer don't add it to the new list!
     
     *args*:
+
         - **Hobj**: *H_me* object(defined in *chinook.TB_lib.py*), as 
         the bulk-Hamiltonian
         
         - **basis**: list of *orbital* objects
     
     *return*:
+
         - **Hdict**: dictionary of hopping paths associated with a given orbital
         index
     
@@ -677,6 +731,7 @@ def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
     duplicates are removed.
     
     *args*:
+
         - **Hsurf**: *H_me* object(defined in *chinook.TB_lib.py*), as 
         the bulk-Hamiltonian from the surface unit cell
         
@@ -687,6 +742,7 @@ def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
         - **svec**: numpy array of 3x3 float, surface unit cell lattice vectors 
         
     *return*:
+
         - list of Hamiltonian matrix elements in [i,j,x,y,z,Hij] format
         
     ***
@@ -742,6 +798,7 @@ def bulk_to_slab(slab_dict):
     established a bulk model.
     
     *args*:
+
         - **slab_dict**: dictionary containing all essential information
         regarding the slab construction:
         
@@ -762,6 +819,7 @@ def bulk_to_slab(slab_dict):
             for the top and bottom of the slab structure
             
     *return*:
+
         - **slab_TB**: tight-binding TB object containing the slab basis
         
         - **slab_ham**: Hamiltonian object, slab Hamiltonian
@@ -789,9 +847,11 @@ def H_conj(h):
     Conjugate hopping path
     
     *args*:
+
         - **h**: list, input hopping path in format [i,j,x,y,z,Hij]
     
     *return*:
+
         - list, reversed hopping path, swapped indices, complex conjugate of the
         hopping strength
     
@@ -808,11 +868,13 @@ def mod_dict(surf_basis,av_i):
     number of surface lattice vectors, rather than direct units of Angstrom. 
     
     *args*:
+
         - **surf_basis**: list of orbital objects, covering the slab model
         
         - **av_i**: numpy array of 3x3 float, inverse of the lattice vector matrix
         
     *return*:
+    
         - **cv_dict**: dictionary with key-value pairs of 
         slab_index[i]-slab_index[j]:numpy.array([[i,j,mod_vec]...])
             

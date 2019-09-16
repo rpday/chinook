@@ -1,34 +1,32 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Nov  9 21:38:24 2017
 
-@author: ryanday
+#Created on Thu Nov  9 21:38:24 2017
 
-Slater Koster Library for generating a Hamiltonian of Slater-Koster
-MIT License
+#@author: ryanday
 
-Copyright (c) 2018 Ryan Patrick Day
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+#MIT License
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+#Copyright (c) 2018 Ryan Patrick Day
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is
+#furnished to do so, subject to the following conditions:
 
-"""
+#The above copyright notice and this permission notice shall be included in all
+#copies or substantial portions of the Software.
+
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#SOFTWARE.
 import numpy as np
 import chinook.SlaterKoster as SK
 import chinook.rotation_lib as rot_lib
@@ -50,10 +48,12 @@ kb = 1.38*10**-23
 def txt_build(filename,cutoff,renorm,offset,tol):
     
     '''
+
     Build Hamiltonian from textfile, input is of form
     o1,o2,x12,xy12,z12,t12, output in form [o1,o2,x12,y12,z12,t12]
     
     *args*:
+
         - **filename**: string, name of file
         
         - **cutoff**: float, maximum distance of hopping allowed, Angstrom
@@ -65,6 +65,7 @@ def txt_build(filename,cutoff,renorm,offset,tol):
         - **tol**: float, minimum Hamiltonian matrix element amplitude
         
     *return*:
+
         - **Hlist**: the list of Hamiltonian matrix elements
     
     ***
@@ -96,13 +97,16 @@ def txt_build(filename,cutoff,renorm,offset,tol):
     return Hlist
 
 def sk_build(avec,basis,Vdict,cutoff,tol,renorm,offset):
+    
     '''
+
     Build SK model from using D-matrices, rather than a list of SK terms from table.
     This can handle orbitals of arbitrary orbital angular momentum in principal, 
     but right now implemented for up to and including f-electrons. 
     NOTE: f-hoppings require thorough testing
     
     *args*:
+
         - **avec**: numpy array 3x3 float, lattice vectors
         
         - **basis**: list of orbital objects
@@ -116,6 +120,7 @@ def sk_build(avec,basis,Vdict,cutoff,tol,renorm,offset):
         - **offset**: float, offset for Fermi level 
         
     *return*:
+
         - **H_raw**: list of Hamiltonian matrix elements, in form [o1,o2,x12,y12,z12,t12]
     
     ***
@@ -167,10 +172,12 @@ def sk_build(avec,basis,Vdict,cutoff,tol,renorm,offset):
 def on_site(basis,V,offset):
     
     '''
+
     On-site matrix element calculation. Try both anl and alabel formats,
     if neither is defined, default the onsite energy to 0.0 eV
     
     *args*:
+
         - **basis**: list of orbitals defining the tight-binding basis
         
         - **V**: dictionary, Slater Koster terms
@@ -178,6 +185,7 @@ def on_site(basis,V,offset):
         - **offset**: float, EF shift
         
     *return*:
+
         - **Ho**: list of Hamiltonian matrix elements
         
     ***
@@ -197,11 +205,13 @@ def on_site(basis,V,offset):
                 
 def mat_els(Rij,SKmat,tol,i1,i2):
     '''
+
     Extract the pertinent, and non-zero elements of the Slater-Koster matrix
     and transform to the conventional form of Hamiltonian list entries
     (o1,o2,Rij0,Rij1,Rij2,H12(Rij))
     
     *args*:
+
         - **Rij**: numpy array of 3 float, relevant connecting vector 
         
         - **SKmat**: numpy array of float, matrix of hopping elements 
@@ -216,7 +226,8 @@ def mat_els(Rij,SKmat,tol,i1,i2):
         
         - **out**: list of Hamiltonian matrix elements, extracted from the
         ordered SKmat, in form [[o1,o2,x12,y12,z12,H12],...]
-        
+    
+    ***    
     '''
     inds = np.where(abs(SKmat)>tol)
     out = []
@@ -233,6 +244,7 @@ def mat_els(Rij,SKmat,tol,i1,i2):
 def index_ordering(basis):
     
     '''
+
     We use an universal ordering convention for defining the Slater-Koster matrices
     which may (and most likely will) not match the ordering chosen by the user.
     To account for this, we define a dictionary which gives the ordering, relative 
@@ -240,10 +252,13 @@ def index_ordering(basis):
     at each site in the lattice basis.
     
     *args*:
+
         - **basis**: list of orbital objects
     
     *return*:
+
         - **indexing**: dictionary of key-value pairs (a,n,l,x,y,z):numpy.array([...])
+    
     ***
     '''
     normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
@@ -261,11 +276,13 @@ def index_ordering(basis):
 def Vlist_gen(V,pair):
    
     '''
+
     Select the relevant hopping matrix elements to be used in defining the value
     of the Slater-Koster matrix elements for a given pair of orbitals. Handles situation where
     insufficient parameters have been passed to system.
     
     *args*:
+
         - **V**: dictionary of Slater-Koster hopping terms
         
         - **pair**: tuple of int defining the orbitals to be paired, (a1,a2,n1,n2,l1,l2)
@@ -313,10 +330,13 @@ def mirror_SK(SK_in):
     its last entry i.e. [Vsps,Vspp] -> [Vsps,Vspp,Vsps]
     
     *args*:
+
         - **SK_in**: iterable, of arbitrary length and data-type
         
     *return*:
+
         - list of values with same data-type as input
+    
     ***
     '''
     return list(SK_in) + (SK_in[-2::-1])
@@ -333,6 +353,7 @@ def cluster_init(Vdict,cutoff,avec):
     Returns an array of lattice points which go safely to the edge of the cutoff range.
     
     *args*:
+
         - **Vdict**: dictionary, or list of dictionaries of Slater Koster matrix elements
         
         - **cutoff**: float, or list of float
@@ -340,6 +361,7 @@ def cluster_init(Vdict,cutoff,avec):
         - **avec**: numpy array of 3x3 float
         
     *return*:
+
         - **Vdict**: list of length 1 if a single dictionary passed, else unmodified
         
         - **cutoff**: numpy array, append 0 to the beginning of the cutoff list,
@@ -381,11 +403,13 @@ def spin_double(H,lb):
     original basis.
     
     *args*:
+
         - **H**: list, Hamiltonian matrix elements [[o1,o2,x,y,z,H12],...]
         
         - **lb**: int, length of basis before spin duplication
         
     *return*:
+
         - **h2** modified copy of **H**, filled with kinetic terms for both 
         spin species
     
@@ -399,6 +423,7 @@ def spin_double(H,lb):
 
 
 def SO(basis):
+
     '''
     Generate L.S  matrix-elements for a given basis. 
     This is generic to all l, except the normal_order, which is defined here up to 
@@ -416,9 +441,11 @@ def SO(basis):
     weighted by the factor value, and slotted into a len(**basis**)xlen(**basis**) matrix **HSO**
     
     *args*:
+
         - **basis**: list of orbital objects
     
     *return*:
+
         - **HSO**: list of matrix elements in standard format [o1,o2,0,0,0,H12]
         
     ***
@@ -458,15 +485,18 @@ def SO(basis):
 
 
 def Lp(l):
+
     '''
     L+ operator in the :math:`l`, :math:`m_l` basis, organized with 
     (0,0) = |l,l>... (2l,2l) = |l,-l>
     The nonzero elements are on the upper diagonal
     
     *arg*:
+
         - **l**: int orbital angular momentum
     
     *return*:
+
         - **M**: numpy array (2l+1,2l+1) of real float
         
     ***
@@ -479,6 +509,7 @@ def Lp(l):
     return M
 
 def Lm(l):
+
     '''
     L- operator in the l,m_l basis, organized with 
     (0,0) = |l,l>... (2l,2l) = |l,-l>
@@ -486,9 +517,11 @@ def Lm(l):
     The nonzero elements are on the upper diagonal
     
     *arg*:
+
         - **l**: int orbital angular momentum
     
     *return*:
+
         - **M**: numpy array (2l+1,2l+1) of real float
         
     ***
@@ -501,25 +534,32 @@ def Lm(l):
     return M
 
 def Lz(l):
+
     '''
     Lz operator in the l,:math:`m_l` basis
     
     *arg*:
+
         - **l**: int orbital angular momentum
     
     *return*:
+
         - numpy array (2*l+1,2*l+1)
+
+    ***
     '''
     return np.identity(2*l+1)*np.array([l-m for m in range(2*l+1)])
 
 
 
 def AFM_order(basis,dS,p_up,p_dn):
+  
   '''
   Add antiferromagnetism to the tight-binding model, by adding a different on-site energy to 
   orbitals of different spin character, on the designated sites. 
   
   *args*:
+
       - **basis**: list, orbital objects
       
       - **dS**: float, size of spin-splitting (eV)
@@ -528,6 +568,7 @@ def AFM_order(basis,dS,p_up,p_dn):
       for the AFM order
       
   *return*: 
+
       - **h_AF**: list of matrix elements, as conventionally arranged [[o1,o2,0,0,0,H12],...]
 
   ***
@@ -550,16 +591,19 @@ def AFM_order(basis,dS,p_up,p_dn):
 def FM_order(basis,dS):
     
     '''
+
      Add ferromagnetism to the system. Take dS to assume that the splitting puts 
      spin-up lower in energy by dS,and viceversa for spin-down. This directly
      modifies the *TB_model*'s **mat_els** attribute
      
      *args*:
+
          - **basis**: list, of orbital objects in basis
          
          - **dS**: float, energy of the spin splitting (eV)
     
      *return*:
+
          - list of matrix elements [[o1,o2,0,0,0,H12],...]
     
      ***
@@ -567,13 +611,15 @@ def FM_order(basis,dS):
     return [[bi.index,bi.index,0,0,0,-np.sign(bi.spin)*dS] for bi in basis]
 
 
-def Efield(basis,field,orbital_type='Slater'):
+#def Efield(basis,field,orbital_type='Slater'):
     
     '''
     Define a set of matrix elements which introduce an electric field, treated at the level of a dipole operator.
     
+    TODO
+
     '''
-    return None
+ #   return None
     
     
 
@@ -582,14 +628,19 @@ def Efield(basis,field,orbital_type='Slater'):
 def region(num):
     
     '''
+
     Generate a symmetric grid of points in number of lattice vectors. 
     
     *args*:
+
         - **num**: int, grid will have size 2*num+1 in each direction
     
     *return*:
+
         - numpy array of size ((2*num+1)**3,3) with centre value of first entry
         of (-num,-num,-num),...,(0,0,0),...,(num,num,num)
+
+    ***
     '''
     num_symm = 2*num+1
     return np.array([[int(i/num_symm**2)-num,int(i/num_symm)%num_symm-num,i%num_symm-num] for i in range((num_symm)**3)])

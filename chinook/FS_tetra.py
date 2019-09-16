@@ -59,6 +59,7 @@ def EF_tetra(TB,NK,EF,degen=False,origin=None):
     prescribed in the above paper. 
     
     *args*:
+
         - **TB**: tight-binding model object
         
         - **NK**: int or list,tuple of 3 int indicating number of k-points in mesh
@@ -66,6 +67,7 @@ def EF_tetra(TB,NK,EF,degen=False,origin=None):
         - **EF**: float, Fermi energy, or energy of interest
         
     *kwargs*:
+
         - **degen**: bool, flag for whether the bands are two-fold degenerate, as for 
         Kramers degeneracy
         
@@ -73,6 +75,7 @@ def EF_tetra(TB,NK,EF,degen=False,origin=None):
         plotted Brillouin zone
         
     *return*:
+
         - **surfaces**: dictionary of dictionaries: Each key-value pair corresponds
         to a different band index. For each case, the value is a dictionary with key-value
         pairs:
@@ -80,6 +83,7 @@ def EF_tetra(TB,NK,EF,degen=False,origin=None):
             - *'pts'*: numpy array of Nx3 float, the N coordinates of EF crossing
             
             - *'tris'*: numpy array of Nx3 int, the triangulation of the surface
+    
     ***
     '''
     
@@ -162,10 +166,12 @@ def EF_tetra(TB,NK,EF,degen=False,origin=None):
 def FS_generate(TB,Nk,EF,degen = False,origin=None,ax=None):
     
     '''
+
     Wrapper function for computing Fermi surface triangulation, and then plotting
     the result. 
     
     *args*:
+
         - **TB**: tight-binding model object
         
         - **Nk**: int, or tuple/list of 3 int, number of k-points in Brillouin zone mesh
@@ -173,6 +179,7 @@ def FS_generate(TB,Nk,EF,degen = False,origin=None,ax=None):
         - **EF**: float, Fermi energy, or constant energy level of interest
         
     *kwargs*:
+
         - **degen**: bool, flag for whether the bands are two-fold degenerate, as for 
         Kramers degeneracy
         
@@ -183,6 +190,7 @@ def FS_generate(TB,Nk,EF,degen = False,origin=None,ax=None):
 
     
     *return*:
+
         - **surfaces**: dictionary of dictionaries: Each key-value pair corresponds
         to a different band index. For each case, the value is a dictionary with key-value
         pairs:
@@ -215,9 +223,11 @@ def heron(vert):
     Heron's algorithm for calculation of triangle area, defined by only the vertices
     
     *args*:
+
         - **vert**: numpy array of 3x3 indicating vertices of triangle
     
     *return*:
+
         - float, area of triangle
         
     ***
@@ -243,9 +253,11 @@ def sim_tri(vert):
     triangles decomposed.
     
     *args*:
+
         - **vert**: (4 by 3 numpy array (or list) of float) in some coordinate frame 
         
     *return*:
+    
         - **tris[0]** , **tris[1]**: two numpy arrays of size 3 by 3 float containing
         the coordinates of a triangulation 
     

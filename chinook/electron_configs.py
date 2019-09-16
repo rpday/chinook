@@ -71,11 +71,13 @@ def get_con(filename,Z):
     This is configuration to be used in calculation of the Slater wavefunction.
     
     *args*:
+
         - **filename**: string, text-file where the configurations are saved
         
         - **Z**: int, atomic number
         
     *return*:
+
         - string, electron configuration of neutral atom
     
     ***
@@ -90,13 +92,16 @@ def get_con(filename,Z):
 def shield_split(shield_string):
     
     '''
+
     Parse the electron configuration string, dividing up into the different orbital
     shells.
     
     *args*:
+
         - **shield_string**: string, electron configuration
         
     *return*:
+
         - **parsed_shield**: list of separated orbital components
     
     ***
@@ -117,13 +122,16 @@ def Z_eff(Z_ind,orb):
     Compute the effective nuclear charge, following Slater's rules.
     
     *args*:
+
         - **Z_ind**: int, the atomic number
         
         - **orb**: orbital string, written as nl in either fully numeric, or numeric-alpha format
     
     *return*:
+
         - **result**: float, effective nuclear charge
     
+    ***
     '''
     
     l_dic = {"s":0,"p":1,"d":2,"f":3}  
@@ -176,7 +184,9 @@ def Z_eff(Z_ind,orb):
     
 
 def Slater_exec(Z_ind,orb):
+
     '''
+
     Define an executable Slater-type orbital wavefunction which takes only
     the radius as an input argument. In this way, the usser specifies Z 
     and the orbital label string, and this generates a lambda function
@@ -184,14 +194,17 @@ def Slater_exec(Z_ind,orb):
     :math:`R(r) = (\\frac{2Z_{e}}{n_{e}})^{n_{e}} \\sqrt{\\frac{2Z_{e}}{n_{e}\\Gamma(2n_{e}+1)}} r^{n_{e}-1} e^{-\\frac{Z_{e} r}{n_{e}}}`    
  
     *args*:
+
         - **Z_ind**: int, atomic number
         
         - **orb**: string, 'nlxx' as per standard orbital definitions used
         throughout the library
     
     *return*:
+
         - executable function of position (in units of Angstrom)
     
+    ***
     '''
     ne = ndic[int(orb[0])]
     xi = Z_eff(Z_ind,orb)/ne
@@ -214,11 +227,13 @@ def hydrogenic_exec(Z_ind,orb):
     **Z_ind** and orbital label 'nlxx'
     
     *args*:
+
         - **Z_ind**: int, atomic number
         
         - **orb**: string, orbital label 'nlxx'
         
     *return*:
+    
         - executable function of float
         
     ***

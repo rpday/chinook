@@ -4,16 +4,27 @@
 Introduction
 ************
 
-Overview
-========
+Installation
+============
 
-Welcome to the documentation for chinook, developed by at the Quantum Matter Institute in Vancouver, BC at the University of British Columbia. chinook was designed with an aim towards providing a convenient framework in which to simulate angle-resolved photoemission spectroscopy (ARPES) experiments. In doing so, we have built a more general environment in which one can construct and study tight-binding and other effective single-particle Hamiltonians. In these pages, you will find comprehensive documentation for all methods available in the chinook package, in addition to a few instructive tutorials and some instructions for getting started. We hope you like what you find, and encourage you to get involved in this project by building new tools to extend the library here beyond its current form. For a detailed overview of our methodology, in addition to a few motivating examples, please see our recent paper at (arXiv:1905.XXXXXXX). The development of chinook was motivated by an absence of readily available tools to facilitate interpretation and design of new experiments. In this spirit, this software is offered for free; we request only that any publications which make use of chinook cite the following reference:
+The entire source code for *chinook* is available as a github repository, which can be accessed
+by visiting our repo_. 
 
-arXiv:1905.XXXXXXX.
+.. _repo: https://github.com/rpday/chinook
 
+For most convenient access, *chinook* is registered and available for download via *pip*. Open a command line shell and execute
+::
+  pip install chinook
 
-Thanks for stopping by!
+We have avoided use of unconventional packages to run *chinook*, and the only required packages are numpy_, matplotlib_, and scipy_. Some high performance operation is available if psutil_ is also available.
 
+.. _numpy: https://numpy.org
+
+.. _matplotlib: https://matplotlib.org
+
+.. _scipy: https://www.scipy.org/scipylib/index.html
+
+.. _psutil: https://psutil.readthedocs.io/en/latest/
 
 Getting Started
 ===============

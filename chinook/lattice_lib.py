@@ -11,6 +11,13 @@ import matplotlib.pyplot as plt
 
 
 class lattice:
+
+    '''
+    Primarily a utility class, for use in visualizing lattice and
+    basis. Also includes some tools for converting between different
+    unit conventions.
+
+    '''
     
     def __init__(self,avec,basis):
         
@@ -21,6 +28,24 @@ class lattice:
         
         
     def parse_basis(self,basis,nmax):
+        '''
+        Take orbital basis and establish all equivalent locations
+        of each atom in the basis within a region near the origin
+
+        *args*:
+
+            - **basis**: list of orbital objects
+
+            - **nmax**: int, number of neighbouring cells to consider
+
+        *return*:
+
+            - **atoms**: dictionary, key values indications atoms, all positions
+
+            - **frac_posns**: same as **atoms**, but in lattice vector units
+
+        ***
+        '''
         
         atoms = {}
         frac_posns = {}
@@ -42,11 +67,40 @@ class lattice:
         
         
     def frac_pos(self,posns):
+        '''
+        Inverse multiplication of lattice vectors with position vector, 
+        to get position in units of lattice vectors, rather than direct units
+        of Angstrom
+
+        *args*:
+
+            - **posns**: numpy array of Nx3 float
+
+        *return*:
+
+            - numpy array of Nx3 float
+
+        ***
+        '''
         
         return np.einsum('ji,kj->ki',self.ivec,posns)
         
         
     def draw_lattice(self,ax=None):
+        '''
+        Plotting utility function, display unit cell parallelepiped, and
+        atoms inside
+
+        *kwargs*:
+            
+            - **ax**: matplotlib Axes, for plotting onto existing axes
+
+        *return*:
+
+            - **ax**: matplotlib Axes, for further editing of plots
+
+        ***
+        '''
         
         if ax is None:
             fig = plt.figure()
@@ -61,15 +115,20 @@ class lattice:
         return ax
             
     def cell_edges(self):
+
         '''
         Evaluate the edges forming an enclosing volume for the unit cell.
         
         *args*:
+
             - **avec**: numpy array of 3x3 float, lattice vectors
         
         *return*:
+
             - **edges**: numpy array of 24x2x3 float, indicating the endpoints of all
             bounding edges of the cell
+
+        ***
         '''
         
         modvec = np.array([[np.mod(int(j/4),2),np.mod(int(j/2),2),np.mod(j,2)] for j in range(8)])
@@ -86,18 +145,22 @@ class lattice:
 def lattice_pars_to_vecs(norm_a,norm_b,norm_c,ang_a,ang_B,ang_y):
     
     '''
+
     A fairly standard way to define lattice vectors is in terms of the vector lengths,
     and their relative angles--defining in this way a parallelepiped unit cell. Use
     this notation to translate into a numpy array of 3x3 array of float
     
     *args*:
+
         - **norm_a**, **norm_b**, **norm_c**: float, length vectors, Angstrom
         
         - **ang_a**, **ang_B**, **ang_y**: float, angles between (b,c), (a,c), (a,b) in degrees
     
     *return*:
+
         - numpy array of 3x3 float: unit cell vectors
     
+    ***
     '''
     
     rad = np.pi/180
@@ -115,6 +178,20 @@ def lattice_pars_to_vecs(norm_a,norm_b,norm_c,ang_a,ang_B,ang_y):
 
 
 def neighbours(pos,num):
+    '''
+
+    Build series of lattice points using the pos arrays, out to some fixed number of points away
+    from origin
+
+    *args*:
+
+        - **pos**: numpy array of 3x3 float
+
+        - **num**: int, number of sites to consider
+
+    *return*:
+
+        - **inside**: numpy array of Nx3 float, all points in neighbouring region of lattice
     
     num_symm= 2*num+1
     

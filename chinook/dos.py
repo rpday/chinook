@@ -42,11 +42,13 @@ def dos_broad(TB,NK,NE=None,dE=None,origin = np.zeros(3)):
     delta functions. 
     
     *args*:
+
         - **TB**: tight-binding model object
         
         - **NK**: int, or tuple of int, indicating number of k-points
         
     *kwargs*:
+
         - **NE**: int, number of energy bins for final output
         
         - **dE**: float, energy broadening of peaks, eV
@@ -55,10 +57,12 @@ def dos_broad(TB,NK,NE=None,dE=None,origin = np.zeros(3)):
         relevant for example in kz-specific contributions to density of states
         
     *return*:
+
         - **DOS**: numpy array of float, density-of-states in states/eV
         
         - **Elin**: numpy array of float, energy domain in eV
     
+    ***
     '''
     kpts = tetrahedra.gen_mesh(TB.avec,NK)+origin
     TB.Kobj.kpts = kpts
@@ -92,17 +96,21 @@ def dos_broad(TB,NK,NE=None,dE=None,origin = np.zeros(3)):
 def def_dE(Eband):
     
     '''
+
     If energy broadening is not passed for density-of-states calculation,
     compute a reasonable value based on the energy between adjacent energies
     in the tight-binding calculation
     
     *args*:
+
         - **Eband**: numpy array of float, indicating band energies
         
     *return*:
+
         **dE**: float, energy broadening, as the smallest average energy spacing
         over all bands.
     
+    ***
     '''
     
     dE = Eband.max()-Eband.min()
@@ -119,11 +127,13 @@ def ne_broad_numerical(TB,NK,NE=None,dE=None,origin=np.zeros(3)):
     
     
     *args*:
+
         - **TB**: tight-binding model object
         
         - **NK**: int, or tuple of int, indicating number of k-points
         
     *kwargs*:
+
         - **NE**: int, number of energy bins for final output
         
         - **dE**: float, energy spacing of bins, in eV
@@ -132,9 +142,12 @@ def ne_broad_numerical(TB,NK,NE=None,dE=None,origin=np.zeros(3)):
         relevant for example in kz-specific contributions to density of states
         
     *return*:
+
         - **ne**: numpy array of float, integrated density-of-states at each energy
         
         - **Elin**: numpy array of float, energy domain in eV
+    
+    ***
     '''
     DOS,Elin = dos_broad(TB,NK,NE,dE,origin)
     delta = Elin[1]-Elin[0]
@@ -156,7 +169,9 @@ def find_EF(TB,NK,occ,NE=None,dE=None,origin=np.zeros(3)):
     '''
     Find the Fermi level of a model Hamiltonian, for a designated electronic
     occupation. Note this is evaluated at T=0, so EF is well-defined.
+
     *args*:
+
         - **TB**: tight-binding model object
         
         - **NK**: int, or tuple of int, indicating number of k-points
@@ -164,6 +179,7 @@ def find_EF(TB,NK,occ,NE=None,dE=None,origin=np.zeros(3)):
         - **occ**: float, desired electronic occupation
         
     *kwargs*:
+
         - **NE**: int, number of energy bins for final output
         
         - **dE**: float, energy spacing of bins, in eV
@@ -172,7 +188,10 @@ def find_EF(TB,NK,occ,NE=None,dE=None,origin=np.zeros(3)):
         relevant for example in kz-specific contributions to density of states
         
     *return*:
+
         - **EF**: float, Fermi level in eV
+
+    ***
     '''
     
     ne,Elin = ne_broad_numerical(TB,NK,NE,dE,origin)
@@ -185,16 +204,19 @@ def find_EF(TB,NK,occ,NE=None,dE=None,origin=np.zeros(3)):
         
 def ne_broad_analytical(TB,NK,NE=None,dE=None,origin=np.zeros(3),plot = True):
     '''
+
     Analytical evaluation of the occupation function. Uses scipy's errorfunction
     executable to evaluate the analytical form of a Gaussian-broadened state's contribution
     to the total occupation, at each energy
     
     *args*:
+
         - **TB**: tight-binding model object
         
         - **NK**: int, or tuple of int, indicating number of k-points
         
     *kwargs*:
+
         - **NE**: int, number of energy bins for final output
         
         - **dE**: float, energy spacing of bins, in eV
@@ -205,9 +227,12 @@ def ne_broad_analytical(TB,NK,NE=None,dE=None,origin=np.zeros(3),plot = True):
         - **plot**: boolean, default to True, if false, suppress plot output
         
     *return*:
+
         - **nE**: numpy array of float, occupied states
         
         - **Elin**: numpy array of float, energy domain in eV
+
+    ***
     '''
     kpts = tetrahedra.gen_mesh(TB.avec,NK)+origin #just a mesh over the Brillouin zone
     TB.Kobj.kpts = kpts
@@ -249,6 +274,7 @@ def error_function(x0,x,sigma):
     the scipy implementation of the error function
     
     *args*:
+
         - **x0**: float, centre of Gaussian, in eV
         
         - **x**: numpy array of float, energy domain eV
@@ -256,23 +282,33 @@ def error_function(x0,x,sigma):
         - **sigma**: float, width of Gaussian, in eV
         
     *return*:
+
         - analytical form of integral
     
+    ***
     '''
     return 0.5*(erf((x-x0)/(np.sqrt(2)*sigma))+1)      
             
             
             
 def gaussian(x0,x,sigma):
+
     '''
     Evaluate a normalized Gaussian function.
     
     *args*:
+
         - **x0**: float, centre of peak, in eV
         
         - **x**: numpy array of float, energy domain in eV
         
         - **sigma**: float, width of Gaussian, in eV
+
+    *return*:
+
+        - numpy array of float, gaussian evaluated.
+
+    ***
     '''
     return np.exp(-(x-x0)**2/(2*sigma**2))*np.sqrt(1/(2*np.pi))/sigma
 ################# Density of States following the Blochl Prescription #######################
@@ -280,12 +316,14 @@ def gaussian(x0,x,sigma):
     
 def dos_tetra(TB,NE,NK):
     '''
+
     Generate a tetrahedra mesh of k-points which span the BZ with even distribution
     Diagonalize over this mesh and then compute the resulting density of states as
     prescribed in the above paper. 
     The result is plotted, and DOS returned
     
     *args*:
+
         - **TB**: tight-binding model object
         
         - **NE**: int, number of energy points
@@ -293,6 +331,7 @@ def dos_tetra(TB,NE,NK):
         - **NK**: int or list of 3 int -- number of k-points in mesh
         
     *return*:
+
         - **Elin**: linear energy array of float, spanning the range of the eigenspectrum
         
         - **DOS**: numpy array of float, same length as Elin, density of states
@@ -320,10 +359,12 @@ def dos_tetra(TB,NE,NK):
 def band_contribution(eigenvals,w_domain,volume):
     
     '''
+
     Compute the contribution over a single tetrahedron, from a 
     single band, to the density of states
     
     *args*:
+
         - **eigenvals**: numpy array of float, energy values at corners
         
         - **w_domain**: numpy array of float, energy domain
@@ -331,6 +372,7 @@ def band_contribution(eigenvals,w_domain,volume):
         - **volume**: int, number of tetrahedra in the total mesh
     
     *return*:
+
         - **DOS**: numpy array of float, same length as w_domain
     
     ***
@@ -351,12 +393,14 @@ def proj_avg(eivecs,proj_matrix):
     use *numpy.einsum* to perform matrix multiplication and contraction.
     
     *args*:
+
         - **eivecs**: numpy array of complex float, 4xNxM, with M number of eigenvectors,
         N basis dimension
         
         - **proj_matrix**: numpy array of complex float, NxN in size
         
     *return*:
+
         - numpy array of M float, indicating the average projection over the 4 
         corners of the tetrahedron
       
@@ -371,13 +415,15 @@ def proj_mat(proj,lenbasis):
     matrix, it is by definition a real matrix operator.
     
     *args*:
+
         - **proj**: numpy array, either 1D (indices of projection), or 2D (indices of
         projection and weight of projection)
         
         - **lenbasis**: int, size of the orbital basis
     
     *return*:
-        - numpy array of float, lenbasis x lenbasis
+
+        - **projector**: numpy array of float, lenbasis x lenbasis
     
     ***
     '''
@@ -409,6 +455,7 @@ def pdos_tetra(TB,NE,NK,proj):
     over projection at the 4 vertices of the tetrahedra.
     
     *args*:
+
         - **TB**: tight-binding model object
         
         - **NE**: int, number of energy bins
@@ -419,12 +466,14 @@ def pdos_tetra(TB,NE,NK,proj):
         - **proj**: numpy array of float, 1D or 2D, c.f. *proj_mat*.
         
     *return*:
+
         - **Elin**: numpy array of float, with length **NE**, spanning the
         range of the tight-binding bandstructure
         
         - **pDOS**: numpy array of float, len **NE**, projected density of states
         
         - **DOS**: numpy array of float, len **NE**, full density of states
+    
     ***
     '''
     
@@ -459,16 +508,21 @@ def pdos_tetra(TB,NE,NK,proj):
 ##############################-------D(E)---------#############################
 def dos_func(energy,epars):
     '''
+
     Piecewise function for calculation of density of states
     
     *args*:
+
         - **energy**: numpy array of float (energy domain)
         
         - **epars**: tuple of parameters: e[0],e[1],e[2],e[3],V_T,V_G being the ranked band energies for the tetrahedron, 
         as well as the volume of both the tetrahedron and the Brillouin zone, all float
     
     *return*:
+
         - numpy array of float giving DOS contribution from this tetrahedron
+    
+    ***
     '''
     print(epars)
     return np.piecewise(energy,[energy<epars[0],(epars[0]<=energy)*(energy<epars[1]),(epars[1]<=energy)*(energy<epars[2]),(epars[2]<=energy)*(energy<epars[3]),energy>=epars[3]],[e_out,e_12,e_23,e_34,e_out],epars)
@@ -492,11 +546,13 @@ def e_34(energy,epars):
 
 ##############################-------n(E)---------#############################
 def EF_find(TB,occ,dE,NK):
+
     '''
     Use the tetrahedron-integration method to establish the Fermi-level, for a given
     electron occupation.
     
     *args*:
+
         - **TB**: instance of tight-binding model object from *TB_lib*
 
         - **occ**: float, desired electronic occupation
@@ -507,6 +563,7 @@ def EF_find(TB,occ,dE,NK):
         - **NK**: int or iterable of 3 int, number of k points in mesh.
         
     *return*:
+
         **EF**: float, Fermi Energy for the desired occupation, to within dE of actual
         value.
     
@@ -525,6 +582,7 @@ def n_tetra(TB,dE,NK,plot=True):
     number)
     
     *args*:
+
         - **TB**: tight-binding model object
         
         - **dE**: float, energy spacing (meV)
@@ -534,6 +592,7 @@ def n_tetra(TB,dE,NK,plot=True):
         - **plot**: bool, to plot or not to plot the calculated array
     
     *return*:
+
         - **Elin**: linear energy array of float, spanning the range of the eigenspectrum
         
         - **n_elect**: numpy array of float, same length as **Elin**, integrated DOS 
@@ -561,17 +620,20 @@ def n_tetra(TB,dE,NK,plot=True):
 
 
 def n_func(energy,epars):
+
     '''
     Piecewise function for evaluating contribution of tetrahedra to electronic
     occupation number
     
     *args*:
+
         - **energy**: numpy array of float, energy domain
         
          - **epars**: tuple of parameters: e[0],e[1],e[2],e[3],V_T,V_G being the ranked band energies for the tetrahedron, 
         as well as the volume of both the tetrahedron and the Brillouin zone, all float
        
     *return*:
+    
         - numpy array of float, same length as **energy**, providing contribution of
         tetrahedra to the occupation function
         

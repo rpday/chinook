@@ -76,6 +76,7 @@ kb = 1.38*10**-23
 ###
 class experiment:
     '''
+
     The experiment object is at the centre of the ARPES matrix element 
     calculation.This object keeps track of the experimental geometry as 
     well as a local copy of the tight-binding model and its dependents. 
@@ -210,12 +211,14 @@ class experiment:
             
     def update_pars(self,ARPES_dict,datacube=False):
         '''
+
         Several experimental parameters can be updated without re-calculating 
         the ARPES intensity explicitly. Specifically here, we can update 
         resolution in both energy and momentum, as well as temperature,
         spin-projection, self-energy function, and polarization.
         
         *args*:
+
             - **ARPES_dict**: dictionary, specifically containing
                 
                 - *'resolution'*: dictionary with 'E':float and 'k':float
@@ -229,6 +232,7 @@ class experiment:
                 - *'pol'*: numpy array of 3 complex float, polarization of light
         
         *kwargs*:
+
             - **datacube**: bool, if updating in *spectral*, only the above  can be changed. If instead, updating
             at the start of *datacube*, can also pass:
                 - **hv**: float, photon energy, eV
@@ -243,6 +247,7 @@ class experiment:
                 
                 - **mfp**: float, mean-free path, Angstrom
         
+        ***
         '''
         if 'resolution' in ARPES_dict.keys():
             try:
@@ -278,13 +283,17 @@ class experiment:
     
     def diagonalize(self):
         '''
+
         Diagonalize the Hamiltonian over the desired range of momentum, reshaping the 
         band-energies into a 1-dimensional array. If the user has not selected a energy
         grain for calculation, automatically calculate this.
 
         *return*:
+
             None, however *experiment* attributes *X*, *Y*, *ph*, *TB.Kobj*, *Eb*, *Ev*, *cube*
             are modified.
+
+        ***
         '''
         if self.Vo>0:
             
@@ -327,6 +336,7 @@ class experiment:
         
     def truncate_model(self):
         '''
+
         For slab calculations, the number of basis states becomes a significant memory load,
         as well as a time bottleneck. In reality, an ARPES calculation only needs the small
         number of basis states near the surface. Then for slab-calculations, we can truncate
@@ -336,10 +346,13 @@ class experiment:
         states associated with this projection are retained, while remainders are not.
         
         *return*:
+
             - **tmp_basis**: list, truncated subset of the basis' orbital objects
             
             - **Evec**: numpy array of complex float corresponding to the truncated eigenvector
-             array containing only the surface-projected wavefunctions        
+             array containing only the surface-projected wavefunctions  
+
+        ***      
         '''
         depths = np.array([abs(oi.depth) for oi in self.basis])
         i_start = np.where(depths<4*self.mfp)[0][0]
@@ -365,12 +378,16 @@ class experiment:
     
     def rot_basis(self):
         '''
+
         Rotate the basis orbitals and their positions in the lab frame to be consistent with the
         experimental geometry
         
         *return*:
+
             - list of orbital objects, representing a rotated version of the original basis if the 
             angle is finite. Otherwise, just return the original basis.
+        
+        ***
         '''
         tmp_base = []
         if abs(self.ang)>0.0:
@@ -394,17 +411,22 @@ class experiment:
     
     def datacube(self,ARPES_dict=None):
         '''
+
         This function computes the photoemission matrix elements.
         Given a kmesh to calculate the photoemission over, the mesh is reshaped to an nx3 array and the Hamiltonian
         diagonalized over this set of k points. The matrix elements are then calculated for each 
         of these E-k points
     
         *kwargs*:
+
             - **ARPES_dict**: can optionally pass a dictionary of experimental parameters, to update those defined
             in the initialization of the *experiment* object.
 
         *return*:
+      
             - boolean, True if function finishes successfully.
+      
+        ***
         '''      
         if ARPES_dict is not None:
             self.update_pars(ARPES_dict,True)
@@ -461,15 +483,20 @@ class experiment:
     
     def M_compute(self,i):
         '''
+
         The core method called during matrix element computation.
         
         *args*:
+
             - **i**: integer, index and energy of state
         
         *return*:
+
             - **Mtmp**: numpy array (2x3) of complex float corresponding to the matrix element
               projection for dm = -1,0,1 (columns) and spin down or up (rows) for a given
               state in k and energy.
+
+        ***
         '''
         nstates = len(self.TB.basis)
         phi = self.ph[int(self.pks[i,0]/nstates)]
@@ -494,11 +521,15 @@ class experiment:
     
     def serial_Mk(self,indices):
         '''
+
         Run matrix element on a single thread, directly modifies the *Mk* attribute.
         
         *args*:
+
             - **indices**: list of all state indices for execution; restricting states
              in *cube_indx* to those within the desired window     
+        
+        ***
         '''
         for ii in indices:
             sys.stdout.write('\r'+progress_bar(ii+1,len(self.pks)))
@@ -507,6 +538,7 @@ class experiment:
         
     def thread_Mk(self,N,indices):
         '''
+
         Run matrix element on *N* threads using multiprocess functions, directly modifies the *Mk*
         attribute.
         
@@ -514,10 +546,13 @@ class experiment:
         May require a more clever way to do this to get a proper speedup.
         
         *args*:
+
             - **N**: int, number of threads
             
             - **indices**: list of int, all state indices for execution; restricting 
             states in cube_indx to those within the desired window.
+        
+        ***
         '''
         div = int(len(indices)/N)
         pool = ThreadPool(N)
@@ -530,14 +565,19 @@ class experiment:
         
     def Mk_wrapper(self,ilist):
         '''
+
         Wrapper function for use in multiprocessing, to run each of the processes
         as a serial matrix element calculation over a sublist of state indices.
 
         *args*:
+
             - **ilist**: list of int, all state indices for execution.
 
         *return*:
+
             - **Mk_out**: numpy array of complex float with shape (len(ilist), 2,3)
+        
+        ***
         '''
         Mk_out = np.zeros((len(ilist),2,3),dtype=complex)
         for ii in list(enumerate(ilist)):
@@ -554,17 +594,22 @@ class experiment:
 ############################################################################### 
     def SE_gen(self):
         '''
+
         Self energy arguments are passed as a list, which supports mixed-datatype.
         The first entry in list is a string, indicating the type of self-energy, 
         and the remaining entries are the self-energy. 
         
         *args*:
+
             - **SE_args**: list, first entry can be 'func', 'poly', 'constant', or 'grid'
             indicating an executable function, polynomial factors, constant, or a grid of values
         
         *return*:
-            - SE, numpy array of complex float, with either shape of the datacube,
+
+            - **SE**: numpy array of complex float, with either shape of the datacube,
             or as a one dimensional array over energy only.
+        
+        ***
         '''
         
         w = np.linspace(*self.cube[2])
@@ -589,10 +634,14 @@ class experiment:
             
     def smat_gen(self,svector=None):
         '''
+
         Define the spin-projection matrix related to a spin-resolved ARPES experiment.
         
         *return*:
+
             - **Smat**: numpy array of 2x2 complex float corresponding to Pauli operator along the desired direction
+        
+        ***
         '''
         try:
             sv = svector/np.linalg.norm(svector)
@@ -618,8 +667,11 @@ class experiment:
         computed into the desired basis direction.
             
         *return*:
+
             - **spin_projected_Mk**: numpy array of complex float with same
             shape as *Mk*
+
+        ***
         '''
         if self.coord_type == 'momentum':
             Smat = self.smat_gen()
@@ -653,8 +705,11 @@ class experiment:
         Right now only handles zero vertical rotation (just tilt)
         
         *return*:
+
             - numpy array of len(expmt.cube[1]) x 3 complex float, rotated polarization vectors 
             expressed in basis of spherical harmonics
+        
+        ***
         '''
         
         if self.slit=='H':
@@ -679,7 +734,10 @@ class experiment:
         Compute the Fermi-distribution for a fixed temperature, over the domain of energy of interest
 
         *return*:
+
             - **fermi**: numpy array of float, same length as energy domain array defined by *cube[2]* attribute.
+        
+        ***
         '''
         if np.sign(self.T)>-1:
             fermi = vf(np.linspace(*self.cube[2])/(kb*self.T/q))
@@ -690,12 +748,14 @@ class experiment:
     def spectral(self,ARPES_dict=None,slice_select=None,add_map = False,plot_bands=False,ax=None):
         
         '''
+
         Take the matrix elements and build a simulated ARPES spectrum. 
         The user has several options here for the self-energy to be used,  c.f. *SE_gen()* for details.
         Gaussian resolution broadening is the last operation performed, to be consistent with the
         practical experiment.
         
         *kwargs*:
+
             - **ARPES_dict**: dictionary, experimental configuration. See *experiment.__init__* and *experiment.update_pars()*
             
             - **slice_select**: tuple, of either int (axis,index format) or string (axis), int format
@@ -708,11 +768,14 @@ class experiment:
             - **ax**: matplotlib Axes, only relevant if **slice_select**, option to pass existing Axes to plot onto
         
         *return*:
+
             - **I**: numpy array of float, raw intensity map.
 
             - **Ig**: numpy array of float, resolution-broadened intensity map.
             
             - **ax**: matplotlib Axes, for further modifications to plot only if **slice_select** True
+        
+        ***
         '''
         if not hasattr(self,'Mk'):
             self.datacube()
@@ -778,17 +841,33 @@ class experiment:
             return I,Ig
     
     def gen_imap(self,I_arr):
+        '''
+        Generate a new ARPES intensity map
+
+        *args*:
+
+            - **I_arr**: numpy array of float, intensity map data
+
+        *return*:
+
+            - **new_map**: instance of intensity_map class
+
+        ***
+        '''
+
         new_map = imap.intensity_map(len(self.maps),I_arr,self.cube,self.kz,self.T,self.hv,self.pol,self.dE,self.dk,self.SE_args,self.sarpes,self.ang)
         return new_map
 
 
     def plot_intensity_map(self,plot_map,slice_select,plot_bands=False,ax=None):
          '''
+
         Plot a slice of the intensity map computed in *spectral*. The user selects either
         an array index along one of the axes, or the fixed value of interest, allowing
         either integer, or float selection.
         
         *args*:
+
             - **plot_map**: numpy array of shape (self.cube[0],self.cube[1],self.cube[2]) of float
 
             - **slice_select**: list of either [int,int] or [str,float], corresponding to 
@@ -804,6 +883,8 @@ class experiment:
         *return*:
 
             - **ax_img**: matplotlib axis object
+
+        ***
          '''
          fig,ax_img = plt.subplots()
          fig.set_tight_layout(False)
@@ -819,10 +900,7 @@ class experiment:
              index = np.where(abs(x-slice_select[1])==abs(x-slice_select[1]).min())[0][0]
              slice_select = [dim,int(index)]
              
-        
-       
-        
-        #new option
+
          index_dict = {2:(0,1),1:(2,0),0:(2,1)}
          
          X,Y = np.meshgrid(np.linspace(*self.cube[index_dict[slice_select[0]][0]]),np.linspace(*self.cube[index_dict[slice_select[0]][1]]))
@@ -843,7 +921,7 @@ class experiment:
                  indices = np.array([slice_select[1] + ii*self.cube[0][2] for ii in range(len(k))])
              for ii in range(len(self.TB.basis)):  
                  ax_img.plot(self.TB.Eband[indices,ii],k,alpha=0.4,c='w')
-#            
+           
          ax_img.set_xlim(*ax_xlimit)
          ax_img.set_ylim(*ax_ylimit)
          
@@ -856,15 +934,20 @@ class experiment:
     
     def plot_gui(self):
         '''
+
         Generate the Tkinter gui for exploring the experimental parameter-space
         associated with the present experiment.
 
         *args*:
+
             - **ARPES_dict**: dictionary of experimental parameters, c.f. the 
             *__init__* function for details.
 
         *return*:
+
             - **Tk_win**: Tkinter window.
+
+        ***
         '''
         if tk_found:
             TK_win = Tk_plot.plot_intensity_interface(self)
@@ -883,15 +966,20 @@ class experiment:
      
     def write_map(self,_map,directory):
         '''
+
         Write the intensity maps to a series of text files in the indicated directory.
 
         *args*:
+
             - **_map**: numpy array of float to write to file
 
             - **directory**: string, name of directory + the file-lead name 
 
         *return*:
-            - boolean, True
+
+            - boolean, True to confirm successful write
+
+        ***
         '''
         for i in range(np.shape(_map)[2]):   
             filename = directory + '_{:d}.txt'.format(i)
@@ -900,14 +988,17 @@ class experiment:
 
     def write_params(self,Adict,parfile):
         '''
+
         Generate metadata text file  associated with the saved map.
         
         *args*:
+
             - **Adict**: dictionary, ARPES_dict same as in above functions, containing
             relevant experimental parameters for use in saving the metadata associated
             with the related calculation.
             
             - **parfile**: string, destination for the metadata
+
         '''
         
         
@@ -947,8 +1038,10 @@ class experiment:
             - **mat**: numpy array of float, two dimensional
 
         *return*:
+
             - boolean, True
         
+        ***
         '''
         with open(filename,"w") as destination:
             for i in range(np.shape(mat)[0]):
@@ -966,13 +1059,18 @@ class experiment:
 ###############################################################################
 def find_mean_dE(Eb):
     '''
+
     Find the average spacing between adjacent points along the dispersion calculated.
     
     *args*:
+
         - **Eb**: numpy array of float, eigenvalues
         
     *return*:
+
         - **dE_mean**: float, average difference between consecutive eigenvalues.
+    
+    ***
     '''
     
     dE_mean = abs(np.subtract(Eb[1:,:],Eb[:-1,:])).mean()
@@ -980,15 +1078,20 @@ def find_mean_dE(Eb):
         
 def con_ferm(ekbt):      
     '''
+
     Typical values in the relevant domain for execution of the Fermi distribution will
     result in an overflow associated with 64-bit float. To circumvent, set fermi-function
     to zero when the argument of the exponential in the denominator is too large.
 
     *args*:
+
         - **ekbt**: float, (E-u)/kbT in terms of eV
 
     *return*:
+
         - **fermi**: float, evaluation of Fermi function.
+    
+    ***
     '''
     fermi = 0.0
     if ekbt<709:
@@ -1002,15 +1105,20 @@ vf = np.vectorize(con_ferm)
 
 def pol_2_sph(pol):
     '''
-    return polarization vector in spherical harmonics -- order being Y_11, Y_10, Y_1-1.
+
+    Return polarization vector in spherical harmonics -- order being Y_11, Y_10, Y_1-1.
     If an array of polarization vectors is passed, use the einsum function to broadcast over
     all vectors.
 
     *args*:
+
         - **pol**: numpy array of 3 complex float, polarization vector in Cartesian coordinates (x,y,z)
 
     *return*:
+
         - numpy array of 3 complex float, transformed polarization vector.
+    
+    ***
     '''
     M = np.sqrt(0.5)*np.array([[-1,1.0j,0],[0,0,np.sqrt(2)],[1.,1.0j,0]])
     if len(np.shape(pol))>1:
@@ -1023,38 +1131,44 @@ def pol_2_sph(pol):
 
 def poly(input_x,poly_args):
     '''
+
     Recursive polynomial function.
     
     *args*:
+
         - **input_x**: float, int or numpy array of numeric type, input value(s) at which to evaluate the polynomial 
         
         - **poly_args**: list of coefficients, in INCREASING polynomial order i.e. [a_0,a_1,a_2] for y = a_0 + a_1 * x + a_2 *x **2
     
     *return*:
+
         - recursive call to *poly*, if *poly_args* is reduced to a single value, return explicit evaluation of the function.
         Same datatype as input, with int changed to float if *poly_args* are float, polynomial evaluated over domain of *input_x*
+    
+    ***
     '''
     if len(poly_args)==0:
         return 0
     else:
         return input_x**(len(poly_args)-1)*poly_args[-1] + poly(input_x,poly_args[:-1])
-    
-  
-
-#        
         
     
 def progress_bar(N,Nmax):
     '''
+
     Utility function, generate string to print matrix element calculation progress.
 
     *args*:
+
         - **N**: int, number of iterations complete
 
         - **Nmax**: int, total number of iterations to complete
 
     *return*:
+
         - **st**: string, progress status
+    
+    ***
     '''
     frac = N/Nmax
     st = ''.join(['|' for i in range(int(frac*30))])
@@ -1073,8 +1187,11 @@ def G_dic():
     Initialize the gaunt coefficients associated with all possible transitions relevant
 
     *return*:
+
         - **Gdict**: dictionary with keys as a string representing (l,l',m,dm) "ll'mdm" and values complex float.
         All unacceptable transitions set to zero.
+    
+    ***
     '''
     llp = [[l,lp] for l in range(4) for lp in ([l-1,l+1] if (l-1)>=0 else [l+1])]    
 
@@ -1089,6 +1206,7 @@ def G_dic():
 
 
 def all_Y(basis):
+
     '''
     Build L-M argument array input arguments for every combination of l,m in the basis. The idea is for a given k-point to have a single call
     to evaluate all spherical harmonics at once. The pointer array orb_point is a list of lists, where for each projection in the basis, the integer
@@ -1096,9 +1214,11 @@ def all_Y(basis):
     required.
     
     *args*:
+
         - **basis**: list of orbital objects
 
     *return*:
+
         - **l_args**: numpy array of int, of shape len(*lm_inds*),3,2, with the latter two indicating the final state orbital angular momentum
 
         - **m_args**: numpy array of int, of shape len(*lm_inds*),3,2, with the latter two indicating the final state azimuthal angular momentum
@@ -1106,6 +1226,8 @@ def all_Y(basis):
         - **g_arr**: numpy array of float, shape len(*lm_inds*),3,2, providing the related Gaunt coefficients.
 
         - **orb_point**: numpy array of int, matching the related sub-array of *l_args*, *m_args*, *g_arr* related to each orbital in basis
+    
+    ***
     '''
     maxproj = max([len(o.proj) for o in basis])
     Gvals = G_dic()
@@ -1133,6 +1255,7 @@ def all_Y(basis):
 def projection_map(basis):
 
     '''
+
     In order to improve efficiency, an array of orbital projections is generated, carrying all and each
     orbital projection for the elements of the model basis. As these do not in general have the same length,
     the second dimension of this array corresponds to the largest of the sets of projections associated with
@@ -1140,11 +1263,14 @@ def projection_map(basis):
     in which case the projection can be no larger than 7 long. So output will be at worst len(basis)x7 complex float
 
     *args*:
+
         - **basis**: list of orbital objects
 
     *return*:
-        - **projarr**: numpy array of complex float
 
+        - **projarr**: numpy array of complex float
+    
+    ***
     '''
     
     maxproj = max([len(o.proj) for o in basis])
@@ -1162,16 +1288,21 @@ Yvect = np.vectorize(Ylm.Y,otypes=[complex])
 
 def Gmat_make(lm,Gdictionary):
     '''
+
     Use the dictionary of relevant Gaunt coefficients to generate a small 2x3 array of  
     float which carries the relevant Gaunt coefficients for a given initial state.
 
     *args*:
+
         - **lm**: tuple of 2 int, initial state orbital angular momentum and azimuthal angular momentum
 
         - **Gdictionary**: pre-calculated dictionary of Gaunt coefficients, with key-values associated with "ll'mdm"
 
     *return*:
+
         - **mats**: numpy array of float 2x3
+
+    ***
     '''
 
     l  = int(lm[0])
@@ -1191,6 +1322,7 @@ def Gmat_make(lm,Gdictionary):
 
 
 def gen_SE_KK(w,SE_args):
+
     '''
     The total self-energy is computed using Kramers' Kronig relations:
         
@@ -1203,11 +1335,19 @@ def gen_SE_KK(w,SE_args):
         wf. This is the domain over which we evaluate the Hilbert transform, which itself is carried out using:
         the scipy.signal.hilbert() function. This function acting on an array f: H(f(x)) -> f(x) + i Hf(x). It relies on the FFT performed on the product of the sgn(w) and F(w) functions,
         and then IFFT back so that we can use this to extract the real part of the self energy, given only the input.
-        args:
-            w -- numpy array energy values for the spectral peaks used in the ARPES simulation
-            SE_args -- dictionary containing the 'imfunc' key value pair (values being either callable, list of polynomial prefactors (increasing order) or numpy array of energy and Im(SE) values)
-                    -- for the first two options, a 'cut' key value pair is also required to force the function to vanish at the boundary of the Hilbert transform integration window.
-        return: self energy as a numpy array of complex float. The indexing matches that of w, the spectral features to be plotted in the matrix element simulation.
+        *args*:
+            
+            - **w**: numpy array energy values for the spectral peaks used in the ARPES simulation
+            
+            - **SE_args**: dictionary containing the 'imfunc' key value pair (values being either callable, list of polynomial prefactors (increasing order) or numpy array of energy and Im(SE) values)
+                    
+                    for the first two options, a 'cut' key value pair is also required to force the function to vanish at the boundary of the Hilbert transform integration window.
+
+        *return*:
+
+            - self energy as a numpy array of complex float. The indexing matches that of w, the spectral features to be plotted in the matrix element simulation.
+    
+    ***
     '''
     
     
@@ -1265,8 +1405,5 @@ def gen_SE_KK(w,SE_args):
         re_interp = interp1d(wf[roi[0]:roi[1]],reSE[roi[0]:roi[1]])
 
         return re_interp(w) + im_interp(w)*1.0j
-    
-    
-###
 
     

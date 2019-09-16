@@ -56,7 +56,8 @@ def make_radint_pointer(rad_dict,basis,Eb):
     integration at several binding energies, finally returning an
     interpolation of these integrations.
     
-    *args*:        
+    *args*: 
+
         - **rad_dict**: dictionary of ARPES parameters: relevant keys are 
         'hv' (photon energy), 'W' (work function), and the rad_type
         (radial wavefunction type, as well as any relevant additional
@@ -69,7 +70,8 @@ def make_radint_pointer(rad_dict,basis,Eb):
         - **Eb**: tuple of 2 floats indicating the range of energy of
         interest (increasing order)
         
-    *return*:       
+    *return*: 
+
         - **B_array**: numpy array of Nx2 executable functions of float
         
         - **B_pointers**: numpy array of integer indices matching orbital
@@ -86,17 +88,20 @@ def make_radint_pointer(rad_dict,basis,Eb):
 
 
 def radint_dict_to_arr(Bdict,basis):
+
     '''
     Take a dictionary of executables defined for different combinations
     of a,n,l and send them to an array, with a corresponding pointer
     array which can be used to dereference the relevant executable.
     
-    *args*:        
+    *args*:     
+
         - **Bdict**: dictionary of executables with 'a-n-l-l'' keys
         
         - **basis**: list of orbital objects
     
-    *return*:        
+    *return*:  
+
         - **Blist**: numpy array of the executables, organized by a-n-l,
         and l' (size Nx2, where N is the length of the set of 
         distinct a-n-l triplets)
@@ -125,7 +130,8 @@ def define_radial_wavefunctions(rad_dict,basis):
     Define the executable radial wavefunctions for computation of
     the radial integrals
     
-    *args*:       
+    *args*:   
+
         - **rad_dict**: essential key is *'rad_type'*, if not passed,
         assume Slater orbitals. 
             
@@ -170,7 +176,8 @@ def define_radial_wavefunctions(rad_dict,basis):
                     
         - **basis**: list of orbital objects
         
-    *return*:        
+    *return*: 
+
         **orbital_funcs**: dictionary of executables
         
     ***    
@@ -243,11 +250,13 @@ def gen_orb_labels(basis):
     atom-n-l:[Z, orbital label] pairs, to establish which radial integrals
     need be computed.
     
-    *args*:       
+    *args*:   
+
         - **basis**: list of orbitals in basis
     
     
     *return*:
+
         - **orbitals**: dictionary of radial integral pairs
         
     ***    
@@ -269,16 +278,19 @@ def radint_calc(k_norm,orbital_funcs,phase_shifts=None):
     as a simple adaptive integration algorithm, defined in the 
     *adaptive_int* library.
     
-    *args*:     
+    *args*: 
+
         - **k_norm**: float, length of the k-vector 
         (as an argument for the spherical Bessel Function)
         
         - **orbital_funcs**: dictionary, radial wavefunction executables
         
     *kwargs*:
+
         - **phase_shifts**: dictionary of phase shifts, to convey final state scattering
         
     *returns*:
+
         - **Bdic**: dictionary, key value pairs in form -- 'ATOM-N-L':*Bval*
         
     ***
@@ -325,23 +337,30 @@ def fill_radint_dic(Eb,orbital_funcs,hv,W=0.0,phase_shifts=None,fixed=False):
     used by either writing **Bdic['key']** or
     **Bdic['key']**(valid float between endpoints of input array)
     
-    *args*:      
+    *args*:   
+
         - **Eb**: float or tuple indicating the extremal energies
+       
         - **orbital_funcs**: dictionary of executable orbital radial wavefunctions
+       
         - **fixed**: bool, if True, constant radial integral for each scattering
         channel available: then the orbital_funcs dictionary already
         has the radial integral evaluated
+      
         - **hv**: float, photon energy of incident light.
         
     *kwargs*:
+
         - **W**: float, work function
         
         - **phase_shifts**: dictionary for final state phase shifts, as an optional
         extension beyond pure- free electron final states. For now, float type.
         
     *return*:
+
         - **Brad**: dictionary of executable interpolation grids
 
+    ***
     '''
     if fixed:
         Brad = {o:orbital_funcs[o] for o in orbital_funcs}
@@ -392,9 +411,11 @@ def find_cutoff(func):
     a function.
     
     *args*: 
+
         - **func**: the integrand executable
     
     *return*:
+
         - float, cutoff distance for integration
         
     ***    
@@ -438,10 +459,12 @@ def gen_const(val):
     
     Create executable function returning a constant value
     
-    *args*:    
+    *args*:  
+
         - **val**: constant value to return when executable function
     
-    *return*:      
+    *return*:   
+       
         - lambda function with constant value
     
     ***

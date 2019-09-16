@@ -58,12 +58,14 @@ def LSmat(TB,axis=None):
     a len(basis)xlen(basis) matrix HSO
     
     *args*:
+
         - **TB**: tight-binding object, as defined in TB_lib.py
         
         - **axis**: axis for calculation as either 'x','y','z',None,
         or float (angle in the x-y plane)
         
     *return*:
+
         - **HSO**: (len(basis)xlen(basis)) numpy array of complex float
         
     ***
@@ -127,9 +129,11 @@ def Lp(l):
     The nonzero elements are on the upper diagonal
     
     *arg*: 
+
         - **l**: int orbital angular momentum
         
     *return*:
+
         - **M**: numpy array (2*l+1,2*l+1) of real float
     ***
     '''
@@ -150,9 +154,11 @@ def Lm(l):
     The nonzero elements are on the upper diagonal
     
     *arg*:
+
         - **l**: int orbital angular momentum
     
     *return*:
+
         - **M**: numpy array (2*l+1,2*l+1) of real float
         
     ***
@@ -172,9 +178,11 @@ def Lz(l):
     Lz operator in the l,m_l basis
     
     *arg*:
+
         - **l**: int orbital angular momentum
         
     *return*:
+
         - numpy array (2*l+1,2*l+1)
         
     ***
@@ -192,6 +200,7 @@ def fatbs(proj,TB,Kobj=None,vlims=(0,1),Elims=(-1,1),degen=False):
     the weights are all taken to be eqaul
     
     *args*:
+
         - **proj**: iterable of projections, to be passed as either a 1-dimensional
         with indices of projection only, OR, 2-dimensional, with the second column giving
         the amplitude of projection (for linear-combination projection)
@@ -199,6 +208,7 @@ def fatbs(proj,TB,Kobj=None,vlims=(0,1),Elims=(-1,1),degen=False):
         - **TB**: tight-binding object
             
     *kwargs*:
+
         - **Kobj**: Momentum object, as defined in *chinook.klib.py*
             
         - **vlims**: tuple of 2 float, limits of the colorscale for plotting, default to (0,1)
@@ -208,6 +218,7 @@ def fatbs(proj,TB,Kobj=None,vlims=(0,1),Elims=(-1,1),degen=False):
         - **degen**: bool, True if bands are degenerate, sum over adjacent bands
             
     *return*:
+
         - **Ovals**: numpy array of float, len(Kobj.kpts)*len(TB.basis)
         
     ***
@@ -246,6 +257,7 @@ def O_path(Operator,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=Tru
     Option of summing over degenerate bands (for e.g. fat bands) with degen boolean flag
         
     *args*:
+
         - **Operator**: matrix representation of the operator (numpy array len(basis), len(basis) of complex float)
           
         - **TB**: Tight binding object from TB_lib
@@ -264,6 +276,7 @@ def O_path(Operator,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=Tru
         - **ax**: matplotlib Axes, option for plotting onto existing Axes
 
     *return*:
+
         - **O_vals**: the numpy array of float, (len Kobj x len basis) expectation values 
         
         - **ax**: matplotlib Axes, allowing for user to further modify
@@ -340,9 +353,12 @@ def degen_Ovals(Oper_exp,Energy):
     All degeneracies are found, and the expectation values averaged.
     
     *args*:
+
         - **Oper_exp**: numpy array of float, operator expectations
         
         - **Energy**: numpy array of float, energy eigenvalues.
+    
+    ***
     '''
     
     O_copy = Oper_exp.copy()
@@ -366,12 +382,14 @@ def degen_Ovals(Oper_exp,Energy):
 def O_surf(O,TB,ktuple,Ef,tol,vlims=(0,0),ax=None):
     
     '''
+    
     Compute and plot the expectation value of an user-defined operator over
     a surface of constant-binding energy
     
     Option of summing over degenerate bands (for e.g. fat bands) with degen boolean flag
         
     *args*:
+
         - **O**: matrix representation of the operator (numpy array len(basis), len(basis) of complex float)
             
         - **TB**: Tight binding object from *chinook.TB_lib.py*
@@ -380,6 +398,7 @@ def O_surf(O,TB,ktuple,Ef,tol,vlims=(0,0),ax=None):
             ktuple[0] = (x0,xn,n),ktuple[1]=(y0,yn,n),ktuple[2]=kz
             
     *kwargs*:
+
         - **vlims**: limits for the colourscale (optional argument), will choose 
         a reasonable set of limits if none passed by user
         
@@ -387,12 +406,12 @@ def O_surf(O,TB,ktuple,Ef,tol,vlims=(0,0),ax=None):
 
 
     *return*:
+
         - **pts**: the numpy array of expectation values, of shape Nx3, with first
         two dimensions the kx,ky coordinates of the point, and the third the expectation
         value.
         
         - **ax**: matplotlib Axes, allowing for further user modifications
-
         
     ***
     '''
@@ -429,6 +448,7 @@ def FS(TB,ktuple,Ef,tol,ax=None):
     tolerance of the constant energy level.
     
     *args*:
+
         - **TB**: tight-binding model object
         
         - **ktuple**: tuple of k limits, len (3), First and second should be iterable,
@@ -442,6 +462,7 @@ def FS(TB,ktuple,Ef,tol,ax=None):
 
     
     *return*:
+
         - **pts**: numpy array of len(N) x 3 indicating x,y, band index
         
         - **TB.Eband**: numpy array of float, energy spectrum
@@ -488,12 +509,15 @@ def LdotS(TB,axis=None):
     
     
     *args*:
+
         - **TB**: tight-binding obect
         
     *kwargs*:
+
         - **axis**: numpy array of 3 float, indicating axis, or None for full L.S
     
     *return*:
+
         - **O**: numpy array of Nxlen(basis) float, expectation value of operator
         on each band over the kpath of TB.Kobj.
     
@@ -510,10 +534,12 @@ def Sz(TB):
     
     
     *args*:
+
         - **TB**: tight-binding obect
         
     
     *return*:
+
         - **O**: numpy array of Nxlen(basis) float, expectation value of operator
         on each band over the kpath of TB.Kobj.
     
@@ -534,11 +560,13 @@ def surface_proj(basis,length):
     For use with SLAB geometry only
     
     *args*:
+
         - **basis**: list, orbital objects
         
         - **cutoff**: float, cutoff length
     
     *return*:
+
         - **M**: numpy array of float, shape len(TB.basis) x len(TB.basis)
         
     ***
@@ -554,12 +582,16 @@ def S_vec(LB,vec):
     n.S = nx Sx + ny Sy + nz Sz
     
     *args*:
+
         - **LB**: int, length of basis
         
         - **vec**: numpy array of 3 float, direction of spin projection
     
     *return*:
+
         - numpy array of complex float (LB by LB), spin operator matrix
+    
+    ***
     '''
     numstates = int(LB/2)
     Si = 0.5*np.identity(numstates,dtype=complex)
@@ -578,14 +610,19 @@ def S_vec(LB,vec):
 
 
 def is_numeric(a):
+
     '''
     Quick check if object is numeric
     
     *args*:
+
         - **a**: numeric, float/int
     
     *return*:
+
         - bool, if numeric True, else False
+
+    ***
     '''
     if a is not None:
         

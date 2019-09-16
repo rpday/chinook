@@ -49,6 +49,7 @@ def Y(l,m,theta,phi):
     Can be vectorized with numpy.vectorize() to allow array-like input
     
     *args*:
+
         - **l**: int orbital angular momentum, up to l=4 supported
         
         - **m**: int, azimuthal angular momentum |m|<=l
@@ -58,6 +59,7 @@ def Y(l,m,theta,phi):
         - **phi**: float, angle in spherical coordinates, radian measured from the x-axis [0,2pi]
 
     *return*:
+
         - complex float, value of spherical harmonic evaluated at theta,phi
     
     '''
@@ -118,6 +120,22 @@ def Y(l,m,theta,phi):
     
     
 def value_one(theta,phi):
+    '''
+    Flexible generation of the number 1.0, in either float or array format
+
+    *args*:
+
+        - **theta**: float or numpy array of float
+
+        - **phi**: float or numpy array of float
+
+    *return*:
+
+        **out**: float or numpy array of float, evaluated to 1.0, of same shape and type
+        as **theta**, **phi**
+
+    ***
+    '''
     if type(theta)==np.ndarray:
         out =np.ones(np.shape(theta))
     if type(phi)==np.ndarray:
@@ -128,27 +146,69 @@ def value_one(theta,phi):
         
 
 def binom(a,b):
+    '''
+    Binomial coefficient for 'a choose b'
+
+    *args*:
+
+        - **a**: int, positive
+
+        - **b**: int, positive
+
+    *return*:
+
+        - float, binomial coefficient
+
+    ***
+    '''
     return factorial(a+b)/float(factorial(a-b)*factorial(b))
 
 def laguerre(x,l,j):
-    tmp = sum([((-1)**i)*(binom(l+j,j-i)*x**i/float(factorial(i))) for i in range(j+1)])
-    return tmp
+    '''
+    Laguerre polynomial of order l, degree j, evaluated over x
+
+    *args*:
+
+        - **x**: float or numpy array of float, input
+
+        - **l**: int, order of polynomial
+
+        - **j**: int, degree of polynomial
+
+
+    *return*:
+
+        - **laguerre_output**: float or numpy array of float, shape as input **x**
+
+    ***
+    '''
+    laguerre_output = sum([((-1)**i)*(binom(l+j,j-i)*x**i/float(factorial(i))) for i in range(j+1)])
+    return laguerre_output
 
 
 def gaunt(l,m,dl,dm):
     '''
-    I prefer to avoid using the sympy library where possible. These are the explicitly defined
+    I prefer to avoid using the sympy library where possible, for speed reasons. These are the explicitly defined
     Gaunt coefficients required for dipole-allowed transitions (dl = +/-1) for arbitrary m,l and dm
     These have been tested against the sympy package to confirm numerical accuracy for all l,m possible
     up to l=5. This function is equivalent, for the subset of dm, dl allowed to
     sympy.physics.wigner.gaunt(l,1,l+dl,m,dm,-(m+dm))
-    args:
-        l: int orbital angular momentum quantum number
-        m: int azimuthal angular momentum quantum number
-        dl: int change in l (+/-1)
-        dm: int change in azimuthal angular momentum (-1,0,1)
-    return:
-        float Gaunt coefficient
+    
+    *args*:
+        
+        - **l**: int orbital angular momentum quantum number
+        
+        - **m**: int azimuthal angular momentum quantum number
+        
+        - **dl**: int change in l (+/-1)
+        
+        - **dm**: int change in azimuthal angular momentum (-1,0,1)
+    
+    *return*:
+
+        - float Gaunt coefficient
+
+    ***
     '''
     try:
         if abs(m + dm)<=(l+dl):
@@ -178,12 +238,18 @@ def Yproj(basis):
     '''
     Define the unitary transformation rotating the basis of different inequivalent atoms in the
     basis to the basis of spherical harmonics for sake of defining L.S operator in basis of user
-    args: basis--list of orbital objects
     
-    returns: dictionary of matrices for the different atoms and l-shells--keys are tuples of (atom,l)
-     
     29/09/2018 added reference to the spin character 'sp' to handle rotated systems effectively
+
+    *args:*
+
+        - **basis**: list of orbital objects
     
+    *return*:
+
+        - dictionary of matrices for the different atoms and l-shells--keys are tuples of (atom,l)
+     
+    ***
     '''
     normal_order = {0:{'':0},1:{'x':0,'y':1,'z':2},2:{'xz':0,'yz':1,'xy':2,'ZR':3,'XY':4},3:{'z3':0,'xz2':1,'yz2':2,'xzy':3,'zXY':4,'xXY':5,'yXY':6}}
     a = basis[0].atom
@@ -224,6 +290,25 @@ def Yproj(basis):
     return M
 
 def fillin(M,l,Dmat=None):
+    '''
+    If only using a reduced subset of an orbital shell (for example, only t2g states in d-shell),
+    need to fill in the rest of the projection matrix with some defaults
+
+    *args*:
+
+        - **M**: numpy array of (2l+1)x(2l+1) complex float
+
+        - **l**: int
+
+        - **Dmat**: numpy array of (2l+1)x(2l+1) complex float
+
+    *return*:
+
+        - **M**: numpy arrayof (2l+1)x(2l+1) complex float
+
+    ***
+    '''
+
     normal_order_rev = {0:{0:''},1:{0:'x',1:'y',2:'z'},2:{0:'xz',1:'yz',2:'xy',3:'ZR',4:'XY'},3:{0:'z3',1:'xz2',2:'yz2',3:'xzy',4:'zXY',5:'xXY',6:'yXY'}}
 
     for m in range(2*l+1):
@@ -246,11 +331,19 @@ def fillin(M,l,Dmat=None):
 def GramSchmidt(a,b):
     '''
     Simple orthogonalization of two vectors, returns orthonormalized vector
-    args: a,b -- np.array of same length
-    returns: tmp -- numpy array of same size, orthonormalized to the b vector
+    
+    *args*:
+
+        - **a**, **b**: numpy array of same length
+
+    *returns*:
+
+        - **GS_a**: numpy array of same size, orthonormalized to the b vector
+
+    ***
     '''
-    tmp = a - np.dot(a,b)/np.dot(b,b)*b
-    return tmp/np.linalg.norm(tmp)
+    GS_a = a - np.dot(a,b)/np.dot(b,b)*b
+    return GS_a/np.linalg.norm(GS_a)
 
 
 

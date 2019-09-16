@@ -68,6 +68,11 @@ def tk_query():
 if tk_found:
 
     class plot_intensity_interface:
+        '''
+        Tkinter-based plotting interface. Interactive, allows for generation
+        and exploration of intensity maps, given an existing TB and experiment
+        object.
+        '''
         
         def __init__(self,experiment):
             self.root = Tk.Tk()

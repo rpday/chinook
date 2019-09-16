@@ -6,20 +6,20 @@ Support Files
 *************
 The following modules and their functions are used extensively throughout the chinook package.
 
-rotation_lib:
-=============
+Rotations
+=========
 
-.. automodule:: chinook.rotation_lib
+.. automodule:: rotation_lib
    :members:
 
-wigner:
-=======
+Wigner Matrices
+===============
 
-.. automodule:: chinook.wigner
+.. automodule:: wigner
    :members:
 
-Ylm:
-====
+Spherical Harmonics
+===================
 
-.. automodule:: chinook.Ylm
+.. automodule:: Ylm
    :members:

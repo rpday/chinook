@@ -61,12 +61,13 @@ class orbital:
     '''
     
     def __init__(self,atom,index,label,pos,Z,orient=[0.0],spin=1,lam=0.0,sigma=1.0,slab_index=None):
+        
         '''
         Initialize the **orbital** object.
         
         *args*:
+
             - **atom**: int, index of inequivalent atoms in the basis
-            
             
             - **index**: int, index in the list of orbitals which consitute the 
             basis
@@ -78,6 +79,7 @@ class orbital:
             - **Z**: int, atomic number
             
         *kwargs*:
+
             - **orient**: various possible format. Can pass a projection array, 
             as in case of **projdict**, each element being length 4 array of 
             [Re(proj),Im(proj), l,m]. Alternatively, can pass a conventional 
@@ -130,10 +132,12 @@ class orbital:
             self.proj = projdict[self.label[1:]]
             
     def copy(self):
+
         '''
         Copy by value method for orbital object
         
         *return*:
+
             - **orbital_copy**: duplicate of **orbital** object
             
         ***
@@ -156,6 +160,7 @@ def rot_projection(l,proj,rotation):
     of freedom.
     
     *args*:
+
         - **l**: int,orbital angular momentum
         
         - **proj**: numpy array of shape Nx4 of float, each element is
@@ -166,6 +171,7 @@ def rot_projection(l,proj,rotation):
         of len 3, indicating rotation vector, and second element is float, angle.
         
     *return*:
+
         - **proj**: numpy array of Mx4 float, as above, but modified, and may
         now include additional, or fewer elements than input *proj*.
 
@@ -196,13 +202,16 @@ def rot_projection(l,proj,rotation):
     return proj,Dmat
 
 def fact(n):
+
     '''
     Recursive factorial function, works for any non-negative integer.
     
     *args*:
+
         - **n**: int, or integer-float
         
     *return*:
+
         - int, recursively evaluates the factorial of the initial input value.
     
     ***
@@ -220,11 +229,13 @@ def fact(n):
     
     
 def slab_basis_copy(basis,new_posns,new_inds):
+    
     '''
     Copy elements of a slab basis into a new list of
     orbitals, with modified positions and index ordering.
     
     *args*:
+
         - **basis**: list or orbital objects
         
         - **new_posns**: numpy array of len(basis)x3 float, new positions for
@@ -233,6 +244,7 @@ def slab_basis_copy(basis,new_posns,new_inds):
         - **new_inds**: numpy array of len(basis) int, new indices for orbitals
         
     *return*:
+
         - **new_basis**: list of duplicated orbitals following modification.
     
     ***
@@ -255,11 +267,13 @@ def sort_basis(basis,slab):
     Utility script for organizing an orbital basis that is out of sequence
     
     *args*:
+
         - **basis**: list of orbital objects
         
         - **slab**: bool, True or False if this is for sorting a slab
         
     *return*:
+
         - **orb_basis**: list of sorted orbital objects (by orbital.index value)
         
     ***
@@ -273,6 +287,7 @@ def sort_basis(basis,slab):
     return orb_basis
     
 def spin_double(basis,lamdict):
+
     '''
     Double the size of a basis to introduce spin to the problem.
     Go through the basis and create an identical copy with opposite spin and 
@@ -280,6 +295,7 @@ def spin_double(basis,lamdict):
     N/2 orbitals, and spin up in the second N/2.
     
     *args*:
+
         - **basis**: list of orbital objects
        
         - **lamdict**: dictionary of int:float pairs providing the
@@ -287,6 +303,7 @@ def spin_double(basis,lamdict):
         basis.
     
     *return*:
+    
         - doubled basis carrying all required spin information
         
     ***

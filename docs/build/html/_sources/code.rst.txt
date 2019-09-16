@@ -10,154 +10,154 @@ Documentation for chinook
 adaptive_int: 
 ===================================
 
-.. automodule:: chinook.adaptive_int
+.. automodule:: adaptive_int
    :members:
 
 
 ARPES_lib:
 ============================
 
-.. automodule:: chinook.ARPES_lib
+.. automodule:: ARPES_lib
    :members:
 
 atomic_mass: 
 ============================
 
-.. automodule:: chinook.atomic_mass
+.. automodule:: atomic_mass
    :members:
 
 build_lib:
 ===========================
 
-.. automodule:: chinook.build_lib
+.. automodule:: build_lib
    :members:
 
 dos.py:
 ===================================
 
-.. automodule:: chinook.dos
+.. automodule:: dos
    :members:
 
 electron_configs:
 =================
 
-.. automodule:: chinook.electron_configs
+.. automodule:: electron_configs
    :members:
 
 
 FS_tetra:
 =========
 
-.. automodule:: chinook.FS_tetra
+.. automodule:: FS_tetra
    :members:
 
 H_library:
 ==========
 
-.. automodule:: chinook.H_library
+.. automodule:: H_library
    :members:
 
 intensity_map:
 ==============
 
-.. automodule:: chinook.intensity_map
+.. automodule:: intensity_map
    :members:
 
 
 klib:
 =====
 
-.. automodule:: chinook.klib
+.. automodule:: klib
    :members:
 
 matplotlib_plotter:
 ===================
 
-.. automodule:: chinook.matplotlib_plotter
+.. automodule:: matplotlib_plotter
    :members:
 
 operator_library:
 =================
 
-.. automodule:: chinook.operator_library
+.. automodule:: operator_library
    :members:
 
 orbital:
 ========
 
-.. automodule:: chinook.orbital
+.. automodule:: orbital
    :members:
 
 orbital_plotting: 
 ===========================
 
-.. automodule:: chinook.orbital_plotting
+.. automodule:: orbital_plotting
    :members:
 
 radint_lib: 
 ===========================
 
-.. automodule:: chinook.radint_lib
+.. automodule:: radint_lib
    :members:
 
 rotation_lib:
 =============
 
-.. automodule:: chinook.rotation_lib
+.. automodule:: rotation_lib
    :members:
 
 slab:
 =====
 
-.. automodule:: chinook.slab
+.. automodule:: slab
    :members:
 
 SlaterKoster:
 =============
 
-.. automodule:: chinook.SlaterKoster
+.. automodule:: SlaterKoster
    :members:
 
 surface_vector:
 ===============
 
-.. automodule:: chinook.surface_vector
+.. automodule:: surface_vector
    :members:
 
 TB_lib:
 =======
 
-.. automodule:: chinook.TB_lib
+.. automodule:: TB_lib
    :members:
 
 tetrahedra:
 ===========
 
-.. automodule:: chinook.tetrahedra
+.. automodule:: tetrahedra
    :members:
 
 tilt:
 =====
 
-.. automodule:: chinook.tilt
+.. automodule:: tilt
    :members:
 
 v3find:
 =======
 
-.. automodule:: chinook.v3find
+.. automodule:: v3find
    :members:
 
 wigner:
 =======
 
-.. automodule:: chinook.wigner
+.. automodule:: wigner
    :members:
 
 Ylm:
 ====
 
-.. automodule:: chinook.Ylm
+.. automodule:: Ylm
    :members:
 
 

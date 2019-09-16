@@ -20,10 +20,12 @@ def Euler(rotation):
 
     
     *args*:
+
         - **rotation**: numpy array of 3x3 float (rotation matrix)
         OR tuple/list of vector and angle (numpy array of 3 float, float) respectively
     
     *return*:
+
         - **Euler_A**, **Euler_B**, **Euler_y**: float, Euler angles associated with
         the given rotation.
         
@@ -63,13 +65,17 @@ def Euler(rotation):
 
 
 def Euler_to_R(Euler_A,Euler_B,Euler_y):
+    
     '''
     Inverse of *Euler*, generate a rotation matrix from the Euler angles A,B,y
     with the same conventiona as in *Euler*.
+   
     *args*:
+
         - **Euler_A**, **Euler_B**, **Euler_y**: float
     
     *return*:
+
         - numpy array of 3x3 float
         
     ***
@@ -92,11 +98,13 @@ def rotate_v1v2(v1,v2):
     the vector **v1** onto the vector **v2**.
     
     *args*:
+
         - **v1**: numpy array len 3 of float, input vector
         
         - **v2**: numpy array len 3 of float, vector to rotate into
         
     *return*:
+
         - **Rmat**: numpy array of 3x3 float, rotation matrix
     
     ***    
@@ -122,11 +130,13 @@ def Rodrigues_Rmat(nvec,theta):
     Works in pre-multiplication order (i.e. v' = R.v)
     
     *args*:
+
         - **nvec**: numpy array len 3 axis of rotation
         
         - **theta**: float radian angle of rotation counter clockwise for theta>0
         
     *return*:
+
         - **Rmat**: numpy array 3x3 of float rotation matrix
         
     ***    
@@ -145,9 +155,11 @@ def rot_vector(Rmatrix):
     the angle-axis convention rotations corresponding to this rotation matrix.
     
     *args*:
+
         - **Rmatrix**: numpy array of 3x3 float, rotation matrix
         
     *return*:
+    
         - **nvec**: numpy array of 3 float, rotation axis
         
         - **theta**: float, rotation angle in float

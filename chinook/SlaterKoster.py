@@ -45,11 +45,13 @@ def Vmat(l1,l2,V):
     the Wigner formalism I use here, no need to have exceptions
     
     *args*:
+
         - **l1**, **l2**: int orbital angular momentum of initial and final states
         
         - **V**: numpy array of float -- length should be min(**l1** ,**l2**)*2+1
     
     *return*:
+
         - **Vm**: numpy array of float, shape 2 **l1** +1 x 2 **l2** +1
         
     ***
@@ -98,6 +100,7 @@ def SK_cub(Ymats,l1,l2):
         to fill Hamiltonian
     
     *args*:
+
         - **Ymats**: list of numpy arrays corresponding to the relevant
         transformation from cubic to spherical harmonic basis
         
@@ -105,6 +108,7 @@ def SK_cub(Ymats,l1,l2):
         to a given hopping pair
         
     *return*:
+
         - lambda function for the SK-matrix between these orbital shells, 
         for arbitrary hopping strength and direction.
         
@@ -128,9 +132,11 @@ def SK_full(basis):
     Formatting is a1a2n1n2l1l2, same as for SK dictionary entries
     
     *args*:
+
         - **basis**: list of orbital objects composing the TB-basis
     
     *return*:
+    
         - **SK_funcs**: a dictionary of hopping matrix functions 
         (lambda functions with args EA,EB,Ey,V as Euler angles and potential (V))
         which can be executed for various hopping paths and potential strengths
