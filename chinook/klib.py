@@ -56,18 +56,15 @@ class kpath:
         Initialize the momentum object
         
         *args*:
-
             - **pts**: list of len(3) numpy array of float: the endpoints of the 
             path in k-space
             
         *kwargs*:
-
             - **grain**: int, optional, indicating number of points between each point 
             in **pts**
             
             - **labels**: list of strings, optional, labels for plotting bandstructure
             along the kpath
-
         ***
         '''
         
@@ -90,7 +87,6 @@ class kpath:
         of len(3) float which cover the entire path, based on method by I.S. Elfimov.
         
         *return*:
-
             - **kpath.kpts**: numpy array of float, len(**kpath.pts**)(1+**kpath.grain**) by 3
         
         ***
@@ -115,17 +111,14 @@ class kpath:
     
     
 def bvectors(a_vec):
-   
     '''
     Define the reciprocal lattice vectors corresponding to the direct lattice 
     in real space
     
     *args*:
-
         - **a_vec**: numpy array of 3x3 float, lattice vectors
         
     *return*:
-
         - **b_vec**: numpy array of 3x3 float, reciprocal lattice vectors
        
     ***
@@ -141,20 +134,15 @@ def b_zone(a_vec,N,show=False):
     (so points are not necessarily evenly spaced along each axis).
     
     *args*:
-
         - **a_vec**: numpy array of size 3x3 float
         
         - **N**: int mesh density
    
-    *kwargs*:  
-
+    *kwargs*:     
         - **show**: boolean for optional plotting of the mesh points
         
     *return*:
-
         - **m_pts**: numpy array of mesh points (float), shape (len(m_pts),3)
-   
-    ***
     '''
     
     b_vec = bvectors(a_vec)
@@ -170,16 +158,13 @@ def b_zone(a_vec,N,show=False):
 
 
 def region(num):
-
     '''
     Generate a symmetric grid of points in number of lattice vectors.
     
     *args*:
-
         - **num**: int, grid will have size 2 num+1 in each direction
         
     *return*:
-
         - numpy array of size ((2 num+1)**3,3) with centre value of 
         first entry of (-num,-num,-num),...,(0,0,0),...,(num,num,num)
         
@@ -199,14 +184,12 @@ def raw_mesh(blatt,N):
     are within the first-Brillouin zone
     
     *args*:
-
         - **blatt**: numpy array of 27x3 float
         
         - **N**: int, or iterable of len 3, defines a coarse estimation
         of number of k-points
         
     *return*:
-
         - **mesh**: numpy array of mesh points, size set roughly by N
         
     ***
@@ -232,7 +215,6 @@ def raw_mesh(blatt,N):
     return Kpts
 
 def mesh_reduce(blatt,mesh,inds=False):
-
     '''
     Determine and select only k-points corresponding to the first Brillouin
     zone, by simply classifying points on the basis
@@ -243,22 +225,18 @@ def mesh_reduce(blatt,mesh,inds=False):
     --this is relevant for tetrahedral interpolation methods
     
     *args*:
-
         - **blatt**: numpy array of len(27,3), nearest reciprocal lattice vector points
         
         - **mesh**: numpy array of (N,3) float, defining a mesh of k points, before
         being reduced to contain only the Brillouin zone.
         
     *kwargs*: 
-
         - **inds**: option to pass a list of bool, indicating the 
         indices one wants to keep, instead of autogenerating the mesh
     
     *return*:
-
         - **bz_pts**: numpy array of (M,3) float, Brillouin zone points
     
-    ***
     '''
     bz_pts = []
     if np.linalg.norm(blatt[13])>0:       
@@ -274,44 +252,27 @@ def mesh_reduce(blatt,mesh,inds=False):
         return np.array(bz_pts)
     
 
-def plt_pts(pts,ax=None):
-    
+def plt_pts(pts):
     '''
     Plot an array of points iin 3D
     
     *args*:
-
         - **pts**: numpy array shape N x 3
-
-    *kwargs*:
-
-        - **ax**: matplotlib Axes, for plotting on existing figure
-
-    *return*:
-
-        - **ax**: matplotlib Axes, for further modifications.
-
-    ***
-    '''
-    if ax is None:
-        fig = plt.figure()
-        ax = fig.add_subplot(111,projection='3d')
-    ax.scatter(pts[:,0],pts[:,1],pts[:,2])
-
-    return ax
     
-
-
-def kmesh(ang,X,Y,kz,Vo=None):
-
     '''
-
+    fig = plt.figure()
+    ax = fig.add_subplot(111,projection='3d')
+    ax.scatter(pts[:,0],pts[:,1],pts[:,2])
+ 
+    
+    
+def kmesh(ang,X,Y,kz,Vo=None,hv=None,W=None):
+    '''
     Take a mesh of kx and ky with fixed kz and generate a Nx3 array of points
     which rotates the mesh about the z axis by **ang**. N is the flattened shape
     of **X** and **Y**.
     
     *args*:
-
         - **ang**: float, angle of rotation
         
         - **X**: numpy array of float, one coordinate of meshgrid
@@ -320,12 +281,15 @@ def kmesh(ang,X,Y,kz,Vo=None):
         
         - **kz**: float, third dimension of momentum path, fixed
         
+        
     *kwargs*:
-
-        - **Vo**: parameters necessary for inclusion of inner potential
+        - **Vo**: float, parameter necessary for inclusion of inner potential
+        
+        - **hv**: float, photon energy, to be used if **Vo** also included, for evaluating kz
+        
+        - **W**: float, work function
         
     *return*:
-
         - **k_arr**: numpy array of shape Nx3 float, rotated  kpoint array.
         
         - **ph**: numpy array of N float, angles of the in-plane momentum
@@ -339,21 +303,80 @@ def kmesh(ang,X,Y,kz,Vo=None):
     if abs(ang)>0.0:
         X = kp*np.cos(ph-ang)
         Y = kp*np.sin(ph-ang)
-    Zeff = kz*np.ones(np.shape(X))
+    try:
+        Zeff = kz_kpt(hv,kp,W,Vo)
+        print('Inner potential detected, overriding kz input.')
+    except TypeError:    
+        Zeff = kz*np.ones(np.shape(X))
     
     ph = np.reshape(ph,np.shape(X)[0]*np.shape(X)[1])
     k_arr = np.reshape(np.array([X,Y,Zeff]),(3,np.shape(X)[0]*np.shape(X)[1])).T
     return k_arr,ph
 
 
-def kz_kpt(hv,kpt,W,V):
+def kmesh_hv(ang,x,y,hv,Vo=None):
+    '''
+    Take a mesh of kx and ky with fixed kz and generate a Nx3 array of points
+    which rotates the mesh about the z axis by **ang**. N is the flattened shape
+    of **X** and **Y**.
+    
+    *args*:
+        - **ang**: float, angle of rotation
+        
+        - **X**: numpy array of float, one coordinate of meshgrid
+        
+        - **Y**: numpy array of float, second coordinate of meshgrid
+        
+        - **kz**: float, third dimension of momentum path, fixed
+        
+        
+    *kwargs*:
+        - **Vo**: float, parameter necessary for inclusion of inner potential
+        
+        - **hv**: float, photon energy, to be used if **Vo** also included, for evaluating kz
+        
+        - **W**: float, work function
+        
+    *return*:
+        - **k_arr**: numpy array of shape Nx3 float, rotated  kpoint array.
+        
+        - **ph**: numpy array of N float, angles of the in-plane momentum
+        points, before rotation.
+    
+    ***    
+    '''
+            
+
+    
+    if len(x)==1:
+
+        X,HV = np.meshgrid(y,hv)
+        Y = x*np.ones(np.shape(X))
+    elif len(y)==1:
+        X,HV = np.meshgrid(x,hv)
+        Y = y*np.ones(np.shape(X))
+        
+        
+    ph = np.arctan2(Y,X)
+    KP = np.sqrt(X**2+Y**2)    
+
+    if abs(ang)>0.0:
+        x = KP*np.cos(ph-ang)
+        y = KP*np.sin(ph-ang)
+    Z = kz_kpt(HV,KP,V=Vo)
+    
+    ph = np.reshape(ph,np.shape(X)[0]*np.shape(X)[1])
+    k_arr = np.reshape(np.array([X,Y,Z]),(3,np.shape(X)[0]*np.shape(X)[1])).T
+    return k_arr,ph
+
+
+def kz_kpt(hv,kpt,W=0,V=0):
     
     '''
     Extract the kz associated with a given in-plane momentum, photon energy, 
     work function and inner potential
     
     *args*:
-
         - **hv**: float, photon energ in eV
         
         - **kpt**: float, in plane momentum, inverse Angstrom
@@ -363,9 +386,7 @@ def kz_kpt(hv,kpt,W,V):
         - **V**: float, inner potential in eV
         
     *return*:
-
         - **kz**: float, out of plane momentum, inverse Angstrom
-    
     ***
     '''
     kn = np.sqrt(2*me/hb**2*(hv-W)*q)*A
@@ -374,9 +395,9 @@ def kz_kpt(hv,kpt,W,V):
     
     return kz
 
-#if __name__=="__main__":
-#    a = 1.78
-#    av = np.array([[a,0,a],[0,a,a],[a,a,0]])
+if __name__=="__main__":
+    a = 1.78
+    av = np.array([[a,0,a],[0,a,a],[a,a,0]])
 #    av = np.array([[np.sqrt(3)*a/2,a/2,0],[np.sqrt(3)*a/2,-a/2,0],[0,0,2*c]])
-#    N = 20
-#    bz = b_zone(av,N,True)
+    N = 20
+    bz = b_zone(av,N,True)
