@@ -14,7 +14,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('/Users/ryanday/Documents/UBC/chinook/master/chinook-master/chinook/repo_0919/chinook/chinook'))
+#sys.path.insert(0, os.path.abspath('/Users/ryanday/Documents/UBC/chinook/master/chinook-master/chinook/repo_0919/chinook/chinook'))
 
 
 # -- Project information -----------------------------------------------------
