@@ -107,7 +107,7 @@ The tuple of integers preceding the name of the executable corresponds to the ba
 For the construction of the executable functions, we recommend the use of python's *lambda* functions. For example, to define a function which evaluates to :math:`\alpha k_x^2 + \beta k_y^2` , one may define
 ::
 	def my_func_generator(alpha,beta):
-		return lambda kvec: alpha*k[:,0]**2 + beta*k[:,1]
+		return lambda kvec: alpha*k[:,0]**2 + beta*k[:,1]**2
 
 	#Define specific parameters for my executable functions
 	a1 = 2.3
@@ -154,8 +154,8 @@ Orbital Objects
 .. automodule:: orbital
    :members:
 
-Slater Koster
-=============
+Slater Koster Library
+=====================
 
 .. automodule:: SlaterKoster
    :members:

@@ -85,7 +85,8 @@ html_theme = "sphinx_rtd_theme"
 # documentation.
 #
 html_theme_options = {
-	'collapse_navigation':True
+	'collapse_navigation':True,
+    'logo_only':True
 }
 
 html_logo = 'images/chinook_header_logo.png'
