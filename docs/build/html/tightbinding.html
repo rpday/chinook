@@ -51,7 +51,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> chinook
+            <a href="index.html">
           
 
           
@@ -96,7 +96,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-H_library">Hamiltonian Library</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-klib">Momentum Library</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-orbital">Orbital Objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-SlaterKoster">Slater Koster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-SlaterKoster">Slater Koster Library</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-TB_lib">Tight-Binding Library</a></li>
 </ul>
 </li>
@@ -258,7 +258,7 @@ Similarly, a textfile of this form is also acceptable, with each line in the tex
 <p>The tuple of integers preceding the name of the executable corresponds to the basis indices. Here <em>my_func1</em> applies to the diagonal elements of my first basis member, and <em>my_func2</em> to the coupling of my first and second basis elements. As always, indexing in python is 0-based.</p>
 <p>For the construction of the executable functions, we recommend the use of python’s <em>lambda</em> functions. For example, to define a function which evaluates to <span class="math notranslate nohighlight">\(\alpha k_x^2 + \beta k_y^2\)</span> , one may define</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_func_generator</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span><span class="n">beta</span><span class="p">):</span>
-        <span class="k">return</span> <span class="k">lambda</span> <span class="n">kvec</span><span class="p">:</span> <span class="n">alpha</span><span class="o">*</span><span class="n">k</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">beta</span><span class="o">*</span><span class="n">k</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">kvec</span><span class="p">:</span> <span class="n">alpha</span><span class="o">*</span><span class="n">k</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">beta</span><span class="o">*</span><span class="n">k</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
 
 <span class="c1">#Define specific parameters for my executable functions</span>
 <span class="n">a1</span> <span class="o">=</span> <span class="mf">2.3</span>
@@ -1221,7 +1221,7 @@ basis.</p>
 
 </div>
 <div class="section" id="module-SlaterKoster">
-<span id="slater-koster"></span><h2>Slater Koster<a class="headerlink" href="#module-SlaterKoster" title="Permalink to this headline">¶</a></h2>
+<span id="slater-koster-library"></span><h2>Slater Koster Library<a class="headerlink" href="#module-SlaterKoster" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="SlaterKoster.SK_cub">
 <code class="descclassname">SlaterKoster.</code><code class="descname">SK_cub</code><span class="sig-paren">(</span><em>Ymats</em>, <em>l1</em>, <em>l2</em><span class="sig-paren">)</span><a class="headerlink" href="#SlaterKoster.SK_cub" title="Permalink to this definition">¶</a></dt>
