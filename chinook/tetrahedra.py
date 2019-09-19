@@ -6,18 +6,20 @@ Created on Tue Sep  4 16:27:40 2018
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 import chinook.klib as klib
 
 def not_point(point):
     '''
+    
     Inverse of point, defined in an N-dimensional binary coordinate frame
     
     *args*:
-
+        
         - **point**: int or numpy array of int between 0 and 1
     
     *return*:
-
+        
         - numpy array of int, NOT gate applied to the binary vector point
 
     ***
@@ -26,16 +28,17 @@ def not_point(point):
 
 def neighbours(point):
     '''
+    
     For an unit cube, we can define the set of 3 nearest neighbours by performing
     the requisite modular sum along one of the three Cartesian axes. In this way,
     for an input point, we can extract its neighbours easily.
     
     *args*:
-
+        
         - **point**: numpy array of 3 int, all either 0 or 1
     
     *return*:
-
+        
         - numpy array of 3x3 int, indicating the neighbours of **point** on the
         unit cube.
         
@@ -50,7 +53,7 @@ def corners():
     the main diagonal for tetrahedral partitioning of the cube
     
     *return*:
-
+        
         **main**: tuple of 2 integers indicating the cube coordinates
         
         **cube**: numpy array of 8 corners (8x3) float
@@ -71,7 +74,7 @@ def tetrahedra():
     dotted with some basis vector set to put them into the proper coordinate frame.
     
     *return*:
-
+        
         - **tetra**: numpy array of 6 x 4 x 3 int, indicating the corners
         of the 6 tetrahedra
         
@@ -101,11 +104,12 @@ def tet_inds():
       0 o ---- o 1
       
       with 2 hidden from view (below 6, and behind the line-segment connecting 4-5). 
+      Here drawn with x along horizontal, z into plane, y vertical
       Defining the real-index spacing between adjacent cubes in a larger array, we can apply this simple prescription
       to define the spanning tetrahedra over the larger k-mesh
     
     *return*:
-
+        
         - **tetra_inds**: numpy array of integer (6x4), with each
         row containing the index of the 4 tetrahedral vertices. Together, for
         of a set of neighbouring points on a grid, we divide into a set of covering
@@ -113,7 +117,8 @@ def tet_inds():
         
     ***
     '''
-    corn_dict = {'000':0,'100':1,'010':2,'110':3,'001':4,'101':5,'011':6,'111':7}
+#    corn_dict = {'000':0,'100':1,'010':2,'110':3,'001':4,'101':5,'011':6,'111':7}
+    corn_dict = {'000':0,'001':1,'100':2,'101':3,'010':4,'011':5,'110':6,'111':7}
     
     tetra_vec = tetrahedra().astype(int)
     tetra_inds = np.array([[corn_dict['{:d}{:d}{:d}'.format(*ti)] for ti in tetra_vec[j]] for j in range(6)])
@@ -121,6 +126,24 @@ def tet_inds():
 
 
 def gen_mesh(avec,N):
+    '''
+    Generate a mesh of points in 3-dimensional momentum space over the first
+    Brillouin zone. These are defined first in terms of recirocal lattice vectors,
+    
+    i.e. from 0->1 along each, and then are multiplied by the rec. latt. vectors 
+    themselves. Note that this implicitly provides a mesh which is not centred
+    at zero, but has an origin at the rec. latt. vector (0,0,0)
+    
+    *args*:
+        
+        - **avec**: numpy array of 3x3 float, lattice vectors
+
+        - **N**: int, or tuple of 3 int, indicating the number of points along
+        each of the reciprocal lattice vectors        
+        
+    ***
+    '''
+    
     if type(N)==int:
         N = (N,N,N)
         
@@ -129,6 +152,7 @@ def gen_mesh(avec,N):
     X,Y,Z = np.meshgrid(x,y,z)
     X,Y,Z = X.flatten(),Y.flatten(),Z.flatten()
     pts = np.dot(np.array([[X[i],Y[i],Z[i]] for i in range(len(X))]),b_vec)
+
     return pts
 
 def mesh_tetra(avec,N):
@@ -141,20 +165,21 @@ def mesh_tetra(avec,N):
     Bravais lattices in R3. 
     
     *args*:
+        
         - **avec**: numpy array of 3x3 float, lattice vectors
         
         - **N**: int, or iterable of 3 int which define the density of the mesh
         over the Brillouin zone.
         
     *return*:
-
+        
         - **pts**: numpy array of Mx3 float, indicating the points in momentum space
         at the vertices of the mesh
         
         - **mesh_tet**: numpy array of Lx4 int, indicating the L-tetrahedra
         which partition the grid
-
-        
+      
+    ***
     '''
     
     if type(N)==int:
@@ -165,7 +190,7 @@ def mesh_tetra(avec,N):
     
     mesh_tet = []
     for ii in range(len(pts)):
-        test_tetra = propagate(ii,N[0],N[1])[ti]
+        test_tetra = propagate(ii,N[2],N[0])[ti]
         for t in test_tetra:
             try:
                 if t.max()>=len(pts) or t.max()<0:
@@ -192,7 +217,7 @@ def propagate(i,Nr,Nc):
     edge points as starting points, so that all cubes are within the grid.
     
     *args*:
-
+        
         - **i**: int, index of origin
         
         - **Nr**: int, number of rows in grid
@@ -200,7 +225,7 @@ def propagate(i,Nr,Nc):
         - **Nc**: int, number of columns in grid
         
     *return*:
-    
+        
         - **numpy array of int, len 8 corresponding to the re-numbering of the
         corners of the cube.
     
