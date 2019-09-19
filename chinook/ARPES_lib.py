@@ -425,6 +425,9 @@ class experiment:
            
 
         self.pks = np.array([[i,np.floor(np.floor(i/nstates)/np.shape(self.X)[1]),np.floor(i/nstates)%np.shape(self.X)[1],self.Eb[i]] for i in range(len(self.Eb)) if dig_range[0]<=self.Eb[i]<=dig_range[-1]])
+	if len(self.pks)==0:
+            raise ValueError('ARPES Calculation Error: no states found in energy window. Consider refining the region of interest')
+
         self.Mk = np.zeros((len(self.pks),2,3),dtype=complex)
 
         kn = (2.*me/hb**2*(self.hv+self.pks[:,3]-self.W)*q)**0.5*A
