@@ -165,7 +165,7 @@ def ne_broad_numerical(TB,NK,NE=None,dE=None,origin=np.zeros(3)):
     return ne,Elin
 
 
-def find_EF(TB,NK,occ,NE=None,dE=None,origin=np.zeros(3)):
+def find_EF_broad_dos(TB,NK,occ,NE=None,dE=None,origin=np.zeros(3)):
     '''
     Find the Fermi level of a model Hamiltonian, for a designated electronic
     occupation. Note this is evaluated at T=0, so EF is well-defined.
@@ -545,7 +545,7 @@ def e_34(energy,epars):
     
 
 ##############################-------n(E)---------#############################
-def EF_find(TB,occ,dE,NK):
+def find_EF_tetra_dos(TB,occ,dE,NK):
 
     '''
     Use the tetrahedron-integration method to establish the Fermi-level, for a given

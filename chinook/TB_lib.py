@@ -386,7 +386,7 @@ class TB_model:
                 
         ***
         '''
-	partition = False
+        partition = False
         if ps_found:
             mem_summary = psutil.virtual_memory()
             avail = mem_summary.available
