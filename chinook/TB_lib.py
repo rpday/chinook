@@ -386,6 +386,7 @@ class TB_model:
                 
         ***
         '''
+	partition = False
         if ps_found:
             mem_summary = psutil.virtual_memory()
             avail = mem_summary.available
@@ -397,8 +398,7 @@ class TB_model:
                 splits = [j*int(np.floor(len(self.Kobj.kpts)/N_partitions)) for j in range(N_partitions)]
                 splits.append(len(self.Kobj.kpts))
                 print('Large memory load: splitting diagonalization into {:d} segments'.format(N_partitions))
-            else:
-                partition = False
+ 
         if self.Kobj is not None:
             Hmat = np.zeros((len(self.Kobj.kpts),len(self.basis),len(self.basis)),dtype=complex) #initialize the Hamiltonian
             
