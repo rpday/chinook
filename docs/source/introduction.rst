@@ -38,7 +38,7 @@ Lattice
 
 The lattice is defined as a 3x3 array called avec, and is defined in units of inverse Angstrom. The default provided in template.py is a unit-length simple cubic lattice. As an example here, we construct the unit cell of GaAs,
 ::
-    avec = np.array([2.8162,2.8162,0],[0,2.8162,2.8162],[2.8162,0,2.8162]])
+    avec = np.array([[2.8162,2.8162,0],[0,2.8162,2.8162],[2.8162,0,2.8162]])
 
 
 Basis
