@@ -1,6 +1,8 @@
 .. chinook documentation master file, created by
    sphinx-quickstart on Mon Mar 25 21:37:42 2019.
-   
+
+.. image: images/header_img.png
+   :width: 800
 
 Welcome to chinook!
 ===================================
