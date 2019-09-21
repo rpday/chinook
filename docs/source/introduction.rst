@@ -1,6 +1,7 @@
 .. toctree::
    :maxdepth: 2
-
+.. image: images/header_img.png
+   :width: 800
 Introduction
 ************
 
