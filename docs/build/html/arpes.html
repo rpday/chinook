@@ -530,7 +530,7 @@ of radial wavefunction.)</p>
 <dl class="function">
 <dt id="radint_lib.radint_calc">
 <code class="descclassname">radint_lib.</code><code class="descname">radint_calc</code><span class="sig-paren">(</span><em>k_norm</em>, <em>orbital_funcs</em>, <em>phase_shifts=None</em><span class="sig-paren">)</span><a class="headerlink" href="#radint_lib.radint_calc" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute dictionary of radial integrals evaluated at a single <a href="#id227"><span class="problematic" id="id228">|k|</span></a> value
+<dd><p>Compute dictionary of radial integrals evaluated at a single <a href="#id107"><span class="problematic" id="id108">|k|</span></a> value
 for the whole basis. Will avoid redundant integrations by checking for
 the presence of an identical dictionary key. The integration is done
 as a simple adaptive integration algorithm, defined in the 
@@ -595,14 +595,14 @@ distinct a-n-l triplets)</p>
 <dt id="ARPES_lib.G_dic">
 <code class="descclassname">ARPES_lib.</code><code class="descname">G_dic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.G_dic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the gaunt coefficients associated with all possible transitions relevant</p>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
 <li><strong>Gdict</strong>: dictionary with keys as a string representing (l,l’,m,dm) “ll’mdm” and values complex float.</li>
 </ul>
-<p>All unacceptable transitions set to zero.</p>
-</div></blockquote>
-<p><a href="#id51"><span class="problematic" id="id52">**</span></a><a href="#id53"><span class="problematic" id="id54">*</span></a></p>
+<p class="last">All unacceptable transitions set to zero.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -610,20 +610,19 @@ distinct a-n-l triplets)</p>
 <code class="descclassname">ARPES_lib.</code><code class="descname">Gmat_make</code><span class="sig-paren">(</span><em>lm</em>, <em>Gdictionary</em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.Gmat_make" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use the dictionary of relevant Gaunt coefficients to generate a small 2x3 array of  
 float which carries the relevant Gaunt coefficients for a given initial state.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>lm</strong>: tuple of 2 int, initial state orbital angular momentum and azimuthal angular momentum</li>
 <li><strong>Gdictionary</strong>: pre-calculated dictionary of Gaunt coefficients, with key-values associated with “ll’mdm”</li>
 </ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>mats</strong>: numpy array of float 2x3</li>
 </ul>
-</div></blockquote>
-<p><a href="#id55"><span class="problematic" id="id56">**</span></a><a href="#id57"><span class="problematic" id="id58">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -633,22 +632,21 @@ float which carries the relevant Gaunt coefficients for a given initial state.</
 to evaluate all spherical harmonics at once. The pointer array orb_point is a list of lists, where for each projection in the basis, the integer
 in the list indicates which row (first axis) of the Ylm array should be taken. This allows for very quick access to the l+/-1, m+/-1,0 Ylm evaluation
 required.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>basis</strong>: list of orbital objects</li>
 </ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>l_args</strong>: numpy array of int, of shape len(<em>lm_inds</em>),3,2, with the latter two indicating the final state orbital angular momentum</li>
 <li><strong>m_args</strong>: numpy array of int, of shape len(<em>lm_inds</em>),3,2, with the latter two indicating the final state azimuthal angular momentum</li>
 <li><strong>g_arr</strong>: numpy array of float, shape len(<em>lm_inds</em>),3,2, providing the related Gaunt coefficients.</li>
 <li><strong>orb_point</strong>: numpy array of int, matching the related sub-array of <em>l_args</em>, <em>m_args</em>, <em>g_arr</em> related to each orbital in basis</li>
 </ul>
-</div></blockquote>
-<p><a href="#id59"><span class="problematic" id="id60">**</span></a><a href="#id61"><span class="problematic" id="id62">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -657,19 +655,18 @@ required.</p>
 <dd><p>Typical values in the relevant domain for execution of the Fermi distribution will
 result in an overflow associated with 64-bit float. To circumvent, set fermi-function
 to zero when the argument of the exponential in the denominator is too large.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>ekbt</strong>: float, (E-u)/kbT in terms of eV</li>
 </ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>fermi</strong>: float, evaluation of Fermi function.</li>
 </ul>
-</div></blockquote>
-<p><a href="#id63"><span class="problematic" id="id64">**</span></a><a href="#id65"><span class="problematic" id="id66">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
@@ -732,26 +729,25 @@ direction (with respect to) experimental frame.</p>
 </ul>
 </div></blockquote>
 </div></blockquote>
-<p><a href="#id67"><span class="problematic" id="id68">**</span></a><a href="#id69"><span class="problematic" id="id70">*</span></a></p>
+<p><a href="#id51"><span class="problematic" id="id52">**</span></a><a href="#id53"><span class="problematic" id="id54">*</span></a></p>
 <dl class="method">
 <dt id="ARPES_lib.experiment.M_compute">
 <code class="descname">M_compute</code><span class="sig-paren">(</span><em>i</em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.M_compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>The core method called during matrix element computation.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>i</strong>: integer, index and energy of state</li>
 </ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>Mtmp</strong>: numpy array (2x3) of complex float corresponding to the matrix element
 projection for dm = -1,0,1 (columns) and spin down or up (rows) for a given
 state in k and energy.</li>
 </ul>
-</div></blockquote>
-<p><a href="#id71"><span class="problematic" id="id72">**</span></a><a href="#id73"><span class="problematic" id="id74">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -759,19 +755,18 @@ state in k and energy.</li>
 <code class="descname">Mk_wrapper</code><span class="sig-paren">(</span><em>ilist</em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.Mk_wrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper function for use in multiprocessing, to run each of the processes
 as a serial matrix element calculation over a sublist of state indices.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>ilist</strong>: list of int, all state indices for execution.</li>
 </ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>Mk_out</strong>: numpy array of complex float with shape (len(ilist), 2,3)</li>
 </ul>
-</div></blockquote>
-<p><a href="#id75"><span class="problematic" id="id76">**</span></a><a href="#id77"><span class="problematic" id="id78">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -780,34 +775,33 @@ as a serial matrix element calculation over a sublist of state indices.</p>
 <dd><p>Self energy arguments are passed as a list, which supports mixed-datatype.
 The first entry in list is a string, indicating the type of self-energy, 
 and the remaining entries are the self-energy.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
 <li><strong>SE_args</strong>: list, first entry can be ‘func’, ‘poly’, ‘constant’, or ‘grid’</li>
 </ul>
-<p>indicating an executable function, polynomial factors, constant, or a grid of values</p>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
-<li><strong>SE</strong>: numpy array of complex float, with either shape of the datacube,</li>
+<p class="last">indicating an executable function, polynomial factors, constant, or a grid of values</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li>SE, numpy array of complex float, with either shape of the datacube,</li>
 </ul>
-<p>or as a one dimensional array over energy only.</p>
-</div></blockquote>
-<p><a href="#id79"><span class="problematic" id="id80">**</span></a><a href="#id81"><span class="problematic" id="id82">*</span></a></p>
+<p class="last">or as a one dimensional array over energy only.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ARPES_lib.experiment.T_distribution">
 <code class="descname">T_distribution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.T_distribution" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the Fermi-distribution for a fixed temperature, over the domain of energy of interest</p>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>fermi</strong>: numpy array of float, same length as energy domain array defined by <em>cube[2]</em> attribute.</li>
 </ul>
-</div></blockquote>
-<p><a href="#id83"><span class="problematic" id="id84">**</span></a><a href="#id85"><span class="problematic" id="id86">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -817,20 +811,19 @@ and the remaining entries are the self-energy.</p>
 Given a kmesh to calculate the photoemission over, the mesh is reshaped to an nx3 array and the Hamiltonian
 diagonalized over this set of k points. The matrix elements are then calculated for each 
 of these E-k points</p>
-<p><em>kwargs</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first simple">
 <li><strong>ARPES_dict</strong>: can optionally pass a dictionary of experimental parameters, to update those defined</li>
 </ul>
-<p>in the initialization of the <em>experiment</em> object.</p>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<p class="last">in the initialization of the <em>experiment</em> object.</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li>boolean, True if function finishes successfully.</li>
 </ul>
-</div></blockquote>
-<p><a href="#id87"><span class="problematic" id="id88">**</span></a><a href="#id89"><span class="problematic" id="id90">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -839,11 +832,11 @@ of these E-k points</p>
 <dd><p>Diagonalize the Hamiltonian over the desired range of momentum, reshaping the 
 band-energies into a 1-dimensional array. If the user has not selected a energy
 grain for calculation, automatically calculate this.</p>
-<p><em>return</em>:</p>
-<blockquote>
-<div>None, however <em>experiment</em> attributes <em>X</em>, <em>Y</em>, <em>ph</em>, <em>TB.Kobj</em>, <em>Eb</em>, <em>Ev</em>, <em>cube</em>
-are modified.</div></blockquote>
-<p><a href="#id91"><span class="problematic" id="id92">**</span></a><a href="#id93"><span class="problematic" id="id94">*</span></a></p>
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd>None, however <em>experiment</em> attributes <em>X</em>, <em>Y</em>, <em>ph</em>, <em>TB.Kobj</em>, <em>Eb</em>, <em>Ev</em>, <em>cube</em>
+are modified.</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -853,33 +846,14 @@ are modified.</div></blockquote>
 Assume that it only rotates with THETA_y (vertical cryostat), and that the polarization
 vector defined by the user relates to centre of THETA_x axis. 
 Right now only handles zero vertical rotation (just tilt)</p>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
 <li>numpy array of len(expmt.cube[1]) x 3 complex float, rotated polarization vectors</li>
 </ul>
-<p>expressed in basis of spherical harmonics</p>
-</div></blockquote>
-<p><a href="#id95"><span class="problematic" id="id96">**</span></a><a href="#id97"><span class="problematic" id="id98">*</span></a></p>
-</dd></dl>
-
-<dl class="method">
-<dt id="ARPES_lib.experiment.gen_imap">
-<code class="descname">gen_imap</code><span class="sig-paren">(</span><em>I_arr</em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.gen_imap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a new ARPES intensity map</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
-<li><strong>I_arr</strong>: numpy array of float, intensity map data</li>
-</ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
-<li><strong>new_map</strong>: instance of intensity_map class</li>
-</ul>
-</div></blockquote>
-<p><a href="#id99"><span class="problematic" id="id100">**</span></a><a href="#id101"><span class="problematic" id="id102">*</span></a></p>
+<p class="last">expressed in basis of spherical harmonics</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -887,31 +861,30 @@ Right now only handles zero vertical rotation (just tilt)</p>
 <code class="descname">plot_gui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.plot_gui" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate the Tkinter gui for exploring the experimental parameter-space
 associated with the present experiment.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
 <li><strong>ARPES_dict</strong>: dictionary of experimental parameters, c.f. the</li>
 </ul>
-<p><em>__init__</em> function for details.</p>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<p class="last"><em>__init__</em> function for details.</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>Tk_win</strong>: Tkinter window.</li>
 </ul>
-</div></blockquote>
-<p><a href="#id103"><span class="problematic" id="id104">**</span></a><a href="#id105"><span class="problematic" id="id106">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ARPES_lib.experiment.plot_intensity_map">
-<code class="descname">plot_intensity_map</code><span class="sig-paren">(</span><em>plot_map</em>, <em>slice_select</em>, <em>plot_bands=False</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.plot_intensity_map" title="Permalink to this definition">¶</a></dt>
+<code class="descname">plot_intensity_map</code><span class="sig-paren">(</span><em>plot_map</em>, <em>slice_select</em>, <em>plot_bands=False</em>, <em>ax_img=None</em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.plot_intensity_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot a slice of the intensity map computed in <em>spectral</em>. The user selects either
 an array index along one of the axes, or the fixed value of interest, allowing
 either integer, or float selection.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
 <li><strong>plot_map</strong>: numpy array of shape (self.cube[0],self.cube[1],self.cube[2]) of float</li>
 <li><strong>slice_select</strong>: list of either [int,int] or [str,float], corresponding to</li>
 </ul>
@@ -922,17 +895,17 @@ case-sensitive.</p>
 <li><strong>plot_bands</strong>: boolean, option to overlay a constant-momentum cut with</li>
 </ul>
 <p>the dispersion calculated from tight-binding</p>
-<ul class="simple">
-<li><strong>ax</strong>: matplotlib Axes, for option to plot onto existing Axes</li>
+<ul class="last simple">
+<li><strong>ax_img</strong>: matplotlib Axes, for option to plot onto existing Axes</li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 <p><em>return</em>:</p>
 <blockquote>
 <div><ul class="simple">
 <li><strong>ax_img</strong>: matplotlib axis object</li>
 </ul>
 </div></blockquote>
-<p><a href="#id107"><span class="problematic" id="id108">**</span></a><a href="#id109"><span class="problematic" id="id110">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -940,14 +913,14 @@ case-sensitive.</p>
 <code class="descname">rot_basis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.rot_basis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Rotate the basis orbitals and their positions in the lab frame to be consistent with the
 experimental geometry</p>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
 <li>list of orbital objects, representing a rotated version of the original basis if the</li>
 </ul>
-<p>angle is finite. Otherwise, just return the original basis.</p>
-</div></blockquote>
-<p><a href="#id111"><span class="problematic" id="id112">**</span></a><a href="#id113"><span class="problematic" id="id114">*</span></a></p>
+<p class="last">angle is finite. Otherwise, just return the original basis.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -958,42 +931,42 @@ matrix element values onto the desired spin-projection direction.
 In the event that the spin projection direction is not along the 
 standard out-of-plane quantization axis, we rotate the matrix elements
 computed into the desired basis direction.</p>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
 <li><strong>spin_projected_Mk</strong>: numpy array of complex float with same</li>
 </ul>
-<p>shape as <em>Mk</em></p>
-</div></blockquote>
-<p><a href="#id115"><span class="problematic" id="id116">**</span></a><a href="#id117"><span class="problematic" id="id118">*</span></a></p>
+<p class="last">shape as <em>Mk</em></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ARPES_lib.experiment.serial_Mk">
 <code class="descname">serial_Mk</code><span class="sig-paren">(</span><em>indices</em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.serial_Mk" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run matrix element on a single thread, directly modifies the <em>Mk</em> attribute.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
 <li><strong>indices</strong>: list of all state indices for execution; restricting states</li>
 </ul>
-<blockquote>
+<blockquote class="last">
 <div>in <em>cube_indx</em> to those within the desired window</div></blockquote>
-</div></blockquote>
-<p><a href="#id119"><span class="problematic" id="id120">**</span></a><a href="#id121"><span class="problematic" id="id122">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ARPES_lib.experiment.smat_gen">
 <code class="descname">smat_gen</code><span class="sig-paren">(</span><em>svector=None</em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.smat_gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define the spin-projection matrix related to a spin-resolved ARPES experiment.</p>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>Smat</strong>: numpy array of 2x2 complex float corresponding to Pauli operator along the desired direction</li>
 </ul>
-</div></blockquote>
-<p><a href="#id123"><span class="problematic" id="id124">**</span></a><a href="#id125"><span class="problematic" id="id126">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -1003,28 +976,27 @@ computed into the desired basis direction.</p>
 The user has several options here for the self-energy to be used,  c.f. <em>SE_gen()</em> for details.
 Gaussian resolution broadening is the last operation performed, to be consistent with the
 practical experiment.</p>
-<p><em>kwargs</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first simple">
 <li><strong>ARPES_dict</strong>: dictionary, experimental configuration. See <em>experiment.__init__</em> and <em>experiment.update_pars()</em></li>
 <li><strong>slice_select</strong>: tuple, of either int (axis,index format) or string (axis), int format</li>
 <li><strong>add_map</strong>: boolean, add intensity map to list of intensity maps. If true, a list of intensity objects is appended,</li>
 </ul>
 <p>otherwise, the intensity map is overwritten</p>
-<ul class="simple">
+<ul class="last simple">
 <li><strong>plot_bands</strong>: boolean, plot bandstructure from tight-binding over the intensity map</li>
 <li><strong>ax</strong>: matplotlib Axes, only relevant if <strong>slice_select</strong>, option to pass existing Axes to plot onto</li>
 </ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>I</strong>: numpy array of float, raw intensity map.</li>
 <li><strong>Ig</strong>: numpy array of float, resolution-broadened intensity map.</li>
 <li><strong>ax</strong>: matplotlib Axes, for further modifications to plot only if <strong>slice_select</strong> True</li>
 </ul>
-</div></blockquote>
-<p><a href="#id127"><span class="problematic" id="id128">**</span></a><a href="#id129"><span class="problematic" id="id130">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -1034,15 +1006,15 @@ practical experiment.</p>
 attribute.</p>
 <p>NOTE 21/2/2019 – this has not been optimized to show any measureable improvement over serial execution.
 May require a more clever way to do this to get a proper speedup.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
 <li><strong>N</strong>: int, number of threads</li>
 <li><strong>indices</strong>: list of int, all state indices for execution; restricting</li>
 </ul>
-<p>states in cube_indx to those within the desired window.</p>
-</div></blockquote>
-<p><a href="#id131"><span class="problematic" id="id132">**</span></a><a href="#id133"><span class="problematic" id="id134">*</span></a></p>
+<p class="last">states in cube_indx to those within the desired window.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -1055,16 +1027,16 @@ the basis and eigenvectors used in the calculation to dramatically improve our
 capacity to perform such calculations. We keep all eigenvectors, but retain only the
 projection of the basis states within 2*the mean free path of the surface. The 
 states associated with this projection are retained, while remainders are not.</p>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
 <li><strong>tmp_basis</strong>: list, truncated subset of the basis’ orbital objects</li>
 <li><strong>Evec</strong>: numpy array of complex float corresponding to the truncated eigenvector</li>
 </ul>
-<blockquote>
+<blockquote class="last">
 <div>array containing only the surface-projected wavefunctions</div></blockquote>
-</div></blockquote>
-<p><a href="#id135"><span class="problematic" id="id136">**</span></a><a href="#id137"><span class="problematic" id="id138">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -1074,9 +1046,9 @@ states associated with this projection are retained, while remainders are not.</
 the ARPES intensity explicitly. Specifically here, we can update 
 resolution in both energy and momentum, as well as temperature,
 spin-projection, self-energy function, and polarization.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last">
 <li><p class="first"><strong>ARPES_dict</strong>: dictionary, specifically containing</p>
 <blockquote>
 <div><ul class="simple">
@@ -1089,13 +1061,12 @@ spin-projection, self-energy function, and polarization.</p>
 </div></blockquote>
 </li>
 </ul>
-</div></blockquote>
-<p><em>kwargs</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first simple">
 <li><strong>datacube</strong>: bool, if updating in <em>spectral</em>, only the above  can be changed. If instead, updating</li>
 </ul>
-<dl class="docutils">
+<dl class="last docutils">
 <dt>at the start of <em>datacube</em>, can also pass:</dt>
 <dd><ul class="first last simple">
 <li><strong>hv</strong>: float, photon energy, eV</li>
@@ -1107,8 +1078,8 @@ spin-projection, self-energy function, and polarization.</p>
 </ul>
 </dd>
 </dl>
-</div></blockquote>
-<p><a href="#id139"><span class="problematic" id="id140">**</span></a><a href="#id141"><span class="problematic" id="id142">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -1122,50 +1093,50 @@ spin-projection, self-energy function, and polarization.</p>
 <li><strong>mat</strong>: numpy array of float, two dimensional</li>
 </ul>
 </div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li>boolean, True</li>
 </ul>
-</div></blockquote>
-<p><a href="#id143"><span class="problematic" id="id144">**</span></a><a href="#id145"><span class="problematic" id="id146">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ARPES_lib.experiment.write_map">
 <code class="descname">write_map</code><span class="sig-paren">(</span><em>_map</em>, <em>directory</em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.write_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write the intensity maps to a series of text files in the indicated directory.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>_map</strong>: numpy array of float to write to file</li>
 <li><strong>directory</strong>: string, name of directory + the file-lead name</li>
 </ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
-<li>boolean, True to confirm successful write</li>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
+<li>boolean, True</li>
 </ul>
-</div></blockquote>
-<p><a href="#id147"><span class="problematic" id="id148">**</span></a><a href="#id149"><span class="problematic" id="id150">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ARPES_lib.experiment.write_params">
 <code class="descname">write_params</code><span class="sig-paren">(</span><em>Adict</em>, <em>parfile</em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.write_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate metadata text file  associated with the saved map.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
 <li><strong>Adict</strong>: dictionary, ARPES_dict same as in above functions, containing</li>
 </ul>
 <p>relevant experimental parameters for use in saving the metadata associated
 with the related calculation.</p>
-<ul class="simple">
+<ul class="last simple">
 <li><strong>parfile</strong>: string, destination for the metadata</li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1174,19 +1145,18 @@ with the related calculation.</p>
 <dt id="ARPES_lib.find_mean_dE">
 <code class="descclassname">ARPES_lib.</code><code class="descname">find_mean_dE</code><span class="sig-paren">(</span><em>Eb</em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.find_mean_dE" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the average spacing between adjacent points along the dispersion calculated.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>Eb</strong>: numpy array of float, eigenvalues</li>
 </ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>dE_mean</strong>: float, average difference between consecutive eigenvalues.</li>
 </ul>
-</div></blockquote>
-<p><a href="#id151"><span class="problematic" id="id152">**</span></a><a href="#id153"><span class="problematic" id="id154">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -1203,88 +1173,74 @@ With the input defined, along with the energy range of interest to the calculati
 wf. This is the domain over which we evaluate the Hilbert transform, which itself is carried out using:
 the scipy.signal.hilbert() function. This function acting on an array f: H(f(x)) -&gt; f(x) + i Hf(x). It relies on the FFT performed on the product of the sgn(w) and F(w) functions,
 and then IFFT back so that we can use this to extract the real part of the self energy, given only the input.
-<em>args</em>:</p>
+args:</p>
 <blockquote>
-<div><ul>
-<li><p class="first"><strong>w</strong>: numpy array energy values for the spectral peaks used in the ARPES simulation</p>
-</li>
-<li><p class="first"><strong>SE_args</strong>: dictionary containing the ‘imfunc’ key value pair (values being either callable, list of polynomial prefactors (increasing order) or numpy array of energy and Im(SE) values)</p>
+<div><p>w – numpy array energy values for the spectral peaks used in the ARPES simulation
+SE_args – dictionary containing the ‘imfunc’ key value pair (values being either callable, list of polynomial prefactors (increasing order) or numpy array of energy and Im(SE) values)</p>
 <blockquote>
-<div><p>for the first two options, a ‘cut’ key value pair is also required to force the function to vanish at the boundary of the Hilbert transform integration window.</p>
+<div>– for the first two options, a ‘cut’ key value pair is also required to force the function to vanish at the boundary of the Hilbert transform integration window.</div></blockquote>
 </div></blockquote>
-</li>
-</ul>
+<p>return: self energy as a numpy array of complex float. The indexing matches that of w, the spectral features to be plotted in the matrix element simulation.</p>
 </div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
-<li>self energy as a numpy array of complex float. The indexing matches that of w, the spectral features to be plotted in the matrix element simulation.</li>
-</ul>
-</div></blockquote>
-</div></blockquote>
-<p><a href="#id155"><span class="problematic" id="id156">**</span></a><a href="#id157"><span class="problematic" id="id158">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
 <dt id="ARPES_lib.pol_2_sph">
 <code class="descclassname">ARPES_lib.</code><code class="descname">pol_2_sph</code><span class="sig-paren">(</span><em>pol</em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.pol_2_sph" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return polarization vector in spherical harmonics – order being Y_11, Y_10, Y_1-1.
+<dd><p>return polarization vector in spherical harmonics – order being Y_11, Y_10, Y_1-1.
 If an array of polarization vectors is passed, use the einsum function to broadcast over
 all vectors.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>pol</strong>: numpy array of 3 complex float, polarization vector in Cartesian coordinates (x,y,z)</li>
 </ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li>numpy array of 3 complex float, transformed polarization vector.</li>
 </ul>
-</div></blockquote>
-<p><a href="#id159"><span class="problematic" id="id160">**</span></a><a href="#id161"><span class="problematic" id="id162">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="ARPES_lib.poly">
 <code class="descclassname">ARPES_lib.</code><code class="descname">poly</code><span class="sig-paren">(</span><em>input_x</em>, <em>poly_args</em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.poly" title="Permalink to this definition">¶</a></dt>
 <dd><p>Recursive polynomial function.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>input_x</strong>: float, int or numpy array of numeric type, input value(s) at which to evaluate the polynomial</li>
-<li><strong>poly_args</strong>: list of coefficients, in INCREASING polynomial order i.e. [a_0,a_1,a_2] for y = a_0 + a_1 * x + a_2 <a href="#id163"><span class="problematic" id="id164">*</span></a>x <a href="#id165"><span class="problematic" id="id166">**</span></a>2</li>
+<li><strong>poly_args</strong>: list of coefficients, in INCREASING polynomial order i.e. [a_0,a_1,a_2] for y = a_0 + a_1 * x + a_2 <a href="#id55"><span class="problematic" id="id56">*</span></a>x <a href="#id57"><span class="problematic" id="id58">**</span></a>2</li>
 </ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
 <li>recursive call to <em>poly</em>, if <em>poly_args</em> is reduced to a single value, return explicit evaluation of the function.</li>
 </ul>
-<p>Same datatype as input, with int changed to float if <em>poly_args</em> are float, polynomial evaluated over domain of <em>input_x</em></p>
-</div></blockquote>
-<p><a href="#id167"><span class="problematic" id="id168">**</span></a><a href="#id169"><span class="problematic" id="id170">*</span></a></p>
+<p class="last">Same datatype as input, with int changed to float if <em>poly_args</em> are float, polynomial evaluated over domain of <em>input_x</em></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="ARPES_lib.progress_bar">
 <code class="descclassname">ARPES_lib.</code><code class="descname">progress_bar</code><span class="sig-paren">(</span><em>N</em>, <em>Nmax</em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.progress_bar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Utility function, generate string to print matrix element calculation progress.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>N</strong>: int, number of iterations complete</li>
 <li><strong>Nmax</strong>: int, total number of iterations to complete</li>
 </ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>st</strong>: string, progress status</li>
 </ul>
-</div></blockquote>
-<p><a href="#id171"><span class="problematic" id="id172">**</span></a><a href="#id173"><span class="problematic" id="id174">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -1295,19 +1251,18 @@ orbital projection for the elements of the model basis. As these do not in gener
 the second dimension of this array corresponds to the largest of the sets of projections associated with
 a given orbital. This will in practice remain a modest number of order 1, since at worst we assume f-orbitals,
 in which case the projection can be no larger than 7 long. So output will be at worst len(basis)x7 complex float</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>basis</strong>: list of orbital objects</li>
 </ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>projarr</strong>: numpy array of complex float</li>
 </ul>
-</div></blockquote>
-<p><a href="#id175"><span class="problematic" id="id176">**</span></a><a href="#id177"><span class="problematic" id="id178">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -1328,7 +1283,7 @@ a specific ARPES calculation.</p>
 <li><em>intensity_map</em> object with identical attributes to self.</li>
 </ul>
 </div></blockquote>
-<p><a href="#id179"><span class="problematic" id="id180">**</span></a><a href="#id181"><span class="problematic" id="id182">*</span></a></p>
+<p><a href="#id59"><span class="problematic" id="id60">**</span></a><a href="#id61"><span class="problematic" id="id62">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -1348,7 +1303,7 @@ slice is saved separately. Saved as .txt file</p>
 <li>boolean</li>
 </ul>
 </div></blockquote>
-<p><a href="#id183"><span class="problematic" id="id184">**</span></a><a href="#id185"><span class="problematic" id="id186">*</span></a></p>
+<p><a href="#id63"><span class="problematic" id="id64">**</span></a><a href="#id65"><span class="problematic" id="id66">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -1369,7 +1324,7 @@ slice is saved separately. Saved as .txt file</p>
 <li>boolean</li>
 </ul>
 </div></blockquote>
-<p><a href="#id187"><span class="problematic" id="id188">**</span></a><a href="#id189"><span class="problematic" id="id190">*</span></a></p>
+<p><a href="#id67"><span class="problematic" id="id68">**</span></a><a href="#id69"><span class="problematic" id="id70">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -1388,7 +1343,7 @@ slice is saved separately. Saved as .txt file</p>
 <li>boolean</li>
 </ul>
 </div></blockquote>
-<p><a href="#id191"><span class="problematic" id="id192">**</span></a><a href="#id193"><span class="problematic" id="id194">*</span></a></p>
+<p><a href="#id71"><span class="problematic" id="id72">**</span></a><a href="#id73"><span class="problematic" id="id74">*</span></a></p>
 </dd></dl>
 
 </dd></dl>
@@ -1420,7 +1375,7 @@ binning of the intensity map, to allow for cursor queries to be processed.</p>
 </ul>
 <p>but sampled over a discrete grid.</p>
 </div></blockquote>
-<p><a href="#id195"><span class="problematic" id="id196">**</span></a><a href="#id197"><span class="problematic" id="id198">*</span></a></p>
+<p><a href="#id75"><span class="problematic" id="id76">**</span></a><a href="#id77"><span class="problematic" id="id78">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -1437,7 +1392,7 @@ slice is selected.</p>
 </ul>
 <p>event, in units of the data-set scaling (e.g. 1/A or eV)</p>
 </div></blockquote>
-<p><a href="#id199"><span class="problematic" id="id200">**</span></a><a href="#id201"><span class="problematic" id="id202">*</span></a></p>
+<p><a href="#id79"><span class="problematic" id="id80">**</span></a><a href="#id81"><span class="problematic" id="id82">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -1445,7 +1400,7 @@ slice is selected.</p>
 <code class="descname">plot_img</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matplotlib_plotter.interface.plot_img" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update the plotted intensity map slice. The plotted bandstructure states are 
 also displayed.</p>
-<p><a href="#id203"><span class="problematic" id="id204">**</span></a><a href="#id205"><span class="problematic" id="id206">*</span></a></p>
+<p><a href="#id83"><span class="problematic" id="id84">**</span></a><a href="#id85"><span class="problematic" id="id86">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -1483,7 +1438,7 @@ with N elements along each of the two directions</p>
 <li>numpy array of N_th x N_ph float, representing mesh of angular coordinates</li>
 </ul>
 </div></blockquote>
-<p><a href="#id207"><span class="problematic" id="id208">**</span></a><a href="#id209"><span class="problematic" id="id210">*</span></a></p>
+<p><a href="#id87"><span class="problematic" id="id88">**</span></a><a href="#id89"><span class="problematic" id="id90">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -1506,7 +1461,7 @@ with N elements along each of the two directions</p>
 <li><strong>k_array</strong>: numpy array of N[1]xN[0] float, corresponding to mesh of in-plane momenta</li>
 </ul>
 </div></blockquote>
-<p><a href="#id211"><span class="problematic" id="id212">**</span></a><a href="#id213"><span class="problematic" id="id214">*</span></a></p>
+<p><a href="#id91"><span class="problematic" id="id92">**</span></a><a href="#id93"><span class="problematic" id="id94">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -1529,7 +1484,7 @@ c.f. Labbook 28 December, 2018</p>
 <li><strong>kvec</strong>: numpy array of float, in-plane momentum array associated with angular emission coordinates</li>
 </ul>
 </div></blockquote>
-<p><a href="#id215"><span class="problematic" id="id216">**</span></a><a href="#id217"><span class="problematic" id="id218">*</span></a></p>
+<p><a href="#id95"><span class="problematic" id="id96">**</span></a><a href="#id97"><span class="problematic" id="id98">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -1552,7 +1507,7 @@ at a fixed kinetic energy.</p>
 <li><strong>thy</strong>: tuple of 2 float, range of vertical angles, radian</li>
 </ul>
 </div></blockquote>
-<p><a href="#id219"><span class="problematic" id="id220">**</span></a><a href="#id221"><span class="problematic" id="id222">*</span></a></p>
+<p><a href="#id99"><span class="problematic" id="id100">**</span></a><a href="#id101"><span class="problematic" id="id102">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -1577,7 +1532,7 @@ is fixed, as opposed to the vertical axis–I have never seen such a system but 
 </ul>
 <p>NOTE: will flatten any length-one dimensions</p>
 </div></blockquote>
-<p><a href="#id223"><span class="problematic" id="id224">**</span></a><a href="#id225"><span class="problematic" id="id226">*</span></a></p>
+<p><a href="#id103"><span class="problematic" id="id104">**</span></a><a href="#id105"><span class="problematic" id="id106">*</span></a></p>
 </dd></dl>
 
 </div>

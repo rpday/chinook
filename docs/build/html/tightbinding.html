@@ -846,26 +846,24 @@ o1,o2,x12,xy12,z12,t12, output in form [o1,o2,x12,y12,z12,t12]</p>
 <dd><p>Generate a mesh of points over the Brillouin zone. 
 Each of the cardinal axes are divided by the same number of points 
 (so points are not necessarily evenly spaced along each axis).</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>a_vec</strong>: numpy array of size 3x3 float</li>
 <li><strong>N</strong>: int mesh density</li>
 </ul>
-</div></blockquote>
-<p><em>kwargs</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>kwargs</em>:     </dt>
+<dd><ul class="first last simple">
 <li><strong>show</strong>: boolean for optional plotting of the mesh points</li>
 </ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>m_pts</strong>: numpy array of mesh points (float), shape (len(m_pts),3)</li>
 </ul>
-</div></blockquote>
-<p><a href="#id81"><span class="problematic" id="id82">**</span></a><a href="#id83"><span class="problematic" id="id84">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -873,50 +871,84 @@ Each of the cardinal axes are divided by the same number of points
 <code class="descclassname">klib.</code><code class="descname">bvectors</code><span class="sig-paren">(</span><em>a_vec</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.bvectors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define the reciprocal lattice vectors corresponding to the direct lattice 
 in real space</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>a_vec</strong>: numpy array of 3x3 float, lattice vectors</li>
 </ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>b_vec</strong>: numpy array of 3x3 float, reciprocal lattice vectors</li>
 </ul>
-</div></blockquote>
-<p><a href="#id85"><span class="problematic" id="id86">**</span></a><a href="#id87"><span class="problematic" id="id88">*</span></a></p>
+</dd>
+</dl>
+<p><a href="#id81"><span class="problematic" id="id82">**</span></a><a href="#id83"><span class="problematic" id="id84">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
 <dt id="klib.kmesh">
-<code class="descclassname">klib.</code><code class="descname">kmesh</code><span class="sig-paren">(</span><em>ang</em>, <em>X</em>, <em>Y</em>, <em>kz</em>, <em>Vo=None</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.kmesh" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">klib.</code><code class="descname">kmesh</code><span class="sig-paren">(</span><em>ang</em>, <em>X</em>, <em>Y</em>, <em>kz</em>, <em>Vo=None</em>, <em>hv=None</em>, <em>W=None</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.kmesh" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take a mesh of kx and ky with fixed kz and generate a Nx3 array of points
 which rotates the mesh about the z axis by <strong>ang</strong>. N is the flattened shape
 of <strong>X</strong> and <strong>Y</strong>.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>ang</strong>: float, angle of rotation</li>
 <li><strong>X</strong>: numpy array of float, one coordinate of meshgrid</li>
 <li><strong>Y</strong>: numpy array of float, second coordinate of meshgrid</li>
 <li><strong>kz</strong>: float, third dimension of momentum path, fixed</li>
 </ul>
-</div></blockquote>
-<p><em>kwargs</em>:</p>
-<blockquote>
-<div><ul class="simple">
-<li><strong>Vo</strong>: parameters necessary for inclusion of inner potential</li>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Vo</strong>: float, parameter necessary for inclusion of inner potential</li>
+<li><strong>hv</strong>: float, photon energy, to be used if <strong>Vo</strong> also included, for evaluating kz</li>
+<li><strong>W</strong>: float, work function</li>
 </ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
 <li><strong>k_arr</strong>: numpy array of shape Nx3 float, rotated  kpoint array.</li>
 <li><strong>ph</strong>: numpy array of N float, angles of the in-plane momentum</li>
 </ul>
-<p>points, before rotation.</p>
-</div></blockquote>
+<p class="last">points, before rotation.</p>
+</dd>
+</dl>
+<p><a href="#id85"><span class="problematic" id="id86">**</span></a><a href="#id87"><span class="problematic" id="id88">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="klib.kmesh_hv">
+<code class="descclassname">klib.</code><code class="descname">kmesh_hv</code><span class="sig-paren">(</span><em>ang</em>, <em>x</em>, <em>y</em>, <em>hv</em>, <em>Vo=None</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.kmesh_hv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take a mesh of kx and ky with fixed kz and generate a Nx3 array of points
+which rotates the mesh about the z axis by <strong>ang</strong>. N is the flattened shape
+of <strong>X</strong> and <strong>Y</strong>.</p>
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>ang</strong>: float, angle of rotation</li>
+<li><strong>X</strong>: numpy array of float, one coordinate of meshgrid</li>
+<li><strong>Y</strong>: numpy array of float, second coordinate of meshgrid</li>
+<li><strong>kz</strong>: float, third dimension of momentum path, fixed</li>
+</ul>
+</dd>
+<dt><em>kwargs</em>:</dt>
+<dd><ul class="first last simple">
+<li><strong>Vo</strong>: float, parameter necessary for inclusion of inner potential</li>
+<li><strong>hv</strong>: float, photon energy, to be used if <strong>Vo</strong> also included, for evaluating kz</li>
+<li><strong>W</strong>: float, work function</li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
+<li><strong>k_arr</strong>: numpy array of shape Nx3 float, rotated  kpoint array.</li>
+<li><strong>ph</strong>: numpy array of N float, angles of the in-plane momentum</li>
+</ul>
+<p class="last">points, before rotation.</p>
+</dd>
+</dl>
 <p><a href="#id89"><span class="problematic" id="id90">**</span></a><a href="#id91"><span class="problematic" id="id92">*</span></a></p>
 </dd></dl>
 
@@ -931,12 +963,13 @@ Hamiltonian at different points in the Brillouin zone.
 <code class="descname">points</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#klib.kpath.points" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use the endpoints of kpath defined in <strong>kpath.pts</strong> to create numpy array
 of len(3) float which cover the entire path, based on method by I.S. Elfimov.</p>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>kpath.kpts</strong>: numpy array of float, len(<strong>kpath.pts</strong>)(1+**kpath.grain**) by 3</li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 <p><a href="#id97"><span class="problematic" id="id98">**</span></a><a href="#id99"><span class="problematic" id="id100">*</span></a></p>
 </dd></dl>
 
@@ -944,24 +977,24 @@ of len(3) float which cover the entire path, based on method by I.S. Elfimov.</p
 
 <dl class="function">
 <dt id="klib.kz_kpt">
-<code class="descclassname">klib.</code><code class="descname">kz_kpt</code><span class="sig-paren">(</span><em>hv</em>, <em>kpt</em>, <em>W</em>, <em>V</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.kz_kpt" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">klib.</code><code class="descname">kz_kpt</code><span class="sig-paren">(</span><em>hv</em>, <em>kpt</em>, <em>W=0</em>, <em>V=0</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.kz_kpt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract the kz associated with a given in-plane momentum, photon energy, 
 work function and inner potential</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>hv</strong>: float, photon energ in eV</li>
 <li><strong>kpt</strong>: float, in plane momentum, inverse Angstrom</li>
 <li><strong>W</strong>: float, work function in eV</li>
 <li><strong>V</strong>: float, inner potential in eV</li>
 </ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>kz</strong>: float, out of plane momentum, inverse Angstrom</li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 <p><a href="#id101"><span class="problematic" id="id102">**</span></a><a href="#id103"><span class="problematic" id="id104">*</span></a></p>
 </dd></dl>
 
@@ -975,53 +1008,39 @@ By construction, the origin is index 13 of the blatt.
 If it is not, return error. Option to take only the indices of
 the mesh which we want, rather than the actual array points
 –this is relevant for tetrahedral interpolation methods</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
 <li><strong>blatt</strong>: numpy array of len(27,3), nearest reciprocal lattice vector points</li>
 <li><strong>mesh</strong>: numpy array of (N,3) float, defining a mesh of k points, before</li>
 </ul>
-<p>being reduced to contain only the Brillouin zone.</p>
-</div></blockquote>
-<p><em>kwargs</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<p class="last">being reduced to contain only the Brillouin zone.</p>
+</dd>
+<dt><em>kwargs</em>: </dt>
+<dd><ul class="first simple">
 <li><strong>inds</strong>: option to pass a list of bool, indicating the</li>
 </ul>
-<p>indices one wants to keep, instead of autogenerating the mesh</p>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<p class="last">indices one wants to keep, instead of autogenerating the mesh</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>bz_pts</strong>: numpy array of (M,3) float, Brillouin zone points</li>
 </ul>
-</div></blockquote>
-<p><a href="#id105"><span class="problematic" id="id106">**</span></a><a href="#id107"><span class="problematic" id="id108">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="klib.plt_pts">
-<code class="descclassname">klib.</code><code class="descname">plt_pts</code><span class="sig-paren">(</span><em>pts</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.plt_pts" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">klib.</code><code class="descname">plt_pts</code><span class="sig-paren">(</span><em>pts</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.plt_pts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot an array of points iin 3D</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>pts</strong>: numpy array shape N x 3</li>
 </ul>
-</div></blockquote>
-<p><em>kwargs</em>:</p>
-<blockquote>
-<div><ul class="simple">
-<li><strong>ax</strong>: matplotlib Axes, for plotting on existing figure</li>
-</ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
-<li><strong>ax</strong>: matplotlib Axes, for further modifications.</li>
-</ul>
-</div></blockquote>
-<p><a href="#id109"><span class="problematic" id="id110">**</span></a><a href="#id111"><span class="problematic" id="id112">*</span></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -1031,41 +1050,41 @@ the mesh which we want, rather than the actual array points
 of reciprocal lattice points generated by <em>bvectors</em>.
 These will be further reduced by <em>mesh_reduce</em> to find points which
 are within the first-Brillouin zone</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first simple">
 <li><strong>blatt</strong>: numpy array of 27x3 float</li>
 <li><strong>N</strong>: int, or iterable of len 3, defines a coarse estimation</li>
 </ul>
-<p>of number of k-points</p>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<p class="last">of number of k-points</p>
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>mesh</strong>: numpy array of mesh points, size set roughly by N</li>
 </ul>
-</div></blockquote>
-<p><a href="#id113"><span class="problematic" id="id114">**</span></a><a href="#id115"><span class="problematic" id="id116">*</span></a></p>
+</dd>
+</dl>
+<p><a href="#id105"><span class="problematic" id="id106">**</span></a><a href="#id107"><span class="problematic" id="id108">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
 <dt id="klib.region">
 <code class="descclassname">klib.</code><code class="descname">region</code><span class="sig-paren">(</span><em>num</em><span class="sig-paren">)</span><a class="headerlink" href="#klib.region" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a symmetric grid of points in number of lattice vectors.</p>
-<p><em>args</em>:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="docutils">
+<dt><em>args</em>:</dt>
+<dd><ul class="first last simple">
 <li><strong>num</strong>: int, grid will have size 2 num+1 in each direction</li>
 </ul>
-</div></blockquote>
-<p><em>return</em>:</p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+<dt><em>return</em>:</dt>
+<dd><ul class="first simple">
 <li>numpy array of size ((2 num+1)**3,3) with centre value of</li>
 </ul>
-<p>first entry of (-num,-num,-num),…,(0,0,0),…,(num,num,num)</p>
-</div></blockquote>
-<p><a href="#id117"><span class="problematic" id="id118">**</span></a><a href="#id119"><span class="problematic" id="id120">*</span></a></p>
+<p class="last">first entry of (-num,-num,-num),…,(0,0,0),…,(num,num,num)</p>
+</dd>
+</dl>
+<p><a href="#id109"><span class="problematic" id="id110">**</span></a><a href="#id111"><span class="problematic" id="id112">*</span></a></p>
 </dd></dl>
 
 </div>
@@ -1087,7 +1106,7 @@ are within the first-Brillouin zone</p>
 <li>int, recursively evaluates the factorial of the initial input value.</li>
 </ul>
 </div></blockquote>
-<p><a href="#id121"><span class="problematic" id="id122">**</span></a><a href="#id123"><span class="problematic" id="id124">*</span></a></p>
+<p><a href="#id113"><span class="problematic" id="id114">**</span></a><a href="#id115"><span class="problematic" id="id116">*</span></a></p>
 </dd></dl>
 
 <dl class="class">
@@ -1106,7 +1125,7 @@ addition to the evaluation of expectation values and ARPES intensity.</p>
 <li><strong>orbital_copy</strong>: duplicate of <strong>orbital</strong> object</li>
 </ul>
 </div></blockquote>
-<p><a href="#id125"><span class="problematic" id="id126">**</span></a><a href="#id127"><span class="problematic" id="id128">*</span></a></p>
+<p><a href="#id117"><span class="problematic" id="id118">**</span></a><a href="#id119"><span class="problematic" id="id120">*</span></a></p>
 </dd></dl>
 
 </dd></dl>
@@ -1146,7 +1165,7 @@ of len 3, indicating rotation vector, and second element is float, angle.</p>
 <p>Wigner Big-D matrix associated with the rotation of this orbital shell
 about the intended axis.</p>
 </div></blockquote>
-<p><a href="#id129"><span class="problematic" id="id130">**</span></a><a href="#id131"><span class="problematic" id="id132">*</span></a></p>
+<p><a href="#id121"><span class="problematic" id="id122">**</span></a><a href="#id123"><span class="problematic" id="id124">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -1171,7 +1190,7 @@ orbitals, with modified positions and index ordering.</p>
 <li><strong>new_basis</strong>: list of duplicated orbitals following modification.</li>
 </ul>
 </div></blockquote>
-<p><a href="#id133"><span class="problematic" id="id134">**</span></a><a href="#id135"><span class="problematic" id="id136">*</span></a></p>
+<p><a href="#id125"><span class="problematic" id="id126">**</span></a><a href="#id127"><span class="problematic" id="id128">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -1191,7 +1210,7 @@ orbitals, with modified positions and index ordering.</p>
 <li><strong>orb_basis</strong>: list of sorted orbital objects (by orbital.index value)</li>
 </ul>
 </div></blockquote>
-<p><a href="#id137"><span class="problematic" id="id138">**</span></a><a href="#id139"><span class="problematic" id="id140">*</span></a></p>
+<p><a href="#id129"><span class="problematic" id="id130">**</span></a><a href="#id131"><span class="problematic" id="id132">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -1216,7 +1235,7 @@ basis.</p>
 <li>doubled basis carrying all required spin information</li>
 </ul>
 </div></blockquote>
-<p><a href="#id141"><span class="problematic" id="id142">**</span></a><a href="#id143"><span class="problematic" id="id144">*</span></a></p>
+<p><a href="#id133"><span class="problematic" id="id134">**</span></a><a href="#id135"><span class="problematic" id="id136">*</span></a></p>
 </dd></dl>
 
 </div>
@@ -1267,7 +1286,7 @@ to fill Hamiltonian</p>
 </ul>
 <p>for arbitrary hopping strength and direction.</p>
 </div></blockquote>
-<p><a href="#id145"><span class="problematic" id="id146">**</span></a><a href="#id147"><span class="problematic" id="id148">*</span></a></p>
+<p><a href="#id137"><span class="problematic" id="id138">**</span></a><a href="#id139"><span class="problematic" id="id140">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -1293,7 +1312,7 @@ The keys of the dictionary will be organized similar to the way the SK
 parameters are passed, labelled by a1a2n1n2l1l2, which completely
 defines a given orbital-orbital coupling</p>
 </div></blockquote>
-<p><a href="#id149"><span class="problematic" id="id150">**</span></a><a href="#id151"><span class="problematic" id="id152">*</span></a></p>
+<p><a href="#id141"><span class="problematic" id="id142">**</span></a><a href="#id143"><span class="problematic" id="id144">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -1322,7 +1341,7 @@ the Wigner formalism I use here, no need to have exceptions</p>
 <li><strong>Vm</strong>: numpy array of float, shape 2 <strong>l1</strong> +1 x 2 <strong>l2</strong> +1</li>
 </ul>
 </div></blockquote>
-<p><a href="#id153"><span class="problematic" id="id154">**</span></a><a href="#id155"><span class="problematic" id="id156">*</span></a></p>
+<p><a href="#id145"><span class="problematic" id="id146">**</span></a><a href="#id147"><span class="problematic" id="id148">*</span></a></p>
 </dd></dl>
 
 </div>
@@ -1342,7 +1361,7 @@ Python’s flexible protocol for equivalency and passing variables by
 reference/value require definition of a copy operator which allows one to
 produce safely, a copy of the object rather than its coordinates 
 in memory alone.
-<a href="#id157"><span class="problematic" id="id158">**</span></a><a href="#id159"><span class="problematic" id="id160">*</span></a></p>
+<a href="#id149"><span class="problematic" id="id150">**</span></a><a href="#id151"><span class="problematic" id="id152">*</span></a></p>
 <dl class="method">
 <dt id="TB_lib.H_me.H2Hk">
 <code class="descname">H2Hk</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.H_me.H2Hk" title="Permalink to this definition">¶</a></dt>
@@ -1357,7 +1376,7 @@ implicitly a numpy array of Nx3: it is essential that the executable conform to 
 <li>lambda function of a numpy array of float of length 3</li>
 </ul>
 </div></blockquote>
-<p><a href="#id161"><span class="problematic" id="id162">**</span></a><a href="#id163"><span class="problematic" id="id164">*</span></a></p>
+<p><a href="#id153"><span class="problematic" id="id154">**</span></a><a href="#id155"><span class="problematic" id="id156">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -1383,7 +1402,7 @@ lattice vectors only</p>
 </ul>
 <p>coordinates</p>
 </div></blockquote>
-<p><a href="#id165"><span class="problematic" id="id166">**</span></a><a href="#id167"><span class="problematic" id="id168">*</span></a></p>
+<p><a href="#id157"><span class="problematic" id="id158">**</span></a><a href="#id159"><span class="problematic" id="id160">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -1399,7 +1418,7 @@ element list. This function is run automatically during slab generation.</p>
 </ul>
 <p>element strengths</p>
 </div></blockquote>
-<p><a href="#id169"><span class="problematic" id="id170">**</span></a><a href="#id171"><span class="problematic" id="id172">*</span></a></p>
+<p><a href="#id161"><span class="problematic" id="id162">**</span></a><a href="#id163"><span class="problematic" id="id164">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -1412,7 +1431,7 @@ element list. This function is run automatically during slab generation.</p>
 <li><strong>H_copy</strong>: duplicate <strong>H_me</strong> object</li>
 </ul>
 </div></blockquote>
-<p><a href="#id173"><span class="problematic" id="id174">**</span></a><a href="#id175"><span class="problematic" id="id176">*</span></a></p>
+<p><a href="#id165"><span class="problematic" id="id166">**</span></a><a href="#id167"><span class="problematic" id="id168">*</span></a></p>
 </dd></dl>
 
 </dd></dl>
@@ -1434,7 +1453,7 @@ the list of Hamiltonian matrix element, self.mat_els of the TB object.</p>
 </ul>
 <p>or as a list of such lists. Here i, j are the related orbital-indices.</p>
 </div></blockquote>
-<p><a href="#id177"><span class="problematic" id="id178">**</span></a><a href="#id179"><span class="problematic" id="id180">*</span></a></p>
+<p><a href="#id169"><span class="problematic" id="id170">**</span></a><a href="#id171"><span class="problematic" id="id172">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -1456,7 +1475,7 @@ the list of Hamiltonian matrix element, self.mat_els of the TB object.</p>
 <p>i,j attributes referencing the orbital basis indices, 
 and a list of form [R0,R1,R2,Re(H)+1.0jIm(H)]</p>
 </div></blockquote>
-<p><a href="#id181"><span class="problematic" id="id182">**</span></a><a href="#id183"><span class="problematic" id="id184">*</span></a></p>
+<p><a href="#id173"><span class="problematic" id="id174">**</span></a><a href="#id175"><span class="problematic" id="id176">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -1488,7 +1507,7 @@ Distinct atoms are drawn in different colours</p>
 <li><strong>ax</strong>: matplotlib Axes, for further modifications to plot</li>
 </ul>
 </div></blockquote>
-<p><a href="#id185"><span class="problematic" id="id186">**</span></a><a href="#id187"><span class="problematic" id="id188">*</span></a></p>
+<p><a href="#id177"><span class="problematic" id="id178">**</span></a><a href="#id179"><span class="problematic" id="id180">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -1514,7 +1533,7 @@ covers the entire eigenspectrum.</p>
 <li><strong>ax</strong>: matplotlib axes object</li>
 </ul>
 </div></blockquote>
-<p><a href="#id189"><span class="problematic" id="id190">**</span></a><a href="#id191"><span class="problematic" id="id192">*</span></a></p>
+<p><a href="#id181"><span class="problematic" id="id182">**</span></a><a href="#id183"><span class="problematic" id="id184">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -1547,7 +1566,7 @@ up the k-path into sequential diagonalizations.</p>
 </ul>
 <p>eigenvectors</p>
 </div></blockquote>
-<p><a href="#id193"><span class="problematic" id="id194">**</span></a><a href="#id195"><span class="problematic" id="id196">*</span></a></p>
+<p><a href="#id185"><span class="problematic" id="id186">**</span></a><a href="#id187"><span class="problematic" id="id188">*</span></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -1560,7 +1579,7 @@ up the k-path into sequential diagonalizations.</p>
 <li><strong>Hlist</strong>: list of Hamiltonian matrix elements</li>
 </ul>
 </div></blockquote>
-<p><a href="#id197"><span class="problematic" id="id198">**</span></a><a href="#id199"><span class="problematic" id="id200">*</span></a></p>
+<p><a href="#id189"><span class="problematic" id="id190">**</span></a><a href="#id191"><span class="problematic" id="id192">*</span></a></p>
 </dd></dl>
 
 </dd></dl>
@@ -1579,11 +1598,11 @@ atomic species in the basis</p>
 <p><em>return</em>:</p>
 <blockquote>
 <div><ul class="simple">
-<li><a href="#id201"><span class="problematic" id="id202">**</span></a>dictionary with integer keys, numpy array of float values. atom:locations are</li>
+<li><a href="#id193"><span class="problematic" id="id194">**</span></a>dictionary with integer keys, numpy array of float values. atom:locations are</li>
 </ul>
 <p>encoded in this way</p>
 </div></blockquote>
-<p><a href="#id203"><span class="problematic" id="id204">**</span></a><a href="#id205"><span class="problematic" id="id206">*</span></a>.</p>
+<p><a href="#id195"><span class="problematic" id="id196">**</span></a><a href="#id197"><span class="problematic" id="id198">*</span></a>.</p>
 </dd></dl>
 
 <dl class="function">
@@ -1602,7 +1621,7 @@ atomic species in the basis</p>
 <li><strong>edges</strong>: numpy array of 12 x 6, endpoints of the 12 edges of the unit cell parallelepiped</li>
 </ul>
 </div></blockquote>
-<p><a href="#id207"><span class="problematic" id="id208">**</span></a><a href="#id209"><span class="problematic" id="id210">*</span></a></p>
+<p><a href="#id199"><span class="problematic" id="id200">**</span></a><a href="#id201"><span class="problematic" id="id202">*</span></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -1632,7 +1651,7 @@ an input array of momentum</p>
 <li><strong>Hlist</strong>: list of Hamiltonian matrix element, <strong>H_me</strong> objects</li>
 </ul>
 </div></blockquote>
-<p><a href="#id211"><span class="problematic" id="id212">**</span></a><a href="#id213"><span class="problematic" id="id214">*</span></a></p>
+<p><a href="#id203"><span class="problematic" id="id204">**</span></a><a href="#id205"><span class="problematic" id="id206">*</span></a></p>
 </dd></dl>
 
 </div>

@@ -1,12 +1,16 @@
+.. _tutorial:
+
 .. toctree::
    :maxdepth: 2
 
 Tutorial
 ********
 
-The following tutorial is also available as an interactive *jupyter* notebook, available for download with the git repo_.
+The following tutorial is also available as an interactive *jupyter* notebook, available for download with the git repo_, in the examples folder. Alternatively, it can be :download:`downloaded here <downloads/introduction_to_chinook.ipynb>`.
 
 .. _repo: https://github.com/rpday/chinook
+
+Before beginning, it is also worth noting that in the interest of maintaining an organized workspace, it can be beneficial to define a separate input script independent of the working experimental script. Examples of an :download:`input file <downloads/input_square.py>` and :download:`experiment script <downloads/tutorial_square.py>` are available for this exercise. 
 
 In this tutorial, we work through a calculation of simulated ARPES spectra from scratch. While several input format are accepted in chinook, here we use a Slater-Koster model for a cubic lattice.
 
@@ -126,9 +130,9 @@ There are several ways in which we can characterize our tight-binding model befo
 
 We want to plot the projection onto all :math:`p_x` , :math:`p_y` , and :math:`p_z` orbitals. We see that orbitals the set {0,3,6,9} are all :math:`p_x` , {1,4,7,10} are :math:`p_y` and {2,5,8,11} are :math:`p_x` . To visualize these projections then:
 ::
-	px = operators.fatbs(proj=[0,3,6,9],TB=TB,Elims=(-4,5),degen=True) 
-	py = operators.fatbs(proj=[1,4,7,10],TB=TB,Elims=(-4,5),degen=True)
-	pz = operators.fatbs(proj=[2,5,8,11],TB=TB,Elims=(-4,5),degen=True)
+	px = operators.fatbs(proj=[0,3,6,9],TB=TB,Elims=(-5,5),degen=True) 
+	py = operators.fatbs(proj=[1,4,7,10],TB=TB,Elims=(-5,5),degen=True)
+	pz = operators.fatbs(proj=[2,5,8,11],TB=TB,Elims=(-5,5),degen=True)
 	#The degen flag averages over degenerate states. All states are at least two-fold degenerate,
 	#so this flag should certainly be on here.
 
@@ -215,7 +219,7 @@ While some bands are suppressed as a result of orbital and polarization symmetry
 	arpes_experiment.datacube()
 	I,Ig = arpes_experiment.spectral(slice_select=('y',0),plot_bands=True)
 
-In this tutorial, we have seen how to define and characterize a tight-binding model using chinook. In addition to this, we have performed a few calculations of the photoemission intensity associated with this model, and seen a few ways in which the photoemission intensity is affected by the nature of both our system of interest and the experimental geometry. Feel free to make changes to the model here and experiment with different parameters to get a better sense of how to use some of these tools. You're now ready to begin building your own models and simulating ARPES intensity for your material of choice.
+In this tutorial, we have seen how to define and characterize a tight-binding model using chinook. In addition to this, we have performed a few calculations of the photoemission intensity associated with this model, and seen a few ways in which the photoemission intensity is affected by the nature of both our system of interest and the experimental geometry. Feel free to make changes to the model here and experiment with different parameters to get a better sense of how to use some of these tools. You're now ready to begin building your own models and simulating ARPES intensity for your material of choice. A template input file is provided :download:`here <downloads/template.py>`. 
 
 
 

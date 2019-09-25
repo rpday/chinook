@@ -29,6 +29,8 @@ We have avoided use of unconventional packages to run *chinook*, and the only re
 Getting Started
 ===============
 
+The recommended structure for defining the necessary input for a *chinook* calculation can be found in the following :download:`template <downloads/template.py>` file. Entire calculations can be done in a single script, or as illustrated for the example in the :ref:`tutorial` page, input and execution can be split across multiple python scripts. 
+
 At the core of any chinook calculation is the tight-binding model. The requisite information to construct such a model is an orbital basis and a Hamiltonian which effectively describes the Hilbert space spanned by this orbital basis.
 
 In order to construct the essential objects in chinook, we make use of Python dictionaries, a hash-table representation which allows for an efficient, but more importantly human-readable, input format. If you open the template.py file in your chinook distribution, you will find the basic input for starting a calculation.
