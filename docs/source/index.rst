@@ -25,6 +25,7 @@ Thanks for stopping by!
    operator
    slab
    support
+   input
    tutorial
    license
 
