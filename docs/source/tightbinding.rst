@@ -1,3 +1,5 @@
+.. _tight binding: 
+
 .. toctree::
    :maxdepth: 2
 

@@ -1,3 +1,5 @@
+.. _input arguments: 
+
 .. toctree::
    :maxdepth: 2
 
