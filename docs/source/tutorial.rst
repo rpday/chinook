@@ -12,7 +12,7 @@ The following tutorial is also available as an interactive *jupyter* notebook, a
 
 Before beginning, it is also worth noting that in the interest of maintaining an organized workspace, it can be beneficial to define a separate input script independent of the working experimental script. Examples of an :download:`input file <downloads/input_square.py>` and :download:`experiment script <downloads/tutorial_square.py>` are available for this exercise. 
 
-In this tutorial, we work through a calculation of simulated ARPES spectra from scratch. While several input format are accepted in chinook, here we use a Slater-Koster model for a cubic lattice.
+In this tutorial, we work through a calculation of simulated ARPES spectra from scratch. While several input format are accepted in chinook, here we use a Slater-Koster model for a square lattice.
 
 Model Definition
 ================
@@ -23,7 +23,8 @@ The following modules will be needed for your work here.
 	import chinook.operator_library as operators
 	from chinook.ARPES_lib import experiment
 
-We can begin by defining the lattice geometry, which we take here to be a square lattice. Throughout, feel free to try different parameters and geometries
+We can begin by defining the lattice geometry, which we take here to be a square lattice. Throughout, feel free to try different parameters and geometries. Here, I've decided to make the in-plane dimensions smaller than the out of plane,
+and since I'm taking a 2-atom basis, I've expanded my unit cell accordingly.
 ::
 	a,c = 5.0,5.0
 	avec = np.array([[np.sqrt(0.5)*a,np.sqrt(0.5)*a,0],
@@ -161,7 +162,7 @@ ARPES Calculation
 =================
 
 While a number of other tools are available for model diagnostics, we'll proceed now to consideration of ARPES intensity simulation. Similar to the inputs defined above, we make use of Python dictionaries to organize the input 
-arguments. Above, we saw that the Brillouin zone extends over a square of side-length 1.256 Å:math:`^{-1}` . We will begin by looking at the Fermi surface of our material.
+arguments. Above, we saw that the Brillouin zone extends over a square of side-length 1.256 Å :math:`^{-1}` . We will begin by looking at the Fermi surface of our material.
 ::
 	arpes = {'cube':{'X':[-0.628,0.628,300],'Y':[-0.628,0.628,300],'E':[-0.05,0.05,50],'kz':0.0}, #domain of interest
         'hv':100,                          #photon energy, in eV
@@ -191,6 +192,13 @@ In consideration of the bandstructure above, we expect 3 Fermi-surface sheets, s
 
 .. image:: images/tutorial_pols_ef.png
 	:width: 400
+
+An easy way to quickly navigate a calculation over a 2-dimensional region of momentum space is with the :meth:`matplotlib_plotter.interface()`. 
+::
+	import chinook.matplotlib_plotter
+	interface = chinook.matplotlib_plotter.interface(arpes_experiment)
+
+This will activate an interactive window, where constant :math:`k_x`, :math:`k_y`, and :math:`E` can be selected, and all slices can be explored.
 
 We can explore the evolution of the orbital character and ARPES intensity over a broader range of momentum by computing the matrix elements over a wider energy window. Below, we do so for a fixed in-plane momentum
 ::

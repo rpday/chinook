@@ -696,15 +696,16 @@ class experiment:
         Take the matrix elements and build a simulated ARPES spectrum. 
         The user has several options here for the self-energy to be used,  c.f. *SE_gen()* for details.
         Gaussian resolution broadening is the last operation performed, to be consistent with the
-        practical experiment.
+        practical experiment. *slice_select* instructs the method to also produce a plot of the designated
+        slice through momentum or energy. If this is done, the function also returns the associated matplotlib.Axes
+        object for further manipulation of the plot window.
         
         *kwargs*:
-            - **ARPES_dict**: dictionary, experimental configuration. See *experiment.__init__* and *experiment.update_pars()*
+            - **ARPES_dict**: dictionary, experimental configuration. See *experiment.__init__* and *experiment.update_pars()*            
             
-            - **slice_select**: tuple, of either int (axis,index format) or string (axis), int format
+            - **slice_select**: tuple, of either (int,int) or (str,float) format. If (int,int), first is axis index (0,1,2 for x,y,E) and the second is the index of the array. More useful typically is (str,float) format, with str as 'x', 'kx', 'y', 'ky', 'E', 'w' and the float the value requested. It will find the index along this direction closest to the request. Note the strings are not case-sensitive.
             
-            - **add_map**: boolean, add intensity map to list of intensity maps. If true, a list of intensity objects is appended,
-            otherwise, the intensity map is overwritten
+            - **add_map**: boolean, add intensity map to list of intensity maps. If true, a list of intensity objects is appended, otherwise, the intensity map is overwritten
             
             - **plot_bands**: boolean, plot bandstructure from tight-binding over the intensity map
             
