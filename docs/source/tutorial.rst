@@ -75,18 +75,20 @@ At this point, we can define the Hamiltonian for our model. We will use a Slater
 	VSK = {'051':Ep,'005511S':Vpps,'005511P':Vppp}
 	cutoff = 0.72*a
 
-	######################################################################
-	#####Option: nearest neighbour, and next nearest neighbour hopping  ##
-	V1 = {'051':Ep,'005511S':Vpps,'005511P':Vppp}                     ##
-	V2 = {'005511S':Vpps/a,'005511P':Vppp/a}                          ##
-	VSK = [V1,V2]                                                     ##
-	cutoff = [0.8*a,1.1*a]                                            ##
-	######################################################################
+In the following, I'm going to use a slightly more advanced model, where rather than consider nearest neighbour hoppings only, I will also include next nearest neighbour hoppings. To do this, I specify a Slater-Koster dictionary for on-site and nearest neighbours, and a second dictionary for next-nearest neighbours. 
+::
+	V1 = {'051':Ep,'005511S':Vpps,'005511P':Vppp}
+	V2 = {'005511S':Vpps/a,'005511P':Vppp/a}
+	VSK = [V1,V2] 
+
+These are distinguished by different cutoff-distances, with 0.8a sufficient for nearest neighbours, and 1.1a for next-nearest neighbours. 
+::
+	cutoff = [0.8*a,1.1*a]
 
 	hamiltonian = {'type':'SK',     #Slater-Koster type Hamiltonian
               'V':VSK,          #dictionary (or list of dictionaries) of onsite and hopping potentials
                'avec':avec,     #lattice geometry
-              'cutoff':cutoff,  #cutoff length-scale for hopping
+              'cutoff':cutoff,  #(cutoff or list of cutoffs) maximum length-scale for each hoppings specified by VSK
               'renorm':1.0,     #renormalize bandwidth of Hamiltonian 
                'offset':0.0,    #offset the Fermi level
               'tol':1e-4,       #minimum amplitude for matrix element to be included in model.
