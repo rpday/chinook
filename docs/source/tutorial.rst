@@ -178,7 +178,7 @@ Once the matrix elements have been calculated, the spectrum can be plot
 
 The first thing we plot here is a constant energy contour, at the Fermi level
 ::
-	I,Ig = arpes_experiment.spectral(slice_select=('w',0.0))
+	I,Ig,ax = arpes_experiment.spectral(slice_select=('w',0.0))
 
 The *spectral* function produces 2 output by default, corresponding to the raw, and resolution-broadened intensity maps. Generally speaking, the output is a 3-dimensional array of float, with the first two axes being momentum, and the last energy.
 
@@ -225,7 +225,7 @@ While some bands are suppressed as a result of orbital and polarization symmetry
 	arpes['cube'] = {'X':[-1.256,1.256,300],'Y':[0,0,1],'kz':0,'E':[-5,0.2,1000]}
 	arpes_experiment = experiment(TB,arpes)
 	arpes_experiment.datacube()
-	I,Ig = arpes_experiment.spectral(slice_select=('y',0),plot_bands=True)
+	I,Ig,ax = arpes_experiment.spectral(slice_select=('y',0),plot_bands=True)
 
 In this tutorial, we have seen how to define and characterize a tight-binding model using chinook. In addition to this, we have performed a few calculations of the photoemission intensity associated with this model, and seen a few ways in which the photoemission intensity is affected by the nature of both our system of interest and the experimental geometry. Feel free to make changes to the model here and experiment with different parameters to get a better sense of how to use some of these tools. You're now ready to begin building your own models and simulating ARPES intensity for your material of choice. A template input file is provided :download:`here <downloads/template.py>`. 
 
