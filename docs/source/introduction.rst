@@ -26,6 +26,11 @@ We have avoided use of unconventional packages to run *chinook*, and the only re
 
 .. _psutil: https://psutil.readthedocs.io/en/latest/
 
+
+For any publications which make use of *chinook*, please reference 
+
+R.P. Day, B. Zwartsenberg, I.S. Elfimov and A. Damascelli, *Computational framework chinook for angle-resolved photoemission spectroscopy*, npj Quantum Materials 4, 54 (2019) 
+
 Getting Started
 ===============
 
