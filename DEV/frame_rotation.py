@@ -33,6 +33,19 @@ convention of z-y'-z", but this can be updated later maybe to a more convenient 
 
 '''
 
+#def sample_euler(alpha,beta,gamma):
+    
+#    '''
+#    Sample orientation, as mounted on sample holder defined by
+#    3 Euler angles, following the z-y'-z" convention. Define here
+#    the associated rotation matrix.
+#    
+#    '''
+    
+#    rot_mat = 
+    
+#def build_rotation_matrix(angles):
+    
 
 def cryo_polar(angle,frame):
     
