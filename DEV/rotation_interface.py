@@ -230,8 +230,8 @@ class sample:
             Xm,Ym = np.reshape(self.theta_x,np.shape(self.experiment.X)),np.reshape(self.theta_y,np.shape(self.experiment.Y))
             self.axs[1].pcolormesh(Xm,Ym,Imap[:,:,self.master.plot_index],cmap=cm.Greys_r)
                 
-        self.axs[1].set_xlim(-25,25)
-        self.axs[1].set_ylim(-25,25)
+        self.axs[1].set_xlim(self.master.ax_lims[0],self.master.ax_lims[1])
+        self.axs[1].set_ylim(self.master.ax_lims[2],self.master.ax_lims[3])
         
         self.figs[1].canvas.draw()
         
@@ -480,6 +480,8 @@ class Application:
         
         self.lattice = np.identity(3)
         self.plot_index = 0
+        self.ax_lims = (-25,25,-25,25)
+
         self.experiment = experiment
         self.lightsource = light()
         self.root = Tk.Tk()
@@ -551,11 +553,37 @@ class Application:
         self.sample.draw_emission()
         
     def _update_settings(self):
-        print('update your settings')
+        top  = Tk.Toplevel(master=self.root)
+        top.title('Chinook Orientation Settings')
+        
+        entryvals = [Tk.DoubleVar(),Tk.DoubleVar(),Tk.DoubleVar(),Tk.DoubleVar()]
+        entries = []
+        positions = [(0,1),(0,2),(1,1),(1,2)]
+        for ii in range(4):
+            entryvals[ii].set(self.ax_lims[ii])
+            entries.append(Tk.Entry(master=top,textvariable=entryvals[ii]))
+            entries[-1].grid(row=positions[ii][0],column=positions[ii][1])
+        
+        xlabel = Tk.Label(master=top,text='θx range').grid(row=0,column=0)
+        ylabel = Tk.Label(master=top,text='θy range').grid(row=1,column=0)
+        
+        def do_submit():
+            self.ax_lims = [entryvals[ii].get() for ii in range(4)]
+            self.sample.draw_emission()
+            top.destroy()
+            
+        
+        submit = Tk.Button(master=top,text='SUBMIT',command=do_submit)
+        submit.grid(row=2,column=0)
+        
+        close = Tk.Button(master=top,text='CLOSE',command=top.destroy)
+        close.grid(row=2,column=1)
+        
+        
         
     def _about_popup(self):
         
-        top = Tk.Toplevel(self.root)
+        top = Tk.Toplevel(master=self.root)
         top.title('About Chinook Orientation')
         
         msg = Tk.Message(master=top, text=self.about_message)
