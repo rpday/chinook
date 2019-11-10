@@ -178,7 +178,8 @@ class sample:
         
         cryo_axes = 2*np.array([[-self.frame[3],self.frame[3]],[-self.frame[4],self.frame[4]]])
         nvec_line = np.array([np.zeros(3),self.lightsource.nvec_global])
-        return points,cart_lines,cryo_axes,nvec_line
+        pol_line = np.array([self.lightsource.nvec_global-0.5*self.lightsource.pol_global,self.lightsource.nvec_global+0.5*self.lightsource.pol_global])
+        return points,cart_lines,cryo_axes,nvec_line,pol_line
         
     def draw_frame(self):
         '''
@@ -186,24 +187,28 @@ class sample:
         as well as all vectors of interest.
         
         '''
-        points,ax_lines,cryo_axes,nvec_line = self.plottable_surface()
+        points,ax_lines,cryo_axes,nvec_line,pol_lines = self.plottable_surface()
         
         self.axs[0].clear()
         
-        self.axs[0].plot_trisurf(points[:,0],points[:,1],points[:,2])
-        self.axs[0].plot(ax_lines[0,:,0],ax_lines[0,:,1],ax_lines[0,:,2],c='r',lw=2)
-        self.axs[0].plot(ax_lines[1,:,0],ax_lines[1,:,1],ax_lines[1,:,2],c='g',lw=2)
-        self.axs[0].plot(ax_lines[2,:,0],ax_lines[2,:,1],ax_lines[2,:,2],c='b',lw=2)
+        self.axs[0].plot_trisurf(points[:,0],points[:,1],points[:,2],color='grey')
+        self.axs[0].plot(ax_lines[0,:,0],ax_lines[0,:,1],ax_lines[0,:,2],c='w',lw=2)
+        self.axs[0].plot(ax_lines[1,:,0],ax_lines[1,:,1],ax_lines[1,:,2],c='#e18a7a',lw=2)
+        self.axs[0].plot(ax_lines[2,:,0],ax_lines[2,:,1],ax_lines[2,:,2],c='#a78d8a',lw=2)
     
-        self.axs[0].plot(cryo_axes[0,:,0],cryo_axes[0,:,1],cryo_axes[0,:,2],c='k',lw=1,linestyle='dashed')
-        self.axs[0].plot(cryo_axes[1,:,0],cryo_axes[1,:,1],cryo_axes[1,:,2],c='k',lw=1,linestyle='dashed')
+        self.axs[0].plot(cryo_axes[0,:,0],cryo_axes[0,:,1],cryo_axes[0,:,2],c='#66545e',lw=1,linestyle='dashed')
+        self.axs[0].plot(cryo_axes[1,:,0],cryo_axes[1,:,1],cryo_axes[1,:,2],c='#66545e',lw=1,linestyle='dashed')
         
-        self.axs[0].plot(nvec_line[:,0],nvec_line[:,1],nvec_line[:,2],c='#7f00ff',lw=1)
+        self.axs[0].plot(nvec_line[:,0],nvec_line[:,1],nvec_line[:,2],c='#507592',lw=2)
         
-        self.axs[0].set_xlim(-2,2)
-        self.axs[0].set_ylim(-2,2)
-        self.axs[0].set_zlim(-2,2)
-    
+        self.axs[0].plot(pol_lines[:,0],pol_lines[:,1],pol_lines[:,2],c='#b21111',lw=2)
+                
+        self.axs[0].set_xlim(-1,1)
+        self.axs[0].set_ylim(-1,1)
+        self.axs[0].set_zlim(-1,1)
+        
+        self.axs[0].grid(False)
+        self.axs[0].set_axis_off()
         self.axs[0].set_aspect(1)
         self.figs[0].canvas.draw()
         
@@ -228,7 +233,7 @@ class sample:
             self.experiment.pol = self.lightsource.pol
             _,Imap = self.experiment.spectral()
             Xm,Ym = np.reshape(self.theta_x,np.shape(self.experiment.X)),np.reshape(self.theta_y,np.shape(self.experiment.Y))
-            self.axs[1].pcolormesh(Xm,Ym,Imap[:,:,self.master.plot_index],cmap=cm.Greys_r)
+            self.axs[1].pcolormesh(Xm,Ym,Imap[:,:,self.master.plot_index],cmap=cm.magma_r)
                 
         self.axs[1].set_xlim(self.master.ax_lims[0],self.master.ax_lims[1])
         self.axs[1].set_ylim(self.master.ax_lims[2],self.master.ax_lims[3])
@@ -292,8 +297,8 @@ class sample:
         '''
         frame = self.build_experiment()
         rotated_frame = np.einsum('ij,kj->ki',self.rotation_matrix,frame)
-        frame[4] = np.array([0,1,0])
-        frame[3] = np.dot(cryo,np.array([1,0,0]))
+        rotated_frame[4] = np.array([0,1,0])
+        rotated_frame[3] = np.dot(cryo,np.array([1,0,0]))
         return rotated_frame
     
     
@@ -342,9 +347,7 @@ class angle:
     
     Each angle has a label, as well as a text-entry box, linked to a
     slider for coarse and precise control 
-    
-    TODO: link change of entry-box to slider position
-    
+        
     *args*:
         
         - **name**: string, angle name, displayed in control panel
@@ -369,8 +372,7 @@ class angle:
         self.value = value
         self.strvar = Tk.StringVar()
         self.strvar.set('{:0.2f}'.format(value))
-        self.label = Tk.Label(master=master,text=name).grid(row=origin[0],column=origin[1])
-        
+        self.label = Tk.Label(master=master,text=name).grid(row=origin[0],column=origin[1],sticky='E')
         self.entry = Tk.Entry(master=master,textvariable=self.strvar)
         self.entry.grid(row=origin[0],column=origin[1]+1)
         
@@ -425,10 +427,12 @@ class light:
         self.nvec_global = np.array([0,0,1]) # as seen by lab frame
         self.hpol = np.array([1,0,0])
         self.vpol = np.array([0,1,0])
-        self.theta = 0
+        self.theta = 45
         self.phi = 0
         self.pol_type = 'LV'
         self.pol = np.array([0,1,0])
+        self.pol_global = np.array([0,1,0])
+        self.update()
         
     def pol_update(self):
         '''
@@ -438,13 +442,15 @@ class light:
         direction
         '''
         if self.pol_type=='LH':
-            self.pol = self.hpol
+            pol = self.hpol
         elif self.pol_type == 'LV':
-            self.pol = self.vpol
+            pol = self.vpol
         elif self.pol_type == 'C+':
-            self.pol = np.sqrt(0.5)*(self.hpol+1.0j*self.vpol)
+            pol = np.sqrt(0.5)*(self.hpol+1.0j*self.vpol)
         elif self.pol_type == 'C-':
-            self.pol = np.sqrt(0.5)*(self.hpol-1.0j*self.vpol)
+            pol = np.sqrt(0.5)*(self.hpol-1.0j*self.vpol)
+        
+        return pol
         
     
     def update(self,sample_rotation=None):
@@ -466,13 +472,19 @@ class light:
         
         self.nvec_global = np.dot(rotmat,np.array([0,0,1]))
         
+        self.hpol = np.dot(rotmat,np.array([1,0,0]))
+        self.vpol = np.dot(rotmat,np.array([0,1,0])) 
+        
+        self.pol_global =  self.pol_update()
+        self.pol_global = np.real(self.pol_global) + np.imag(self.pol_global)
+        
         if sample_rotation is not None:
             rotmat = np.dot(sample_rotation.T,rotmat)
         self.nvec = np.dot(rotmat,np.array([0,0,1]))
         
         self.hpol = np.dot(rotmat,np.array([1,0,0]))
         self.vpol = np.dot(rotmat,np.array([0,1,0]))        
-        self.pol_update()
+        self.pol = self.pol_update()
         
 class Application:
     
@@ -510,20 +522,20 @@ class Application:
         self.about_message+='orientation along with real-time calculations\n'
         self.about_message+='of the photoemission spectra. The sample ori-\n'
         self.about_message+='entation is defined by the Euler angles alpha\n'
-        self.about_message+='beta, gamma in the z-y-z convention. The\n'
-        self.about_message+='cryostat orientation is defined with a verti-\n'
+        self.about_message+='beta, gamma in the z-y-z convention. \n'
+        self.about_message+='Cryostat orientation is defined with a verti-\n'
         self.about_message+='cal polar angle theta as well as tilt angle\n'
         self.about_message+='phi (axis rotates with theta) and azimuthal\n'
         self.about_message+='delta. The tilt and polar axes are drawn in\n'
-        self.about_message+='dashed black lines. The light incidence\n'
-        self.about_message+='vector is defined by a polar theta and azim-\n'
-        self.about_message+='uthal phi. This vector is drawn in violet.\n'
-        self.about_message+='The polarization can be chosen from linear\n'
-        self.about_message+='vertical and horizontal, as well as circular\n'
-        self.about_message+='plus and minus. Updates to text entries and\n'
-        self.about_message+='polarization are effective only by pressing\n'
-        self.about_message+='the *update* button. Plot axis ranges can be\n'
-        self.about_message+='adjusted under the *settings*.'
+        self.about_message+='dashed lines. \n'
+        self.about_message+='The light incidence vector is defined by a\n'
+        self.about_message+='polar theta and azimuthal phi. This vector\n'
+        self.about_message+='is drawn in blue. The polarization (red) is\n'
+        self.about_message+='chosen from linear vertical and horizontal,\n'
+        self.about_message+='as well as circular plus and minus. Updates\n'
+        self.about_message+='to text entries and polarization are effective\n'
+        self.about_message+='only by pressing the *update* button. Plot axis\n'
+        self.about_message+='ranges can be adjusted under the *settings*.'
         
     def _update(self):
         '''
@@ -564,8 +576,8 @@ class Application:
             entries.append(Tk.Entry(master=top,textvariable=entryvals[ii]))
             entries[-1].grid(row=positions[ii][0],column=positions[ii][1])
         
-        xlabel = Tk.Label(master=top,text='θx range').grid(row=0,column=0)
-        ylabel = Tk.Label(master=top,text='θy range').grid(row=1,column=0)
+        Tk.Label(master=top,text='θx range').grid(row=0,column=0)
+        Tk.Label(master=top,text='θy range').grid(row=1,column=0)
         
         def do_submit():
             self.ax_lims = [entryvals[ii].get() for ii in range(4)]
@@ -606,25 +618,25 @@ class Application:
         names = ['alpha','beta','gamma','theta','phi','delta']
         origins = [(5,0),(8,0),(11,0),(5,4),(8,4),(11,4)]
 
-        angle_range = [(0,180),(-90,90),(0,180),(-90,90),(-90,90),(-180,180)]
+        angle_range = [(0,180),(-89,89),(0,180),(-89,89),(-89,89),(-180,180)]
         
         for ii in range(6):
             self.angle_widgets.append(angle(name=names[ii],index=ii,value=self.angle_values[ii],origin=origins[ii],master=self.root,valmin=angle_range[ii][0],valmax=angle_range[ii][1]))  
     
     def _make_quit(self,origin):
-        self.quit = Tk.Button(master=self.root,text="QUIT", command=self.root.destroy)
+        self.quit = Tk.Button(master=self.root,text="Quit", command=self.root.destroy)
         self.quit.grid(row=origin[0],column=origin[1])
         
     def _make_update(self,origin):
         
-        self.update = Tk.Button(master=self.root,text="UPDATE", command=self._update)
+        self.update = Tk.Button(master=self.root,text="Update", command=self._update)
         self.update.grid(row=origin[0],column=origin[1])
         
     def _make_nvec(self,origin):
         
         self.nang = [Tk.DoubleVar(),Tk.DoubleVar()]
         self.nangEntry = []
-        self.nang[0].set(0)
+        self.nang[0].set(45)
         self.nang[1].set(0)
         
         self.polButtons = []
@@ -677,7 +689,7 @@ class Application:
     def make_panel(self): 
         
         self._make_figure(origin=(0,0),projection="3d")
-        self._make_figure(origin=(0,5),projection=None)
+        self._make_figure(origin=(0,4),projection=None)
         self._make_angles()
         self.sample = self._make_sample()
         self._make_nvec(origin=(14,0))
@@ -690,9 +702,8 @@ class Application:
 
 if __name__ == "__main__":
 
-    app = Application()#experiment=expmt)
+    app = Application(experiment=expmt)
     app.root.mainloop()
-#root.destroy()
 
 
     
