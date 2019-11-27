@@ -29,8 +29,8 @@ SOFTWARE.
 """
 
 
-__all__ = ['adaptive_int','angle_expt','ARPES_lib','atomic_mass','build_lib','CG','dos',
+__all__ = ['adaptive_int','angle_expt','ARPES_lib','atomic_mass','build_lib','dos',
            'electron_configs', 'FS_tetra','H_library','intensity_map','klib',
-           'lattice_lib','operator_library','orbital','orbital_plotting',
+           'lattice_lib','matplotlib_plotter','operator_library','orbital','orbital_plotting',
            'radint_lib','rotation_lib','SlaterKoster','slab','surface_vector',
            'TB_lib','tetrahedra','tilt','Tk_plot','v3find','wigner','Ylm']
