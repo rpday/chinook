@@ -81,7 +81,7 @@ def txt_build(filename,cutoff,renorm,offset,tol):
             R = np.array([float(spl[2]),float(spl[3]),float(spl[4])])
             Hval = complex(spl[5])
             
-            if len(spl)>7:
+            if len(spl)>6:
                 Hval+=1.0j*float(spl[6])
             if abs(Hval)>tol and  np.linalg.norm(R)<cutoff:
                 Hval*=renorm
@@ -372,7 +372,7 @@ def cluster_init(Vdict,cutoff,avec):
         
     ***
     '''
-    if type(cutoff)==float:
+    if isinstance(cutoff,(int,float)) and not isinstance(cutoff,bool):
         cutoff = np.array([0.0,cutoff])
         Vdict = [Vdict]
     else:
