@@ -126,7 +126,25 @@ def do_fatbands(TB,projections):
     
     
 def setup_arpes(TB,Kpt,klimit=0.1,Elimits=[-2,0.2],Npoints=100):
-    
+    '''
+    Initialize an ARPES experiment over a 2D momentum mesh.
+
+    *args*:
+
+        - **TB**: tight-binding object 
+
+        - **Kpt**: iterable, length 3 of float, indicating centre of calculation
+
+        -**klimit**: float, range of momentum in 1/A about centre Kpt
+
+        - **Elimits**: iterable, length 2 of float, indicating energy range of interest, in eV
+
+        - **Npoints**: int, number of k-points along each dimension
+
+    *return*:
+
+        - **experiment**: experiment object, with matrix elements computed
+    '''
 
 
     arpes_args={'cube':{'X':[Kpt[0]-klimit,Kpt[0]+klimit,Npoints],
@@ -146,6 +164,70 @@ def setup_arpes(TB,Kpt,klimit=0.1,Elimits=[-2,0.2],Npoints=100):
     
     return experiment
 
+
+def plot_wavefunction(TB,band_index,k_index,nangles=20):
+
+    '''
+    Plot orbital projection of eigenvector, assumes already diagonalized
+
+    *args*:
+
+        - **TB**: tight-binding object
+
+        - **band_index**: int, index of band zero-based from low-to-high energy
+
+        - **k_index**: int, index of momentum point in the K-path
+
+    *kwargs*:
+
+        - **nangles**: int, optional, number of points in angular mesh for orbital plotting
+
+    '''
+
+    wavefunction = oplot.wavefunction(basis=TB.basis,vector=TB.Evec[k_index,:,band_index])
+
+    _ = wavefunction.triangulate_wavefunction(nangles)
+
+    
+
+def semenoff_mass(TB,mass):
+    
+    '''
+    Add Semenoff mass to the Hamiltonian
+    
+    *args*:
+        
+        - **TB**: tight-binding model
+        
+        - **mass**: float, mass term
     
     
+    '''
+    Hnew = [[0,0,0,0,0,mass/2],
+            [1,1,0,0,0,-mass/2]]
     
+    TB.append_H(Hnew)
+    
+    
+def haldane_mass(TB,mass):
+    '''
+    Add Haldane terms to the Hamiltonian
+    
+    *args*:
+        
+        - **TB**: tight-binding model
+        
+        - **mass**: float, mass term
+    
+    '''
+
+    Hnew = []
+    vectors = [TB.avec[0],TB.avec[1],TB.avec[1]-TB.avec[0]]
+    for ii in range(2):
+        for jj in range(3):
+            Hnew.append([ii,ii,*vectors[jj],-(2*ii-1)*0.5j*mass])
+            Hnew.append([ii,ii,*(-vectors[jj]),(2*ii-1)*0.5j*mass])
+
+    TB.append_H(Hnew)
+    
+
