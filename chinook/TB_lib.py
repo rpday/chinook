@@ -181,7 +181,8 @@ class H_me:
 class TB_model:
     '''
     The **TB_model** object carries the model basis as a list of **orbital**
-    objects, as well as the model Hamiltonian, as a list of **H_me**.
+    objects, as well as the model Hamiltonian, as a list of **H_me**. The orbital
+    indices paired in each instance of **H_me** are stored in a dictionary under **ijpairs**
     '''
     
     def __init__(self,basis,H_args,Kobj = None):
@@ -230,12 +231,13 @@ class TB_model:
         ***
         '''
         self.basis = basis 
-    
+        self.ijpairs = {}
         if H_args is not None:
             if 'avec' in H_args.keys():
                 self.avec = H_args['avec']
         
             self.mat_els = self.build_ham(H_args)
+            self.ijpairs = {(me[1].i,me[1].j):me[0] for me in list(enumerate(self.mat_els))}
             
         self.Kobj = Kobj
 
@@ -338,15 +340,13 @@ class TB_model:
             new_elements = [new_elements]
         for elmts in new_elements:
             i,j = elmts[:2]
-            new_pair = True
-            for Hme in self.mat_els:
-                if Hme.i==i and Hme.j==j:
-                    Hme.H.append(elmts[2:])
-                    new_pair = False
-            if new_pair:
+            if (i,j) in self.ijpairs.keys():
+                self.mat_els[self.ijpairs[(i,j)]].H.append(elmts[2:])
+
+            else:
                 self.mat_els.append(H_me(i,j))
-                self.mat_els[-1].append_H(*elmts[2:])
-        
+                self.mat_els[-1].append_H(R0 = elmts[2],R1 = elmts[3],R2 = elmts[4],H=elmts[5])
+                self.ijpairs.update({(i,j):len(self.ijpairs.keys())})
     def unpack(self):
         '''
         Reduce a Hamiltonian object down to a list of matrix elements. Include the Hermitian conjugate terms
