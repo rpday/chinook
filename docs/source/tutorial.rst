@@ -3,8 +3,18 @@
 .. toctree::
    :maxdepth: 2
 
+
+
 Tutorial
 ********
+
+SBQMI Workshop
+==============
+
+For use in the Student Seminar at SBQMI, we will use the following :download:`input <downloads/graphene_backend.py>` and :download:`run <downloads/graphene_front.py>` files. The exercises contained there are also available as an interactive *jupyter* :download:`notebook <downloads/QMI Student Seminar-Graphene.ipynb>`. 
+
+Square Lattice
+==============
 
 The following tutorial is also available as an interactive *jupyter* notebook, available for download with the git repo_, in the examples folder. Alternatively, it can be :download:`downloaded here <downloads/introduction_to_chinook.ipynb>`.
 
