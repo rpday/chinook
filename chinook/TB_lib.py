@@ -231,7 +231,7 @@ class TB_model:
         ***
         '''
         self.basis = basis 
-        self.ijpairs = {}
+#        self.ijpairs = {}
         if H_args is not None:
             if 'avec' in H_args.keys():
                 self.avec = H_args['avec']
@@ -254,6 +254,7 @@ class TB_model:
         basis_copy = [o.copy() for o in self.basis]
         TB_copy = TB_model(basis_copy,None,self.Kobj)
         TB_copy.avec = self.avec.copy()
+        TB_copy.ijpairs = self.ijpairs.copy()
         TB_copy.mat_els = [m.copy() for m in self.mat_els]
         
         return TB_copy
@@ -289,6 +290,7 @@ class TB_model:
         
         ***
         '''
+        self.ijpairs = {}
         executable = False
         if type(H_args)==dict:
             try:
@@ -344,9 +346,10 @@ class TB_model:
                 self.mat_els[self.ijpairs[(i,j)]].H.append(elmts[2:])
 
             else:
+
                 self.mat_els.append(H_me(i,j))
                 self.mat_els[-1].append_H(R0 = elmts[2],R1 = elmts[3],R2 = elmts[4],H=elmts[5])
-                self.ijpairs.update({(i,j):len(self.ijpairs.keys())})
+                self.ijpairs[(i,j)] = len(self.ijpairs.keys())
     def unpack(self):
         '''
         Reduce a Hamiltonian object down to a list of matrix elements. Include the Hermitian conjugate terms
