@@ -50,8 +50,14 @@ def txt_build(filename,cutoff,renorm,offset,tol):
     '''
 
     Build Hamiltonian from textfile, input is of form
-    o1,o2,x12,xy12,z12,t12, output in form [o1,o2,x12,y12,z12,t12]
-    
+    o1,o2,x12,y12,z12,t12, output in form [o1,o2,x12,y12,z12,t12]. 
+    To be explicit, each row of the textfile is used to generate a
+    k-space Hamiltonian matrix element of the form:
+
+    .. math::
+        H_{1,2}(\vec{k}) = t_{1,2} e^{i (k_x x_{1,2} + k_y y_{1,2} + k_z z_{1,2})}
+
+        
     *args*:
 
         - **filename**: string, name of file
