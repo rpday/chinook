@@ -55,7 +55,7 @@ def txt_build(filename,cutoff,renorm,offset,tol):
     k-space Hamiltonian matrix element of the form:
 
     .. math::
-        H_{1,2}(\vec{k}) = t_{1,2} e^{i (k_x x_{1,2} + k_y y_{1,2} + k_z z_{1,2})}
+        H_{1,2}(k) = t_{1,2} e^{i (k_x x_{1,2} + k_y y_{1,2} + k_z z_{1,2})}
 
         
     *args*:
