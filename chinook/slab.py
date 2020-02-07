@@ -755,7 +755,8 @@ def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
         Htmp = Hdict[oi.slab_index] #access relevant hopping paths for the orbital in question
         for hi in Htmp: #iterate over all relevant hoppings
             
-            ncells = int(np.dot(hi[2:5]-surf_basis[hi[1]].pos+surf_basis[hi[0]].pos,si)[2]) #how many unit cells -- in the surface unit cell basis are jumped during this hopping--specifically, cells along the normal direction
+            ncells = int(np.round(np.dot(hi[2:5]-surf_basis[hi[1]].pos+surf_basis[hi[0]].pos,si)[2])) #how many unit cells -- in the surface unit cell basis are jumped during this hopping--specifically, cells along the normal direction
+
             Htmp_2 = [0]*6 #create empty hopping element, to be filled
 
             Htmp_2[0] = int(oi.index) #matrix row should be the SLAB BASIS INDEX
@@ -770,7 +771,6 @@ def build_slab_H(Hsurf,slab_basis,surf_basis,svec):
             Htmp_2[5] = hi[5]       
             try:
                 Htmp_2[2:5] = hi[2:5]
-
 
                 if 0<=Htmp_2[1]<len(slab_basis) and 0<=Htmp_2[0]<len(slab_basis):
                     if Htmp_2[1]>=Htmp_2[0]:
