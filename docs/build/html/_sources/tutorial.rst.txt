@@ -3,8 +3,18 @@
 .. toctree::
    :maxdepth: 2
 
+
+
 Tutorial
 ********
+
+SBQMI Workshop
+==============
+
+For use in the Student Seminar at SBQMI, we will use the following :download:`input <downloads/graphene_backend.py>` and :download:`run <downloads/graphene_front.py>` files. The exercises contained there are also available as an interactive *jupyter* :download:`notebook <downloads/QMI Student Seminar-Graphene.ipynb>`. 
+
+Square Lattice
+==============
 
 The following tutorial is also available as an interactive *jupyter* notebook, available for download with the git repo_, in the examples folder. Alternatively, it can be :download:`downloaded here <downloads/introduction_to_chinook.ipynb>`.
 
@@ -12,7 +22,7 @@ The following tutorial is also available as an interactive *jupyter* notebook, a
 
 Before beginning, it is also worth noting that in the interest of maintaining an organized workspace, it can be beneficial to define a separate input script independent of the working experimental script. Examples of an :download:`input file <downloads/input_square.py>` and :download:`experiment script <downloads/tutorial_square.py>` are available for this exercise. 
 
-In this tutorial, we work through a calculation of simulated ARPES spectra from scratch. While several input format are accepted in chinook, here we use a Slater-Koster model for a cubic lattice.
+In this tutorial, we work through a calculation of simulated ARPES spectra from scratch. While several input format are accepted in chinook, here we use a Slater-Koster model for a square lattice.
 
 Model Definition
 ================
@@ -23,7 +33,8 @@ The following modules will be needed for your work here.
 	import chinook.operator_library as operators
 	from chinook.ARPES_lib import experiment
 
-We can begin by defining the lattice geometry, which we take here to be a square lattice. Throughout, feel free to try different parameters and geometries
+We can begin by defining the lattice geometry, which we take here to be a square lattice. Throughout, feel free to try different parameters and geometries. Here, I've decided to make the in-plane dimensions smaller than the out of plane,
+and since I'm taking a 2-atom basis, I've expanded my unit cell accordingly.
 ::
 	a,c = 5.0,5.0
 	avec = np.array([[np.sqrt(0.5)*a,np.sqrt(0.5)*a,0],
@@ -74,18 +85,20 @@ At this point, we can define the Hamiltonian for our model. We will use a Slater
 	VSK = {'051':Ep,'005511S':Vpps,'005511P':Vppp}
 	cutoff = 0.72*a
 
-	######################################################################
-	#####Option: nearest neighbour, and next nearest neighbour hopping  ##
-	V1 = {'051':Ep,'005511S':Vpps,'005511P':Vppp}                     ##
-	V2 = {'005511S':Vpps/a,'005511P':Vppp/a}                          ##
-	VSK = [V1,V2]                                                     ##
-	cutoff = [0.8*a,1.1*a]                                            ##
-	######################################################################
+In the following, I'm going to use a slightly more advanced model, where rather than consider nearest neighbour hoppings only, I will also include next nearest neighbour hoppings. To do this, I specify a Slater-Koster dictionary for on-site and nearest neighbours, and a second dictionary for next-nearest neighbours. 
+::
+	V1 = {'051':Ep,'005511S':Vpps,'005511P':Vppp}
+	V2 = {'005511S':Vpps/a,'005511P':Vppp/a}
+	VSK = [V1,V2] 
+
+These are distinguished by different cutoff-distances, with 0.8a sufficient for nearest neighbours, and 1.1a for next-nearest neighbours. 
+::
+	cutoff = [0.8*a,1.1*a]
 
 	hamiltonian = {'type':'SK',     #Slater-Koster type Hamiltonian
               'V':VSK,          #dictionary (or list of dictionaries) of onsite and hopping potentials
                'avec':avec,     #lattice geometry
-              'cutoff':cutoff,  #cutoff length-scale for hopping
+              'cutoff':cutoff,  #(cutoff or list of cutoffs) maximum length-scale for each hoppings specified by VSK
               'renorm':1.0,     #renormalize bandwidth of Hamiltonian 
                'offset':0.0,    #offset the Fermi level
               'tol':1e-4,       #minimum amplitude for matrix element to be included in model.
@@ -161,7 +174,7 @@ ARPES Calculation
 =================
 
 While a number of other tools are available for model diagnostics, we'll proceed now to consideration of ARPES intensity simulation. Similar to the inputs defined above, we make use of Python dictionaries to organize the input 
-arguments. Above, we saw that the Brillouin zone extends over a square of side-length 1.256 Å:math:`^{-1}` . We will begin by looking at the Fermi surface of our material.
+arguments. Above, we saw that the Brillouin zone extends over a square of side-length 1.256 Å :math:`^{-1}` . We will begin by looking at the Fermi surface of our material.
 ::
 	arpes = {'cube':{'X':[-0.628,0.628,300],'Y':[-0.628,0.628,300],'E':[-0.05,0.05,50],'kz':0.0}, #domain of interest
         'hv':100,                          #photon energy, in eV
@@ -177,7 +190,7 @@ Once the matrix elements have been calculated, the spectrum can be plot
 
 The first thing we plot here is a constant energy contour, at the Fermi level
 ::
-	I,Ig = arpes_experiment.spectral(slice_select=('w',0.0))
+	I,Ig,ax = arpes_experiment.spectral(slice_select=('w',0.0))
 
 The *spectral* function produces 2 output by default, corresponding to the raw, and resolution-broadened intensity maps. Generally speaking, the output is a 3-dimensional array of float, with the first two axes being momentum, and the last energy.
 
@@ -191,6 +204,13 @@ In consideration of the bandstructure above, we expect 3 Fermi-surface sheets, s
 
 .. image:: images/tutorial_pols_ef.png
 	:width: 400
+
+An easy way to quickly navigate a calculation over a 2-dimensional region of momentum space is with the :meth:`matplotlib_plotter.interface()`. 
+::
+	import chinook.matplotlib_plotter
+	interface = chinook.matplotlib_plotter.interface(arpes_experiment)
+
+This will activate an interactive window, where constant :math:`k_x`, :math:`k_y`, and :math:`E` can be selected, and all slices can be explored.
 
 We can explore the evolution of the orbital character and ARPES intensity over a broader range of momentum by computing the matrix elements over a wider energy window. Below, we do so for a fixed in-plane momentum
 ::
@@ -217,7 +237,7 @@ While some bands are suppressed as a result of orbital and polarization symmetry
 	arpes['cube'] = {'X':[-1.256,1.256,300],'Y':[0,0,1],'kz':0,'E':[-5,0.2,1000]}
 	arpes_experiment = experiment(TB,arpes)
 	arpes_experiment.datacube()
-	I,Ig = arpes_experiment.spectral(slice_select=('y',0),plot_bands=True)
+	I,Ig,ax = arpes_experiment.spectral(slice_select=('y',0),plot_bands=True)
 
 In this tutorial, we have seen how to define and characterize a tight-binding model using chinook. In addition to this, we have performed a few calculations of the photoemission intensity associated with this model, and seen a few ways in which the photoemission intensity is affected by the nature of both our system of interest and the experimental geometry. Feel free to make changes to the model here and experiment with different parameters to get a better sense of how to use some of these tools. You're now ready to begin building your own models and simulating ARPES intensity for your material of choice. A template input file is provided :download:`here <downloads/template.py>`. 
 

@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Mar 23 20:08:46 2020
+
+@author: ryanday
+"""
+
 # -*- coding: utf-8 -*-
 
 #Created on Thu Feb 01 08:56:54 2018
@@ -28,14 +36,40 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
+from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.cm as cm
 import chinook.klib as K_lib
 import chinook.Ylm as Ylm
+rcParams.update({'font.size':14})
 
 '''
 Library for different operators of possible interest in calculating, diagnostics, etc for a material of interest
 
 '''
+    
+def colourmaps():
+    '''
+    Plot utility, define a few colourmaps which scale to transparent at their zero values
+    '''
+    cmaps=[cm.Blues,cm.Greens,cm.Reds,cm.Purples,cm.Greys]
+    cname = ['Blues_alpha','Greens_alpha','Reds_alpha','Purples_alpha','Greys_alpha']
+    nc = 256
+
+    for ii in range(len(cmaps)):
+        col_arr = cmaps[ii](range(nc))
+        col_arr[:,-1] = np.linspace(0,1,nc)
+        map_obj = LinearSegmentedColormap.from_list(name=cname[ii],colors=col_arr)
+        
+        plt.register_cmap(cmap=map_obj)
+    
+    col_arr = cm.RdBu(range(nc))
+    col_arr[:,-1] = abs(np.linspace(-1,1,nc))
+    map_obj = LinearSegmentedColormap.from_list(name='RdBu_alpha',colors=col_arr)
+    plt.register_cmap(cmap=map_obj)
+
+colourmaps()
+
+
 
 def LSmat(TB,axis=None):
     '''
@@ -190,7 +224,7 @@ def Lz(l):
     return np.identity(2*l+1)*np.array([l-m for m in range(2*l+1)])
 
 
-def fatbs(proj,TB,Kobj=None,vlims=(0,1),Elims=(-1,1),degen=False):
+def fatbs(proj,TB,Kobj=None,vlims=None,Elims=None,degen=False,ax=None,colourbar=True,plot=True):
     
     '''
     
@@ -215,7 +249,13 @@ def fatbs(proj,TB,Kobj=None,vlims=(0,1),Elims=(-1,1),degen=False):
             
         - **Elims**: tuple of 2 float, limits of vertical scale for plotting
             
+        - **plot**: bool, default to True, plot, or not plot the result
+            
         - **degen**: bool, True if bands are degenerate, sum over adjacent bands
+        
+        - **ax**: matplotlib Axes, option for plotting onto existing Axes
+        
+        - **colorbar**: bool, plot colorbar on axes, default to True
             
     *return*:
 
@@ -238,18 +278,18 @@ def fatbs(proj,TB,Kobj=None,vlims=(0,1),Elims=(-1,1),degen=False):
         pvec[np.real(proj[:,0]).astype(int)] = proj[:,1]
         O = O*pvec
     
-        Ovals = O_path(O,TB,Kobj,vlims,Elims,degen=degen)
+        Ovals,ax = O_path(O,TB,Kobj,vlims,Elims,degen=degen,ax=ax,colourbar=colourbar,plot=plot)
     except ValueError:
         print('projections need to be passed as list or array of type [index,projection]')
     
         Ovals = None
-    
-    return Ovals
+        
+    return Ovals,ax
     
     
 
 
-def O_path(Operator,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=True,ax=None):
+def O_path(Operator,TB,Kobj=None,vlims=None,Elims=None,degen=False,plot=True,ax=None,colourbar=True,colourmap=None):
     
     '''
     
@@ -266,14 +306,20 @@ def O_path(Operator,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=Tru
         
         - **Kobj**: Momentum object, as defined in *chinook.klib.py*
             
-        - **vlims**: tuple of 2 float, limits of the colourscale for plotting, default to (0,0)
+        - **vlims**: tuple of 2 float, limits of the colourscale for plotting,
         if default value passed, will compute a reasonable range
             
         - **Elims**: tuple of 2 float, limits of vertical scale for plotting
+        
+        - **plot**: bool, default to True, plot, or not plot the result
             
         - **degen**: bool, True if bands are degenerate, sum over adjacent bands
         
         - **ax**: matplotlib Axes, option for plotting onto existing Axes
+        
+        - **colourbar**: bool, plot colorbar on axes, default to True
+        
+        - **colourmap**: matplotlib colourmap,i.e. LinearSegmentedColormap
 
     *return*:
 
@@ -301,8 +347,7 @@ def O_path(Operator,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=Tru
                 print('ERROR! Please include a K-object, or diagonalize your tight-binding model over a k-path first to initialize the eigenvectors')
                 return None
             
-    #check if Hermitian
-    
+   
        
     right_product = np.einsum('ij,ljm->lim',Operator,TB.Evec)
     O_vals = np.einsum('ijk,ijk->ik',np.conj(TB.Evec),right_product)
@@ -311,35 +356,36 @@ def O_path(Operator,TB,Kobj=None,vlims=(0,0),Elims=(-10,10),degen=False,plot=Tru
         O_vals = degen_Ovals(O_vals,TB.Eband)
 
 
-    rcParams.update({'font.size':14})
     
     if ax is None:
-        fig = plt.figure()
+        fig,ax = plt.subplots(1,1)
         fig.set_tight_layout(False)
-        ax=fig.add_subplot(111)
 
     for b in TB.Kobj.kcut_brk:
-        plt.axvline(x = b,color = 'grey',ls='--',lw=1.0)
-                    
-    if np.sign(O_vals.min())<0 and np.sign(O_vals.max())>0:
-        my_cmap = cm.RdBu
-    else:
-        my_cmap = cm.Blues
+        ax.axvline(x = b,color = 'grey',ls='--',lw=1.0)
     
-    if vlims==(0,0):
+    if colourmap is None:               
+        if np.sign(O_vals.min())<0 and np.sign(O_vals.max())>0:
+            colourmap = 'RdBu_alpha'
+        else:
+            colourmap = 'Blues_alpha'
+
+    if vlims is None:
         vlims = (O_vals.min()-(O_vals.max()-O_vals.min())/10.0,O_vals.max()+(O_vals.max()-O_vals.min())/10.0)
-    if Elims==(-10,10):
+    if Elims is None:
         Elims = (TB.Eband.min()-(TB.Eband.max()-TB.Eband.min())/10.0,TB.Eband.max()+(TB.Eband.max()-TB.Eband.min())/10.0)
+    
     if plot:
         for p in range(np.shape(O_vals)[1]):
 
-            plt.plot(TB.Kobj.kcut,TB.Eband[:,p],color='k',lw=0.2)
-            O_line=plt.scatter(TB.Kobj.kcut,TB.Eband[:,p],c=O_vals[:,p],cmap=my_cmap,marker='.',lw=0,s=80,vmin=vlims[0],vmax=vlims[1])
+            ax.plot(TB.Kobj.kcut,TB.Eband[:,p],color='k',lw=0.2)
+            O_line=ax.scatter(TB.Kobj.kcut,TB.Eband[:,p],c=O_vals[:,p],cmap=colourmap,marker='.',lw=0,s=80,vmin=vlims[0],vmax=vlims[1])
 
-        plt.axis([TB.Kobj.kcut[0],TB.Kobj.kcut[-1],Elims[0],Elims[1]])
-        plt.xticks(TB.Kobj.kcut_brk,TB.Kobj.labels)
-        plt.colorbar(O_line,ax=ax)
-        plt.ylabel("Energy (eV)")
+        ax.axis([TB.Kobj.kcut[0],TB.Kobj.kcut[-1],Elims[0],Elims[1]])
+        ax.set_xticks(TB.Kobj.kcut_brk,TB.Kobj.labels)
+        if colourbar:
+            plt.colorbar(O_line,ax=ax)
+        ax.set_ylabel("Energy (eV)")
         
     return O_vals,ax
 
@@ -362,7 +408,7 @@ def degen_Ovals(Oper_exp,Energy):
     '''
     
     O_copy = Oper_exp.copy()
-    tol = 1e-9
+    tol = 1e-6
     for ki in range(np.shape(Oper_exp)[0]):
         val = Energy[ki,0]
         start = 0
@@ -430,9 +476,11 @@ def O_surf(O,TB,ktuple,Ef,tol,vlims=(0,0),ax=None):
     
     if vlims==(0,0):
         vlims = (Ovals.min()-(Ovals.max()-Ovals.min())/10.0,Ovals.max()+(Ovals.max()-Ovals.min())/10.0)
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
+    
+    if ax is None:
+        fig,ax  = plt.subplots(1,1)
+        
+    
     ax.scatter(pts[:,0],pts[:,1],c=pts[:,2],cmap=cmap,s=200,vmin=vlims[0],vmax=vlims[1])
     ax.scatter(pts[:,0],pts[:,1],c='k',s=5)
     
@@ -497,12 +545,13 @@ def FS(TB,ktuple,Ef,tol,ax=None):
         ax.scatter(pts[:,0],pts[:,1])
     return pts,TB.Eband,TB.Evec,ax
     
+
     
 ####################SOME STANDARD OPERATORS FOLLOW HERE: ######################
     
     
 
-def LdotS(TB,axis=None):
+def LdotS(TB,axis=None,ax=None,colourbar=True):
     '''
     Wrapper for **O_path** for computing L.S along a vector projection of interest,
     or none at all.
@@ -516,6 +565,9 @@ def LdotS(TB,axis=None):
 
         - **axis**: numpy array of 3 float, indicating axis, or None for full L.S
     
+        - **ax**: matplotli.Axes object for plotting
+        
+        - **colourbar**: bool, display colourbar on plot
     *return*:
 
         - **O**: numpy array of Nxlen(basis) float, expectation value of operator
@@ -524,10 +576,10 @@ def LdotS(TB,axis=None):
     ***
     '''
     HSO = LSmat(TB,axis)
-    O = O_path(HSO,TB,TB.Kobj)
+    O = O_path(HSO,TB,TB.Kobj,ax=ax,colourbar=colourbar)
     return O
 
-def Sz(TB):
+def Sz(TB,ax=None,colourbar=True):
     '''
     Wrapper for **O_path** for computing Sz along a vector projection of interest,
     or none at all.
@@ -536,6 +588,12 @@ def Sz(TB):
     *args*:
 
         - **TB**: tight-binding obect
+        
+    *kwargs*:
+        
+        - **ax**: matplotlib.Axes plotting object
+        
+        - **colourbar**: bool, display colourbar on plot
         
     
     *return*:
@@ -546,7 +604,7 @@ def Sz(TB):
     ***
     '''
     Omat = S_vec(len(TB.basis),np.array([0,0,1]))
-    O = O_path(Omat,TB,TB.Kobj)
+    O = O_path(Omat,TB,TB.Kobj,ax=ax,colourbar=colourbar)
     return O
 
 
@@ -634,4 +692,5 @@ def is_numeric(a):
     else:
         return False
     
+
     

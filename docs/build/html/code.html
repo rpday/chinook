@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="operator.html">Model Diagnostics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="slab.html">Slab Calculation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html">Support Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Input Arguments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html#contact">Contact</a></li>
@@ -643,16 +644,15 @@ computed into the desired basis direction.</p>
 <dd><p>Take the matrix elements and build a simulated ARPES spectrum. 
 The user has several options here for the self-energy to be used,  c.f. <em>SE_gen()</em> for details.
 Gaussian resolution broadening is the last operation performed, to be consistent with the
-practical experiment.</p>
+practical experiment. <em>slice_select</em> instructs the method to also produce a plot of the designated
+slice through momentum or energy. If this is done, the function also returns the associated matplotlib.Axes
+object for further manipulation of the plot window.</p>
 <dl class="docutils">
 <dt><em>kwargs</em>:</dt>
-<dd><ul class="first simple">
+<dd><ul class="first last simple">
 <li><strong>ARPES_dict</strong>: dictionary, experimental configuration. See <em>experiment.__init__</em> and <em>experiment.update_pars()</em></li>
-<li><strong>slice_select</strong>: tuple, of either int (axis,index format) or string (axis), int format</li>
-<li><strong>add_map</strong>: boolean, add intensity map to list of intensity maps. If true, a list of intensity objects is appended,</li>
-</ul>
-<p>otherwise, the intensity map is overwritten</p>
-<ul class="last simple">
+<li><strong>slice_select</strong>: tuple, of either (int,int) or (str,float) format. If (int,int), first is axis index (0,1,2 for x,y,E) and the second is the index of the array. More useful typically is (str,float) format, with str as ‘x’, ‘kx’, ‘y’, ‘ky’, ‘E’, ‘w’ and the float the value requested. It will find the index along this direction closest to the request. Note the strings are not case-sensitive.</li>
+<li><strong>add_map</strong>: boolean, add intensity map to list of intensity maps. If true, a list of intensity objects is appended, otherwise, the intensity map is overwritten</li>
 <li><strong>plot_bands</strong>: boolean, plot bandstructure from tight-binding over the intensity map</li>
 <li><strong>ax</strong>: matplotlib Axes, only relevant if <strong>slice_select</strong>, option to pass existing Axes to plot onto</li>
 </ul>
@@ -1051,9 +1051,9 @@ invalid entry.</p>
 ‘txt’ (textfile, requires a ‘filename’ key as well)</p>
 <ul class="simple">
 <li><em>‘cutoff’</em>: float, cutoff hopping distance</li>
-<li><em>‘renorm’</em>: float, renormalization factor</li>
-<li><em>‘offset’</em>: float, offset of chemical potential</li>
-<li><em>‘tol’</em>: float, minimum matrix element tolerance</li>
+<li><em>‘renorm’</em>: optional float, renormalization factor default to 1.0</li>
+<li><em>‘offset’</em>: optional float, offset of chemical potential, default to 0.0</li>
+<li><em>‘tol’</em>: optional float, minimum matrix element tolerance, default to 1e-15</li>
 </ul>
 </div></blockquote>
 </li>
@@ -2199,7 +2199,11 @@ original basis.</p>
 <dt id="H_library.txt_build">
 <code class="descclassname">H_library.</code><code class="descname">txt_build</code><span class="sig-paren">(</span><em>filename</em>, <em>cutoff</em>, <em>renorm</em>, <em>offset</em>, <em>tol</em><span class="sig-paren">)</span><a class="headerlink" href="#H_library.txt_build" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build Hamiltonian from textfile, input is of form
-o1,o2,x12,xy12,z12,t12, output in form [o1,o2,x12,y12,z12,t12]</p>
+o1,o2,x12,y12,z12,t12, output in form [o1,o2,x12,y12,z12,t12]. 
+To be explicit, each row of the textfile is used to generate a
+k-space Hamiltonian matrix element of the form:</p>
+<div class="math notranslate nohighlight">
+\[H_{1,2}(k) = t_{1,2} e^{i (k_x x_{1,2} + k_y y_{1,2} + k_z z_{1,2})}\]</div>
 <p><em>args</em>:</p>
 <blockquote>
 <div><ul class="simple">
@@ -4768,7 +4772,8 @@ element list. This function is run automatically during slab generation.</p>
 <dt id="TB_lib.TB_model">
 <em class="property">class </em><code class="descclassname">TB_lib.</code><code class="descname">TB_model</code><span class="sig-paren">(</span><em>basis</em>, <em>H_args</em>, <em>Kobj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.TB_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <strong>TB_model</strong> object carries the model basis as a list of <strong>orbital</strong>
-objects, as well as the model Hamiltonian, as a list of <strong>H_me</strong>.</p>
+objects, as well as the model Hamiltonian, as a list of <strong>H_me</strong>. The orbital
+indices paired in each instance of <strong>H_me</strong> are stored in a dictionary under <strong>ijpairs</strong></p>
 <dl class="method">
 <dt id="TB_lib.TB_model.append_H">
 <code class="descname">append_H</code><span class="sig-paren">(</span><em>new_elements</em><span class="sig-paren">)</span><a class="headerlink" href="#TB_lib.TB_model.append_H" title="Permalink to this definition">¶</a></dt>

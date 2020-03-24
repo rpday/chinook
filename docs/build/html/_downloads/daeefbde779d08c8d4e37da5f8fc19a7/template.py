@@ -11,14 +11,17 @@ import chinook.build_lib as build_lib
 import chinook.ARPES_lib as arpes_lib
 
 
-avec = np.array([[1.0,0.0,0.0]
+avec = np.array([[1.0,0.0,0.0],
                 [0.0,1.0,0.0],
                 [0.0,0.0,1.0]])
+
+spin_args = {'bool':False}
 
 basis_args = {'atoms':[],
          'Z':{},
          'pos':[],
-         'orbs':[[]]}
+         'orbs':[[]],
+         'spin':spin_args}
 
 hamiltonian_args = {'type':'SK',
          'V':{},
@@ -26,7 +29,8 @@ hamiltonian_args = {'type':'SK',
          'renorm':1.0,
          'offset':0.0,
          'tol':1e-4,
-         'avec':avec}
+         'avec':avec,
+         'spin':spin_args}
 
 momentum_args= {'type':'F',
                 'avec':avec,

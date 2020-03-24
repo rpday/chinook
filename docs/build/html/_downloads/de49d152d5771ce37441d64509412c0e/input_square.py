@@ -16,9 +16,9 @@ def build_model():
 	'''
 
 	####LATTICE GEOMETRY####
-	a,c = 5.0,5.0
-	avec = np.array([[np.sqrt(0.5)*a,np.sqrt(0.5)*a,0],
-		[np.sqrt(0.5)*a,-np.sqrt(0.5)*a,0],
+	a,c = np.sqrt(0.5)*5.0,5.0
+	avec = np.array([[a,a,0],
+		[a,-a,0],
 		[0,0,c]])
 
 	####MOMENTUM PATH####
@@ -38,7 +38,7 @@ def build_model():
 	       'lam':{0:0.5}} #spin-orbit coupling strength in eV, require a value for each unique species in our basis
 
 	Sb1 = np.array([0.0,0.0,0.0])
-	Sb2 = np.array([np.sqrt(0.5)*a,0,0])
+	Sb2 = np.array([a,0,0])
 
 	basis = {'atoms':[0,0], #two equivalent atoms in the basis, both labelled as species #0
 	        'Z':{0:51},     #We only have one atomic species, which is antimony #51 in the periodic table.
@@ -54,14 +54,14 @@ def build_model():
 	Vpps = 0.25
 	Vppp = -1.0
 	VSK = {'051':Ep,'005511S':Vpps,'005511P':Vppp}
-	cutoff = 0.72*a
+	cutoff = 1.01*a
 
 	######################################################################
 	#####Option: nearest neighbour, and next nearest neighbour hopping  ##
 	V1 = {'051':Ep,'005511S':Vpps,'005511P':Vppp}                     ##
 	V2 = {'005511S':Vpps/a,'005511P':Vppp/a}                          ##
 	VSK = [V1,V2]                                                     ##
-	cutoff = [0.8*a,1.1*a]                                            ##
+	cutoff = [1.01*a,1.56*a]                                            ##
 	######################################################################
 
 	hamiltonian = {'type':'SK',     #Slater-Koster type Hamiltonian

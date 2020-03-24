@@ -26,6 +26,11 @@ We have avoided use of unconventional packages to run *chinook*, and the only re
 
 .. _psutil: https://psutil.readthedocs.io/en/latest/
 
+
+For any publications which make use of *chinook*, please reference 
+
+R.P. Day, B. Zwartsenberg, I.S. Elfimov and A. Damascelli, *Computational framework chinook for angle-resolved photoemission spectroscopy*, npj Quantum Materials 4, 54 (2019) 
+
 Getting Started
 ===============
 
@@ -33,12 +38,12 @@ The recommended structure for defining the necessary input for a *chinook* calcu
 
 At the core of any chinook calculation is the tight-binding model. The requisite information to construct such a model is an orbital basis and a Hamiltonian which effectively describes the Hilbert space spanned by this orbital basis.
 
-In order to construct the essential objects in chinook, we make use of Python dictionaries, a hash-table representation which allows for an efficient, but more importantly human-readable, input format. If you open the template.py file in your chinook distribution, you will find the basic input for starting a calculation.
+In order to construct the essential objects in chinook, we make use of Python dictionaries, a hash-table representation which allows for an efficient, but more importantly human-readable, input format. If you open the template.py file in your chinook distribution, you will find the basic input for starting a calculation. A comprehensive overview of the required and optional arguments supported for the input dictionaries can be found on the :ref:`input arguments` page. 
 
 Lattice
 =======
 
-The lattice is defined as a 3x3 array called avec, and is defined in units of inverse Angstrom. The default provided in template.py is a unit-length simple cubic lattice. As an example here, we construct the unit cell of GaAs,
+The lattice is defined as a 3x3 array called avec, and is defined in units of Angstrom. The default provided in template.py is a unit-length simple cubic lattice. As an example here, we construct the unit cell of GaAs,
 ::
     avec = np.array([[2.8162,2.8162,0],[0,2.8162,2.8162],[2.8162,0,2.8162]])
 
@@ -57,15 +62,13 @@ We see from this that the distinct atomic species (Ga and As) are indexed as 0 a
 
 Hamiltonian
 ===========
-The Hamiltonian has a fair amount of flexibility. For further details, it is recommended to refer to the documentation under *chinook.TB_lib.py*. In the template, we are assuming that the user wishes to enter a Slater-Koster type Hamiltonian. In this case, the hopping terms need to be defined. We can use the parameters given by, for example Harrison or Cohen, which gives us a dictionary which looks like so:
+The user is given a fair amount of flexibility in passing the Hamiltonian to chinook. For further details on Hamiltonian types and the way these are converted into a functioning tight-binding model in our framework, it is recommended to refer to the documentation under :ref:`tight binding` . In the template, we are assuming that the user wishes to enter a Slater-Koster type Hamiltonian. This is a fairly compact representation for tight-binding with minimal parameters, requiring only onsite energies and a few hopping terms need to be defined. We can use the parameters given by, for example Harrison or Cohen, which gives us a dictionary which looks like so:
 ::
-    V_SK = {'040':-6.55,'041':0.48,'140':-8.84,'141':1.48,
-            '004400S':-2.71,'004401S':-1.42,'004410S':2.71,
-            '004411S':2.65,'004411P':-0.64,
-            '114400S':-0.24,'114401S':0.01,
-            '114411S':0.47,'114411P':-0.10}
+    V_SK = {'040':-6.01,'041':0.19,'140':-4.79,'141':4.59,
+            '014400S':-1.75,'014401S':-3.15,'014410S':-1.60,
+            '014411S':2.59,'014411P':-0.94}
 
-In the above, we begin by defining the on-site energies, where the key-strings are formatted as 'atom-n-l', and the values are the energies in eV. Second, we define the various Slater-Koster type hoppings, such as Vsss, Vsps, Vpps, Vppp. These have key-strings as 'atom1-atom2-n1-n2-l1-l2-x'. With such a dictionary defined, the user can combine this with the other pertinent descriptors for the hamiltonian arguments, as seen in the template:
+At first glance, the format of this dictionary may appear cryptic. We'll break it down here. Each key:value pair indicates the orbitals and type of coupling, and the value the amplitude, in units of eV. The order is arbitrary, but we begin above by defining the on-site energies. These are labelled uniquely with key-strings formatted as 'atom-n-l'. So '041' indicates the onsite energy for the first atom in our basis (i.e. Ga), in the n=4, l=1 (i.e. p) shell. In other words, the onsite energy for the Ga 4p states. Similarly, '140' corresponds to the As 4s states. Next, we define the various Slater-Koster type hoppings, such as Vsss, Vsps, Vpps, Vppp. These have key-strings as 'atom1-atom2-n1-n2-l1-l2-x'. The 'x' at the end refers to sigma (S), pi (P), or delta (D) bonding symmetry. For example, '014410S' is the Ga 4p - As 4s sigma bonding strength, and '014411P' the Ga 4p - As 4p pi bonding. An arbitrary bond will ultimately be a linear combination of these. Note that we do not include any terms with '00' or '11' at the beginning. Considering only nearest-neighbour hopping in this model, we account for only on-site and Ga-As hopping. For more information on Slater-Koster Hamiltonians and other tight-binding model formats, we refer you to :ref:`tight binding`. Moving on, with the *V_SK* dictionary defined, the user can combine this with the other pertinent descriptors for the hamiltonian arguments, as seen in the template:
 ::
     hamiltonian_args = {'type':'SK',
                         'V':V_SK,
@@ -75,7 +78,7 @@ In the above, we begin by defining the on-site energies, where the key-strings a
                         'offset':0.0,
                         'tol':1e-4}
 
-In addition to denoting that we will use a Slater-Koster type Hamiltonian, we pass the dictionary of potentials 'V'. In addition to the lattice vectors, we finally define a few numeric values, corresponding to the cutoff hopping lengthscale (in Angstrom), any overall renormalization factor for the bandstructure, an offset for the Fermi level, and a tolerance, or minimal Hamiltonian matrix element size we wish to consider--any smaller terms will be neglected.
+In addition to denoting that we will use a Slater-Koster type Hamiltonian, we pass the dictionary of potentials 'V'. In addition to the lattice vectors, we finally define a few numeric values, corresponding to the cutoff hopping lengthscale (in Angstrom), any overall renormalization factor for the bandstructure, an offset for the Fermi level, and a tolerance, or minimal Hamiltonian matrix element size we wish to consider--any smaller terms will be neglected. The cutoff is chosen here to specify that only nearest-neighbour hoppings will be considered (Ga-As bondlength is approximately 2.48 Å).
 
 Tight-Binding Model
 ===================

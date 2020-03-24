@@ -37,7 +37,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="License" href="license.html" />
-    <link rel="prev" title="Support Files" href="support.html" /> 
+    <link rel="prev" title="Input Arguments" href="input.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -92,7 +92,10 @@
 <li class="toctree-l1"><a class="reference internal" href="operator.html">Model Diagnostics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="slab.html">Slab Calculation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html">Support Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Input Arguments</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sbqmi-workshop">SBQMI Workshop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#square-lattice">Square Lattice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#model-definition">Model Definition</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#model-characterization">Model Characterization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#arpes-calculation">ARPES Calculation</a></li>
@@ -168,9 +171,16 @@
 </div>
 <div class="section" id="id1">
 <h1>Tutorial<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="sbqmi-workshop">
+<h2>SBQMI Workshop<a class="headerlink" href="#sbqmi-workshop" title="Permalink to this headline">¶</a></h2>
+<p>For use in the Student Seminar at SBQMI, we will use the following <a class="reference download internal" download="" href="_downloads/78e24ba8c2ea422311cefc5fc8ae1789/graphene_backend.py"><code class="xref download docutils literal notranslate"><span class="pre">input</span></code></a> and <a class="reference download internal" download="" href="_downloads/f567418c7cd920bc53c4ae6789ad22e7/graphene_front.py"><code class="xref download docutils literal notranslate"><span class="pre">run</span></code></a> files. The exercises contained there are also available as an interactive <em>jupyter</em> <a class="reference download internal" download="" href="_downloads/1abc96ce83e8f776d77fd3006a49c258/QMI Student Seminar-Graphene.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">notebook</span></code></a>.</p>
+</div>
+<div class="section" id="square-lattice">
+<h2>Square Lattice<a class="headerlink" href="#square-lattice" title="Permalink to this headline">¶</a></h2>
 <p>The following tutorial is also available as an interactive <em>jupyter</em> notebook, available for download with the git <a class="reference external" href="https://github.com/rpday/chinook">repo</a>, in the examples folder. Alternatively, it can be <a class="reference download internal" download="" href="_downloads/85d95ad10b4b604b131a29120f61ed82/introduction_to_chinook.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">downloaded</span> <span class="pre">here</span></code></a>.</p>
 <p>Before beginning, it is also worth noting that in the interest of maintaining an organized workspace, it can be beneficial to define a separate input script independent of the working experimental script. Examples of an <a class="reference download internal" download="" href="_downloads/de49d152d5771ce37441d64509412c0e/input_square.py"><code class="xref download docutils literal notranslate"><span class="pre">input</span> <span class="pre">file</span></code></a> and <a class="reference download internal" download="" href="_downloads/8a2ec1af082dabfd15a1fe1319e2dfe2/tutorial_square.py"><code class="xref download docutils literal notranslate"><span class="pre">experiment</span> <span class="pre">script</span></code></a> are available for this exercise.</p>
-<p>In this tutorial, we work through a calculation of simulated ARPES spectra from scratch. While several input format are accepted in chinook, here we use a Slater-Koster model for a cubic lattice.</p>
+<p>In this tutorial, we work through a calculation of simulated ARPES spectra from scratch. While several input format are accepted in chinook, here we use a Slater-Koster model for a square lattice.</p>
+</div>
 <div class="section" id="model-definition">
 <h2>Model Definition<a class="headerlink" href="#model-definition" title="Permalink to this headline">¶</a></h2>
 <p>The following modules will be needed for your work here.</p>
@@ -180,7 +190,8 @@
 <span class="kn">from</span> <span class="nn">chinook.ARPES_lib</span> <span class="k">import</span> <span class="n">experiment</span>
 </pre></div>
 </div>
-<p>We can begin by defining the lattice geometry, which we take here to be a square lattice. Throughout, feel free to try different parameters and geometries</p>
+<p>We can begin by defining the lattice geometry, which we take here to be a square lattice. Throughout, feel free to try different parameters and geometries. Here, I’ve decided to make the in-plane dimensions smaller than the out of plane,
+and since I’m taking a 2-atom basis, I’ve expanded my unit cell accordingly.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">,</span><span class="n">c</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span><span class="mf">5.0</span>
 <span class="n">avec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
 <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
@@ -227,19 +238,21 @@
 <span class="n">Vppp</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
 <span class="n">VSK</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;051&#39;</span><span class="p">:</span><span class="n">Ep</span><span class="p">,</span><span class="s1">&#39;005511S&#39;</span><span class="p">:</span><span class="n">Vpps</span><span class="p">,</span><span class="s1">&#39;005511P&#39;</span><span class="p">:</span><span class="n">Vppp</span><span class="p">}</span>
 <span class="n">cutoff</span> <span class="o">=</span> <span class="mf">0.72</span><span class="o">*</span><span class="n">a</span>
-
-<span class="c1">######################################################################</span>
-<span class="c1">#####Option: nearest neighbour, and next nearest neighbour hopping  ##</span>
-<span class="n">V1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;051&#39;</span><span class="p">:</span><span class="n">Ep</span><span class="p">,</span><span class="s1">&#39;005511S&#39;</span><span class="p">:</span><span class="n">Vpps</span><span class="p">,</span><span class="s1">&#39;005511P&#39;</span><span class="p">:</span><span class="n">Vppp</span><span class="p">}</span>                     <span class="c1">##</span>
-<span class="n">V2</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;005511S&#39;</span><span class="p">:</span><span class="n">Vpps</span><span class="o">/</span><span class="n">a</span><span class="p">,</span><span class="s1">&#39;005511P&#39;</span><span class="p">:</span><span class="n">Vppp</span><span class="o">/</span><span class="n">a</span><span class="p">}</span>                          <span class="c1">##</span>
-<span class="n">VSK</span> <span class="o">=</span> <span class="p">[</span><span class="n">V1</span><span class="p">,</span><span class="n">V2</span><span class="p">]</span>                                                     <span class="c1">##</span>
-<span class="n">cutoff</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="mf">1.1</span><span class="o">*</span><span class="n">a</span><span class="p">]</span>                                            <span class="c1">##</span>
-<span class="c1">######################################################################</span>
+</pre></div>
+</div>
+<p>In the following, I’m going to use a slightly more advanced model, where rather than consider nearest neighbour hoppings only, I will also include next nearest neighbour hoppings. To do this, I specify a Slater-Koster dictionary for on-site and nearest neighbours, and a second dictionary for next-nearest neighbours.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">V1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;051&#39;</span><span class="p">:</span><span class="n">Ep</span><span class="p">,</span><span class="s1">&#39;005511S&#39;</span><span class="p">:</span><span class="n">Vpps</span><span class="p">,</span><span class="s1">&#39;005511P&#39;</span><span class="p">:</span><span class="n">Vppp</span><span class="p">}</span>
+<span class="n">V2</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;005511S&#39;</span><span class="p">:</span><span class="n">Vpps</span><span class="o">/</span><span class="n">a</span><span class="p">,</span><span class="s1">&#39;005511P&#39;</span><span class="p">:</span><span class="n">Vppp</span><span class="o">/</span><span class="n">a</span><span class="p">}</span>
+<span class="n">VSK</span> <span class="o">=</span> <span class="p">[</span><span class="n">V1</span><span class="p">,</span><span class="n">V2</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>These are distinguished by different cutoff-distances, with 0.8a sufficient for nearest neighbours, and 1.1a for next-nearest neighbours.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cutoff</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="mf">1.1</span><span class="o">*</span><span class="n">a</span><span class="p">]</span>
 
 <span class="n">hamiltonian</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;SK&#39;</span><span class="p">,</span>     <span class="c1">#Slater-Koster type Hamiltonian</span>
       <span class="s1">&#39;V&#39;</span><span class="p">:</span><span class="n">VSK</span><span class="p">,</span>          <span class="c1">#dictionary (or list of dictionaries) of onsite and hopping potentials</span>
        <span class="s1">&#39;avec&#39;</span><span class="p">:</span><span class="n">avec</span><span class="p">,</span>     <span class="c1">#lattice geometry</span>
-      <span class="s1">&#39;cutoff&#39;</span><span class="p">:</span><span class="n">cutoff</span><span class="p">,</span>  <span class="c1">#cutoff length-scale for hopping</span>
+      <span class="s1">&#39;cutoff&#39;</span><span class="p">:</span><span class="n">cutoff</span><span class="p">,</span>  <span class="c1">#(cutoff or list of cutoffs) maximum length-scale for each hoppings specified by VSK</span>
       <span class="s1">&#39;renorm&#39;</span><span class="p">:</span><span class="mf">1.0</span><span class="p">,</span>     <span class="c1">#renormalize bandwidth of Hamiltonian</span>
        <span class="s1">&#39;offset&#39;</span><span class="p">:</span><span class="mf">0.0</span><span class="p">,</span>    <span class="c1">#offset the Fermi level</span>
       <span class="s1">&#39;tol&#39;</span><span class="p">:</span><span class="mf">1e-4</span><span class="p">,</span>       <span class="c1">#minimum amplitude for matrix element to be included in model.</span>
@@ -303,7 +316,7 @@
 <div class="section" id="arpes-calculation">
 <h2>ARPES Calculation<a class="headerlink" href="#arpes-calculation" title="Permalink to this headline">¶</a></h2>
 <p>While a number of other tools are available for model diagnostics, we’ll proceed now to consideration of ARPES intensity simulation. Similar to the inputs defined above, we make use of Python dictionaries to organize the input
-arguments. Above, we saw that the Brillouin zone extends over a square of side-length 1.256 Å:math:<cite>^{-1}</cite> . We will begin by looking at the Fermi surface of our material.</p>
+arguments. Above, we saw that the Brillouin zone extends over a square of side-length 1.256 Å <span class="math notranslate nohighlight">\(^{-1}\)</span> . We will begin by looking at the Fermi surface of our material.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">arpes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;cube&#39;</span><span class="p">:{</span><span class="s1">&#39;X&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mf">0.628</span><span class="p">,</span><span class="mf">0.628</span><span class="p">,</span><span class="mi">300</span><span class="p">],</span><span class="s1">&#39;Y&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mf">0.628</span><span class="p">,</span><span class="mf">0.628</span><span class="p">,</span><span class="mi">300</span><span class="p">],</span><span class="s1">&#39;E&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span><span class="mf">0.05</span><span class="p">,</span><span class="mi">50</span><span class="p">],</span><span class="s1">&#39;kz&#39;</span><span class="p">:</span><span class="mf">0.0</span><span class="p">},</span> <span class="c1">#domain of interest</span>
     <span class="s1">&#39;hv&#39;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span>                          <span class="c1">#photon energy, in eV</span>
      <span class="s1">&#39;T&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span>                           <span class="c1">#temperature, in K</span>
@@ -317,7 +330,7 @@ arguments. Above, we saw that the Brillouin zone extends over a square of side-l
 </div>
 <p>Once the matrix elements have been calculated, the spectrum can be plot</p>
 <p>The first thing we plot here is a constant energy contour, at the Fermi level</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">I</span><span class="p">,</span><span class="n">Ig</span> <span class="o">=</span> <span class="n">arpes_experiment</span><span class="o">.</span><span class="n">spectral</span><span class="p">(</span><span class="n">slice_select</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;w&#39;</span><span class="p">,</span><span class="mf">0.0</span><span class="p">))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">I</span><span class="p">,</span><span class="n">Ig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">arpes_experiment</span><span class="o">.</span><span class="n">spectral</span><span class="p">(</span><span class="n">slice_select</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;w&#39;</span><span class="p">,</span><span class="mf">0.0</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>The <em>spectral</em> function produces 2 output by default, corresponding to the raw, and resolution-broadened intensity maps. Generally speaking, the output is a 3-dimensional array of float, with the first two axes being momentum, and the last energy.</p>
@@ -328,6 +341,12 @@ arguments. Above, we saw that the Brillouin zone extends over a square of side-l
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="_images/tutorial_pols_ef.png"><img alt="_images/tutorial_pols_ef.png" src="_images/tutorial_pols_ef.png" style="width: 400px;" /></a>
+<p>An easy way to quickly navigate a calculation over a 2-dimensional region of momentum space is with the <a class="reference internal" href="code.html#matplotlib_plotter.interface" title="matplotlib_plotter.interface"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib_plotter.interface()</span></code></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">chinook.matplotlib_plotter</span>
+<span class="n">interface</span> <span class="o">=</span> <span class="n">chinook</span><span class="o">.</span><span class="n">matplotlib_plotter</span><span class="o">.</span><span class="n">interface</span><span class="p">(</span><span class="n">arpes_experiment</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will activate an interactive window, where constant <span class="math notranslate nohighlight">\(k_x\)</span>, <span class="math notranslate nohighlight">\(k_y\)</span>, and <span class="math notranslate nohighlight">\(E\)</span> can be selected, and all slices can be explored.</p>
 <p>We can explore the evolution of the orbital character and ARPES intensity over a broader range of momentum by computing the matrix elements over a wider energy window. Below, we do so for a fixed in-plane momentum</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">arpes</span><span class="p">[</span><span class="s1">&#39;cube&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;X&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mf">0.628</span><span class="p">,</span><span class="mf">0.628</span><span class="p">,</span><span class="mi">200</span><span class="p">],</span><span class="s1">&#39;Y&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;kz&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;E&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mi">1000</span><span class="p">]}</span>
 <span class="n">arpes</span><span class="p">[</span><span class="s1">&#39;SE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span><span class="mf">0.1</span><span class="p">]</span>
@@ -348,7 +367,7 @@ arguments. Above, we saw that the Brillouin zone extends over a square of side-l
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">arpes</span><span class="p">[</span><span class="s1">&#39;cube&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;X&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mf">1.256</span><span class="p">,</span><span class="mf">1.256</span><span class="p">,</span><span class="mi">300</span><span class="p">],</span><span class="s1">&#39;Y&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;kz&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;E&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="mi">1000</span><span class="p">]}</span>
 <span class="n">arpes_experiment</span> <span class="o">=</span> <span class="n">experiment</span><span class="p">(</span><span class="n">TB</span><span class="p">,</span><span class="n">arpes</span><span class="p">)</span>
 <span class="n">arpes_experiment</span><span class="o">.</span><span class="n">datacube</span><span class="p">()</span>
-<span class="n">I</span><span class="p">,</span><span class="n">Ig</span> <span class="o">=</span> <span class="n">arpes_experiment</span><span class="o">.</span><span class="n">spectral</span><span class="p">(</span><span class="n">slice_select</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">plot_bands</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">I</span><span class="p">,</span><span class="n">Ig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">arpes_experiment</span><span class="o">.</span><span class="n">spectral</span><span class="p">(</span><span class="n">slice_select</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">plot_bands</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>In this tutorial, we have seen how to define and characterize a tight-binding model using chinook. In addition to this, we have performed a few calculations of the photoemission intensity associated with this model, and seen a few ways in which the photoemission intensity is affected by the nature of both our system of interest and the experimental geometry. Feel free to make changes to the model here and experiment with different parameters to get a better sense of how to use some of these tools. You’re now ready to begin building your own models and simulating ARPES intensity for your material of choice. A template input file is provided <a class="reference download internal" download="" href="_downloads/daeefbde779d08c8d4e37da5f8fc19a7/template.py"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a>.</p>
@@ -366,7 +385,7 @@ arguments. Above, we saw that the Brillouin zone extends over a square of side-l
         <a href="license.html" class="btn btn-neutral float-right" title="License" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="support.html" class="btn btn-neutral float-left" title="Support Files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="input.html" class="btn btn-neutral float-left" title="Input Arguments" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
