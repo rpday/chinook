@@ -121,11 +121,11 @@ def do_fatbands(TB,projections):
     
     for pi in range(len(projections)):
         
-        op_lib.fatbs(projections[pi],TB,Elims=(TB.Eband.min()*1.1,TB.Eband.max()*1.1))
+        op_lib.fatbs(projections[pi],TB,vlims=(0,0.2),Elims=(TB.Eband.min()*1.1,TB.Eband.max()*1.1))
     
     
     
-def setup_arpes(TB,Kpt,klimit=0.1,Elimits=[-2,0.2],Npoints=100):
+#def setup_arpes(TB,Kpt,klimit=0.1,Elimits=[-2,0.2],Npoints=100):
     '''
     Initialize an ARPES experiment over a 2D momentum mesh.
 
@@ -145,6 +145,7 @@ def setup_arpes(TB,Kpt,klimit=0.1,Elimits=[-2,0.2],Npoints=100):
 
         - **experiment**: experiment object, with matrix elements computed
     '''
+def setup_arpes(TB,Kpt,klimit=0.1,Elimits=[-2,0.2],Npoints=100):
 
 
     arpes_args={'cube':{'X':[Kpt[0]-klimit,Kpt[0]+klimit,Npoints],
@@ -190,7 +191,7 @@ def plot_wavefunction(TB,band_index,k_index,nangles=20):
 
     
 
-def semenoff_mass(TB,mass):
+#def semenoff_mass(TB,mass):
     
     '''
     Add Semenoff mass to the Hamiltonian
@@ -203,6 +204,9 @@ def semenoff_mass(TB,mass):
     
     
     '''
+    
+def semenoff_mass(TB,mass):
+
     Hnew = [[0,0,0,0,0,mass/2],
             [1,1,0,0,0,-mass/2]]
     

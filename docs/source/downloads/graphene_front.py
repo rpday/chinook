@@ -38,15 +38,15 @@ if __name__ == "__main__":
     #### Use TB_full.print_basis_summary() to get a summary of orbital basis
     
 #    projections = [] ##FILL IN THIS LIST with C2s, C2px, C2py, C2pz orbitals
-    
+#    projections = [[0,4],[1,5]]
 #    graphene_backend.do_fatbands(TB_full,projections)
     ####
     
     ## From output, see that the pz are really the only required orbitals.
     
     ###
-#    TB_pz,kpath = graphene_backend.construct_tightbinding(pzonly=True)
-#    TB_pz.plotting()
+    TB_pz,kpath = graphene_backend.construct_tightbinding(pzonly=True)
+    TB_pz.plotting()
     ###
 
     ### In the backend file, I have included a function for plotting the
@@ -65,10 +65,10 @@ if __name__ == "__main__":
     ## of the K-point
     
     ##TODO fill in with proper coordinates
-#    Kpt = np.array([0.0,0.0,0.0])
+    Kpt = np.array([1.702,0.0,0.0])
     
     
-#    experiment = graphene_backend.setup_arpes(TB_pz,Kpt=Kpt)
+    experiment = graphene_backend.setup_arpes(TB_pz,Kpt=Kpt)
     
     ## And now we can actually plot the spectrum. 
     
@@ -84,7 +84,12 @@ if __name__ == "__main__":
 #    TB_sem,kpath = 
     ##With the model you defined here, now add a Semenoff mass:
 #    mass = 0.0
+#    TB_pz = []
+    
+    
+    
 #    graphene_backend.semenoff_mass(TB_sem,mass)
+    
 
     ##TODO now solve the Hamiltonian for the TB_sem model, and plot its dispersion
 

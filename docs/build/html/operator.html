@@ -736,7 +736,9 @@ triangles decomposed.</p>
 <div class="section" id="operators">
 <h2>Operators<a class="headerlink" href="#operators" title="Permalink to this headline">¶</a></h2>
 <p>A number of tools are included for characterizing the expectation values of observables, as projected onto the eigenstates of the model Hamiltonian. The main function here is <em>O_path</em>, which will compute the expectation value of an indicated operator (represented by the user as a Hermitian numpy array of complex float with the same dimensions as the orbital basis). The resulting values are then displayed in the form of a colourmap applied to the bandstructure calculation along the desired path in momentum space. Several common operators are defined to facilitate these calculations, such as spin <span class="math notranslate nohighlight">\(\hat S_i\)</span> and <span class="math notranslate nohighlight">\(\left&lt;\vec{L}\cdot\vec{S}\right&gt;\)</span> . In addition, <em>fatbs</em> uses <em>O_path</em> to produce a “fat bands” type spaghetti plot, where the colourscale reflects the orbital projection onto the bandstructure.</p>
-<span class="target" id="module-operator_library"></span><dl class="function">
+<span class="target" id="module-operator_library"></span><p>Created on Mon Mar 23 20:08:46 2020</p>
+<p>&#64;author: ryanday</p>
+<dl class="function">
 <dt id="operator_library.FS">
 <code class="descclassname">operator_library.</code><code class="descname">FS</code><span class="sig-paren">(</span><em>TB</em>, <em>ktuple</em>, <em>Ef</em>, <em>tol</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.FS" title="Permalink to this definition">¶</a></dt>
 <dd><p>A simplified form of Fermi surface extraction, for proper calculation of this,
@@ -803,7 +805,7 @@ a len(basis)xlen(basis) matrix HSO</p>
 
 <dl class="function">
 <dt id="operator_library.LdotS">
-<code class="descclassname">operator_library.</code><code class="descname">LdotS</code><span class="sig-paren">(</span><em>TB</em>, <em>axis=None</em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.LdotS" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">operator_library.</code><code class="descname">LdotS</code><span class="sig-paren">(</span><em>TB</em>, <em>axis=None</em>, <em>ax=None</em>, <em>colourbar=True</em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.LdotS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper for <strong>O_path</strong> for computing L.S along a vector projection of interest,
 or none at all.</p>
 <p><em>args</em>:</p>
@@ -816,6 +818,8 @@ or none at all.</p>
 <blockquote>
 <div><ul class="simple">
 <li><strong>axis</strong>: numpy array of 3 float, indicating axis, or None for full L.S</li>
+<li><strong>ax</strong>: matplotli.Axes object for plotting</li>
+<li><strong>colourbar</strong>: bool, display colourbar on plot</li>
 </ul>
 </div></blockquote>
 <p><em>return</em>:</p>
@@ -891,7 +895,7 @@ The nonzero elements are on the upper diagonal</p>
 
 <dl class="function">
 <dt id="operator_library.O_path">
-<code class="descclassname">operator_library.</code><code class="descname">O_path</code><span class="sig-paren">(</span><em>Operator</em>, <em>TB</em>, <em>Kobj=None</em>, <em>vlims=(0</em>, <em>0)</em>, <em>Elims=(-10</em>, <em>10)</em>, <em>degen=False</em>, <em>plot=True</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.O_path" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">operator_library.</code><code class="descname">O_path</code><span class="sig-paren">(</span><em>Operator</em>, <em>TB</em>, <em>Kobj=None</em>, <em>vlims=None</em>, <em>Elims=None</em>, <em>degen=False</em>, <em>plot=True</em>, <em>ax=None</em>, <em>colourbar=True</em>, <em>colourmap=None</em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.O_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute and plot the expectation value of an user-defined operator along a k-path
 Option of summing over degenerate bands (for e.g. fat bands) with degen boolean flag</p>
 <p><em>args</em>:</p>
@@ -905,13 +909,16 @@ Option of summing over degenerate bands (for e.g. fat bands) with degen boolean 
 <blockquote>
 <div><ul class="simple">
 <li><strong>Kobj</strong>: Momentum object, as defined in <em>chinook.klib.py</em></li>
-<li><strong>vlims</strong>: tuple of 2 float, limits of the colourscale for plotting, default to (0,0)</li>
+<li><strong>vlims</strong>: tuple of 2 float, limits of the colourscale for plotting,</li>
 </ul>
 <p>if default value passed, will compute a reasonable range</p>
 <ul class="simple">
 <li><strong>Elims</strong>: tuple of 2 float, limits of vertical scale for plotting</li>
+<li><strong>plot</strong>: bool, default to True, plot, or not plot the result</li>
 <li><strong>degen</strong>: bool, True if bands are degenerate, sum over adjacent bands</li>
 <li><strong>ax</strong>: matplotlib Axes, option for plotting onto existing Axes</li>
+<li><strong>colourbar</strong>: bool, plot colorbar on axes, default to True</li>
+<li><strong>colourmap</strong>: matplotlib colourmap,i.e. LinearSegmentedColormap</li>
 </ul>
 </div></blockquote>
 <p><em>return</em>:</p>
@@ -989,13 +996,20 @@ n.S = nx Sx + ny Sy + nz Sz</p>
 
 <dl class="function">
 <dt id="operator_library.Sz">
-<code class="descclassname">operator_library.</code><code class="descname">Sz</code><span class="sig-paren">(</span><em>TB</em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.Sz" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">operator_library.</code><code class="descname">Sz</code><span class="sig-paren">(</span><em>TB</em>, <em>ax=None</em>, <em>colourbar=True</em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.Sz" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper for <strong>O_path</strong> for computing Sz along a vector projection of interest,
 or none at all.</p>
 <p><em>args</em>:</p>
 <blockquote>
 <div><ul class="simple">
 <li><strong>TB</strong>: tight-binding obect</li>
+</ul>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>ax</strong>: matplotlib.Axes plotting object</li>
+<li><strong>colourbar</strong>: bool, display colourbar on plot</li>
 </ul>
 </div></blockquote>
 <p><em>return</em>:</p>
@@ -1006,6 +1020,12 @@ or none at all.</p>
 <p>on each band over the kpath of TB.Kobj.</p>
 </div></blockquote>
 <p><a href="#id125"><span class="problematic" id="id126">**</span></a><a href="#id127"><span class="problematic" id="id128">*</span></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="operator_library.colourmaps">
+<code class="descclassname">operator_library.</code><code class="descname">colourmaps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.colourmaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot utility, define a few colourmaps which scale to transparent at their zero values</p>
 </dd></dl>
 
 <dl class="function">
@@ -1027,7 +1047,7 @@ All degeneracies are found, and the expectation values averaged.</p>
 
 <dl class="function">
 <dt id="operator_library.fatbs">
-<code class="descclassname">operator_library.</code><code class="descname">fatbs</code><span class="sig-paren">(</span><em>proj</em>, <em>TB</em>, <em>Kobj=None</em>, <em>vlims=(0</em>, <em>1)</em>, <em>Elims=(-1</em>, <em>1)</em>, <em>degen=False</em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.fatbs" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">operator_library.</code><code class="descname">fatbs</code><span class="sig-paren">(</span><em>proj</em>, <em>TB</em>, <em>Kobj=None</em>, <em>vlims=None</em>, <em>Elims=None</em>, <em>degen=False</em>, <em>ax=None</em>, <em>colourbar=True</em>, <em>plot=True</em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.fatbs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fat band projections. User denotes which orbital index projection is of interest
 Projection passed either as an Nx1 or Nx2 array of float. If Nx2, first column is
 the indices of the desired orbitals, the second column is the weight. If Nx1, then
@@ -1049,7 +1069,10 @@ the amplitude of projection (for linear-combination projection)</p>
 <li><strong>Kobj</strong>: Momentum object, as defined in <em>chinook.klib.py</em></li>
 <li><strong>vlims</strong>: tuple of 2 float, limits of the colorscale for plotting, default to (0,1)</li>
 <li><strong>Elims</strong>: tuple of 2 float, limits of vertical scale for plotting</li>
+<li><strong>plot</strong>: bool, default to True, plot, or not plot the result</li>
 <li><strong>degen</strong>: bool, True if bands are degenerate, sum over adjacent bands</li>
+<li><strong>ax</strong>: matplotlib Axes, option for plotting onto existing Axes</li>
+<li><strong>colorbar</strong>: bool, plot colorbar on axes, default to True</li>
 </ul>
 </div></blockquote>
 <p><em>return</em>:</p>

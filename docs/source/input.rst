@@ -20,11 +20,11 @@ Basis
    "atoms", "Yes", "list of int", "[0,0,1]",  "Unique elements are assigned distinct integers, consecutive"
    "Z", "Yes", "dict of int:int", "{0:77,1:8}", "Atomic number for each atom from *atoms* above"
    "orbs", "Yes", "| list of lists of
-   | string", "| [['060'],
-   | ['060'],
-   | ['121x','121y']]", "| Elements define the orbital, one list for each atom,
+   | string", "| [['60'],
+   | ['60'],
+   | ['21x','21y']]", "| Elements define the orbital, one list for each atom,
    | elements define the orbital definition. Structure
-   | of strings are: *atom*, *principal quantum number n*,
+   | of strings are: *principal quantum number n*,
    | *orbital angular momentum l*, 
    | orbital label (s: N/A, p: x,y,z d:xz,yz,xy,XY,ZR)"
    "pos", "Yes", "list of numpy arrays", "| [np.array([0.0,0.0,0.0]),
@@ -84,7 +84,7 @@ Hamiltonian
    | See Slater-Koster on Tight-Binding page."
    "list","No", "list", "[[0,0,0,0,0,5],...]"," List of Hamiltonian matrix elements,
    | if passing in list format."
-   "txt", "No", "string", "my_hamiltonian.txt", "Path to Hamiltonian textfile."
+   "filename", "No", "string", "my_hamiltonian.txt", "Path to Hamiltonian textfile."
    "exec","No", "list of methods","see Executable page","list of executable Python functions, see relevant page."
 
 Momentum Path
