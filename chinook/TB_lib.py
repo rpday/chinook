@@ -464,7 +464,8 @@ class TB_model:
         for i in range(len(self.basis)):
             ax.plot(self.Kobj.kcut,np.transpose(self.Eband)[i,:],color='navy',lw=1.5)
 
-        plt.xticks(self.Kobj.kcut_brk,self.Kobj.labels)
+        ax.set_xticks(self.Kobj.kcut_brk)
+        ax.set_xticklabels(self.Kobj.labels)
         if win_max==None or win_min==None:
             ax.set_xlim(self.Kobj.kcut[0],self.Kobj.kcut[-1])
             ax.set_ylim(Emin-1.0,Emax+1.0)

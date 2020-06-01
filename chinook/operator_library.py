@@ -382,7 +382,8 @@ def O_path(Operator,TB,Kobj=None,vlims=None,Elims=None,degen=False,plot=True,ax=
             O_line=ax.scatter(TB.Kobj.kcut,TB.Eband[:,p],c=O_vals[:,p],cmap=colourmap,marker='.',lw=0,s=80,vmin=vlims[0],vmax=vlims[1])
 
         ax.axis([TB.Kobj.kcut[0],TB.Kobj.kcut[-1],Elims[0],Elims[1]])
-        ax.set_xticks(TB.Kobj.kcut_brk,TB.Kobj.labels)
+        ax.set_xticks(TB.Kobj.kcut_brk)
+        ax.set_xticklabels(TB.Kobj.labels)
         if colourbar:
             plt.colorbar(O_line,ax=ax)
         ax.set_ylabel("Energy (eV)")
