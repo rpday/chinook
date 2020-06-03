@@ -290,6 +290,7 @@ class TB_model:
         
         ***
         '''
+        Nonsite = len(self.basis)
         self.ijpairs = {}
         executable = False
         if type(H_args)==dict:
@@ -298,7 +299,10 @@ class TB_model:
                 if H_args['type'] == "SK":
                     ham_list = Hlib.sk_build(H_args['avec'],self.basis,H_args['V'],H_args['cutoff'],H_args['tol'],H_args['renorm'],H_args['offset'])
                 elif H_args['type'] == "txt":
-                    ham_list = Hlib.txt_build(H_args['filename'],H_args['cutoff'],H_args['renorm'],H_args['offset'],H_args['tol'])
+                    if 'spin' in H_args.keys():
+                        if H_args['spin']['bool']:
+                            Nonsite = len(self.basis)//2
+                    ham_list = Hlib.txt_build(H_args['filename'],H_args['cutoff'],H_args['renorm'],H_args['offset'],H_args['tol'],Nonsite)
                 elif H_args['type'] == "list":
                     ham_list = H_args['list']
                 elif H_args['type'] == 'exec':
@@ -464,8 +468,7 @@ class TB_model:
         for i in range(len(self.basis)):
             ax.plot(self.Kobj.kcut,np.transpose(self.Eband)[i,:],color='navy',lw=1.5)
 
-        ax.set_xticks(self.Kobj.kcut_brk)
-        ax.set_xticklabels(self.Kobj.labels)
+        plt.xticks(self.Kobj.kcut_brk,self.Kobj.labels)
         if win_max==None or win_min==None:
             ax.set_xlim(self.Kobj.kcut[0],self.Kobj.kcut[-1])
             ax.set_ylim(Emin-1.0,Emax+1.0)

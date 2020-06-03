@@ -120,7 +120,7 @@ class experiment:
             
             - *'slab'*: boolean, will truncate the eigenfunctions beyond the penetration depth (specifically 4x penetration depth), default is False
 
-            - *'ang'*: float, rotation of sample about normal emission i.e. z-axis (radian), default is 0.0
+            - *'angle'*: float, rotation of sample about normal emission i.e. z-axis (radian), default is 0.0
 
             - *'W'*: float, work function (eV), default is 4.0 
 
@@ -276,7 +276,7 @@ class experiment:
 
     
     
-    def diagonalize(self):
+    def diagonalize(self,diagonalize):
         '''
         Diagonalize the Hamiltonian over the desired range of momentum, reshaping the 
         band-energies into a 1-dimensional array. If the user has not selected a energy
@@ -309,11 +309,16 @@ class experiment:
     
             self.X = np.reshape(k_arr[:,0],(self.cube[1][2],self.cube[0][2]))
             self.Y = np.reshape(k_arr[:,1],(self.cube[1][2],self.cube[0][2]))
+            print(self.X.min(),self.X.max())
     
             self.ph = np.arctan2(k_arr[:,1],k_arr[:,0])
     
         self.TB.Kobj = K_lib.kpath(k_arr)
+        print(self.TB.Kobj.kpts[:,0].min(),self.TB.Kobj.kpts[:,0].max())
+#        if diagonalize:
         self.Eb,self.Ev = self.TB.solve_H()
+#        else:
+#            self.Eb,self.Ev = self.TB.Eband,self.TB.Evec
         
         if len(self.cube[2])==2:
             #user only passed the energy limits, not the grain--automate generation of the grain size
@@ -392,7 +397,7 @@ class experiment:
 ###############################################################################
 ############################################################################### 
     
-    def datacube(self,ARPES_dict=None):
+    def datacube(self,ARPES_dict=None,diagonalize=False):
         '''
         This function computes the photoemission matrix elements.
         Given a kmesh to calculate the photoemission over, the mesh is reshaped to an nx3 array and the Hamiltonian
@@ -412,7 +417,7 @@ class experiment:
         self.basis = self.rot_basis()
 
         print('Initiate diagonalization: ')
-        self.diagonalize()
+        self.diagonalize(diagonalize)
         print('Diagonalization Complete.')
         nstates = len(self.basis)
         if self.truncate:
@@ -638,7 +643,7 @@ class experiment:
             elif self.slit=='V':
                 ph = 0.5*(self.cube[1][0]+self.cube[1][1])
                 thvals = np.linspace(*self.cube[0])
-                Rmats = np.array([np.matmul(rotlib.Rodrigues_Rmat(np.array([0,np.cos(-ph),np.sin(-ph)]),-th),rotlib.Rodrigues_Rmat(np.array([1,0,0])-ph)) for th in thvals])
+                Rmats = np.array([np.matmul(rotlib.Rodrigues_Rmat(np.array([0,np.cos(-ph),np.sin(-ph)]),-th),rotlib.Rodrigues_Rmat(np.array([1,0,0]),-ph)) for th in thvals])
                 pk_index = 2
                 
             svectors = np.einsum('ijk,k->ij',Rmats,self.sarpes[1])
@@ -690,7 +695,7 @@ class experiment:
             fermi = np.ones(self.cube[2][2])
         return fermi
 
-    def spectral(self,ARPES_dict=None,slice_select=None,add_map = False,plot_bands=False,ax=None):
+    def spectral(self,ARPES_dict=None,slice_select=None,add_map = False,plot_bands=False,ax=None,colourmap=None):
         
         '''
         Take the matrix elements and build a simulated ARPES spectrum. 
@@ -724,6 +729,9 @@ class experiment:
         if ARPES_dict is not None:
 
             self.update_pars(ARPES_dict)
+            
+        if colourmap is None:
+            colourmap = cm.magma
         
         
         if self.sarpes is not None:
@@ -758,9 +766,9 @@ class experiment:
         for p in range(len(self.pks)):
 
             if not SE_k:
-                I[int(np.real(self.pks[p,1])),int(np.real(self.pks[p,2])),:] += M_factor[p]*np.imag(-1./(np.pi*(w-self.pks[p,3]-(SE-0.0005j))))*fermi
+                I[int(np.real(self.pks[p,1])),int(np.real(self.pks[p,2])),:] += M_factor[p]*np.imag(-1./(np.pi*(w-self.pks[p,3]-(SE-0.00005j))))*fermi
             else:
-                I[int(np.real(self.pks[p,1])),int(np.real(self.pks[p,2])),:]+= M_factor[p]*np.imag(-1./(np.pi*(w-self.pks[p,3]-(SE[int(np.real(self.pks[p,1])),int(np.real(self.pks[p,2])),:]-0.0005j))))*fermi 
+                I[int(np.real(self.pks[p,1])),int(np.real(self.pks[p,2])),:]+= M_factor[p]*np.imag(-1./(np.pi*(w-self.pks[p,3]-(SE[int(np.real(self.pks[p,1])),int(np.real(self.pks[p,2])),:]-0.00005j))))*fermi 
 
 
         kxg = (self.cube[0][2]*self.dk/(self.cube[0][1]-self.cube[0][0]) if abs(self.cube[0][1]-self.cube[0][0])>0 else 0)
@@ -770,7 +778,7 @@ class experiment:
         Ig = nd.gaussian_filter(I,(kyg,kxg,wg))
         
         if slice_select!=None:
-            ax_img = self.plot_intensity_map(Ig,slice_select,plot_bands,ax)
+            ax_img = self.plot_intensity_map(Ig,slice_select,plot_bands,ax,colourmap=colourmap)
         
         if add_map:
             self.maps.append(imap.intensity_map(len(self.maps),Ig,self.cube,self.kz,self.T,self.hv,self.pol,self.dE,self.dk,self.SE_args,self.sarpes,self.ang))
@@ -786,7 +794,7 @@ class experiment:
         return new_map
 
 
-    def plot_intensity_map(self,plot_map,slice_select,plot_bands=False,ax_img=None):
+    def plot_intensity_map(self,plot_map,slice_select,plot_bands=False,ax_img=None,colourmap=None):
          '''
         Plot a slice of the intensity map computed in *spectral*. The user selects either
         an array index along one of the axes, or the fixed value of interest, allowing
@@ -804,11 +812,16 @@ class experiment:
             the dispersion calculated from tight-binding
             
             - **ax_img**: matplotlib Axes, for option to plot onto existing Axes
+            
+            - **colourmap**: matplotlib colourmap
 
         *return*:
 
             - **ax_img**: matplotlib axis object
          '''
+         if colourmap is None:
+             colourmap = cm.magma
+             
          if ax_img is None:
              fig,ax_img = plt.subplots()
              fig.set_tight_layout(False)
@@ -839,7 +852,7 @@ class experiment:
          ax_xlimit = (self.cube[index_dict[slice_select[0]][0]][0],self.cube[index_dict[slice_select[0]][0]][1])
          ax_ylimit = (self.cube[index_dict[slice_select[0]][1]][0],self.cube[index_dict[slice_select[0]][1]][1])
          plottable  = np.squeeze(plot_map[limits[1,0]:limits[1,1],limits[0,0]:limits[0,1],limits[2,0]:limits[2,1]])
-         p = ax_img.pcolormesh(X,Y,plottable,cmap=cm.magma)
+         p = ax_img.pcolormesh(X,Y,plottable,cmap=colourmap)
          if plot_bands and slice_select[0]!=2:
              k = np.linspace(*self.cube[index_dict[slice_select[0]][1]])
              if slice_select[0]==1:                 

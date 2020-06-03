@@ -45,7 +45,7 @@ kb = 1.38*10**-23
 
     
 
-def txt_build(filename,cutoff,renorm,offset,tol):
+def txt_build(filename,cutoff,renorm,offset,tol,Nonsite):
     
     '''
 
@@ -70,6 +70,8 @@ def txt_build(filename,cutoff,renorm,offset,tol):
         
         - **tol**: float, minimum Hamiltonian matrix element amplitude
         
+        - **Nonsite**: int, number of basis states, use to apply **offset**
+        
     *return*:
 
         - **Hlist**: the list of Hamiltonian matrix elements
@@ -84,19 +86,23 @@ def txt_build(filename,cutoff,renorm,offset,tol):
         for line in origin:
             
             spl = line.split(',')
-            R = np.array([float(spl[2]),float(spl[3]),float(spl[4])])
-            Hval = complex(spl[5])
-            
+            try:
+                R = np.array([float(spl[2]),float(spl[3]),float(spl[4])])
+                Hval = complex(spl[5])
+            except:
+                print(line,spl)
+                continue
             if len(spl)>6:
                 Hval+=1.0j*float(spl[6])
             if abs(Hval)>tol and  np.linalg.norm(R)<cutoff:
-                Hval*=renorm
-                if np.linalg.norm(R)==0.0:
-                    Hval-=offset
-                    
+                Hval*=renorm                    
                 tmp = [int(spl[0]),int(spl[1]),R[0],R[1],R[2],Hval]
 
                 Hlist.append(tmp)
+        if abs(offset)>0:
+            for ii in range(Nonsite):
+                Hlist.append([ii,ii,0,0,0,-offset])
+            
             
     origin.close()
             
