@@ -329,7 +329,7 @@ def fermi_surface_2D(TB, npts=100, kfix=(2,0), energy=0, shift=np.array([0,0])):
         - **shift**: numpy array of 3 float, shift vector, in units or b-vectors
     """
 
-    Kpts, K1, K2 = get_kpts(TB,npts,kfix, shift)
+    Kpts, K1, K2 = get_kpts(TB,kfix, npts, shift)
     TB.Kobj.kpts = Kpts
 
     TB.solve_H()
