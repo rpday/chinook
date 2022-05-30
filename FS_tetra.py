@@ -39,7 +39,7 @@
 
 
 
-import chinook.tetrahedra as tetrahedra
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -47,6 +47,8 @@ from operator import itemgetter
 import warnings
 warnings.filterwarnings("error")
 
+import chinook.tetrahedra as tetrahedra
+from chinook.klib import bvectors
 
     
 
@@ -311,7 +313,7 @@ def get_kpts(TB, kfix, npts=100, shift=np.array([0,0,0])):
         K2 = Kpts[:,1].reshape((npts,npts))
     return Kpts, K1, K2
 
-def fermi_surface_2D(TB, npts=100, kfix=(2,0), energy=0, shift=np.array([0,0])):
+def fermi_surface_2D(TB, npts=100, kfix=(2,0), energy=0, shift=np.array([0,0,0])):
     """
     Generate a 2D contour of the Fermi surface, projected into one of the 3 cardinal planes.
     User specifies which b-vector to be normal to, and its fixed value. The user also specifies
