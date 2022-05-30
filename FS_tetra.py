@@ -273,17 +273,17 @@ def sim_tri(vert):
     
     
 
-def get_kpts(TB, npts=100, kfix, shift=np.array([0,0,0])):
+def get_kpts(TB, kfix, npts=100, shift=np.array([0,0,0])):
     """
     Get k-grid for Brillouin zone sampling
 
     *args*:
         - **TB**: tight-binding model object
 
-        - **npts**: int or tuple of 2-int, number of kpoints in grid
-        
         - **kfix**: tuple of two numeric. First is b-vector index (0-base), second is the fixed value (float)
-        
+
+        - **npts**: int or tuple of 2-int, number of kpoints in grid
+                
         - **shift**: numpy array of 3 float, shift vector, in units or b-vectors
     """
     ibz = np.linspace(-0.5, 0.5,npts)
