@@ -337,15 +337,11 @@ def fermi_surface_2D(TB, npts=100, kfix=(2,0), energy=0, shift=np.array([0,0,0])
     TB.solve_H()
     Eband = np.reshape(TB.Eband,(npts,npts,len(TB.basis)))
 
-    if do_plot:
-        fig, ax = plt.subplots(1,1)
-        for ei in range(len(TB.basis)):
-            if Eband[:,:,ei].min() <= energy and Eband[:,:,ei].max() >= energy:
+    fig, ax = plt.subplots(1,1)
+    for ei in range(len(TB.basis)):
+        if Eband[:,:,ei].min() <= energy and Eband[:,:,ei].max() >= energy:
 
-                lines = ax.contour(K1,K2,Eband[:,:,ei],levels=[energy])
-
-    else:
-        plt.close(fig)
+            _ = ax.contour(K1,K2,Eband[:,:,ei],levels=[energy])
 
     ax.set_aspect(1)
     
