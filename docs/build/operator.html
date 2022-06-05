@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Model Diagnostics &mdash; chinook 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Slab Calculation" href="slab.html" />
+    <link rel="prev" title="Tight Binding" href="tightbinding.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html">
+            <img src="_static/chinook_header_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arpes.html">ARPES Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tightbinding.html">Tight Binding</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model Diagnostics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#density-of-states">Density of States</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fermi-surface">Fermi Surface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#operators">Operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-orbital_plotting">Orbital Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-tetrahedra">tetrahedra</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="slab.html">Slab Calculation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Input Arguments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html#contact">Contact</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">chinook</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Model Diagnostics</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/operator.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="toctree-wrapper compound">
+</div>
+<section id="model-diagnostics">
+<h1>Model Diagnostics<a class="headerlink" href="#model-diagnostics" title="Permalink to this heading"></a></h1>
+<p>chinook is designed with the capacity to do fairly extensive characterization of the tight-binding model being used. These scripts contain useful tools for understanding the model in more detail</p>
+<section id="density-of-states">
+<h2>Density of States<a class="headerlink" href="#density-of-states" title="Permalink to this heading"></a></h2>
+<p>Several different approaches can be taken to the execution of density of states. One can follow <a class="reference external" href="https://doi.org/10.1103/PhysRevB.49.16223">Blöchl</a> , partitioning the Brillouin zone into a cubic mesh, with each cube further divided into a group of identical tetrahedra. This approach provides the ability to perform matrix diagonalization over a fairly small number of k-points, as one interpolates within the tetrahedra to construct the full density of states. This is executed using <em>dos_tetra</em> defined below.</p>
+<p>Alternatively, one can perform diagonalization explicitly only at the nodes of a mesh defined over the Brillouin zone, and apply some broadened peak at the eigenvalues of the Hamiltonian at each point. Generally, for reasonably narrow Gaussian broadening this requires a fairly dense k-mesh. In practice, the large supercells where diagonalization becomes costly are also associated with much smaller Brillouin zones, allowing for a smaller k-space sampling. We find this method to perform better in most cases. This is executed using the <em>dos_broad</em> function defined below.</p>
+<p>Related tools are also available to find the Fermi level, given a specified electronic occupation (<em>dos.find_EF</em> using gaussian, and <em>dos.EF_find</em> using tetrahedra).</p>
+<span class="target" id="module-dos"></span><dl class="py function">
+<dt class="sig sig-object py" id="dos.band_contribution">
+<span class="sig-prename descclassname"><span class="pre">dos.</span></span><span class="sig-name descname"><span class="pre">band_contribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eigenvals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w_domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dos.band_contribution" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the contribution over a single tetrahedron, from a 
+single band, to the density of states</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>eigenvals</strong>: numpy array of float, energy values at corners</p></li>
+<li><p><strong>w_domain</strong>: numpy array of float, energy domain</p></li>
+<li><p><strong>volume</strong>: int, number of tetrahedra in the total mesh</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>DOS</strong>: numpy array of float, same length as w_domain</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a><a href="#id3"><span class="problematic" id="id4">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dos.def_dE">
+<span class="sig-prename descclassname"><span class="pre">dos.</span></span><span class="sig-name descname"><span class="pre">def_dE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Eband</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dos.def_dE" title="Permalink to this definition"></a></dt>
+<dd><p>If energy broadening is not passed for density-of-states calculation,
+compute a reasonable value based on the energy between adjacent energies
+in the tight-binding calculation</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Eband</strong>: numpy array of float, indicating band energies</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><p><strong>dE</strong>: float, energy broadening, as the smallest average energy spacing
+over all bands.</p>
+</div></blockquote>
+<p><a href="#id5"><span class="problematic" id="id6">**</span></a><a href="#id7"><span class="problematic" id="id8">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dos.dos_broad">
+<span class="sig-prename descclassname"><span class="pre">dos.</span></span><span class="sig-name descname"><span class="pre">dos_broad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NK</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NE</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dE</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([0.,</span> <span class="pre">0.,</span> <span class="pre">0.])</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dos.dos_broad" title="Permalink to this definition"></a></dt>
+<dd><p>Energy-broadened discrete density of states calculation.
+The Hamiltonian is diagonalized over the kmesh defined by NK and
+states are summed, as energy-broadened Gaussian peaks, rather than
+delta functions.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>TB</strong>: tight-binding model object</p></li>
+<li><p><strong>NK</strong>: int, or tuple of int, indicating number of k-points</p></li>
+</ul>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>NE</strong>: int, number of energy bins for final output</p></li>
+<li><p><strong>dE</strong>: float, energy broadening of peaks, eV</p></li>
+<li><p><strong>origin</strong>: numpy array of 3 float, indicating the origin of the mesh to be used,</p></li>
+</ul>
+<p>relevant for example in kz-specific contributions to density of states</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>DOS</strong>: numpy array of float, density-of-states in states/eV</p></li>
+<li><p><strong>Elin</strong>: numpy array of float, energy domain in eV</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id9"><span class="problematic" id="id10">**</span></a><a href="#id11"><span class="problematic" id="id12">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dos.dos_func">
+<span class="sig-prename descclassname"><span class="pre">dos.</span></span><span class="sig-name descname"><span class="pre">dos_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epars</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dos.dos_func" title="Permalink to this definition"></a></dt>
+<dd><p>Piecewise function for calculation of density of states</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>energy</strong>: numpy array of float (energy domain)</p></li>
+<li><p><strong>epars</strong>: tuple of parameters: e[0],e[1],e[2],e[3],V_T,V_G being the ranked band energies for the tetrahedron,</p></li>
+</ul>
+<p>as well as the volume of both the tetrahedron and the Brillouin zone, all float</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of float giving DOS contribution from this tetrahedron</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id13"><span class="problematic" id="id14">**</span></a><a href="#id15"><span class="problematic" id="id16">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dos.dos_tetra">
+<span class="sig-prename descclassname"><span class="pre">dos.</span></span><span class="sig-name descname"><span class="pre">dos_tetra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NK</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dos.dos_tetra" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a tetrahedra mesh of k-points which span the BZ with even distribution
+Diagonalize over this mesh and then compute the resulting density of states as
+prescribed in the above paper. 
+The result is plotted, and DOS returned</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>TB</strong>: tight-binding model object</p></li>
+<li><p><strong>NE</strong>: int, number of energy points</p></li>
+<li><p><strong>NK</strong>: int or list of 3 int – number of k-points in mesh</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Elin</strong>: linear energy array of float, spanning the range of the eigenspectrum</p></li>
+<li><p><strong>DOS</strong>: numpy array of float, same length as Elin, density of states</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id17"><span class="problematic" id="id18">**</span></a><a href="#id19"><span class="problematic" id="id20">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dos.error_function">
+<span class="sig-prename descclassname"><span class="pre">dos.</span></span><span class="sig-name descname"><span class="pre">error_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dos.error_function" title="Permalink to this definition"></a></dt>
+<dd><p>Integral over the gaussian function, evaluated from -infinity to x, using
+the scipy implementation of the error function</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>x0</strong>: float, centre of Gaussian, in eV</p></li>
+<li><p><strong>x</strong>: numpy array of float, energy domain eV</p></li>
+<li><p><strong>sigma</strong>: float, width of Gaussian, in eV</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>analytical form of integral</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id21"><span class="problematic" id="id22">**</span></a><a href="#id23"><span class="problematic" id="id24">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dos.find_EF_broad_dos">
+<span class="sig-prename descclassname"><span class="pre">dos.</span></span><span class="sig-name descname"><span class="pre">find_EF_broad_dos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NK</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">occ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NE</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dE</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([0.,</span> <span class="pre">0.,</span> <span class="pre">0.])</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dos.find_EF_broad_dos" title="Permalink to this definition"></a></dt>
+<dd><p>Find the Fermi level of a model Hamiltonian, for a designated electronic
+occupation. Note this is evaluated at T=0, so EF is well-defined.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>TB</strong>: tight-binding model object</p></li>
+<li><p><strong>NK</strong>: int, or tuple of int, indicating number of k-points</p></li>
+<li><p><strong>occ</strong>: float, desired electronic occupation</p></li>
+</ul>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>NE</strong>: int, number of energy bins for final output</p></li>
+<li><p><strong>dE</strong>: float, energy spacing of bins, in eV</p></li>
+<li><p><strong>origin</strong>: numpy array of 3 float, indicating the origin of the mesh to be used,</p></li>
+</ul>
+<p>relevant for example in kz-specific contributions to density of states</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>EF</strong>: float, Fermi level in eV</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id25"><span class="problematic" id="id26">**</span></a><a href="#id27"><span class="problematic" id="id28">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dos.find_EF_tetra_dos">
+<span class="sig-prename descclassname"><span class="pre">dos.</span></span><span class="sig-name descname"><span class="pre">find_EF_tetra_dos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">occ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NK</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dos.find_EF_tetra_dos" title="Permalink to this definition"></a></dt>
+<dd><p>Use the tetrahedron-integration method to establish the Fermi-level, for a given
+electron occupation.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>TB</strong>: instance of tight-binding model object from <em>TB_lib</em></p></li>
+<li><p><strong>occ</strong>: float, desired electronic occupation</p></li>
+<li><p><strong>dE</strong>: estimate of energy precision desired for evaluation of the</p></li>
+</ul>
+<p>Fermi-level (in eV)</p>
+<ul class="simple">
+<li><p><strong>NK</strong>: int or iterable of 3 int, number of k points in mesh.</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><p><strong>EF</strong>: float, Fermi Energy for the desired occupation, to within dE of actual
+value.</p>
+</div></blockquote>
+<p><a href="#id29"><span class="problematic" id="id30">**</span></a><a href="#id31"><span class="problematic" id="id32">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dos.gaussian">
+<span class="sig-prename descclassname"><span class="pre">dos.</span></span><span class="sig-name descname"><span class="pre">gaussian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dos.gaussian" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate a normalized Gaussian function.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>x0</strong>: float, centre of peak, in eV</p></li>
+<li><p><strong>x</strong>: numpy array of float, energy domain in eV</p></li>
+<li><p><strong>sigma</strong>: float, width of Gaussian, in eV</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of float, gaussian evaluated.</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id33"><span class="problematic" id="id34">**</span></a><a href="#id35"><span class="problematic" id="id36">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dos.n_func">
+<span class="sig-prename descclassname"><span class="pre">dos.</span></span><span class="sig-name descname"><span class="pre">n_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epars</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dos.n_func" title="Permalink to this definition"></a></dt>
+<dd><p>Piecewise function for evaluating contribution of tetrahedra to electronic
+occupation number</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>energy</strong>: numpy array of float, energy domain</p></li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>epars</strong>: tuple of parameters: e[0],e[1],e[2],e[3],V_T,V_G being the ranked band energies for the tetrahedron,</p></li>
+</ul>
+</div></blockquote>
+<p>as well as the volume of both the tetrahedron and the Brillouin zone, all float</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of float, same length as <strong>energy</strong>, providing contribution of</p></li>
+</ul>
+<p>tetrahedra to the occupation function</p>
+</div></blockquote>
+<p><a href="#id37"><span class="problematic" id="id38">**</span></a><a href="#id39"><span class="problematic" id="id40">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dos.n_tetra">
+<span class="sig-prename descclassname"><span class="pre">dos.</span></span><span class="sig-name descname"><span class="pre">n_tetra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NK</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dos.n_tetra" title="Permalink to this definition"></a></dt>
+<dd><p>This function, also from the algorithm of Blochl, gives the integrated DOS
+at every given energy (so from bottom of bandstructure up to its top. This makes
+for very convenient and precise evaluation of the Fermi level, given an electron
+number)</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>TB</strong>: tight-binding model object</p></li>
+<li><p><strong>dE</strong>: float, energy spacing (meV)</p></li>
+<li><p><strong>NK</strong>: int, iterable of 3 int. number of k-points in mesh</p></li>
+<li><p><strong>plot</strong>: bool, to plot or not to plot the calculated array</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Elin</strong>: linear energy array of float, spanning the range of the eigenspectrum</p></li>
+<li><p><strong>n_elect</strong>: numpy array of float, same length as <strong>Elin</strong>, integrated DOS</p></li>
+</ul>
+<p>at each energy, i.e. total number of electrons occupied at each energy</p>
+</div></blockquote>
+<p><a href="#id41"><span class="problematic" id="id42">**</span></a><a href="#id43"><span class="problematic" id="id44">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dos.ne_broad_analytical">
+<span class="sig-prename descclassname"><span class="pre">dos.</span></span><span class="sig-name descname"><span class="pre">ne_broad_analytical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NK</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NE</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dE</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([0.,</span> <span class="pre">0.,</span> <span class="pre">0.])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dos.ne_broad_analytical" title="Permalink to this definition"></a></dt>
+<dd><p>Analytical evaluation of the occupation function. Uses scipy’s errorfunction
+executable to evaluate the analytical form of a Gaussian-broadened state’s contribution
+to the total occupation, at each energy</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>TB</strong>: tight-binding model object</p></li>
+<li><p><strong>NK</strong>: int, or tuple of int, indicating number of k-points</p></li>
+</ul>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>NE</strong>: int, number of energy bins for final output</p></li>
+<li><p><strong>dE</strong>: float, energy spacing of bins, in eV</p></li>
+<li><p><strong>origin</strong>: numpy array of 3 float, indicating the origin of the mesh to be used,</p></li>
+</ul>
+<p>relevant for example in kz-specific contributions to density of states</p>
+<ul class="simple">
+<li><p><strong>plot</strong>: boolean, default to True, if false, suppress plot output</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>nE</strong>: numpy array of float, occupied states</p></li>
+<li><p><strong>Elin</strong>: numpy array of float, energy domain in eV</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id45"><span class="problematic" id="id46">**</span></a><a href="#id47"><span class="problematic" id="id48">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dos.ne_broad_numerical">
+<span class="sig-prename descclassname"><span class="pre">dos.</span></span><span class="sig-name descname"><span class="pre">ne_broad_numerical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NK</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NE</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dE</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([0.,</span> <span class="pre">0.,</span> <span class="pre">0.])</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dos.ne_broad_numerical" title="Permalink to this definition"></a></dt>
+<dd><p>Occupation function, as a numerical integral over the density of states function.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>TB</strong>: tight-binding model object</p></li>
+<li><p><strong>NK</strong>: int, or tuple of int, indicating number of k-points</p></li>
+</ul>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>NE</strong>: int, number of energy bins for final output</p></li>
+<li><p><strong>dE</strong>: float, energy spacing of bins, in eV</p></li>
+<li><p><strong>origin</strong>: numpy array of 3 float, indicating the origin of the mesh to be used,</p></li>
+</ul>
+<p>relevant for example in kz-specific contributions to density of states</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>ne</strong>: numpy array of float, integrated density-of-states at each energy</p></li>
+<li><p><strong>Elin</strong>: numpy array of float, energy domain in eV</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id49"><span class="problematic" id="id50">**</span></a><a href="#id51"><span class="problematic" id="id52">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dos.pdos_tetra">
+<span class="sig-prename descclassname"><span class="pre">dos.</span></span><span class="sig-name descname"><span class="pre">pdos_tetra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NK</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dos.pdos_tetra" title="Permalink to this definition"></a></dt>
+<dd><p>Partial density of states calculation. Follows same tetrahedra method, 
+weighting the contribution of a given tetrahedra by the average projection
+onto the indicated user-defined projection. The average here taken as the sum
+over projection at the 4 vertices of the tetrahedra.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>TB</strong>: tight-binding model object</p></li>
+<li><p><strong>NE</strong>: int, number of energy bins</p></li>
+<li><p><strong>NK</strong>: int, or iterable of 3 int, indicating the number of k-points</p></li>
+</ul>
+<p>along each of the axes of the Brillouin zone</p>
+<ul class="simple">
+<li><p><strong>proj</strong>: numpy array of float, 1D or 2D, c.f. <em>proj_mat</em>.</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Elin</strong>: numpy array of float, with length <strong>NE</strong>, spanning the</p></li>
+</ul>
+<p>range of the tight-binding bandstructure</p>
+<ul class="simple">
+<li><p><strong>pDOS</strong>: numpy array of float, len <strong>NE</strong>, projected density of states</p></li>
+<li><p><strong>DOS</strong>: numpy array of float, len <strong>NE</strong>, full density of states</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id53"><span class="problematic" id="id54">**</span></a><a href="#id55"><span class="problematic" id="id56">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dos.proj_avg">
+<span class="sig-prename descclassname"><span class="pre">dos.</span></span><span class="sig-name descname"><span class="pre">proj_avg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eivecs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_matrix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dos.proj_avg" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the expectation value of the projection operator, for each of the
+eigenvectors, at each of the vertices, and then sum over the vertices. We
+use <em>numpy.einsum</em> to perform matrix multiplication and contraction.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>eivecs</strong>: numpy array of complex float, 4xNxM, with M number of eigenvectors,</p></li>
+</ul>
+<p>N basis dimension</p>
+<ul class="simple">
+<li><p><strong>proj_matrix</strong>: numpy array of complex float, NxN in size</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of M float, indicating the average projection over the 4</p></li>
+</ul>
+<p>corners of the tetrahedron</p>
+</div></blockquote>
+<p><a href="#id57"><span class="problematic" id="id58">**</span></a><a href="#id59"><span class="problematic" id="id60">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dos.proj_mat">
+<span class="sig-prename descclassname"><span class="pre">dos.</span></span><span class="sig-name descname"><span class="pre">proj_mat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lenbasis</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dos.proj_mat" title="Permalink to this definition"></a></dt>
+<dd><p>Define projection matrix for fast evaluation of the partial density of states
+weighting. As the projector here is diagonal, and represents a Hermitian 
+matrix, it is by definition a real matrix operator.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>proj</strong>: numpy array, either 1D (indices of projection), or 2D (indices of</p></li>
+</ul>
+<p>projection and weight of projection)</p>
+<ul class="simple">
+<li><p><strong>lenbasis</strong>: int, size of the orbital basis</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>projector</strong>: numpy array of float, lenbasis x lenbasis</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id61"><span class="problematic" id="id62">**</span></a><a href="#id63"><span class="problematic" id="id64">*</span></a></p>
+</dd></dl>
+
+</section>
+<section id="fermi-surface">
+<h2>Fermi Surface<a class="headerlink" href="#fermi-surface" title="Permalink to this heading"></a></h2>
+<p>We use a modified version of the method of <a class="reference external" href="https://doi.org/10.1088/1367-2630/16/6/063014">marching tetrahedra</a> to find the Fermi surface within the reciprocal lattice. The standard definition of the reciprocal space mesh runs over the primitive parallelepiped defined by the recriprocal lattice vectors. Shifts to the lattice origin are provided as an option. The loci of the Fermi surface are found for each tetrahedra, and used to assemble a continuous set of triangular patches which ultimately construct the Fermi surface for each band which crosses the Fermi level.</p>
+<span class="target" id="module-FS_tetra"></span><dl class="py function">
+<dt class="sig sig-object py" id="FS_tetra.EF_tetra">
+<span class="sig-prename descclassname"><span class="pre">FS_tetra.</span></span><span class="sig-name descname"><span class="pre">EF_tetra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NK</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">EF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degen</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FS_tetra.EF_tetra" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a tetrahedra mesh of k-points which span the BZ with even distribution
+Diagonalize over this mesh and then compute the resulting density of states as
+prescribed in the above paper.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>TB</strong>: tight-binding model object</p></li>
+<li><p><strong>NK</strong>: int or list,tuple of 3 int indicating number of k-points in mesh</p></li>
+<li><p><strong>EF</strong>: float, Fermi energy, or energy of interest</p></li>
+</ul>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>degen</strong>: bool, flag for whether the bands are two-fold degenerate, as for</p></li>
+</ul>
+<p>Kramers degeneracy</p>
+<ul class="simple">
+<li><p><strong>origin</strong>: numpy array of 3 float,  corresponding to the desired centre of the</p></li>
+</ul>
+<p>plotted Brillouin zone</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>surfaces</strong>: dictionary of dictionaries: Each key-value pair corresponds</p></li>
+</ul>
+<p>to a different band index. For each case, the value is a dictionary with key-value
+pairs:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>‘pts’</em>: numpy array of Nx3 float, the N coordinates of EF crossing</p></li>
+<li><p><em>‘tris’</em>: numpy array of Nx3 int, the triangulation of the surface</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p><a href="#id65"><span class="problematic" id="id66">**</span></a><a href="#id67"><span class="problematic" id="id68">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="FS_tetra.FS_generate">
+<span class="sig-prename descclassname"><span class="pre">FS_tetra.</span></span><span class="sig-name descname"><span class="pre">FS_generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">EF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degen</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FS_tetra.FS_generate" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper function for computing Fermi surface triangulation, and then plotting
+the result.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>TB</strong>: tight-binding model object</p></li>
+<li><p><strong>Nk</strong>: int, or tuple/list of 3 int, number of k-points in Brillouin zone mesh</p></li>
+<li><p><strong>EF</strong>: float, Fermi energy, or constant energy level of interest</p></li>
+</ul>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>degen</strong>: bool, flag for whether the bands are two-fold degenerate, as for</p></li>
+</ul>
+<p>Kramers degeneracy</p>
+<ul class="simple">
+<li><p><strong>origin</strong>: numpy array of 3 float,  corresponding to the desired centre of the</p></li>
+</ul>
+<p>plotted Brillouin zone</p>
+<ul class="simple">
+<li><p><strong>ax</strong>: matplotlib Axes, option for plotting onto existing Axes</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>surfaces</strong>: dictionary of dictionaries: Each key-value pair corresponds</p></li>
+</ul>
+<p>to a different band index. For each case, the value is a dictionary with key-value
+pairs:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>‘pts’</em>: numpy array of Nx3 float, the N coordinates of EF crossing</p></li>
+<li><p><em>‘tris’</em>: numpy array of Nx3 int, the triangulation of the surface</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><p><strong>ax</strong>: matplotlib Axes, for further modification</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id69"><span class="problematic" id="id70">**</span></a><a href="#id71"><span class="problematic" id="id72">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="FS_tetra.fermi_surface_2D">
+<span class="sig-prename descclassname"><span class="pre">FS_tetra.</span></span><span class="sig-name descname"><span class="pre">fermi_surface_2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kfix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(2,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([0,</span> <span class="pre">0,</span> <span class="pre">0])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FS_tetra.fermi_surface_2D" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a 2D contour of the Fermi surface, projected into one of the 3 cardinal planes.
+User specifies which b-vector to be normal to, and its fixed value. The user also specifies
+the ‘Fermi’ energy, and can shift the centre of the plot away from the origin if desired.</p>
+<dl class="simple">
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>TB</strong>: tight-binding model object</p></li>
+<li><p><strong>npts</strong>: int or tuple of 2-int, number of kpoints in grid</p></li>
+<li><p><strong>kfix</strong>: tuple of two numeric. First is b-vector index (0-base), second is the fixed value (float)</p></li>
+<li><p><strong>energy</strong>: float, Fermi energy</p></li>
+<li><p><strong>shift</strong>: numpy array of 3 float, shift vector, in units or b-vectors</p></li>
+<li><p><strong>do_plot</strong>: boolean, option to suppress plot and only return the FS contours</p></li>
+</ul>
+</dd>
+<dt><em>returns</em>:</dt><dd><ul class="simple">
+<li><p><strong>ax</strong>: if do_plot, then a figure is generated and the axes object returned</p></li>
+<li><dl class="simple">
+<dt><strong>FS</strong>: if not do_plot, then a dictionary of contours, with keys indicating the associated band index, and</dt><dd><p>values being the arrays of K points is returned</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="FS_tetra.get_kpts">
+<span class="sig-prename descclassname"><span class="pre">FS_tetra.</span></span><span class="sig-name descname"><span class="pre">get_kpts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kfix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([0,</span> <span class="pre">0,</span> <span class="pre">0])</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FS_tetra.get_kpts" title="Permalink to this definition"></a></dt>
+<dd><p>Get k-grid for Brillouin zone sampling</p>
+<dl class="simple">
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>TB</strong>: tight-binding model object</p></li>
+<li><p><strong>kfix</strong>: tuple of two numeric. First is b-vector index (0-base), second is the fixed value (float)</p></li>
+<li><p><strong>npts</strong>: int or tuple of 2-int, number of kpoints in grid</p></li>
+<li><p><strong>shift</strong>: numpy array of 3 float, shift vector, in units or b-vectors</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="FS_tetra.heron">
+<span class="sig-prename descclassname"><span class="pre">FS_tetra.</span></span><span class="sig-name descname"><span class="pre">heron</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vert</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FS_tetra.heron" title="Permalink to this definition"></a></dt>
+<dd><p>Heron’s algorithm for calculation of triangle area, defined by only the vertices</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>vert</strong>: numpy array of 3x3 indicating vertices of triangle</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>float, area of triangle</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id73"><span class="problematic" id="id74">**</span></a><a href="#id75"><span class="problematic" id="id76">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="FS_tetra.sim_tri">
+<span class="sig-prename descclassname"><span class="pre">FS_tetra.</span></span><span class="sig-name descname"><span class="pre">sim_tri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vert</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FS_tetra.sim_tri" title="Permalink to this definition"></a></dt>
+<dd><p>Take 4 vertices of a quadrilateral and split into two alternative triangulations of the corners.
+Return the vertices of the triangulation which has the more similar areas between the two
+triangles decomposed.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>vert</strong>: (4 by 3 numpy array (or list) of float) in some coordinate frame</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>tris[0]</strong> , <strong>tris[1]</strong>: two numpy arrays of size 3 by 3 float containing</p></li>
+</ul>
+<p>the coordinates of a triangulation</p>
+</div></blockquote>
+<p><a href="#id77"><span class="problematic" id="id78">**</span></a><a href="#id79"><span class="problematic" id="id80">*</span></a></p>
+</dd></dl>
+
+</section>
+<section id="operators">
+<h2>Operators<a class="headerlink" href="#operators" title="Permalink to this heading"></a></h2>
+<p>A number of tools are included for characterizing the expectation values of observables, as projected onto the eigenstates of the model Hamiltonian. The main function here is <em>O_path</em>, which will compute the expectation value of an indicated operator (represented by the user as a Hermitian numpy array of complex float with the same dimensions as the orbital basis). The resulting values are then displayed in the form of a colourmap applied to the bandstructure calculation along the desired path in momentum space. Several common operators are defined to facilitate these calculations, such as spin <span class="math notranslate nohighlight">\(\hat S_i\)</span> and <span class="math notranslate nohighlight">\(\left&lt;\vec{L}\cdot\vec{S}\right&gt;\)</span> . In addition, <em>fatbs</em> uses <em>O_path</em> to produce a “fat bands” type spaghetti plot, where the colourscale reflects the orbital projection onto the bandstructure.</p>
+<span class="target" id="module-operator_library"></span><p>Created on Mon Mar 23 20:08:46 2020</p>
+<p>&#64;author: ryanday</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="operator_library.FS">
+<span class="sig-prename descclassname"><span class="pre">operator_library.</span></span><span class="sig-name descname"><span class="pre">FS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ktuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ef</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.FS" title="Permalink to this definition"></a></dt>
+<dd><p>A simplified form of Fermi surface extraction, for proper calculation of this,
+<em>chinook.FS_tetra.py</em> is preferred. This finds all points in kmesh within a 
+tolerance of the constant energy level.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>TB</strong>: tight-binding model object</p></li>
+<li><p><strong>ktuple</strong>: tuple of k limits, len (3), First and second should be iterable,</p></li>
+</ul>
+<p>define the limits and mesh of k for kx,ky, the third is constant, float for kz</p>
+<ul class="simple">
+<li><p><strong>Ef</strong>: float, energy of interest, eV</p></li>
+<li><p><strong>tol</strong>: float, energy tolerance, float</p></li>
+<li><p><strong>ax</strong>: matplotlib Axes, option for plotting onto existing Axes</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>pts</strong>: numpy array of len(N) x 3 indicating x,y, band index</p></li>
+<li><p><strong>TB.Eband</strong>: numpy array of float, energy spectrum</p></li>
+<li><p><strong>TB.Evec</strong>: numpy array of complex float, eigenvectors</p></li>
+<li><p><strong>ax</strong>: matplotlib Axes, for further user modification</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id81"><span class="problematic" id="id82">**</span></a><a href="#id83"><span class="problematic" id="id84">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="operator_library.LSmat">
+<span class="sig-prename descclassname"><span class="pre">operator_library.</span></span><span class="sig-name descname"><span class="pre">LSmat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.LSmat" title="Permalink to this definition"></a></dt>
+<dd><p>Generate an arbitary L.S type matrix for a given basis. Uses same <em>Yproj</em> as 
+the <em>HSO</em> in the <em>chinook.H_library</em>, but is otherwise different, as it supports
+projection onto specific axes, in addition to the full vector dot product operator.</p>
+<p>Otherwise, the LiSi matrix is computed with i the axis index. 
+To do this, a linear combination of L+S+,L-S-,L+S-,L-S+,LzSz terms are used to compute.</p>
+<p>In the factors dictionary, the weight of these terms is defined. 
+The keys are tuples of (L+/-/z,S+/-/z) in a bit
+of a cryptic way. For L, range (0,1,2) -&gt;(-1,0,1) 
+and for S range (-1,0,1) = S1-S2 with S1/2 = +/- 1 here</p>
+<p>L+,L-,Lz matrices are defined for each l shell in the basis, 
+transformed into the basis of cubic harmonics.
+The nonzero terms will then just be used along with the spin and 
+weighted by the factor value, and slotted into 
+a len(basis)xlen(basis) matrix HSO</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>TB</strong>: tight-binding object, as defined in TB_lib.py</p></li>
+<li><p><strong>axis</strong>: axis for calculation as either ‘x’,’y’,’z’,None,</p></li>
+</ul>
+<p>or float (angle in the x-y plane)</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>HSO</strong>: (len(basis)xlen(basis)) numpy array of complex float</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id85"><span class="problematic" id="id86">**</span></a><a href="#id87"><span class="problematic" id="id88">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="operator_library.LdotS">
+<span class="sig-prename descclassname"><span class="pre">operator_library.</span></span><span class="sig-name descname"><span class="pre">LdotS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colourbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.LdotS" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper for <strong>O_path</strong> for computing L.S along a vector projection of interest,
+or none at all.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>TB</strong>: tight-binding obect</p></li>
+</ul>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>axis</strong>: numpy array of 3 float, indicating axis, or None for full L.S</p></li>
+<li><p><strong>ax</strong>: matplotli.Axes object for plotting</p></li>
+<li><p><strong>colourbar</strong>: bool, display colourbar on plot</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>O</strong>: numpy array of Nxlen(basis) float, expectation value of operator</p></li>
+</ul>
+<p>on each band over the kpath of TB.Kobj.</p>
+</div></blockquote>
+<p><a href="#id89"><span class="problematic" id="id90">**</span></a><a href="#id91"><span class="problematic" id="id92">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="operator_library.Lm">
+<span class="sig-prename descclassname"><span class="pre">operator_library.</span></span><span class="sig-name descname"><span class="pre">Lm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.Lm" title="Permalink to this definition"></a></dt>
+<dd><p>L- operator in the l,m_l basis, organized with 
+(0,0) = <a href="#id93"><span class="problematic" id="id94">|</span></a>l,l&gt;, (2*l,2*l) = <a href="#id95"><span class="problematic" id="id96">|</span></a>l,-l&gt;
+The nonzero elements are on the upper diagonal</p>
+<p><em>arg</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>l</strong>: int orbital angular momentum</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>M</strong>: numpy array (2*l+1,2*l+1) of real float</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id97"><span class="problematic" id="id98">**</span></a><a href="#id99"><span class="problematic" id="id100">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="operator_library.Lp">
+<span class="sig-prename descclassname"><span class="pre">operator_library.</span></span><span class="sig-name descname"><span class="pre">Lp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.Lp" title="Permalink to this definition"></a></dt>
+<dd><p>L+ operator in the l,m_l basis, organized with 
+(0,0) = <a href="#id101"><span class="problematic" id="id102">|</span></a>l,l&gt;, (2*l,2*l) = <a href="#id103"><span class="problematic" id="id104">|</span></a>l,-l&gt;
+The nonzero elements are on the upper diagonal</p>
+<p><em>arg</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>l</strong>: int orbital angular momentum</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>M</strong>: numpy array (2*l+1,2*l+1) of real float</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id105"><span class="problematic" id="id106">**</span></a><a href="#id107"><span class="problematic" id="id108">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="operator_library.Lz">
+<span class="sig-prename descclassname"><span class="pre">operator_library.</span></span><span class="sig-name descname"><span class="pre">Lz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.Lz" title="Permalink to this definition"></a></dt>
+<dd><p>Lz operator in the l,m_l basis</p>
+<p><em>arg</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>l</strong>: int orbital angular momentum</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array (2*l+1,2*l+1)</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id109"><span class="problematic" id="id110">**</span></a><a href="#id111"><span class="problematic" id="id112">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="operator_library.O_path">
+<span class="sig-prename descclassname"><span class="pre">operator_library.</span></span><span class="sig-name descname"><span class="pre">O_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Operator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Kobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vlims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Elims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degen</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colourbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colourmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.O_path" title="Permalink to this definition"></a></dt>
+<dd><p>Compute and plot the expectation value of an user-defined operator along a k-path
+Option of summing over degenerate bands (for e.g. fat bands) with degen boolean flag</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Operator</strong>: matrix representation of the operator (numpy array len(basis), len(basis) of complex float)</p></li>
+<li><p><strong>TB</strong>: Tight binding object from TB_lib</p></li>
+</ul>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Kobj</strong>: Momentum object, as defined in <em>chinook.klib.py</em></p></li>
+<li><p><strong>vlims</strong>: tuple of 2 float, limits of the colourscale for plotting,</p></li>
+</ul>
+<p>if default value passed, will compute a reasonable range</p>
+<ul class="simple">
+<li><p><strong>Elims</strong>: tuple of 2 float, limits of vertical scale for plotting</p></li>
+<li><p><strong>plot</strong>: bool, default to True, plot, or not plot the result</p></li>
+<li><p><strong>degen</strong>: bool, True if bands are degenerate, sum over adjacent bands</p></li>
+<li><p><strong>ax</strong>: matplotlib Axes, option for plotting onto existing Axes</p></li>
+<li><p><strong>colourbar</strong>: bool, plot colorbar on axes, default to True</p></li>
+<li><p><strong>colourmap</strong>: matplotlib colourmap,i.e. LinearSegmentedColormap</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>O_vals</strong>: the numpy array of float, (len Kobj x len basis) expectation values</p></li>
+<li><p><strong>ax</strong>: matplotlib Axes, allowing for user to further modify</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id113"><span class="problematic" id="id114">**</span></a><a href="#id115"><span class="problematic" id="id116">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="operator_library.O_surf">
+<span class="sig-prename descclassname"><span class="pre">operator_library.</span></span><span class="sig-name descname"><span class="pre">O_surf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">O</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ktuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ef</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vlims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.O_surf" title="Permalink to this definition"></a></dt>
+<dd><p>Compute and plot the expectation value of an user-defined operator over
+a surface of constant-binding energy</p>
+<p>Option of summing over degenerate bands (for e.g. fat bands) with degen boolean flag</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>O</strong>: matrix representation of the operator (numpy array len(basis), len(basis) of complex float)</p></li>
+<li><p><strong>TB</strong>: Tight binding object from <em>chinook.TB_lib.py</em></p></li>
+<li><dl class="simple">
+<dt><strong>ktuple</strong>: momentum range for mesh: </dt><dd><p>ktuple[0] = (x0,xn,n),ktuple[1]=(y0,yn,n),ktuple[2]=kz</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>vlims</strong>: limits for the colourscale (optional argument), will choose</p></li>
+</ul>
+<p>a reasonable set of limits if none passed by user</p>
+<ul class="simple">
+<li><p><strong>ax</strong>: matplotlib Axes, option for plotting onto existing Axes</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>pts</strong>: the numpy array of expectation values, of shape Nx3, with first</p></li>
+</ul>
+<p>two dimensions the kx,ky coordinates of the point, and the third the expectation
+value.</p>
+<ul class="simple">
+<li><p><strong>ax</strong>: matplotlib Axes, allowing for further user modifications</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id117"><span class="problematic" id="id118">**</span></a><a href="#id119"><span class="problematic" id="id120">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="operator_library.S_vec">
+<span class="sig-prename descclassname"><span class="pre">operator_library.</span></span><span class="sig-name descname"><span class="pre">S_vec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.S_vec" title="Permalink to this definition"></a></dt>
+<dd><p>Spin operator along an arbitrary direction can be written as
+n.S = nx Sx + ny Sy + nz Sz</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>LB</strong>: int, length of basis</p></li>
+<li><p><strong>vec</strong>: numpy array of 3 float, direction of spin projection</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of complex float (LB by LB), spin operator matrix</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id121"><span class="problematic" id="id122">**</span></a><a href="#id123"><span class="problematic" id="id124">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="operator_library.Sz">
+<span class="sig-prename descclassname"><span class="pre">operator_library.</span></span><span class="sig-name descname"><span class="pre">Sz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colourbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.Sz" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper for <strong>O_path</strong> for computing Sz along a vector projection of interest,
+or none at all.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>TB</strong>: tight-binding obect</p></li>
+</ul>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>ax</strong>: matplotlib.Axes plotting object</p></li>
+<li><p><strong>colourbar</strong>: bool, display colourbar on plot</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>O</strong>: numpy array of Nxlen(basis) float, expectation value of operator</p></li>
+</ul>
+<p>on each band over the kpath of TB.Kobj.</p>
+</div></blockquote>
+<p><a href="#id125"><span class="problematic" id="id126">**</span></a><a href="#id127"><span class="problematic" id="id128">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="operator_library.colourmaps">
+<span class="sig-prename descclassname"><span class="pre">operator_library.</span></span><span class="sig-name descname"><span class="pre">colourmaps</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.colourmaps" title="Permalink to this definition"></a></dt>
+<dd><p>Plot utility, define a few colourmaps which scale to transparent at their zero values</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="operator_library.degen_Ovals">
+<span class="sig-prename descclassname"><span class="pre">operator_library.</span></span><span class="sig-name descname"><span class="pre">degen_Ovals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Oper_exp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Energy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.degen_Ovals" title="Permalink to this definition"></a></dt>
+<dd><p>In the presence of degeneracy, we want to average over the
+evaluated orbital expectation values–numerically, the degenerate 
+subspace can be arbitrarily diagonalized during numpy.linalg.eigh. 
+All degeneracies are found, and the expectation values averaged.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Oper_exp</strong>: numpy array of float, operator expectations</p></li>
+<li><p><strong>Energy</strong>: numpy array of float, energy eigenvalues.</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id129"><span class="problematic" id="id130">**</span></a><a href="#id131"><span class="problematic" id="id132">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="operator_library.fatbs">
+<span class="sig-prename descclassname"><span class="pre">operator_library.</span></span><span class="sig-name descname"><span class="pre">fatbs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Kobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vlims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Elims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degen</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colourbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.fatbs" title="Permalink to this definition"></a></dt>
+<dd><p>Fat band projections. User denotes which orbital index projection is of interest
+Projection passed either as an Nx1 or Nx2 array of float. If Nx2, first column is
+the indices of the desired orbitals, the second column is the weight. If Nx1, then
+the weights are all taken to be eqaul</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>proj</strong>: iterable of projections, to be passed as either a 1-dimensional</p></li>
+</ul>
+<p>with indices of projection only, OR, 2-dimensional, with the second column giving
+the amplitude of projection (for linear-combination projection)</p>
+<ul class="simple">
+<li><p><strong>TB</strong>: tight-binding object</p></li>
+</ul>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Kobj</strong>: Momentum object, as defined in <em>chinook.klib.py</em></p></li>
+<li><p><strong>vlims</strong>: tuple of 2 float, limits of the colorscale for plotting, default to (0,1)</p></li>
+<li><p><strong>Elims</strong>: tuple of 2 float, limits of vertical scale for plotting</p></li>
+<li><p><strong>plot</strong>: bool, default to True, plot, or not plot the result</p></li>
+<li><p><strong>degen</strong>: bool, True if bands are degenerate, sum over adjacent bands</p></li>
+<li><p><strong>ax</strong>: matplotlib Axes, option for plotting onto existing Axes</p></li>
+<li><p><strong>colorbar</strong>: bool, plot colorbar on axes, default to True</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Ovals</strong>: numpy array of float, len(Kobj.kpts)*len(TB.basis)</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id133"><span class="problematic" id="id134">**</span></a><a href="#id135"><span class="problematic" id="id136">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="operator_library.is_numeric">
+<span class="sig-prename descclassname"><span class="pre">operator_library.</span></span><span class="sig-name descname"><span class="pre">is_numeric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.is_numeric" title="Permalink to this definition"></a></dt>
+<dd><p>Quick check if object is numeric</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>a</strong>: numeric, float/int</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>bool, if numeric True, else False</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id137"><span class="problematic" id="id138">**</span></a><a href="#id139"><span class="problematic" id="id140">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="operator_library.operator_projected_fermi_surface">
+<span class="sig-prename descclassname"><span class="pre">operator_library.</span></span><span class="sig-name descname"><span class="pre">operator_projected_fermi_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npts=100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kfix=(2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift=array([0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">0])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degen=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap=&lt;matplotlib.colors.LinearSegmentedColormap</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale=20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.operator_projected_fermi_surface" title="Permalink to this definition"></a></dt>
+<dd><p>Simple 2D-projected FS with operator expectation values plot over the FS contours.</p>
+<dl class="simple">
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>TB</strong>: tight-binding object</p></li>
+<li><p><strong>matrix</strong>: numpy array of complex float, operator matrix</p></li>
+<li><p><strong>npts</strong>: number of k-points along axes of BZ</p></li>
+<li><p><strong>kfix</strong>: fixed index of BZ. First value is projected reciprocal lattice vector (0,1,2), second is value (inverse Angstrom)</p></li>
+<li><p><strong>energy</strong>: float, fixed value of energy (EF = 0 )</p></li>
+<li><p><strong>shift</strong>: numpy array of 3 float. Shift of centre of plot</p></li>
+<li><p><strong>degen</strong>: boolean, average over degenerate bands</p></li>
+<li><p><strong>fig</strong>: matplotlib figure to plot on top of</p></li>
+<li><p><strong>cmap</strong>: colourmap</p></li>
+<li><p><strong>scale</strong>: multiplier for scatterplot point sizes</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="operator_library.surface_proj">
+<span class="sig-prename descclassname"><span class="pre">operator_library.</span></span><span class="sig-name descname"><span class="pre">surface_proj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operator_library.surface_proj" title="Permalink to this definition"></a></dt>
+<dd><p>Operator for computing surface-projection of eigenstates. User passes the orbital basis
+and an extinction length (1/e) length for the ‘projection onto surface’. The operator 
+is diagonal with exponenential suppression based on depth.</p>
+<p>For use with SLAB geometry only</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>basis</strong>: list, orbital objects</p></li>
+<li><p><strong>cutoff</strong>: float, cutoff length</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>M</strong>: numpy array of float, shape len(TB.basis) x len(TB.basis)</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id141"><span class="problematic" id="id142">**</span></a><a href="#id143"><span class="problematic" id="id144">*</span></a></p>
+</dd></dl>
+
+</section>
+<section id="module-orbital_plotting">
+<span id="orbital-visualization"></span><h2>Orbital Visualization<a class="headerlink" href="#module-orbital_plotting" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="orbital_plotting.col_phase">
+<span class="sig-prename descclassname"><span class="pre">orbital_plotting.</span></span><span class="sig-name descname"><span class="pre">col_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orbital_plotting.col_phase" title="Permalink to this definition"></a></dt>
+<dd><p>Define the phase of a complex number</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>vals</strong>: complex float, or numpy array of complex float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>float, or numpy array of float of same shape as vals, from -pi to pi</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id145"><span class="problematic" id="id146">**</span></a><a href="#id147"><span class="problematic" id="id148">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="orbital_plotting.make_angle_mesh">
+<span class="sig-prename descclassname"><span class="pre">orbital_plotting.</span></span><span class="sig-name descname"><span class="pre">make_angle_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orbital_plotting.make_angle_mesh" title="Permalink to this definition"></a></dt>
+<dd><p>Quick utility function for generating an angular mesh over spherical surface</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>n</strong>: int, number of divisions of the angular space</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>th</strong>: numpy array of 2n float from 0 to pi</p></li>
+<li><p><strong>ph</strong>: numpy array of 4n float from 0 to 2pi</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id149"><span class="problematic" id="id150">**</span></a><a href="#id151"><span class="problematic" id="id152">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="orbital_plotting.rephase_wavefunctions">
+<span class="sig-prename descclassname"><span class="pre">orbital_plotting.</span></span><span class="sig-name descname"><span class="pre">rephase_wavefunctions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vecs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orbital_plotting.rephase_wavefunctions" title="Permalink to this definition"></a></dt>
+<dd><p>The wavefunction at different k-points can choose an arbitrary phase, as can 
+a subspace of degenerate eigenstates. As such, it is often advisable to choose
+a global phase definition when comparing several different vectors. The user here
+passes a set of vectors, and they are rephased. The user has the option of specifying
+which basis index they would like to set the phasing. It is essential however that the
+projection onto at least one basis element is non-zero over the entire set  of vectors 
+for this rephasing to work.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>vecs</strong>: numpy array of complex float, ordered as rows:vector index, columns: basis index</p></li>
+</ul>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>index</strong>: int, optional choice of basis phase selection</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>rephase</strong>: numpy array of complex float of same shape as <em>vecs</em></p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id153"><span class="problematic" id="id154">**</span></a><a href="#id155"><span class="problematic" id="id156">*</span></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="orbital_plotting.wavefunction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">orbital_plotting.</span></span><span class="sig-name descname"><span class="pre">wavefunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orbital_plotting.wavefunction" title="Permalink to this definition"></a></dt>
+<dd><p>This class acts to reorganize basis and wavefunction information in a more
+suitable data structure than the native orbital class, or the sake of plotting
+orbital wavefunctions. The relevant eigenvector can be redefined, so long as it
+represents a projection onto the same orbital basis set as defined previously.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>basis</strong>: list of orbital objects</p></li>
+<li><p><strong>vector</strong>: numpy array of complex float, eigenvector projected onto the basis orbitals</p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="orbital_plotting.wavefunction.calc_Ylm">
+<span class="sig-name descname"><span class="pre">calc_Ylm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">th</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orbital_plotting.wavefunction.calc_Ylm" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate all spherical harmonics needed for present calculation</p>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of complex float, of shape (len(self.harmonics),len(th))</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id157"><span class="problematic" id="id158">**</span></a><a href="#id159"><span class="problematic" id="id160">*</span></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orbital_plotting.wavefunction.find_centres">
+<span class="sig-name descname"><span class="pre">find_centres</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orbital_plotting.wavefunction.find_centres" title="Permalink to this definition"></a></dt>
+<dd><p>Create a Pointer array of basis indices and the centres of these basis orbitals.</p>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>all_centres</strong>: list of numpy array of length 3, indicating unique positions in the basis set</p></li>
+<li><p><strong>centre_pointers</strong>: list of int, indicating the indices of position array, associated with the</p></li>
+</ul>
+<p>location of the related orbital in real space.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orbital_plotting.wavefunction.find_harmonics">
+<span class="sig-name descname"><span class="pre">find_harmonics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orbital_plotting.wavefunction.find_harmonics" title="Permalink to this definition"></a></dt>
+<dd><p>Create a pointer array of basis indices and the associated spherical harmonics, as well as
+aa more convenient vector form of the projections themselves, as lists of complex float</p>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>all_lm</strong>: list of int, l,m pairs of all spherical harmonics relevant to calculation</p></li>
+<li><p><strong>lm_pointers</strong>: list of int, pointer indices relating each basis orbital projection to the</p></li>
+</ul>
+<p>lm pairs in <em>all_lm</em></p>
+<ul class="simple">
+<li><p><strong>projectors</strong>: list of arrays of complex float, providing the complex projection of basis</p></li>
+</ul>
+<p>onto the related spherical harmonics</p>
+</div></blockquote>
+<p><a href="#id161"><span class="problematic" id="id162">**</span></a><a href="#id163"><span class="problematic" id="id164">*</span></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orbital_plotting.wavefunction.plot_wavefunction">
+<span class="sig-name descname"><span class="pre">plot_wavefunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vertices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">triangulations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colours</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cbar_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orbital_plotting.wavefunction.plot_wavefunction" title="Permalink to this definition"></a></dt>
+<dd><p>Plotting function, for visualizing orbitals.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>vertices</strong>: numpy array of float, shape (len(centres), len(th)*len(ph), 3) locations of vertices</p></li>
+<li><p><strong>triangulations</strong>: numpy array of int, indicating the vertices connecting each surface patch</p></li>
+<li><p><strong>colours</strong>: numpy array of float, of shape (len(centres),len(triangles)) encoding the orbital phase for each surface patch of the plotting</p></li>
+<li><p><strong>plot_ax</strong>: matplotlib Axes, for plotting on existing axes</p></li>
+<li><p><strong>cbar_ax</strong>: matplotlib Axes, for use in drawing colourbar</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>plots</strong>: list of plotted surfaces</p></li>
+<li><p><strong>plot_ax</strong>: matplotlib Axes, for further modifications</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id165"><span class="problematic" id="id166">**</span></a><a href="#id167"><span class="problematic" id="id168">*</span></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orbital_plotting.wavefunction.redefine_vector">
+<span class="sig-name descname"><span class="pre">redefine_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orbital_plotting.wavefunction.redefine_vector" title="Permalink to this definition"></a></dt>
+<dd><p>Update vector definition</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>vector</strong>: numpy array of complex float, same length as self.vector</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id169"><span class="problematic" id="id170">**</span></a><a href="#id171"><span class="problematic" id="id172">*</span></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="orbital_plotting.wavefunction.triangulate_wavefunction">
+<span class="sig-name descname"><span class="pre">triangulate_wavefunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plotting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orbital_plotting.wavefunction.triangulate_wavefunction" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the wavefunction stored in the class attributes as self.vector as a projection
+over the basis of spherical harmonics. The radial wavefunctions are not explicitly included,
+in the event of multiple basis atom sites, the length scale is set by the mean interatomic 
+distance. The wavefunction phase is encoded in the colourscale of the mesh plot. The user
+sets the smoothness of the orbital projection by the integer argument <em>n</em></p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>n</strong>: int, number of angles in the mesh: Theta from 0 to pi is divided 2n times, and</p></li>
+</ul>
+<p>Phi from 0 to 2pi is divided 4n times</p>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>plotting</strong>: boolean, turn on/off to display plot</p></li>
+<li><p><strong>ax</strong>: matplotlib Axes, for plotting on existing plot</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>vertices</strong>: numpy array of float, shape (len(centres), len(th)*len(ph), 3) locations of vertices</p></li>
+<li><p><strong>triangulations</strong>: numpy array of int, indicating the vertices connecting each surface patch</p></li>
+<li><p><strong>colours</strong>: numpy array of float, of shape (len(centres),len(triangles)) encoding the orbital phase for each surface patch of the plotting</p></li>
+<li><p><strong>ax</strong>: matplotlib Axes, for further modifications</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id173"><span class="problematic" id="id174">**</span></a><a href="#id175"><span class="problematic" id="id176">*</span></a></p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-tetrahedra">
+<span id="tetrahedra"></span><h2>tetrahedra<a class="headerlink" href="#module-tetrahedra" title="Permalink to this heading"></a></h2>
+<p>Created on Tue Sep  4 16:27:40 2018</p>
+<p>&#64;author: rday</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="tetrahedra.corners">
+<span class="sig-prename descclassname"><span class="pre">tetrahedra.</span></span><span class="sig-name descname"><span class="pre">corners</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tetrahedra.corners" title="Permalink to this definition"></a></dt>
+<dd><p>Establish the shortest main diagonal of a cube of points, so as to establish
+the main diagonal for tetrahedral partitioning of the cube</p>
+<p><em>return</em>:</p>
+<blockquote>
+<div><p><strong>main</strong>: tuple of 2 integers indicating the cube coordinates</p>
+<p><strong>cube</strong>: numpy array of 8 corners (8x3) float</p>
+</div></blockquote>
+<p><a href="#id177"><span class="problematic" id="id178">**</span></a><a href="#id179"><span class="problematic" id="id180">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tetrahedra.gen_mesh">
+<span class="sig-prename descclassname"><span class="pre">tetrahedra.</span></span><span class="sig-name descname"><span class="pre">gen_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">avec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tetrahedra.gen_mesh" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a mesh of points in 3-dimensional momentum space over the first
+Brillouin zone. These are defined first in terms of recirocal lattice vectors,</p>
+<p>i.e. from 0-&gt;1 along each, and then are multiplied by the rec. latt. vectors 
+themselves. Note that this implicitly provides a mesh which is not centred
+at zero, but has an origin at the rec. latt. vector (0,0,0)</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>avec</strong>: numpy array of 3x3 float, lattice vectors</p></li>
+<li><p><strong>N</strong>: int, or tuple of 3 int, indicating the number of points along</p></li>
+</ul>
+<p>each of the reciprocal lattice vectors</p>
+</div></blockquote>
+<p><a href="#id181"><span class="problematic" id="id182">**</span></a><a href="#id183"><span class="problematic" id="id184">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tetrahedra.mesh_tetra">
+<span class="sig-prename descclassname"><span class="pre">tetrahedra.</span></span><span class="sig-name descname"><span class="pre">mesh_tetra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">avec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tetrahedra.mesh_tetra" title="Permalink to this definition"></a></dt>
+<dd><p>An equivalent definition of a spanning grid over the Brillouin zone is just
+one which spans the reciprocal cell unit cell. Translational symmetry imposes
+that this partitioning is equivalent to the conventional definition of the 
+Brillouin zone, with the very big advantage that we can define a rectilinear
+grid which spans this volume in a way which can not be done for most
+Bravais lattices in R3.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>avec</strong>: numpy array of 3x3 float, lattice vectors</p></li>
+<li><p><strong>N</strong>: int, or iterable of 3 int which define the density of the mesh</p></li>
+</ul>
+<p>over the Brillouin zone.</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>pts</strong>: numpy array of Mx3 float, indicating the points in momentum space</p></li>
+</ul>
+<p>at the vertices of the mesh</p>
+<ul class="simple">
+<li><p><strong>mesh_tet</strong>: numpy array of Lx4 int, indicating the L-tetrahedra</p></li>
+</ul>
+<p>which partition the grid</p>
+</div></blockquote>
+<p><a href="#id185"><span class="problematic" id="id186">**</span></a><a href="#id187"><span class="problematic" id="id188">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tetrahedra.neighbours">
+<span class="sig-prename descclassname"><span class="pre">tetrahedra.</span></span><span class="sig-name descname"><span class="pre">neighbours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tetrahedra.neighbours" title="Permalink to this definition"></a></dt>
+<dd><p>For an unit cube, we can define the set of 3 nearest neighbours by performing
+the requisite modular sum along one of the three Cartesian axes. In this way,
+for an input point, we can extract its neighbours easily.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>point</strong>: numpy array of 3 int, all either 0 or 1</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of 3x3 int, indicating the neighbours of <strong>point</strong> on the</p></li>
+</ul>
+<p>unit cube.</p>
+</div></blockquote>
+<p><a href="#id189"><span class="problematic" id="id190">**</span></a><a href="#id191"><span class="problematic" id="id192">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tetrahedra.not_point">
+<span class="sig-prename descclassname"><span class="pre">tetrahedra.</span></span><span class="sig-name descname"><span class="pre">not_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tetrahedra.not_point" title="Permalink to this definition"></a></dt>
+<dd><p>Inverse of point, defined in an N-dimensional binary coordinate frame</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>point</strong>: int or numpy array of int between 0 and 1</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of int, NOT gate applied to the binary vector point</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id193"><span class="problematic" id="id194">**</span></a><a href="#id195"><span class="problematic" id="id196">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tetrahedra.propagate">
+<span class="sig-prename descclassname"><span class="pre">tetrahedra.</span></span><span class="sig-name descname"><span class="pre">propagate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tetrahedra.propagate" title="Permalink to this definition"></a></dt>
+<dd><p>Distribute the generic corner numbering convention defined for a cube at the 
+origin to a cube starting at some arbitrary point in our grid. Excludes the
+edge points as starting points, so that all cubes are within the grid.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>i</strong>: int, index of origin</p></li>
+<li><p><strong>Nr</strong>: int, number of rows in grid</p></li>
+<li><p><strong>Nc</strong>: int, number of columns in grid</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a href="#id197"><span class="problematic" id="id198">**</span></a>numpy array of int, len 8 corresponding to the re-numbering of the</p></li>
+</ul>
+<p>corners of the cube.</p>
+</div></blockquote>
+<p><a href="#id199"><span class="problematic" id="id200">**</span></a><a href="#id201"><span class="problematic" id="id202">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tetrahedra.tet_inds">
+<span class="sig-prename descclassname"><span class="pre">tetrahedra.</span></span><span class="sig-name descname"><span class="pre">tet_inds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tetrahedra.tet_inds" title="Permalink to this definition"></a></dt>
+<dd><p>Generate, for a single cube, the tetrahedral designations, 
+for the following conventional numbering:</p>
+<blockquote>
+<div><blockquote>
+<div><p>6 o —- o 7       
+/      / |</p>
+</div></blockquote>
+<dl>
+<dt>4 o —- o5 o 3</dt><dd><div class="line-block">
+<div class="line">| /</div>
+</div>
+</dd>
+</dl>
+<p>0 o —- o 1</p>
+<p>with 2 hidden from view (below 6, and behind the line-segment connecting 4-5). 
+Here drawn with x along horizontal, z into plane, y vertical
+Defining the real-index spacing between adjacent cubes in a larger array, we can apply this simple prescription
+to define the spanning tetrahedra over the larger k-mesh</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>tetra_inds</strong>: numpy array of integer (6x4), with each</p></li>
+</ul>
+<p>row containing the index of the 4 tetrahedral vertices. Together, for
+of a set of neighbouring points on a grid, we divide into a set of covering
+tetrahedra which span the volume of the cube.</p>
+</div></blockquote>
+<p><a href="#id203"><span class="problematic" id="id204">**</span></a><a href="#id205"><span class="problematic" id="id206">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tetrahedra.tetrahedra">
+<span class="sig-prename descclassname"><span class="pre">tetrahedra.</span></span><span class="sig-name descname"><span class="pre">tetrahedra</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tetrahedra.tetrahedra" title="Permalink to this definition"></a></dt>
+<dd><p>Perform partitioning of a cube into tetrahedra. The indices can then be
+dotted with some basis vector set to put them into the proper coordinate frame.</p>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>tetra</strong>: numpy array of 6 x 4 x 3 int, indicating the corners</p></li>
+</ul>
+<p>of the 6 tetrahedra</p>
+</div></blockquote>
+<p><a href="#id207"><span class="problematic" id="id208">**</span></a><a href="#id209"><span class="problematic" id="id210">*</span></a></p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tightbinding.html" class="btn btn-neutral float-left" title="Tight Binding" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="slab.html" class="btn btn-neutral float-right" title="Slab Calculation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Ryan P. Day.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

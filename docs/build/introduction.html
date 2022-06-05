@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Introduction &mdash; chinook 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ARPES Simulation" href="arpes.html" />
+    <link rel="prev" title="Welcome to chinook!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html">
+            <img src="_static/chinook_header_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lattice">Lattice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basis">Basis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hamiltonian">Hamiltonian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tight-binding-model">Tight-Binding Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#momentum">Momentum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#arpes-calculation">ARPES Calculation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="arpes.html">ARPES Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tightbinding.html">Tight Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operator.html">Model Diagnostics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slab.html">Slab Calculation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Input Arguments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html#contact">Contact</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">chinook</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Introduction</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/introduction.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="toctree-wrapper compound">
+</div>
+<section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h1>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<p>The entire source code for <em>chinook</em> is available as a github repository, which can be accessed
+by visiting our <a class="reference external" href="https://github.com/rpday/chinook">repo</a>.</p>
+<p>For most convenient access, <em>chinook</em> is registered and available for download via <em>pip</em>. Open a command line shell and execute</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">chinook</span>
+</pre></div>
+</div>
+<p>We have avoided use of unconventional packages to run <em>chinook</em>, and the only required packages are <a class="reference external" href="https://numpy.org">numpy</a>, <a class="reference external" href="https://matplotlib.org">matplotlib</a>, and <a class="reference external" href="https://www.scipy.org/scipylib/index.html">scipy</a>. Some high performance operation is available if <a class="reference external" href="https://psutil.readthedocs.io/en/latest/">psutil</a> is also available.</p>
+<p>For any publications which make use of <em>chinook</em>, please reference</p>
+<p>R.P. Day, B. Zwartsenberg, I.S. Elfimov and A. Damascelli, <em>Computational framework chinook for angle-resolved photoemission spectroscopy</em>, npj Quantum Materials 4, 54 (2019)</p>
+</section>
+<section id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading"></a></h2>
+<p>The recommended structure for defining the necessary input for a <em>chinook</em> calculation can be found in the following <a class="reference download internal" download="" href="_downloads/68658c8429c00cfa470e47a6eb126770/template.py"><code class="xref download docutils literal notranslate"><span class="pre">template</span></code></a> file. Entire calculations can be done in a single script, or as illustrated for the example in the <a class="reference internal" href="tutorial.html#id1"><span class="std std-ref">Tutorial</span></a> page, input and execution can be split across multiple python scripts.</p>
+<p>At the core of any chinook calculation is the tight-binding model. The requisite information to construct such a model is an orbital basis and a Hamiltonian which effectively describes the Hilbert space spanned by this orbital basis.</p>
+<p>In order to construct the essential objects in chinook, we make use of Python dictionaries, a hash-table representation which allows for an efficient, but more importantly human-readable, input format. If you open the template.py file in your chinook distribution, you will find the basic input for starting a calculation. A comprehensive overview of the required and optional arguments supported for the input dictionaries can be found on the <a class="reference internal" href="input.html#id1"><span class="std std-ref">Input Arguments</span></a> page.</p>
+</section>
+<section id="lattice">
+<h2>Lattice<a class="headerlink" href="#lattice" title="Permalink to this heading"></a></h2>
+<p>The lattice is defined as a 3x3 array called avec, and is defined in units of Angstrom. The default provided in template.py is a unit-length simple cubic lattice. As an example here, we construct the unit cell of GaAs,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">avec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">2.8162</span><span class="p">,</span><span class="mf">2.8162</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mf">2.8162</span><span class="p">,</span><span class="mf">2.8162</span><span class="p">],[</span><span class="mf">2.8162</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">2.8162</span><span class="p">]])</span>
+</pre></div>
+</div>
+</section>
+<section id="basis">
+<h2>Basis<a class="headerlink" href="#basis" title="Permalink to this heading"></a></h2>
+<p>The basis in chinook is defined as a list of orbital objects.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">basis_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;atoms&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+<span class="s1">&#39;Z&#39;</span><span class="p">:{</span><span class="mi">0</span><span class="p">:</span><span class="mi">31</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="mi">33</span><span class="p">},</span>
+<span class="s1">&#39;pos&#39;</span><span class="p">:[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.4081</span><span class="p">,</span><span class="mf">1.4081</span><span class="p">,</span><span class="mf">1.4081</span><span class="p">])],</span>
+<span class="s1">&#39;orbs&#39;</span><span class="p">:[[</span><span class="s1">&#39;40&#39;</span><span class="p">,</span><span class="s1">&#39;41x&#39;</span><span class="p">,</span><span class="s1">&#39;41y&#39;</span><span class="p">,</span><span class="s1">&#39;41z&#39;</span><span class="p">],[</span><span class="s1">&#39;40&#39;</span><span class="p">,</span><span class="s1">&#39;41x&#39;</span><span class="p">,</span><span class="s1">&#39;41y&#39;</span><span class="p">,</span><span class="s1">&#39;41z&#39;</span><span class="p">]]}</span>
+</pre></div>
+</div>
+<p>We see from this that the distinct atomic species (Ga and As) are indexed as 0 and 1 in the ‘atoms’ argument. Their atomic numbers Z are then given below in a dictionary format, with key-value pairs corresponding to the atom index, and the atomic number. The atom positions can then be given, in units of Angstrom. These are entered as numpy arrays, within a list which orders in the same way as atoms does. Finally, we define the orbitals at each of these basis sites which are to be included in our model. In this case, we include both s and all <em>px</em>, <em>py</em>, and <em>pz</em> orbitals for both Ga and As. Orbitals are labelled by the principal quantum number n, orbital angular momentum l and then a standard label. Details can be found in <em>chinook.orbital.py</em>. Note that each atom gets its own list of orbitals, rather than putting them all together in a single list. Finally, there are additional options, including rotations and spinful spinor bases which can be implemented. More details also in <em>chinook.orbital.py</em>.</p>
+</section>
+<section id="hamiltonian">
+<h2>Hamiltonian<a class="headerlink" href="#hamiltonian" title="Permalink to this heading"></a></h2>
+<p>The user is given a fair amount of flexibility in passing the Hamiltonian to chinook. For further details on Hamiltonian types and the way these are converted into a functioning tight-binding model in our framework, it is recommended to refer to the documentation under <a class="reference internal" href="tightbinding.html#id1"><span class="std std-ref">Tight Binding</span></a> . In the template, we are assuming that the user wishes to enter a Slater-Koster type Hamiltonian. This is a fairly compact representation for tight-binding with minimal parameters, requiring only onsite energies and a few hopping terms need to be defined. We can use the parameters given by, for example Harrison or Cohen, which gives us a dictionary which looks like so:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">V_SK</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;040&#39;</span><span class="p">:</span><span class="o">-</span><span class="mf">6.01</span><span class="p">,</span><span class="s1">&#39;041&#39;</span><span class="p">:</span><span class="mf">0.19</span><span class="p">,</span><span class="s1">&#39;140&#39;</span><span class="p">:</span><span class="o">-</span><span class="mf">4.79</span><span class="p">,</span><span class="s1">&#39;141&#39;</span><span class="p">:</span><span class="mf">4.59</span><span class="p">,</span>
+        <span class="s1">&#39;014400S&#39;</span><span class="p">:</span><span class="o">-</span><span class="mf">1.75</span><span class="p">,</span><span class="s1">&#39;014401S&#39;</span><span class="p">:</span><span class="o">-</span><span class="mf">3.15</span><span class="p">,</span><span class="s1">&#39;014410S&#39;</span><span class="p">:</span><span class="o">-</span><span class="mf">1.60</span><span class="p">,</span>
+        <span class="s1">&#39;014411S&#39;</span><span class="p">:</span><span class="mf">2.59</span><span class="p">,</span><span class="s1">&#39;014411P&#39;</span><span class="p">:</span><span class="o">-</span><span class="mf">0.94</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>At first glance, the format of this dictionary may appear cryptic. We’ll break it down here. Each key:value pair indicates the orbitals and type of coupling, and the value the amplitude, in units of eV. The order is arbitrary, but we begin above by defining the on-site energies. These are labelled uniquely with key-strings formatted as ‘atom-n-l’. So ‘041’ indicates the onsite energy for the first atom in our basis (i.e. Ga), in the n=4, l=1 (i.e. p) shell. In other words, the onsite energy for the Ga 4p states. Similarly, ‘140’ corresponds to the As 4s states. Next, we define the various Slater-Koster type hoppings, such as Vsss, Vsps, Vpps, Vppp. These have key-strings as ‘atom1-atom2-n1-n2-l1-l2-x’. The ‘x’ at the end refers to sigma (S), pi (P), or delta (D) bonding symmetry. For example, ‘014410S’ is the Ga 4p - As 4s sigma bonding strength, and ‘014411P’ the Ga 4p - As 4p pi bonding. An arbitrary bond will ultimately be a linear combination of these. Note that we do not include any terms with ‘00’ or ‘11’ at the beginning. Considering only nearest-neighbour hopping in this model, we account for only on-site and Ga-As hopping. For more information on Slater-Koster Hamiltonians and other tight-binding model formats, we refer you to <a class="reference internal" href="tightbinding.html#id1"><span class="std std-ref">Tight Binding</span></a>. Moving on, with the <em>V_SK</em> dictionary defined, the user can combine this with the other pertinent descriptors for the hamiltonian arguments, as seen in the template:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hamiltonian_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;SK&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;V&#39;</span><span class="p">:</span><span class="n">V_SK</span><span class="p">,</span>
+                    <span class="s1">&#39;avec&#39;</span><span class="p">:</span><span class="n">avec</span><span class="p">,</span>
+                    <span class="s1">&#39;cutoff&#39;</span><span class="p">:</span><span class="mf">2.5</span><span class="p">,</span>
+                    <span class="s1">&#39;renorm&#39;</span><span class="p">:</span><span class="mf">1.0</span><span class="p">,</span>
+                    <span class="s1">&#39;offset&#39;</span><span class="p">:</span><span class="mf">0.0</span><span class="p">,</span>
+                    <span class="s1">&#39;tol&#39;</span><span class="p">:</span><span class="mf">1e-4</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>In addition to denoting that we will use a Slater-Koster type Hamiltonian, we pass the dictionary of potentials ‘V’. In addition to the lattice vectors, we finally define a few numeric values, corresponding to the cutoff hopping lengthscale (in Angstrom), any overall renormalization factor for the bandstructure, an offset for the Fermi level, and a tolerance, or minimal Hamiltonian matrix element size we wish to consider–any smaller terms will be neglected. The cutoff is chosen here to specify that only nearest-neighbour hoppings will be considered (Ga-As bondlength is approximately 2.48 Å).</p>
+</section>
+<section id="tight-binding-model">
+<h2>Tight-Binding Model<a class="headerlink" href="#tight-binding-model" title="Permalink to this heading"></a></h2>
+<p>With these input arguments defined we can now actually build our tight-binding model and begin to test it. To do so, we first define the list of orbitals for our model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">basis</span> <span class="o">=</span> <span class="n">chinook</span><span class="o">.</span><span class="n">build_lib</span><span class="o">.</span><span class="n">gen_basis</span><span class="p">(</span><span class="n">basis_args</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is then used with the <cite>hamiltonian_args</cite> defined above to build the tight-binding model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TB</span> <span class="o">=</span> <span class="n">chinook</span><span class="o">.</span><span class="n">build_lib</span><span class="o">.</span><span class="n">gen_TB</span><span class="p">(</span><span class="n">basis</span><span class="p">,</span><span class="n">hamiltonian_args</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We now have a functioning tight binding model. However, to actually perform any work, we need to know where in momentum space we are interested in diagonalizing over. This is done using a similar argument structure as before.</p>
+</section>
+<section id="momentum">
+<h2>Momentum<a class="headerlink" href="#momentum" title="Permalink to this heading"></a></h2>
+<p>The momentum arguments get passed as a dictionary:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">L</span><span class="p">,</span><span class="n">G</span><span class="p">,</span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">]),</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]),</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.0</span><span class="p">])</span>
+<span class="n">momentum_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;F&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;avec&#39;</span><span class="p">:</span><span class="n">avec</span><span class="p">,</span>
+                 <span class="s1">&#39;grain&#39;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span>
+                 <span class="s1">&#39;pts&#39;</span><span class="p">:[</span><span class="n">L</span><span class="p">,</span><span class="n">G</span><span class="p">,</span><span class="n">X</span><span class="p">],</span>
+                 <span class="s1">&#39;labels&#39;</span><span class="p">:[</span><span class="s1">&#39;L&#39;</span><span class="p">,</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">Gamma$&#39;</span><span class="p">,</span><span class="s1">&#39;X&#39;</span><span class="p">]}</span>
+</pre></div>
+</div>
+<p>Here we are using <em>F</em> or fractional units for momentum space (as opposed to <em>A</em> absolute units of inverse Angstrom) to define our k-path. This requires also that we pass then the unit cell vectors. The <em>grain</em> sets the number of points between each high-symmetry point we want to evaluate at. The endpoints of interest are passed similar to what we did with the basis positions, as a list of numpy arrays, which I have pre-defined for tidier code. Finally, we have an option to provide labels for when we go ultimately to plot our bandstructure over this k-path. I can now set the k-path for my tight-binding model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TB</span><span class="o">.</span><span class="n">Kobj</span> <span class="o">=</span> <span class="n">chinook</span><span class="o">.</span><span class="n">build_lib</span><span class="o">.</span><span class="n">gen_K</span><span class="p">(</span><span class="n">momentum_args</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And then diagonalize and plot the band structure.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TB</span><span class="o">.</span><span class="n">solve_H</span><span class="p">()</span>
+<span class="n">TB</span><span class="o">.</span><span class="n">plotting</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="arpes-calculation">
+<h2>ARPES Calculation<a class="headerlink" href="#arpes-calculation" title="Permalink to this heading"></a></h2>
+<p>Presumably, we’re all here for the ARPES calculations. Once you have a tight-binding model you’re happy with, you can proceed to initialize and execute and ARPES experiment. We do this with the following input</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">arpes_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;cube&#39;</span><span class="p">:{</span><span class="s1">&#39;X&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">100</span><span class="p">],</span>
+                      <span class="s1">&#39;Y&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">100</span><span class="p">],</span>
+                      <span class="s1">&#39;kz&#39;</span><span class="p">:</span><span class="mf">0.0</span><span class="p">,</span>
+                      <span class="s1">&#39;E&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mi">1000</span><span class="p">]},</span>
+              <span class="s1">&#39;hv&#39;</span><span class="p">:</span><span class="mf">21.2</span><span class="p">,</span>
+              <span class="s1">&#39;SE&#39;</span><span class="p">:[</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span><span class="mf">0.001</span><span class="p">],</span>
+              <span class="s1">&#39;T&#39;</span><span class="p">:</span><span class="mf">4.2</span><span class="p">,</span>
+              <span class="s1">&#39;pol&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span>
+              <span class="s1">&#39;resolution&#39;</span><span class="p">:{</span><span class="s1">&#39;E&#39;</span><span class="p">:</span><span class="mf">0.01</span><span class="p">,</span><span class="s1">&#39;k&#39;</span><span class="p">:</span><span class="mf">0.01</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>This is sort of the most basic set of arguments we can define for an ARPES experiment, leaving most others as default. We have defined a <em>cube</em> of momentum and energy over which we are interested in evaluating the photoemission intensity. We set both the endpoints and grain for the momentum in-plane as well as the energy, given here as binding energy relative to the zero of our tight-binding model, which will be the Fermi level. A fixed out-of-plane momentum is chosen, and defined as <em>kz</em>. Along with this <em>cube</em>, we fix the photon energy for the experiment. With these two sets of parameters defined, the matrix elements can be calculated. As a result, all other arguments given here can be updated after evaluating the matrix elements, such that different parameter choices and their influence on the ARPES intensity can be surveyed very quickly and with little computational overhead. The first of these is the self-energy. Here, we the self-energy (i.e. <em>SE</em>) is taken to be purely imaginary, giving only the width as a constant 1 meV width for the peaks. Various other approximations are available, to which you are referred to the documentation of <em>chinook.ARPES_lib.py</em>, including Kramers-Kronig related Real and Imaginary parts of the self-energy. In addition, the Fermi function is evaluated here at 4.2 K to suppress intensity from unoccupied states. A polarization and both energy and momentum resolutions are also included. The units for the latter are in terms of eV and inverse Angstrom respectively, and are evaluated at FWHM. These parameters, along with our tight-binding model can then be used to seed an experiment</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">experiment</span> <span class="o">=</span> <span class="n">chinook</span><span class="o">.</span><span class="n">arpes_lib</span><span class="o">.</span><span class="n">experiment</span><span class="p">(</span><span class="n">TB</span><span class="p">,</span><span class="n">arpes_args</span><span class="p">)</span>
+<span class="n">experiment</span><span class="o">.</span><span class="n">datacube</span><span class="p">()</span>
+<span class="n">Imap</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">spectral</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In these three lines, we initialize the experiment, evaluate the matrix elements, and generate an ARPES intensity map. Please refer to the documentation for notes on further parameters available for these calculations, and methods for updating parameters following execution of <em>experiment.datacube()</em>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to chinook!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="arpes.html" class="btn btn-neutral float-right" title="ARPES Simulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Ryan P. Day.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

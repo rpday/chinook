@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Input Arguments &mdash; chinook 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorial" href="tutorial.html" />
+    <link rel="prev" title="Support Files" href="support.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html">
+            <img src="_static/chinook_header_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arpes.html">ARPES Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tightbinding.html">Tight Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operator.html">Model Diagnostics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slab.html">Slab Calculation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support Files</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Input Arguments</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basis">Basis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#spin">Spin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hamiltonian">Hamiltonian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#momentum-path">Momentum Path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#slab">Slab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#arpes-experiment">ARPES Experiment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#radial-integrals">Radial Integrals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html#contact">Contact</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">chinook</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Input Arguments</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/input.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="toctree-wrapper compound" id="input-arguments">
+</div>
+<section id="id1">
+<h1>Input Arguments<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<p>Most high-level functions in <em>chinook</em> operate on dictionaries as input format. This is done to support an efficient and high-density, yet largely human-readable input. Perhaps more importantly, this offers a high degree of flexibility in terms of required and optional keyword arguments. This comes however with a caveat that the full breadth of optional and required input arguments are not always conveniently accessible. This page then contains a comprehensive summary of the input dictionaries for a variety of functions.</p>
+<section id="basis">
+<h2>Basis<a class="headerlink" href="#basis" title="Permalink to this heading"></a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 3%" />
+<col style="width: 15%" />
+<col style="width: 18%" />
+<col style="width: 59%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Argument</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Datatype</p></th>
+<th class="head"><p>Example</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p>atoms</p></th>
+<td><p>Yes</p></td>
+<td><p>list of int</p></td>
+<td><p>[0,0,1]</p></td>
+<td><p>Unique elements are assigned distinct integers, consecutive</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>Z</p></th>
+<td><p>Yes</p></td>
+<td><p>dict of int:int</p></td>
+<td><p>{0:77,1:8}</p></td>
+<td><p>Atomic number for each atom from <em>atoms</em> above</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>orbs</p></th>
+<td><p>Yes</p></td>
+<td><div class="line-block">
+<div class="line">list of lists of</div>
+<div class="line">string</div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">[[‘60’],</div>
+<div class="line">[‘60’],</div>
+<div class="line">[‘21x’,’21y’]]</div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">Elements define the orbital, one list for each atom,</div>
+<div class="line">elements define the orbital definition. Structure</div>
+<div class="line">of strings are: <em>principal quantum number n</em>,</div>
+<div class="line"><em>orbital angular momentum l</em>,</div>
+<div class="line">orbital label (s: N/A, p: x,y,z d:xz,yz,xy,XY,ZR)</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>pos</p></th>
+<td><p>Yes</p></td>
+<td><p>list of numpy arrays</p></td>
+<td><div class="line-block">
+<div class="line">[np.array([0.0,0.0,0.0]),</div>
+<div class="line">np.array([1.2,0.0,0.0]),</div>
+<div class="line">np.array([0.7,5.4,1.2])]</div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">Positions of each atom in basis, each should be</div>
+<div class="line">3-float long, written in units of Angstrom</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p>spin</p></th>
+<td><p>No</p></td>
+<td><p>dictionary</p></td>
+<td><p>see below</p></td>
+<td><p>Optional, for including spin-information, see below</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>slab</p></th>
+<td><p>No</p></td>
+<td><p>dictionary</p></td>
+<td><p>see below</p></td>
+<td><p>Optional, for generating a slab-superstructure, see below</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>orient</p></th>
+<td><p>No</p></td>
+<td><p>list</p></td>
+<td><p>[np.pi/3,0,-np.pi/3]</p></td>
+<td><div class="line-block">
+<div class="line">One entry for each atom, indicating a</div>
+<div class="line">local rotation of the indicated atom, various formats accepted.</div>
+<div class="line">For more details, c.f. <strong>chinook.orbital.py</strong></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="spin">
+<h2>Spin<a class="headerlink" href="#spin" title="Permalink to this heading"></a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 3%" />
+<col style="width: 15%" />
+<col style="width: 18%" />
+<col style="width: 59%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Argument</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Datatype</p></th>
+<th class="head"><p>Example</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p>bool</p></th>
+<td><p>Yes</p></td>
+<td><p>boolean</p></td>
+<td><p>True</p></td>
+<td><div class="line-block">
+<div class="line">Switch for activating spin-degree of freedom.</div>
+<div class="line">Doubles basis size.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>soc</p></th>
+<td><p>No</p></td>
+<td><p>boolean</p></td>
+<td><p>True</p></td>
+<td><p>Switch for activating spin-orbit coupling.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>lam</p></th>
+<td><p>Yes*</p></td>
+<td><p>dictionary</p></td>
+<td><p>{0:0.15,1:0.0}</p></td>
+<td><p>Required if soc:True, atomic-SOC strength</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>order</p></th>
+<td><p>No</p></td>
+<td><p>char</p></td>
+<td><p>F</p></td>
+<td><p>Spin-ordering, ‘F’ for ferro, ‘A’ for antiferro, None otherwise</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>dS</p></th>
+<td><p>No*</p></td>
+<td><p>float</p></td>
+<td><p>0.5</p></td>
+<td><div class="line-block">
+<div class="line">Required if order if ‘F’ or ‘A’.</div>
+<div class="line">Energy splitting between up and down in eV</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>p_up</p></th>
+<td><p>No*</p></td>
+<td><p>numpy array of 3 float</p></td>
+<td><p>np.array([0.0,0.0,0.0])</p></td>
+<td><div class="line-block">
+<div class="line">For AF, position of spin-up states,</div>
+<div class="line">spin-up shifted down by <em>dS</em> on these sites.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p>p_dn</p></th>
+<td><p>No*</p></td>
+<td><p>numpy array of 3 float</p></td>
+<td><p>np.array([0.0,0.0,0.0])</p></td>
+<td><div class="line-block">
+<div class="line">For AF, position of spin-down states,</div>
+<div class="line">spin-down shifted down by <em>dS</em> on these sites.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="hamiltonian">
+<h2>Hamiltonian<a class="headerlink" href="#hamiltonian" title="Permalink to this heading"></a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 3%" />
+<col style="width: 15%" />
+<col style="width: 18%" />
+<col style="width: 59%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Argument</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Datatype</p></th>
+<th class="head"><p>Example</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p>type</p></th>
+<td><p>Yes</p></td>
+<td><p>string</p></td>
+<td><p>SK</p></td>
+<td><div class="line-block">
+<div class="line">type of Hamiltonian. Any of</div>
+<div class="line">‘SK’ for Slater-Koster, ‘txt’ for textfile,</div>
+<div class="line">‘list’ for list of float, ‘exec’ for executable</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>cutoff</p></th>
+<td><p>Yes</p></td>
+<td><p>float or list of float</p></td>
+<td><p>[1.5,3.6]</p></td>
+<td><div class="line-block">
+<div class="line">Cutoff hopping distance.</div>
+<div class="line">Can be either a single float, or list of floats</div>
+<div class="line">if different Hamiltonian arguments apply for</div>
+<div class="line">different neighbour distances. Units of Angstroms.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p>renorm</p></th>
+<td><p>Yes</p></td>
+<td><p>float</p></td>
+<td><p>1.0</p></td>
+<td><p>overall bandwidth renormalization</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>offset</p></th>
+<td><p>Yes</p></td>
+<td><p>float</p></td>
+<td><p>0.1</p></td>
+<td><p>overall chemical potential shift in eV</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>tol</p></th>
+<td><p>Yes</p></td>
+<td><p>float</p></td>
+<td><p>1e-4</p></td>
+<td><p>Minimum strength term to include in eV</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>avec</p></th>
+<td><p><a href="#id2"><span class="problematic" id="id3">*</span></a>No</p></td>
+<td><p>numpy array of float</p></td>
+<td><div class="line-block">
+<div class="line">np.array([[1,0,0],</div>
+<div class="line">[0,1,0],</div>
+<div class="line">[0,0,1])</div>
+</div>
+</td>
+<td><p>Lattice vectors 3x3 float, required with SK.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>spin</p></th>
+<td><p>No</p></td>
+<td><p>dictionary</p></td>
+<td><p>See above</p></td>
+<td><p>spin information, see above</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>V</p></th>
+<td><p>No</p></td>
+<td><p>dictionary</p></td>
+<td><p>{‘020’:0.0,’002200S’:0.5}</p></td>
+<td><div class="line-block">
+<div class="line">Slater Koster arguments, if applicable.</div>
+<div class="line">See Slater-Koster on Tight-Binding page.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p>list</p></th>
+<td><p>No</p></td>
+<td><p>list</p></td>
+<td><p>[[0,0,0,0,0,5],…]</p></td>
+<td><blockquote>
+<div><p>List of Hamiltonian matrix elements,</p>
+</div></blockquote>
+<div class="line-block">
+<div class="line">if passing in list format.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>filename</p></th>
+<td><p>No</p></td>
+<td><p>string</p></td>
+<td><p>my_hamiltonian.txt</p></td>
+<td><p>Path to Hamiltonian textfile.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>exec</p></th>
+<td><p>No</p></td>
+<td><p>list of methods</p></td>
+<td><p>see Executable page</p></td>
+<td><p>list of executable Python functions, see relevant page.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="momentum-path">
+<h2>Momentum Path<a class="headerlink" href="#momentum-path" title="Permalink to this heading"></a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 3%" />
+<col style="width: 15%" />
+<col style="width: 18%" />
+<col style="width: 59%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Argument</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Datatype</p></th>
+<th class="head"><p>Example</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p>type</p></th>
+<td><p>Yes</p></td>
+<td><p>char</p></td>
+<td><p>F</p></td>
+<td><div class="line-block">
+<div class="line">type of units, either fractional,</div>
+<div class="line">i.e. units of reciprocal lattice units</div>
+<div class="line">‘F’, or absolute ‘A’ (i.e. 1/A)</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>pts</p></th>
+<td><p>Yes</p></td>
+<td><p>list of numpy array</p></td>
+<td><div class="line-block">
+<div class="line">[np.array([0,0,0]),</div>
+<div class="line">np.array([0.5,0.0.0])]</div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">Endpoints for the momentum path.</div>
+<div class="line">An arbitrary number of points (&gt;1) can be selected.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p>grain</p></th>
+<td><p>Yes</p></td>
+<td><p>int</p></td>
+<td><p>200</p></td>
+<td><div class="line-block">
+<div class="line">Number of points between</div>
+<div class="line">each endpoint in the list of ‘pts’.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>labels</p></th>
+<td><p>No</p></td>
+<td><p>list of str</p></td>
+<td><p>[’\Gamma’, ‘M’, ‘X’]</p></td>
+<td><div class="line-block">
+<div class="line">Labels for each of ‘pts’, supports</div>
+<div class="line">use of MathTex</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="slab">
+<h2>Slab<a class="headerlink" href="#slab" title="Permalink to this heading"></a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 3%" />
+<col style="width: 15%" />
+<col style="width: 18%" />
+<col style="width: 59%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Argument</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Datatype</p></th>
+<th class="head"><p>Example</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p>hkl</p></th>
+<td><p>Yes</p></td>
+<td><p>numpy array of int</p></td>
+<td><p>np.array([0,0,1])</p></td>
+<td><p>Miller index of surface</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>cells</p></th>
+<td><p>Yes</p></td>
+<td><p>float</p></td>
+<td><p>100.0</p></td>
+<td><p>Minimum thickness of slab, in Angstroms</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>buff</p></th>
+<td><p>Yes</p></td>
+<td><p>float</p></td>
+<td><p>10.0”</p></td>
+<td><p>Minimum thickness of vacuum buffer layer.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>term</p></th>
+<td><p>Yes</p></td>
+<td><p>tuple of two int</p></td>
+<td><p>(1,1)</p></td>
+<td><div class="line-block">
+<div class="line">Atomic identities of atoms</div>
+<div class="line">on top and bottom of surface,</div>
+<div class="line">as defined in the basis arguments</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p>fine</p></th>
+<td><p>Yes</p></td>
+<td><p>tuple of two float</p></td>
+<td><p>(0.0,0.0)</p></td>
+<td><div class="line-block">
+<div class="line">Fine adjustments to surface</div>
+<div class="line">termination. See slab page for details.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="arpes-experiment">
+<h2>ARPES Experiment<a class="headerlink" href="#arpes-experiment" title="Permalink to this heading"></a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 3%" />
+<col style="width: 15%" />
+<col style="width: 18%" />
+<col style="width: 59%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Argument</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Datatype</p></th>
+<th class="head"><p>Example</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p>cube</p></th>
+<td><p>Yes</p></td>
+<td><p>dictionary</p></td>
+<td><div class="line-block">
+<div class="line">{‘X’ : [-0.5,0.5,100],</div>
+<div class="line">‘Y’ : [-1,1,200],</div>
+<div class="line">‘E’ : [-2,0.1,1000],</div>
+<div class="line">‘kz’ : 0.0}</div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">Region of interest, X, and Y</div>
+<div class="line">are momentum range, E is energy.</div>
+<div class="line">Fixed kz only. For a single slice,</div>
+<div class="line">can use e.g. ‘X’ : [0,0,1] .Can also</div>
+<div class="line">pass angles (rad) using ‘Tx’, ‘Ty’</div>
+<div class="line">instead of ‘X’, ‘Y’</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>pol</p></th>
+<td><p>Yes</p></td>
+<td><p>numpy array of float</p></td>
+<td><p>np.array([1,0,0])</p></td>
+<td><p>Polarization vector</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>hv</p></th>
+<td><p>Yes</p></td>
+<td><p>float</p></td>
+<td><p>21.2</p></td>
+<td><p>Photon energy, in eV</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>T</p></th>
+<td><p>Yes</p></td>
+<td><p>float</p></td>
+<td><p>4.2</p></td>
+<td><div class="line-block">
+<div class="line">Temperature, for Fermi distribution.</div>
+<div class="line">-1, or do not include ‘T’, to neglect</div>
+<div class="line">thermal distribution.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p>resolution</p></th>
+<td><p>Yes</p></td>
+<td><p>dictionary</p></td>
+<td><div class="line-block">
+<div class="line">{‘E’ : 0.01,</div>
+<div class="line">‘k’ : 0.005}</div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">Energy, and momentum</div>
+<div class="line">(FWHM) resolution, in eV, 1/A.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>SE</p></th>
+<td><p>Yes</p></td>
+<td><p>list</p></td>
+<td><p>[‘constant’, 0.05]</p></td>
+<td><div class="line-block">
+<div class="line">Self-Energy,</div>
+<div class="line">see ARPES for further details</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p>angle</p></th>
+<td><p>No</p></td>
+<td><p>float</p></td>
+<td><p>1.59</p></td>
+<td><p>Azimuthal rotation, in radians.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>W</p></th>
+<td><p>No</p></td>
+<td><p>float</p></td>
+<td><p>4.5</p></td>
+<td><p>Work function, in eV</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Vo</p></th>
+<td><p>No</p></td>
+<td><p>float</p></td>
+<td><p>11.5</p></td>
+<td><p>Inner potential in eV, for kz-dependence</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>slab</p></th>
+<td><p>No</p></td>
+<td><p>bool</p></td>
+<td><p>True</p></td>
+<td><div class="line-block">
+<div class="line">Specify if using a slab geometry,</div>
+<div class="line">will impose mean-free path. This</div>
+<div class="line">also truncates the eigenvectors.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p>mfp</p></th>
+<td><p>No</p></td>
+<td><p>float</p></td>
+<td><p>10.0</p></td>
+<td><div class="line-block">
+<div class="line">Electron mean-free path,</div>
+<div class="line">sets penetration depth for slab-calculations.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>spin</p></th>
+<td><p>No</p></td>
+<td><p>list</p></td>
+<td><p>[1,np.array([0,0,1])]</p></td>
+<td><div class="line-block">
+<div class="line">Spin-ARPES, specify spin</div>
+<div class="line">projection (+/- 1 for up/down) and axis</div>
+<div class="line">as numpy array of 3 float.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p>threads</p></th>
+<td><p>No</p></td>
+<td><p>int</p></td>
+<td><p>4</p></td>
+<td><p>Split calculation across multiple parallel threads.</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>rad_type</p></th>
+<td><p>No</p></td>
+<td><p>string</p></td>
+<td><p>See below</p></td>
+<td><p>Radial integral type, See below for details.</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>rad_args</p></th>
+<td><p>No</p></td>
+<td><p>string</p></td>
+<td><p>See below</p></td>
+<td><p>Radial integral arguments, see below.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="radial-integrals">
+<h2>Radial Integrals<a class="headerlink" href="#radial-integrals" title="Permalink to this heading"></a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 7%" />
+<col style="width: 21%" />
+<col style="width: 71%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head stub"><p>Argument</p></th>
+<th class="head"><p>Datatype</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><th class="stub"><p>rad_type</p></th>
+<td><p>string</p></td>
+<td><div class="line-block">
+<div class="line">Type of initial radial</div>
+<div class="line">state wavefunctions:</div>
+<div class="line">‘slater’ (default), ‘hydrogenic’, ‘grid’ (sample function on</div>
+<div class="line">mesh), ‘exec’ for user-defined executable</div>
+<div class="line">function, or ‘fixed’, where integrals are over-ridden for</div>
+<div class="line">constant values.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>rad_args</p></th>
+<td></td>
+<td><div class="line-block">
+<div class="line">if ‘rad_type’ is ‘grid’,</div>
+<div class="line">pass scaling of grid as a numpy array</div>
+<div class="line">of float. If ‘fixed’, pass dictionary</div>
+<div class="line">using ‘a-n-l-lp’ keys, float values</div>
+<div class="line">(e.g. ‘0-2-1-0’ for 2p to s transition).</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p>phase_shifts</p></th>
+<td><p>dictionary</p></td>
+<td><div class="line-block">
+<div class="line">Final state phase</div>
+<div class="line">shifts as first attempt at scattering</div>
+<div class="line">final states. Same input type as for ‘fixed’ above,</div>
+<div class="line">(e.g. ‘0-2-1-0’ for 2p to s transition).</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="support.html" class="btn btn-neutral float-left" title="Support Files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial.html" class="btn btn-neutral float-right" title="Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Ryan P. Day.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

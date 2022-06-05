@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slab Calculation &mdash; chinook 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Support Files" href="support.html" />
+    <link rel="prev" title="Model Diagnostics" href="operator.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html">
+            <img src="_static/chinook_header_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arpes.html">ARPES Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tightbinding.html">Tight Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operator.html">Model Diagnostics</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Slab Calculation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-slab">Slab Library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-surface_vector">Surface Vector</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Input Arguments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html#contact">Contact</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">chinook</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Slab Calculation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/slab.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="toctree-wrapper compound">
+</div>
+<section id="slab-calculation">
+<h1>Slab Calculation<a class="headerlink" href="#slab-calculation" title="Permalink to this heading"></a></h1>
+<p>chinook facilitates the generation of slab-models based around bulk Hamiltonians defined
+by the user. This functionality is in beta-testing mode for version 1.0. so please proceed with caution, and contact the developers if you have any concerns.</p>
+<p>The setup for a slab-type calculation proceeds similarly to that for a bulk model. The call to build a tight-binding model passes an additional argument,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TB</span> <span class="o">=</span> <span class="n">chinook</span><span class="o">.</span><span class="n">build_lib</span><span class="o">.</span><span class="n">gen_TB</span><span class="p">(</span><span class="n">basis_dict</span><span class="p">,</span><span class="n">hamiltonian_dict</span><span class="p">,</span><span class="n">K_object</span><span class="p">,</span><span class="n">slab_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <em>slab_dict</em> formats as follows.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">slab_dict</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;avec&#39;</span><span class="p">:</span><span class="n">avec</span><span class="p">,</span>
+      <span class="s1">&#39;miller&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span>
+      <span class="s1">&#39;thick&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">,</span>
+      <span class="s1">&#39;vac&#39;</span><span class="p">:</span><span class="mi">20</span><span class="p">,</span>
+      <span class="s1">&#39;termination&#39;</span><span class="p">:(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+      <span class="s1">&#39;fine&#39;</span><span class="p">:(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)}</span>
+</pre></div>
+</div>
+<p>Here one passes the lattice vectors <em>avec</em>, along with the desired Miller index of the surface termination. A desired thickness of both the slab and the vacuum buffer are also required. These are in units of Angstrom. This defines a lower bound: to find a suitable slab which satisfies the desired atomic termination, the actual slab can often be larger. The <em>vac</em> should be at very least longer than the farthest hopping vector considered in the model. This doesn’t add any computational overhead <em>after</em> the definition of the slab model is established, so a large value is not a serious bottleneck in subsequent calculations.</p>
+<p>The <em>termination</em> tuple designates which inequivalent atoms in the basis one wants to have
+on the top and bottom surface. If a mixed-character surface (e.g. TiO<sub>2</sub> plane) is desired, either species can be selected. Finally the <em>fine</em> tuple allows user to adjust the position of the termination, which can be necessary in the event of incorrect software selection of surface. This can occur commonly in layered materials, for example below for a AB<sub>2</sub> material: while a real material will generally terminate at the bottom of the van-der Waals layer, either instance of atom 0 can satisfy the <em>slab_dict</em> input. This is indicated in the figure:</p>
+<a class="reference internal image-reference" href="_images/surface_selection.png"><img alt="_images/surface_selection.png" src="_images/surface_selection.png" style="width: 600px;" /></a>
+<p>Fine allows the user to request a shift of designated thickness to force the program to select the proper surface termination. As <em>slab</em> is in beta development, some diagnostics of the generated slab should be conducted by the user before proceeding with more complex calculations.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Slab generation will rotate the global coordinate frame to place the surface normal along the <span class="math notranslate nohighlight">\(\hat z\)</span> direction, and one of the in-plane vectors along the <span class="math notranslate nohighlight">\(\hat x\)</span> direction. This may lead to unanticipated redirection of the high-symmetry points.</p>
+</div>
+<section id="module-slab">
+<span id="slab-library"></span><h2>Slab Library<a class="headerlink" href="#module-slab" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.GCD">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">GCD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.GCD" title="Permalink to this definition"></a></dt>
+<dd><p>Basic greatest common denominator function. First find all divisors of each a and b.
+Then find the maximal common element of their divisors.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>a</strong>, <strong>b</strong>: int</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>int, GCD of <strong>a</strong>, <strong>b</strong></p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a><a href="#id3"><span class="problematic" id="id4">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.H_conj">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">H_conj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.H_conj" title="Permalink to this definition"></a></dt>
+<dd><p>Conjugate hopping path</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>h</strong>: list, input hopping path in format [i,j,x,y,z,Hij]</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>list, reversed hopping path, swapped indices, complex conjugate of the</p></li>
+</ul>
+<p>hopping strength</p>
+</div></blockquote>
+<p><a href="#id5"><span class="problematic" id="id6">**</span></a><a href="#id7"><span class="problematic" id="id8">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.H_surf">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">H_surf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surf_basis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H_bulk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Rmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lenbasis</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.H_surf" title="Permalink to this definition"></a></dt>
+<dd><p>Rewrite the bulk-Hamiltonian in terms of the surface unit cell, with its
+(most likely expanded) basis. The idea here is to organize all ‘duplicate’ 
+orbitals, in terms of their various connecting vectors. Using modular
+arithmetic, we then create an organized dictionary which categorizes the 
+hopping paths within the new unit cell according to the new basis index
+designation. For each element in the Hamiltonian then, we can do the same
+modular definition of the hopping vector, easily determining which orbital
+in our new basis this hopping path indeed corresponds to. We then make a
+new list, organizing corresponding to the new basis listing.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>surf_basis</strong>: list of orbitals in the surface unit cell</p></li>
+<li><p><strong>avec</strong>: numpy array 3x3 of float, surface unit cell vectors</p></li>
+<li><p><strong>H_bulk</strong>: <em>H_me</em> object(defined in <em>chinook.TB_lib.py</em>), as</p></li>
+</ul>
+<p>the bulk-Hamiltonian</p>
+<ul class="simple">
+<li><p><strong>Rmat</strong>: 3x3 numpy array of float, rotation matrix</p></li>
+</ul>
+<p>(pre-multiply vectors) for rotating the coordinate system from bulk 
+to surface unit cell axes</p>
+<ul class="simple">
+<li><p><strong>lenbasis</strong>: int, length of bulk basis</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Hamiltonian object, written in the basis of the surface unit cell,</p></li>
+</ul>
+<p>and its coordinate frame, rather than those of the bulk system</p>
+</div></blockquote>
+<p><a href="#id9"><span class="problematic" id="id10">**</span></a><a href="#id11"><span class="problematic" id="id12">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.Hobj_to_dict">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">Hobj_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Hobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.Hobj_to_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Associate a list of matrix elements with each orbital in the original basis. 
+The hopping paths are given not as direct units,but as number of unit-vectors
+for each hopping path. So the actual hopping path will be:</p>
+<blockquote>
+<div><p>np.dot(H[2:5],svec)+TB.basis[j].pos-TB.basis[i].pos</p>
+</div></blockquote>
+<p>This facilitates determining easily which basis element we are dealing with.
+For the slab, the new supercell will be extended along the 001 direction. 
+So to redefine the orbital indices for a given element, we just take 
+[i, len(basis)*(R_2)+j, (np.dot((R_0,R_1,R_2),svec)+pos[j]-pos[i]),H]
+If the path goes into the vacuum buffer don’t add it to the new list!</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Hobj</strong>: <em>H_me</em> object(defined in <em>chinook.TB_lib.py</em>), as</p></li>
+</ul>
+<p>the bulk-Hamiltonian</p>
+<ul class="simple">
+<li><p><strong>basis</strong>: list of <em>orbital</em> objects</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Hdict</strong>: dictionary of hopping paths associated with a given orbital</p></li>
+</ul>
+<p>index</p>
+</div></blockquote>
+<p><a href="#id13"><span class="problematic" id="id14">**</span></a><a href="#id15"><span class="problematic" id="id16">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.LCM">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">LCM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.LCM" title="Permalink to this definition"></a></dt>
+<dd><p>Basic lowest-common multiplier for two values a,b. Based on idea that LCM is just the
+product of the two input, divided by their greatest common denominator.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>a</strong>, <strong>b</strong>: int</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>int, LCM of <strong>a</strong> and <strong>b</strong></p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id17"><span class="problematic" id="id18">**</span></a><a href="#id19"><span class="problematic" id="id20">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.LCM_3">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">LCM_3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.LCM_3" title="Permalink to this definition"></a></dt>
+<dd><p>For generating spanning vectors, require lowest common multiple of 3
+integers, itself just the LCM of one of the numbers, and the LCM of the other two.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>a</strong>, <strong>b</strong>, <strong>c</strong>: int</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><p>int, LCM of the three numbers</p>
+</div></blockquote>
+<p><a href="#id21"><span class="problematic" id="id22">**</span></a><a href="#id23"><span class="problematic" id="id24">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.abs_to_frac">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">abs_to_frac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">avec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.abs_to_frac" title="Permalink to this definition"></a></dt>
+<dd><dl>
+<dt>Quick function for taking a row-ordered matrix of lattice vectors: </dt><dd><div class="line-block">
+<div class="line">a_11  a_12  a_13  |</div>
+<div class="line">a_21  a_22  a_23  |</div>
+<div class="line">a_31  a_32  a_33  |</div>
+</div>
+</dd>
+</dl>
+<p>and using it to transform a vector, written in absolute units, to fractional units.
+Note this function can be used to broadcast over N vectors you would like to transform</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><blockquote>
+<div><ul class="simple">
+<li><p><strong>avec</strong>: numpy array of 3x3 float lattice vectors, ordered by rows</p></li>
+<li><p><strong>vec</strong>: numpy array of Nx3 float, vectors to be transformed to</p></li>
+</ul>
+<p>fractional coordinates</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Nx3 array of float, vectors translated into basis of lattice vectors</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p><a href="#id25"><span class="problematic" id="id26">**</span></a><a href="#id27"><span class="problematic" id="id28">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.basal_plane">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">basal_plane</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vvecs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.basal_plane" title="Permalink to this definition"></a></dt>
+<dd><p>Everything is most convenient if we redefine the basal plane of the surface
+normal to be oriented within a Cartesian plane. To do so, we take the
+v-vectors. We get the norm of v1,v2 and then find the cross product with
+the z-axis, as well as the angle between these two vectors. We can then
+rotate the surface normal onto the z-axis.
+In this way we conveniently re-orient the v1,v2 axes into the Cartesian x,y plane.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>vvecs</strong>: numpy array 3x3 float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>vvec_prime</strong>: numpy array 3x3 of float, rotated v vectors</p></li>
+<li><p><strong>Rmat</strong>: numpy array of 3x3 float, rotation matrix to send original</p></li>
+</ul>
+<p>coordinate frame into the rotated coordinates.</p>
+</div></blockquote>
+<p><a href="#id29"><span class="problematic" id="id30">**</span></a><a href="#id31"><span class="problematic" id="id32">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.build_slab_H">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">build_slab_H</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Hsurf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slab_basis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surf_basis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">svec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.build_slab_H" title="Permalink to this definition"></a></dt>
+<dd><p>Build a slab Hamiltonian, having already defined the surface-unit cell
+Hamiltonian and basis. Begin by creating a dictionary corresponding to the
+Hamiltonian matrix elements associated with the relevant surface unit cell 
+orbital which pairs with our slab orbital, and all its possible hoppings
+in the original surface unit cell. This dictionary conveniently redefines
+the hopping paths in units of lattice vectors between the relevant orbitals.
+In this way, we can easily relabel a matrix element by the slab_basis 
+elements, and then translate the connecting vector in terms of the 
+pertinent orbitals.</p>
+<p>If the resulting element is from the lower diagonal, take its conjugate.
+Finally, only if the result is physical, i.e. corresponds to a hopping path
+contained in the slab, and not e.g. extending into the vacuum, 
+should the matrix element be included in the new Hamiltonian. Finally,
+the new list Hnew is made into a Hamiltonian object, as always, and
+duplicates are removed.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Hsurf</strong>: <em>H_me</em> object(defined in <em>chinook.TB_lib.py</em>), as</p></li>
+</ul>
+<p>the bulk-Hamiltonian from the surface unit cell</p>
+<ul class="simple">
+<li><p><strong>slab_basis</strong>: list of orbital objects, slab unit cell basis</p></li>
+<li><p><strong>surf_basis</strong>: list of orbital objects, surface unit cell basis</p></li>
+<li><p><strong>svec</strong>: numpy array of 3x3 float, surface unit cell lattice vectors</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>list of Hamiltonian matrix elements in [i,j,x,y,z,Hij] format</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id33"><span class="problematic" id="id34">**</span></a><a href="#id35"><span class="problematic" id="id36">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.bulk_to_slab">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">bulk_to_slab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slab_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.bulk_to_slab" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper function for generating a slab tight-binding model, having 
+established a bulk model.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>slab_dict</strong>: dictionary containing all essential information</p></li>
+</ul>
+<p>regarding the slab construction:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>‘miller’</em>: numpy array len 3 of int, miller indices</p></li>
+<li><p><em>‘TB’</em>: Tight-binding model corresponding to the bulk model</p></li>
+<li><p><em>‘fine’</em>:  tuple of 2 float. Fine adjustment of the slab limits,</p></li>
+</ul>
+<p>beyond the termination to precisely indicate the termination. 
+units of Angstrom, relative to the bottom, and top surface generated</p>
+<ul class="simple">
+<li><p><em>‘thick’</em>: float, minimum thickness of the slab structure</p></li>
+<li><p><em>‘vac’</em>: float, minimum thickness of the slab vacuum buffer</p></li>
+</ul>
+<p>to properly generate a surface with possible surface states</p>
+<ul class="simple">
+<li><p><em>‘termination’</em>: tuple of 2 int, specifying the basis indices</p></li>
+</ul>
+<p>for the top and bottom of the slab structure</p>
+</div></blockquote>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>slab_TB</strong>: tight-binding TB object containing the slab basis</p></li>
+<li><p><strong>slab_ham</strong>: Hamiltonian object, slab Hamiltonian</p></li>
+<li><p><strong>Rmat</strong>: numpy array of 3x3 float, rotation matrix</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id37"><span class="problematic" id="id38">**</span></a><a href="#id39"><span class="problematic" id="id40">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.divisors">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">divisors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.divisors" title="Permalink to this definition"></a></dt>
+<dd><p>Iterate through all integer divisors of integer input</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>a</strong>: int</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><p>list of int, divisors of <strong>a</strong></p>
+</div></blockquote>
+<p><a href="#id41"><span class="problematic" id="id42">**</span></a><a href="#id43"><span class="problematic" id="id44">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.frac_inside">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">frac_inside</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.frac_inside" title="Permalink to this definition"></a></dt>
+<dd><p>Use fractional coordinates to determine whether a point is inside the new unit cell, or not.
+This is a very simple way of establishing this point, and circumvents many of the awkward 
+rounding issues of the parallelepiped method I have used previously. Ultimately however, 
+imprecision of the matrix multiplication and inversion result in some rounding error which
+must be corrected for. To do this, the fractional coordinates are rounded to the 4th digit.
+This leads to a smaller uncertainty by over an order to 10^3 than each rounding done on the 
+direct coordinates.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>points</strong>: numpy array of float (Nx4) indicating positions and basis indices of the points to consider</p></li>
+<li><p><strong>avec</strong>: numpy array of 3x3 float, new lattice vectors</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of Mx4 float, indicating positions and basis indices of the valid basis elements inside the new</p></li>
+</ul>
+<p>unit cell.</p>
+</div></blockquote>
+<p><a href="#id45"><span class="problematic" id="id46">**</span></a><a href="#id47"><span class="problematic" id="id48">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.frac_to_abs">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">frac_to_abs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">avec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.frac_to_abs" title="Permalink to this definition"></a></dt>
+<dd><p>Same as abs_to_frac, but in opposite direction,from fractional to absolute coordinates</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>avec</strong>: numpy array of 3x3 float, lattice vectors, row-ordered</p></li>
+<li><p><strong>vec</strong>: numpy array of Nx3 float, input vectors</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>N x 3 array of float, vec in units of absolute coordinates (Angstrom)</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id49"><span class="problematic" id="id50">**</span></a><a href="#id51"><span class="problematic" id="id52">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.gen_slab">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">gen_slab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">term</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.gen_slab" title="Permalink to this definition"></a></dt>
+<dd><p>Using the new basis defined for the surface unit cell, generate a slab
+of at least mint (minimum thickness), minb (minimum buffer) and terminated
+by orbital term. In principal the termination should be same on both top and
+bottom to avoid inversion symmetry breaking between the two lattice terminations.
+In certain cases, mint,minb may need to be tuned somewhat to get exactly the surface
+terminations you want.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>basis</strong>: list of instances of orbital objects</p></li>
+<li><p><strong>vn</strong>: numpy array of 3x3 float, surface unit cell lattice vectors</p></li>
+<li><p><strong>mint</strong>: float, minimum thickness of the slab, in Angstrom</p></li>
+<li><p><strong>minb</strong>: float, minimum thickness of the vacuum buffer, in Angstrom</p></li>
+<li><p><strong>term</strong>: tuple of 2 int, termination of the slab tuple (term[0] = top termination, term[1] = bottom termination)</p></li>
+<li><p><strong>fine</strong>: tuple of 2 float, fine adjustment of the termination to precisely specify terminating atoms</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>avec</strong>: numpy array of float 3x3, updated lattice vector for the SLAB unit cell</p></li>
+<li><p><strong>new_basis</strong>: array of new orbital basis objects, with slab-index corresponding to the original basis indexing,</p></li>
+</ul>
+<p>and primary index corresponding to the order within the new slab basis</p>
+</div></blockquote>
+<p><a href="#id53"><span class="problematic" id="id54">**</span></a><a href="#id55"><span class="problematic" id="id56">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.gen_surface">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">gen_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">avec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">miller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.gen_surface" title="Permalink to this definition"></a></dt>
+<dd><p>Construct the surface unit cell, to then be propagated along the 001 direction to form a slab</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>avec</strong>: numpy array of 3x3 float, lattice vectors for original unit cell</p></li>
+<li><p><strong>miller</strong>: numpy array of 3 int, Miller indices indicating the surface orientation</p></li>
+<li><p><strong>basis</strong>: list of orbital objects, orbital basis for the original lattice</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>new_basis</strong>: list of orbitals, surface unit cell orbital basis</p></li>
+<li><p><strong>vn_b</strong>: numpy array of 3x3 float, the surface unit cell primitive lattice vectors</p></li>
+<li><p><strong>Rmat</strong>: numpy array of 3x3 float, rotation matrix, to be used in post-multiplication order</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id57"><span class="problematic" id="id58">**</span></a><a href="#id59"><span class="problematic" id="id60">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.iszero">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">iszero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.iszero" title="Permalink to this definition"></a></dt>
+<dd><p>Find where an iterable of numeric is zero, returns empty list if none found</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>a</strong>: numpy array of numeric</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>list of int, indices of iterable where value is zero</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id61"><span class="problematic" id="id62">**</span></a><a href="#id63"><span class="problematic" id="id64">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.mod_dict">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">mod_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surf_basis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">av_i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.mod_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Define dictionary establishing connection between slab basis elements and the 
+bulk Hamiltonian. The slab_indices relate to the bulk model, we can then compile
+a list of <em>slab</em> orbital pairs (along with their connecting vectors) which should
+be related to a given bulk model hopping. The hopping is expressed in terms of the
+number of surface lattice vectors, rather than direct units of Angstrom.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>surf_basis</strong>: list of orbital objects, covering the slab model</p></li>
+<li><p><strong>av_i</strong>: numpy array of 3x3 float, inverse of the lattice vector matrix</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>cv_dict</strong>: dictionary with key-value pairs of</p></li>
+</ul>
+<p>slab_index[i]-slab_index[j]:numpy.array([[i,j,mod_vec]…])</p>
+</div></blockquote>
+<p><a href="#id65"><span class="problematic" id="id66">**</span></a><a href="#id67"><span class="problematic" id="id68">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.nonzero">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">nonzero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.nonzero" title="Permalink to this definition"></a></dt>
+<dd><p>Find where an iterable of numeric is non-zero, returns empty list if none found</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>a</strong>: numpy array of numeric</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>list of int, indices of iterable where value is non-zero</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id69"><span class="problematic" id="id70">**</span></a><a href="#id71"><span class="problematic" id="id72">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.p_vecs">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">p_vecs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">miller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.p_vecs" title="Permalink to this definition"></a></dt>
+<dd><p>Produce the vectors p, as defined by Ceder, to be used in defining spanning
+vectors for plane normal to the Miller axis</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>miller</strong>: numpy array of len 3 float</p></li>
+<li><p><strong>avec</strong>: numpy array of size 3x3 of float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>pvecs</strong>: numpy array size 3x3 of float</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id73"><span class="problematic" id="id74">**</span></a><a href="#id75"><span class="problematic" id="id76">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.par">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">par</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">avec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.par" title="Permalink to this definition"></a></dt>
+<dd><p>Definition of the parallelepiped, as well as a containing region within the 
+Cartesian projection of this form which can then be used to guarantee correct
+definition of the new cell basis. The parallelipiped is generated, and then
+its extremal coordinates established, from which a containing parallelepiped is
+then defined.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>avec</strong>: numpy array of 3x3 float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>vert</strong>: numpy array  8x3 float vertices of parallelepiped</p></li>
+<li><p><strong>box_pts</strong>: numpy array 8 x 3 float vertices of containing box</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id77"><span class="problematic" id="id78">**</span></a><a href="#id79"><span class="problematic" id="id80">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.populate_box">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">populate_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.populate_box" title="Permalink to this definition"></a></dt>
+<dd><p>Populate the bounding box with points from the original lattice basis. These
+represent candidate orbitals to populate the surface-projected unit cell.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>box</strong>: numpy array of 8x3 float, vertices of corner of a box</p></li>
+<li><p><strong>basis</strong>: list of orbital objects</p></li>
+<li><p><strong>avec</strong>: numpy array of 3x3 float, lattice vectors</p></li>
+<li><p><strong>R</strong>: numpy array of 3x3 float, rotation matrix</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>basis_full</strong>: list of Nx4 float, representing instances of orbitals copies,</p></li>
+</ul>
+<p>retaining only their position and their orbital basis index. These orbitals fill
+a container box larger than the region of interest.</p>
+</div></blockquote>
+<p><a href="#id81"><span class="problematic" id="id82">**</span></a><a href="#id83"><span class="problematic" id="id84">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.populate_par">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">populate_par</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.populate_par" title="Permalink to this definition"></a></dt>
+<dd><p>Fill the box with basis points, keeping only those which reside in the new
+unit cell.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>points</strong>: numpy array of Nx4 float ([:3] give position, [3] gives index)</p></li>
+<li><p><strong>avec</strong>: numpy array of  3x3 float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>new_points</strong>: Nx3 numpy array of float, coordinates of new orbitals</p></li>
+<li><p><strong>indices</strong>: Nx1 numpy array of float, indices in original basis</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id85"><span class="problematic" id="id86">**</span></a><a href="#id87"><span class="problematic" id="id88">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.region">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.region" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a symmetric grid of points in number of lattice vectors.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>num</strong>: int, grid will have size 2 num+1 in each direction</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of size ((2 num+1)^3,3) with centre value of first entry of</p></li>
+</ul>
+<p>(-num,-num,-num),…,(0,0,0),…,(num,num,num)</p>
+</div></blockquote>
+<p><a href="#id89"><span class="problematic" id="id90">**</span></a><a href="#id91"><span class="problematic" id="id92">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.sorted_basis">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">sorted_basis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.sorted_basis" title="Permalink to this definition"></a></dt>
+<dd><p>Re-order the elements of the new basis, with preference to z-position followed
+by the original indexing</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>pts</strong>: numpy array of Nx3 float, orbital basis positions</p></li>
+<li><p><strong>inds</strong>: numpy array of N int, indices of orbitals, from original basis</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>labels_sorted</strong>: numpy array of Nx4 float, [x,y,z,index], in order of increasing z, and index</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id93"><span class="problematic" id="id94">**</span></a><a href="#id95"><span class="problematic" id="id96">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.unpack">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">unpack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Ham_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.unpack" title="Permalink to this definition"></a></dt>
+<dd><p>Reduce a Hamiltonian object down to a list of matrix elements. Include the Hermitian conjugate terms</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Ham_obj</strong>: Hamiltonian object, c.f. <em>chinook.TB_lib.H_me</em></p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Hlist</strong>: list of Hamiltonian matrix elements</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id97"><span class="problematic" id="id98">**</span></a><a href="#id99"><span class="problematic" id="id100">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="slab.v_vecs">
+<span class="sig-prename descclassname"><span class="pre">slab.</span></span><span class="sig-name descname"><span class="pre">v_vecs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">miller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#slab.v_vecs" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper for functions used to determine the vectors used to define the new,
+surface unit cell.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>miller</strong>: numpy array of 3 int, Miller indices for surface normal</p></li>
+<li><p><strong>avec</strong>: numpy array of 3x3 float, Lattice vectors</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>vvecs</strong>: new surface unit cell vectors numpy array of 3x3 float</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+</section>
+<section id="module-surface_vector">
+<span id="surface-vector"></span><h2>Surface Vector<a class="headerlink" href="#module-surface_vector" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="surface_vector.ang_v1v2">
+<span class="sig-prename descclassname"><span class="pre">surface_vector.</span></span><span class="sig-name descname"><span class="pre">ang_v1v2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#surface_vector.ang_v1v2" title="Permalink to this definition"></a></dt>
+<dd><p>Find angle between two vectors:</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>v1</strong>: numpy array of 3 float</p></li>
+<li><p><strong>v2</strong>: numpy array of 3 float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>float, angle between the vectors</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id101"><span class="problematic" id="id102">**</span></a><a href="#id103"><span class="problematic" id="id104">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="surface_vector.are_parallel">
+<span class="sig-prename descclassname"><span class="pre">surface_vector.</span></span><span class="sig-name descname"><span class="pre">are_parallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#surface_vector.are_parallel" title="Permalink to this definition"></a></dt>
+<dd><p>Determine if two vectors are parallel:</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>v1</strong>: numpy array of 3 float</p></li>
+<li><p><strong>v2</strong>: numpy array of 3 float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>boolean, True if parallel to within 1e-5 radians</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id105"><span class="problematic" id="id106">**</span></a><a href="#id107"><span class="problematic" id="id108">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="surface_vector.are_same">
+<span class="sig-prename descclassname"><span class="pre">surface_vector.</span></span><span class="sig-name descname"><span class="pre">are_same</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#surface_vector.are_same" title="Permalink to this definition"></a></dt>
+<dd><p>Determine if two vectors are identical</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>v1</strong>: numpy array of 3 float</p></li>
+<li><p><strong>v2</strong>: numpy array of 3 float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>boolean, True if the two vectors are parallel and have same</p></li>
+</ul>
+<p>length, both to within 1e-5</p>
+</div></blockquote>
+<p><a href="#id109"><span class="problematic" id="id110">**</span></a><a href="#id111"><span class="problematic" id="id112">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="surface_vector.find_v3">
+<span class="sig-prename descclassname"><span class="pre">surface_vector.</span></span><span class="sig-name descname"><span class="pre">find_v3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxlen</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#surface_vector.find_v3" title="Permalink to this definition"></a></dt>
+<dd><p>Find the best out-of-plane surface unit cell vector. While we initialize with
+a fixed cutoff for maximum length, to avoid endless searching, we can slowly 
+increase on each iteration until a good choice is possible.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>v1</strong>, <strong>v2</strong>: numpy array of 3 float, in plane spanning vectors</p></li>
+<li><p><strong>avec</strong>: numpy array of 3x3 float, bulk lattice vectors</p></li>
+<li><p><strong>maxlen</strong>: float, max length tolerated for the vector we seek</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>v3_choice</strong>: the chosen unit cell vector</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id113"><span class="problematic" id="id114">**</span></a><a href="#id115"><span class="problematic" id="id116">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="surface_vector.initialize_search">
+<span class="sig-prename descclassname"><span class="pre">surface_vector.</span></span><span class="sig-name descname"><span class="pre">initialize_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#surface_vector.initialize_search" title="Permalink to this definition"></a></dt>
+<dd><p>Seed search for v3 with the nearest-neighbouring Bravais latice point
+which maximizes the projection out of plane of that spanned by v1 and v2.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>v1</strong>, <strong>v2</strong>: numpy array of 3 float, the spanning vectors for plane</p></li>
+<li><p><strong>avec</strong>: numpy array of 3x3 float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of 3 float, the nearby Bravais lattice point which</p></li>
+</ul>
+<p>maximizes the projection along the plane normal</p>
+</div></blockquote>
+<p><a href="#id117"><span class="problematic" id="id118">**</span></a><a href="#id119"><span class="problematic" id="id120">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="surface_vector.refine_search">
+<span class="sig-prename descclassname"><span class="pre">surface_vector.</span></span><span class="sig-name descname"><span class="pre">refine_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v3i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxlen</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#surface_vector.refine_search" title="Permalink to this definition"></a></dt>
+<dd><p>Refine the search for the optimal v3–supercell lattice vector which both 
+minimizes its length, while maximizing orthogonality with v1 and v2</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>v3i</strong>: numpy array of 3 float, initial guess for v3</p></li>
+<li><p><strong>v1</strong>: numpy array of 3 float, in-plane supercell vector</p></li>
+<li><p><strong>v2</strong>: numpy array of 3 float, in-plane supercell vector</p></li>
+<li><p><strong>avec</strong>: numpy array of 3x3 float, bulk lattice vectors</p></li>
+<li><p><strong>maxlen</strong>: float, upper limit on how long of a third vector we can</p></li>
+</ul>
+<p>reasonably tolerate. This becomes relevant for unusual Miller indices.</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>v3_opt</strong> list of numpy array of 3 float, list of viable options for</p></li>
+</ul>
+<p>the out of plane surface unit cell vector</p>
+</div></blockquote>
+<p><a href="#id121"><span class="problematic" id="id122">**</span></a><a href="#id123"><span class="problematic" id="id124">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="surface_vector.score">
+<span class="sig-prename descclassname"><span class="pre">surface_vector.</span></span><span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vlist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#surface_vector.score" title="Permalink to this definition"></a></dt>
+<dd><p>To select the ideal out-of-plane surface unit cell vector, score the 
+candidates based on both their length and their orthogonality with respect
+to the two in-plane spanning vectors. The lowest scoring candidate is selected
+as the ideal choice.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>vlist</strong>: list of len 3 numpy array of float, choices for out-of-plane</p></li>
+</ul>
+<p>vector</p>
+<ul class="simple">
+<li><p><strong>v1</strong>, <strong>v2</strong>: numpy array of 3 float, in plane spanning vectors</p></li>
+<li><p><strong>avec</strong>: numpy array of 3x3 float, primitive unit cell vectors</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of len 3, out of plane surface-projected lattice vector</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id125"><span class="problematic" id="id126">**</span></a><a href="#id127"><span class="problematic" id="id128">*</span></a></p>
+</dd></dl>
+
+<span class="target" id="module-v3find"></span><dl class="py function">
+<dt class="sig sig-object py" id="v3find.ang_v1v2">
+<span class="sig-prename descclassname"><span class="pre">v3find.</span></span><span class="sig-name descname"><span class="pre">ang_v1v2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#v3find.ang_v1v2" title="Permalink to this definition"></a></dt>
+<dd><p>Find angle between two vectors, rounded to floating point precision.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>v1</strong>: numpy array of N float</p></li>
+<li><p><strong>v2</strong>: numpy array of N float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>float, angle in radians</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id129"><span class="problematic" id="id130">**</span></a><a href="#id131"><span class="problematic" id="id132">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="v3find.are_parallel">
+<span class="sig-prename descclassname"><span class="pre">v3find.</span></span><span class="sig-name descname"><span class="pre">are_parallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#v3find.are_parallel" title="Permalink to this definition"></a></dt>
+<dd><p>Are two vectors parallel?</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>v1</strong>: numpy array of N float</p></li>
+<li><p><strong>v2</strong>: numpy array of N float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>boolean, True if parallel, to within 1e-5 radians, False otherwise</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id133"><span class="problematic" id="id134">**</span></a><a href="#id135"><span class="problematic" id="id136">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="v3find.are_same">
+<span class="sig-prename descclassname"><span class="pre">v3find.</span></span><span class="sig-name descname"><span class="pre">are_same</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#v3find.are_same" title="Permalink to this definition"></a></dt>
+<dd><p>Are two vectors identical, i.e. parallel and of same length, to within 
+the precision of <em>are_parallel</em>?</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>v1</strong>: numpy array of N float</p></li>
+<li><p><strong>v2</strong>: numpy array of N float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>boolean, True if identical, False otherwise.</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id137"><span class="problematic" id="id138">**</span></a><a href="#id139"><span class="problematic" id="id140">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="v3find.find_v3">
+<span class="sig-prename descclassname"><span class="pre">v3find.</span></span><span class="sig-name descname"><span class="pre">find_v3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxlen</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#v3find.find_v3" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper function for finding the surface vector.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>v1</strong>: numpy array of 3 float, a spanning vector of the plane</p></li>
+<li><p><strong>v2</strong>: numpy array of 3 float, a spanning vector of the plane</p></li>
+<li><p><strong>avec</strong>: numpy array of 3x3 float</p></li>
+<li><p><strong>maxlen</strong>: float, longest accepted surface vector</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of 3 float, surface vector choice</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id141"><span class="problematic" id="id142">**</span></a><a href="#id143"><span class="problematic" id="id144">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="v3find.initialize_search">
+<span class="sig-prename descclassname"><span class="pre">v3find.</span></span><span class="sig-name descname"><span class="pre">initialize_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#v3find.initialize_search" title="Permalink to this definition"></a></dt>
+<dd><p>Seed search for v3 with the nearest-neighbouring Bravais latice point which maximizes
+the projection out of plane of that spanned by v1 and v2</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>v1</strong>: numpy array of 3 float, a spanning vector of the plane</p></li>
+<li><p><strong>v2</strong>: numpy array of 3 float, a spanning vector of the plane</p></li>
+<li><p><strong>avec</strong>: numpy array of 3x3 float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of float, the nearby Bravais lattice point which maximizes</p></li>
+</ul>
+<blockquote>
+<div><p>the projection along the plane normal</p>
+</div></blockquote>
+</div></blockquote>
+<p><a href="#id145"><span class="problematic" id="id146">**</span></a><a href="#id147"><span class="problematic" id="id148">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="v3find.refine_search">
+<span class="sig-prename descclassname"><span class="pre">v3find.</span></span><span class="sig-name descname"><span class="pre">refine_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v3i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxlen</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#v3find.refine_search" title="Permalink to this definition"></a></dt>
+<dd><p>Refine the search for the optimal v3 which both minimalizes the length while
+maximizing orthogonality to v1 and v2</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>v3i</strong>: numpy array of 3 float, initial guess for the surface vector</p></li>
+<li><p><strong>v1</strong>: numpy array of 3 float, a spanning vector of the plane</p></li>
+<li><p><strong>v2</strong>: numpy array of 3 float, a spanning vector of the plane</p></li>
+<li><p><strong>avec</strong>: numpy array of 3x3 float</p></li>
+<li><p><strong>maxlen</strong>: float, longest vector accepted</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><p><strong>v3_opt</strong>: list of numpy array of 3 float, options for surface vector</p>
+</div></blockquote>
+<p><a href="#id149"><span class="problematic" id="id150">**</span></a><a href="#id151"><span class="problematic" id="id152">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="v3find.score">
+<span class="sig-prename descclassname"><span class="pre">v3find.</span></span><span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vlist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#v3find.score" title="Permalink to this definition"></a></dt>
+<dd><p>The possible surface vectors are scored based on their legnth and their orthogonality 
+to the in-plane vectors.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>vlist</strong>: list fo numpy array of 3 float, options for surface vector</p></li>
+<li><p><strong>v1</strong>: numpy array of 3 float, a spanning vector of the plane</p></li>
+<li><p><strong>v2</strong>: numpy array of 3 float, a spanning vector of the plane</p></li>
+<li><p><strong>avec</strong>: numpy array of 3x3 float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of 3 float, the best scoring vector option</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id153"><span class="problematic" id="id154">**</span></a><a href="#id155"><span class="problematic" id="id156">*</span></a></p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="operator.html" class="btn btn-neutral float-left" title="Model Diagnostics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="support.html" class="btn btn-neutral float-right" title="Support Files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Ryan P. Day.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

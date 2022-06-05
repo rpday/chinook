@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial &mdash; chinook 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="License" href="license.html" />
+    <link rel="prev" title="Input Arguments" href="input.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html">
+            <img src="_static/chinook_header_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arpes.html">ARPES Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tightbinding.html">Tight Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operator.html">Model Diagnostics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slab.html">Slab Calculation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Input Arguments</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sbqmi-workshop">SBQMI Workshop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#square-lattice">Square Lattice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model-definition">Model Definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model-characterization">Model Characterization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#arpes-calculation">ARPES Calculation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html#contact">Contact</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">chinook</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Tutorial</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/tutorial.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="toctree-wrapper compound" id="tutorial">
+</div>
+<section id="id1">
+<h1>Tutorial<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<section id="sbqmi-workshop">
+<h2>SBQMI Workshop<a class="headerlink" href="#sbqmi-workshop" title="Permalink to this heading"></a></h2>
+<p>For use in the Student Seminar at SBQMI, we will use the following <a class="reference download internal" download="" href="_downloads/4a3485c6e69b5f1b682c30aaf7c086c7/graphene_backend.py"><code class="xref download docutils literal notranslate"><span class="pre">input</span></code></a> and <a class="reference download internal" download="" href="_downloads/53b9a3194751d063c9d5e41aaada3c00/graphene_front.py"><code class="xref download docutils literal notranslate"><span class="pre">run</span></code></a> files. The exercises contained there are also available as an interactive <em>jupyter</em> <a class="reference download internal" download="" href="_downloads/141e3a7bf6bafe6de4ec499e3971cc14/QMI%20Student%20Seminar-Graphene.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">notebook</span></code></a>.</p>
+</section>
+<section id="square-lattice">
+<h2>Square Lattice<a class="headerlink" href="#square-lattice" title="Permalink to this heading"></a></h2>
+<p>The following tutorial is also available as an interactive <em>jupyter</em> notebook, available for download with the git <a class="reference external" href="https://github.com/rpday/chinook">repo</a>, in the examples folder. Alternatively, it can be <a class="reference download internal" download="" href="_downloads/232a97ab780d1dc16f425aa4b9c8df18/introduction_to_chinook.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">downloaded</span> <span class="pre">here</span></code></a>.</p>
+<p>Before beginning, it is also worth noting that in the interest of maintaining an organized workspace, it can be beneficial to define a separate input script independent of the working experimental script. Examples of an <a class="reference download internal" download="" href="_downloads/9ac56d175d3ce08a213b1f113d887150/input_square.py"><code class="xref download docutils literal notranslate"><span class="pre">input</span> <span class="pre">file</span></code></a> and <a class="reference download internal" download="" href="_downloads/a644d9cf093b1833f4c38c2ff46af524/tutorial_square.py"><code class="xref download docutils literal notranslate"><span class="pre">experiment</span> <span class="pre">script</span></code></a> are available for this exercise.</p>
+<p>In this tutorial, we work through a calculation of simulated ARPES spectra from scratch. While several input format are accepted in chinook, here we use a Slater-Koster model for a square lattice.</p>
+</section>
+<section id="model-definition">
+<h2>Model Definition<a class="headerlink" href="#model-definition" title="Permalink to this heading"></a></h2>
+<p>The following modules will be needed for your work here.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">chinook.build_lib</span> <span class="k">as</span> <span class="nn">build_lib</span>
+<span class="kn">import</span> <span class="nn">chinook.operator_library</span> <span class="k">as</span> <span class="nn">operators</span>
+<span class="kn">from</span> <span class="nn">chinook.ARPES_lib</span> <span class="kn">import</span> <span class="n">experiment</span>
+</pre></div>
+</div>
+<p>We can begin by defining the lattice geometry, which we take here to be a square lattice. Throughout, feel free to try different parameters and geometries. Here, I’ve decided to make the in-plane dimensions smaller than the out of plane,
+and since I’m taking a 2-atom basis, I’ve expanded my unit cell accordingly.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">,</span><span class="n">c</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span><span class="mf">5.0</span>
+<span class="n">avec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+<span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">c</span><span class="p">]])</span>
+</pre></div>
+</div>
+<p>In <em>chinook</em>, functions which require many input arguments take dictionary-input, taking advantage of the readibility and tidyness of this datatype. Specifically, orbital basis, Hamiltonian, ARPES configurations are all defined using dictionaries. The first relevant object will be the momentum path, used for defining a high-symmetry path to first explore our tight-binding model.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kpoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],[</span><span class="mf">0.5</span><span class="p">,</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]])</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;$M_x$&#39;</span><span class="p">,</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">Gamma$&#39;</span><span class="p">,</span><span class="s1">&#39;$M_y$&#39;</span><span class="p">])</span>
+
+
+
+<span class="n">kdict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;F&#39;</span><span class="p">,</span>
+<span class="s1">&#39;avec&#39;</span><span class="p">:</span><span class="n">avec</span><span class="p">,</span>
+<span class="s1">&#39;pts&#39;</span><span class="p">:</span><span class="n">kpoints</span><span class="p">,</span>
+<span class="s1">&#39;grain&#39;</span><span class="p">:</span><span class="mi">200</span><span class="p">,</span>
+<span class="s1">&#39;labels&#39;</span><span class="p">:</span><span class="n">labels</span><span class="p">}</span>
+
+<span class="n">k_object</span> <span class="o">=</span> <span class="n">build_lib</span><span class="o">.</span><span class="n">gen_K</span><span class="p">(</span><span class="n">kdict</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Above, we get the first example of a dictionary-based set of arguments. We defined a k-path in fractional coordinate (‘type’:’F’). This requires the lattice vectors (‘avec’:avec) to define the path in units of inverse angstrom. The path itself is defined by ‘points’. The ‘grain’ argument allows us to vary the number of steps between each segment of the k-path. Finally, we can pass an optional array of ‘labels’, for improving the readibility of figures plotted.</p>
+<p>We can now proceed to define our orbital basis. Since here I will use Antimony 5p states, we should include spin-orbit coupling, which is done with its own dictionary arguments. I define this on its own here, as I will want to re-use this dictionary for generating the Hamiltonian with spin-orbit coupling.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">spin</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;bool&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span>  <span class="c1">#include spin-degree of freedom: double the orbital basis</span>
+<span class="s1">&#39;soc&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span>    <span class="c1">#include atomic spin-orbit coupling in the calculation of the Hamiltonian</span>
+<span class="s1">&#39;lam&#39;</span><span class="p">:{</span><span class="mi">0</span><span class="p">:</span><span class="mf">0.5</span><span class="p">}}</span> <span class="c1">#spin-orbit coupling strength in eV, require a value for each unique species in our basis</span>
+
+ <span class="n">Sb1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">])</span>
+ <span class="n">Sb2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+
+ <span class="n">basis</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;atoms&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="c1">#two equivalent atoms in the basis, both labelled as species #0</span>
+ <span class="s1">&#39;Z&#39;</span><span class="p">:{</span><span class="mi">0</span><span class="p">:</span><span class="mi">51</span><span class="p">},</span>     <span class="c1">#We only have one atomic species, which is antimony #51 in the periodic table.</span>
+ <span class="s1">&#39;orbs&#39;</span><span class="p">:[[</span><span class="s1">&#39;51x&#39;</span><span class="p">,</span><span class="s1">&#39;51y&#39;</span><span class="p">,</span><span class="s1">&#39;51z&#39;</span><span class="p">],[</span><span class="s1">&#39;51x&#39;</span><span class="p">,</span><span class="s1">&#39;51y&#39;</span><span class="p">,</span><span class="s1">&#39;51z&#39;</span><span class="p">]],</span> <span class="c1">#each atom includes a full 5p basis in this model, written in n-l-xx format</span>
+ <span class="s1">&#39;pos&#39;</span><span class="p">:[</span><span class="n">Sb1</span><span class="p">,</span><span class="n">Sb2</span><span class="p">],</span> <span class="c1">#positions of the atoms, in units of Angstrom</span>
+ <span class="s1">&#39;spin&#39;</span><span class="p">:</span><span class="n">spin</span><span class="p">}</span> <span class="c1">#spin arguments.</span>
+
+ <span class="n">basis_object</span> <span class="o">=</span> <span class="n">build_lib</span><span class="o">.</span><span class="n">gen_basis</span><span class="p">(</span><span class="n">basis</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We have defined the location of each atom in the orbital basis, and its full orbital content. Here we work with a full antimony 5p basis on each site. I have taken the second basis atom to sit in the centre of the ab plane, but you are free to modify this, as well as spin-orbit coupling strength, or even the atomic character.</p>
+<p>At this point, we can define the Hamiltonian for our model. We will use a Slater Koster model for this, and we will assume nearest neighbour hoppings only. The options for the type of Hamiltonian are much more extensive, but the Slater Koster framework is very amenable to tuning parameters, so is a nice option for this tutorial. For p-p hopping, Slater Koster requires only 3 parameters: the on-site energy <span class="math notranslate nohighlight">\(\epsilon_p\)</span> , <span class="math notranslate nohighlight">\(V_{pp\sigma}\)</span> and <span class="math notranslate nohighlight">\(V_{pp\pi}\)</span> .</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Ep</span> <span class="o">=</span> <span class="mf">0.7</span>
+<span class="n">Vpps</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">Vppp</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+<span class="n">VSK</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;051&#39;</span><span class="p">:</span><span class="n">Ep</span><span class="p">,</span><span class="s1">&#39;005511S&#39;</span><span class="p">:</span><span class="n">Vpps</span><span class="p">,</span><span class="s1">&#39;005511P&#39;</span><span class="p">:</span><span class="n">Vppp</span><span class="p">}</span>
+<span class="n">cutoff</span> <span class="o">=</span> <span class="mf">0.72</span><span class="o">*</span><span class="n">a</span>
+</pre></div>
+</div>
+<p>In the following, I’m going to use a slightly more advanced model, where rather than consider nearest neighbour hoppings only, I will also include next nearest neighbour hoppings. To do this, I specify a Slater-Koster dictionary for on-site and nearest neighbours, and a second dictionary for next-nearest neighbours.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">V1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;051&#39;</span><span class="p">:</span><span class="n">Ep</span><span class="p">,</span><span class="s1">&#39;005511S&#39;</span><span class="p">:</span><span class="n">Vpps</span><span class="p">,</span><span class="s1">&#39;005511P&#39;</span><span class="p">:</span><span class="n">Vppp</span><span class="p">}</span>
+<span class="n">V2</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;005511S&#39;</span><span class="p">:</span><span class="n">Vpps</span><span class="o">/</span><span class="n">a</span><span class="p">,</span><span class="s1">&#39;005511P&#39;</span><span class="p">:</span><span class="n">Vppp</span><span class="o">/</span><span class="n">a</span><span class="p">}</span>
+<span class="n">VSK</span> <span class="o">=</span> <span class="p">[</span><span class="n">V1</span><span class="p">,</span><span class="n">V2</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>These are distinguished by different cutoff-distances, with 0.8a sufficient for nearest neighbours, and 1.1a for next-nearest neighbours.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cutoff</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="mf">1.1</span><span class="o">*</span><span class="n">a</span><span class="p">]</span>
+
+<span class="n">hamiltonian</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;SK&#39;</span><span class="p">,</span>     <span class="c1">#Slater-Koster type Hamiltonian</span>
+      <span class="s1">&#39;V&#39;</span><span class="p">:</span><span class="n">VSK</span><span class="p">,</span>          <span class="c1">#dictionary (or list of dictionaries) of onsite and hopping potentials</span>
+       <span class="s1">&#39;avec&#39;</span><span class="p">:</span><span class="n">avec</span><span class="p">,</span>     <span class="c1">#lattice geometry</span>
+      <span class="s1">&#39;cutoff&#39;</span><span class="p">:</span><span class="n">cutoff</span><span class="p">,</span>  <span class="c1">#(cutoff or list of cutoffs) maximum length-scale for each hoppings specified by VSK</span>
+      <span class="s1">&#39;renorm&#39;</span><span class="p">:</span><span class="mf">1.0</span><span class="p">,</span>     <span class="c1">#renormalize bandwidth of Hamiltonian</span>
+       <span class="s1">&#39;offset&#39;</span><span class="p">:</span><span class="mf">0.0</span><span class="p">,</span>    <span class="c1">#offset the Fermi level</span>
+      <span class="s1">&#39;tol&#39;</span><span class="p">:</span><span class="mf">1e-4</span><span class="p">,</span>       <span class="c1">#minimum amplitude for matrix element to be included in model.</span>
+      <span class="s1">&#39;spin&#39;</span><span class="p">:</span><span class="n">spin</span><span class="p">}</span>      <span class="c1">#spin arguments, as defined above</span>
+</pre></div>
+</div>
+<p>Finally, we can bring all this together to define a tight-binding model object.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TB</span> <span class="o">=</span> <span class="n">build_lib</span><span class="o">.</span><span class="n">gen_TB</span><span class="p">(</span><span class="n">basis_object</span><span class="p">,</span><span class="n">hamiltonian</span><span class="p">,</span><span class="n">k_object</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="model-characterization">
+<h2>Model Characterization<a class="headerlink" href="#model-characterization" title="Permalink to this heading"></a></h2>
+<p>With the model so defined, we can now diagonalize, and perform some diagnostics on the tight-binding model. We start by plotting the bandstructure over the k path.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TB</span><span class="o">.</span><span class="n">Kobj</span> <span class="o">=</span> <span class="n">k_object</span>
+<span class="n">TB</span><span class="o">.</span><span class="n">solve_H</span><span class="p">()</span>
+<span class="n">TB</span><span class="o">.</span><span class="n">plotting</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/tutorial_dispersion.png"><img alt="_images/tutorial_dispersion.png" src="_images/tutorial_dispersion.png" style="width: 400px;" /></a>
+<p>In the above model, we see the full bandstructure along high-symmetry directions for this model. Notably, the <span class="math notranslate nohighlight">\(k_z\)</span> dispersion is zero, as the c-lattice constant is larger than our cutoff-lengthscale. You can try adjusting the cutoff distance, or the c-lattice constant to introduce these hopping terms.</p>
+<p>There are several ways in which we can characterize our tight-binding model before proceeding to calculation of the photoemission intensity. Here, we consider the orbital projection or ‘fat bands’ plot, which illustrates the orbital weight of different different basis states. Before doing this, it’s instructive to refer to the orbital basis ordering in our model.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">TB</span><span class="o">.</span><span class="n">print_basis_summary</span><span class="p">()</span>
+
+ <span class="o">&gt;&gt;&gt;</span> <span class="n">Index</span> <span class="o">|</span> <span class="n">Atom</span> <span class="o">|</span> <span class="n">Label</span> <span class="o">|</span> <span class="n">Spin</span> <span class="o">|</span>     <span class="n">Position</span>
+<span class="o">================================================</span>
+    <span class="mi">0</span>  <span class="o">|</span>   <span class="mi">0</span>  <span class="o">|</span><span class="mi">51</span><span class="n">x</span>    <span class="o">|</span>  <span class="o">-</span><span class="mf">0.5</span><span class="o">|</span> <span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span>
+    <span class="mi">1</span>  <span class="o">|</span>   <span class="mi">0</span>  <span class="o">|</span><span class="mi">51</span><span class="n">y</span>    <span class="o">|</span>  <span class="o">-</span><span class="mf">0.5</span><span class="o">|</span> <span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span>
+    <span class="mi">2</span>  <span class="o">|</span>   <span class="mi">0</span>  <span class="o">|</span><span class="mi">51</span><span class="n">z</span>    <span class="o">|</span>  <span class="o">-</span><span class="mf">0.5</span><span class="o">|</span> <span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span>
+    <span class="mi">3</span>  <span class="o">|</span>   <span class="mi">0</span>  <span class="o">|</span><span class="mi">51</span><span class="n">x</span>    <span class="o">|</span>  <span class="o">-</span><span class="mf">0.5</span><span class="o">|</span> <span class="mf">3.536</span><span class="p">,</span><span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span>
+    <span class="mi">4</span>  <span class="o">|</span>   <span class="mi">0</span>  <span class="o">|</span><span class="mi">51</span><span class="n">y</span>    <span class="o">|</span>  <span class="o">-</span><span class="mf">0.5</span><span class="o">|</span> <span class="mf">3.536</span><span class="p">,</span><span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span>
+    <span class="mi">5</span>  <span class="o">|</span>   <span class="mi">0</span>  <span class="o">|</span><span class="mi">51</span><span class="n">z</span>    <span class="o">|</span>  <span class="o">-</span><span class="mf">0.5</span><span class="o">|</span> <span class="mf">3.536</span><span class="p">,</span><span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span>
+    <span class="mi">6</span>  <span class="o">|</span>   <span class="mi">0</span>  <span class="o">|</span><span class="mi">51</span><span class="n">x</span>    <span class="o">|</span>   <span class="mf">0.5</span><span class="o">|</span> <span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span>
+    <span class="mi">7</span>  <span class="o">|</span>   <span class="mi">0</span>  <span class="o">|</span><span class="mi">51</span><span class="n">y</span>    <span class="o">|</span>   <span class="mf">0.5</span><span class="o">|</span> <span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span>
+    <span class="mi">8</span>  <span class="o">|</span>   <span class="mi">0</span>  <span class="o">|</span><span class="mi">51</span><span class="n">z</span>    <span class="o">|</span>   <span class="mf">0.5</span><span class="o">|</span> <span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span>
+    <span class="mi">9</span>  <span class="o">|</span>   <span class="mi">0</span>  <span class="o">|</span><span class="mi">51</span><span class="n">x</span>    <span class="o">|</span>   <span class="mf">0.5</span><span class="o">|</span> <span class="mf">3.536</span><span class="p">,</span><span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span>
+   <span class="mi">10</span>  <span class="o">|</span>   <span class="mi">0</span>  <span class="o">|</span><span class="mi">51</span><span class="n">y</span>    <span class="o">|</span>   <span class="mf">0.5</span><span class="o">|</span> <span class="mf">3.536</span><span class="p">,</span><span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span>
+   <span class="mi">11</span>  <span class="o">|</span>   <span class="mi">0</span>  <span class="o">|</span><span class="mi">51</span><span class="n">z</span>    <span class="o">|</span>   <span class="mf">0.5</span><span class="o">|</span> <span class="mf">3.536</span><span class="p">,</span><span class="mf">0.000</span><span class="p">,</span><span class="mf">0.000</span>
+</pre></div>
+</div>
+<p>We want to plot the projection onto all <span class="math notranslate nohighlight">\(p_x\)</span> , <span class="math notranslate nohighlight">\(p_y\)</span> , and <span class="math notranslate nohighlight">\(p_z\)</span> orbitals. We see that orbitals the set {0,3,6,9} are all <span class="math notranslate nohighlight">\(p_x\)</span> , {1,4,7,10} are <span class="math notranslate nohighlight">\(p_y\)</span> and {2,5,8,11} are <span class="math notranslate nohighlight">\(p_x\)</span> . To visualize these projections then:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">px</span> <span class="o">=</span> <span class="n">operators</span><span class="o">.</span><span class="n">fatbs</span><span class="p">(</span><span class="n">proj</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="p">],</span><span class="n">TB</span><span class="o">=</span><span class="n">TB</span><span class="p">,</span><span class="n">Elims</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">degen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">py</span> <span class="o">=</span> <span class="n">operators</span><span class="o">.</span><span class="n">fatbs</span><span class="p">(</span><span class="n">proj</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span><span class="n">TB</span><span class="o">=</span><span class="n">TB</span><span class="p">,</span><span class="n">Elims</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">degen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">pz</span> <span class="o">=</span> <span class="n">operators</span><span class="o">.</span><span class="n">fatbs</span><span class="p">(</span><span class="n">proj</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">11</span><span class="p">],</span><span class="n">TB</span><span class="o">=</span><span class="n">TB</span><span class="p">,</span><span class="n">Elims</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">degen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1">#The degen flag averages over degenerate states. All states are at least two-fold degenerate,</span>
+<span class="c1">#so this flag should certainly be on here.</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/tutorial_fbs_x.png"><img alt="_images/tutorial_fbs_x.png" src="_images/tutorial_fbs_x.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="_images/tutorial_fbs_y.png"><img alt="_images/tutorial_fbs_y.png" src="_images/tutorial_fbs_y.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="_images/tutorial_fbs_z.png"><img alt="_images/tutorial_fbs_z.png" src="_images/tutorial_fbs_z.png" style="width: 400px;" /></a>
+<p>From this, we see that the bandwidth of the <span class="math notranslate nohighlight">\(p_z\)</span> band is largest, over 2 eV larger than that of the in-plane <span class="math notranslate nohighlight">\(p_{x,y}\)</span> states. Furthermore, plotting along the <span class="math notranslate nohighlight">\(k_x\)</span> and <span class="math notranslate nohighlight">\(k_y\)</span> directions, we see clearly the strong momentum dependence of the orbital character, which relaxes only near the avoided crossings where SOC mixes the orbital character.</p>
+<p>In addition to orbital projections, we can also compute the expectation value of any Hermitian operator, and plot is value over each of the bands in a similar way. In this model, we have included spin-orbit coupling, and so we can plot <span class="math notranslate nohighlight">\(\left&lt; \vec{L}\cdot\vec{S}\right&gt;\)</span> as an example.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LdS_matrix</span> <span class="o">=</span> <span class="n">operators</span><span class="o">.</span><span class="n">LSmat</span><span class="p">(</span><span class="n">TB</span><span class="p">)</span>
+<span class="n">LdS</span> <span class="o">=</span> <span class="n">operators</span><span class="o">.</span><span class="n">O_path</span><span class="p">(</span><span class="n">LdS_matrix</span><span class="p">,</span><span class="n">TB</span><span class="p">,</span><span class="n">degen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/tutorial_LdS.png"><img alt="_images/tutorial_LdS.png" src="_images/tutorial_LdS.png" style="width: 400px;" /></a>
+<p>While here I have made use of the built-in function operators.LSmat to generate my operator matrix, one can pass in principal any valid Hermitian operator defined over the dimension of the orbital basis: in this case we require a 12 x 12 Hermitian matrix.</p>
+</section>
+<section id="arpes-calculation">
+<h2>ARPES Calculation<a class="headerlink" href="#arpes-calculation" title="Permalink to this heading"></a></h2>
+<p>While a number of other tools are available for model diagnostics, we’ll proceed now to consideration of ARPES intensity simulation. Similar to the inputs defined above, we make use of Python dictionaries to organize the input
+arguments. Above, we saw that the Brillouin zone extends over a square of side-length 1.256 Å <span class="math notranslate nohighlight">\(^{-1}\)</span> . We will begin by looking at the Fermi surface of our material.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">arpes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;cube&#39;</span><span class="p">:{</span><span class="s1">&#39;X&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mf">0.628</span><span class="p">,</span><span class="mf">0.628</span><span class="p">,</span><span class="mi">300</span><span class="p">],</span><span class="s1">&#39;Y&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mf">0.628</span><span class="p">,</span><span class="mf">0.628</span><span class="p">,</span><span class="mi">300</span><span class="p">],</span><span class="s1">&#39;E&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span><span class="mf">0.05</span><span class="p">,</span><span class="mi">50</span><span class="p">],</span><span class="s1">&#39;kz&#39;</span><span class="p">:</span><span class="mf">0.0</span><span class="p">},</span> <span class="c1">#domain of interest</span>
+    <span class="s1">&#39;hv&#39;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span>                          <span class="c1">#photon energy, in eV</span>
+     <span class="s1">&#39;T&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span>                           <span class="c1">#temperature, in K</span>
+    <span class="s1">&#39;pol&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>           <span class="c1">#polarization vector</span>
+    <span class="s1">&#39;SE&#39;</span><span class="p">:[</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span><span class="mf">0.02</span><span class="p">],</span>            <span class="c1">#self-energy, assume for now to be a constant 20 meV for simplicity</span>
+    <span class="s1">&#39;resolution&#39;</span><span class="p">:{</span><span class="s1">&#39;E&#39;</span><span class="p">:</span><span class="mf">0.02</span><span class="p">,</span><span class="s1">&#39;k&#39;</span><span class="p">:</span><span class="mf">0.02</span><span class="p">}}</span>  <span class="c1">#resolution</span>
+
+<span class="n">arpes_experiment</span> <span class="o">=</span> <span class="n">experiment</span><span class="p">(</span><span class="n">TB</span><span class="p">,</span><span class="n">arpes</span><span class="p">)</span> <span class="c1">#initialize experiment object</span>
+    <span class="n">arpes_experiment</span><span class="o">.</span><span class="n">datacube</span><span class="p">()</span> <span class="c1">#execute calculation of matrix elements</span>
+</pre></div>
+</div>
+<p>Once the matrix elements have been calculated, the spectrum can be plot</p>
+<p>The first thing we plot here is a constant energy contour, at the Fermi level</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">I</span><span class="p">,</span><span class="n">Ig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">arpes_experiment</span><span class="o">.</span><span class="n">spectral</span><span class="p">(</span><span class="n">slice_select</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;w&#39;</span><span class="p">,</span><span class="mf">0.0</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The <em>spectral</em> function produces 2 output by default, corresponding to the raw, and resolution-broadened intensity maps. Generally speaking, the output is a 3-dimensional array of float, with the first two axes being momentum, and the last energy.</p>
+<a class="reference internal image-reference" href="_images/tutorial_polp_ef.png"><img alt="_images/tutorial_polp_ef.png" src="_images/tutorial_polp_ef.png" style="width: 400px;" /></a>
+<p>In consideration of the bandstructure above, we expect 3 Fermi-surface sheets, so why do we only see two? This is an explicit consequence of the matrix-element effects. If we consider the orbital-projected plots above, the large spin-orbit coupling strongly mixes the orbital character over much of the Fermi-surface. However, <span class="math notranslate nohighlight">\(p_z\)</span> character, which we are most strongly sensitive to with this polarization, is vanishing on the inner-most Fermi surface sheet. This readily explains its absence here. By however rotating polarization to be strictly in-plane, we can recover this sheet.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">arpes</span><span class="p">[</span><span class="s1">&#39;pol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">arpes_experiment</span><span class="o">.</span><span class="n">spectral</span><span class="p">(</span><span class="n">arpes</span><span class="p">,</span><span class="n">slice_select</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;w&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/tutorial_pols_ef.png"><img alt="_images/tutorial_pols_ef.png" src="_images/tutorial_pols_ef.png" style="width: 400px;" /></a>
+<p>An easy way to quickly navigate a calculation over a 2-dimensional region of momentum space is with the <a class="reference internal" href="code.html#matplotlib_plotter.interface" title="matplotlib_plotter.interface"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib_plotter.interface()</span></code></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">chinook.matplotlib_plotter</span>
+<span class="n">interface</span> <span class="o">=</span> <span class="n">chinook</span><span class="o">.</span><span class="n">matplotlib_plotter</span><span class="o">.</span><span class="n">interface</span><span class="p">(</span><span class="n">arpes_experiment</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will activate an interactive window, where constant <span class="math notranslate nohighlight">\(k_x\)</span>, <span class="math notranslate nohighlight">\(k_y\)</span>, and <span class="math notranslate nohighlight">\(E\)</span> can be selected, and all slices can be explored.</p>
+<p>We can explore the evolution of the orbital character and ARPES intensity over a broader range of momentum by computing the matrix elements over a wider energy window. Below, we do so for a fixed in-plane momentum</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">arpes</span><span class="p">[</span><span class="s1">&#39;cube&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;X&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mf">0.628</span><span class="p">,</span><span class="mf">0.628</span><span class="p">,</span><span class="mi">200</span><span class="p">],</span><span class="s1">&#39;Y&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;kz&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;E&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mf">4.5</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mi">1000</span><span class="p">]}</span>
+<span class="n">arpes</span><span class="p">[</span><span class="s1">&#39;SE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span><span class="mf">0.1</span><span class="p">]</span>
+<span class="n">arpes</span><span class="p">[</span><span class="s1">&#39;pol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">arpes_experiment</span> <span class="o">=</span> <span class="n">experiment</span><span class="p">(</span><span class="n">TB</span><span class="p">,</span><span class="n">arpes</span><span class="p">)</span>
+<span class="n">arpes_experiment</span><span class="o">.</span><span class="n">datacube</span><span class="p">()</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">arpes_experiment</span><span class="o">.</span><span class="n">spectral</span><span class="p">(</span><span class="n">slice_select</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">plot_bands</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/tutorial_polp_kx.png"><img alt="_images/tutorial_polp_kx.png" src="_images/tutorial_polp_kx.png" style="width: 400px;" /></a>
+<p>Another perspective on the connection to orbital character can be gained by again, changing the polarization:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">arpes</span><span class="p">[</span><span class="s1">&#39;pol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">arpes_experiment</span><span class="o">.</span><span class="n">spectral</span><span class="p">(</span><span class="n">arpes</span><span class="p">,</span><span class="n">slice_select</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">plot_bands</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/tutorial_kx_poly.png"><img alt="_images/tutorial_kx_poly.png" src="_images/tutorial_kx_poly.png" style="width: 400px;" /></a>
+<p>While some bands are suppressed as a result of orbital and polarization symmetry, others still are suppressed due photoelectron interference. Our choice of a two-site unit cell is somewhat artificial, as there is no translational-symmetry breaking potential which prevents us from using a smaller one-atom unit cell. The folded bands in the reduced Brillouin zone of our excessively large unit cell can be described as anti-bonding states. To demonstrate this, we can perform a similar calculation over a wider domain of momentum, covering a full cut through the full Brillouin zone of the one-atom unit cell:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">arpes</span><span class="p">[</span><span class="s1">&#39;cube&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;X&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mf">1.256</span><span class="p">,</span><span class="mf">1.256</span><span class="p">,</span><span class="mi">300</span><span class="p">],</span><span class="s1">&#39;Y&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;kz&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;E&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="mi">1000</span><span class="p">]}</span>
+<span class="n">arpes_experiment</span> <span class="o">=</span> <span class="n">experiment</span><span class="p">(</span><span class="n">TB</span><span class="p">,</span><span class="n">arpes</span><span class="p">)</span>
+<span class="n">arpes_experiment</span><span class="o">.</span><span class="n">datacube</span><span class="p">()</span>
+<span class="n">I</span><span class="p">,</span><span class="n">Ig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">arpes_experiment</span><span class="o">.</span><span class="n">spectral</span><span class="p">(</span><span class="n">slice_select</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">plot_bands</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this tutorial, we have seen how to define and characterize a tight-binding model using chinook. In addition to this, we have performed a few calculations of the photoemission intensity associated with this model, and seen a few ways in which the photoemission intensity is affected by the nature of both our system of interest and the experimental geometry. Feel free to make changes to the model here and experiment with different parameters to get a better sense of how to use some of these tools. You’re now ready to begin building your own models and simulating ARPES intensity for your material of choice. A template input file is provided <a class="reference download internal" download="" href="_downloads/68658c8429c00cfa470e47a6eb126770/template.py"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="input.html" class="btn btn-neutral float-left" title="Input Arguments" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="license.html" class="btn btn-neutral float-right" title="License" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Ryan P. Day.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

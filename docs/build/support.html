@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Support Files &mdash; chinook 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Input Arguments" href="input.html" />
+    <link rel="prev" title="Slab Calculation" href="slab.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html">
+            <img src="_static/chinook_header_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arpes.html">ARPES Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tightbinding.html">Tight Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operator.html">Model Diagnostics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slab.html">Slab Calculation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Support Files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-rotation_lib">Rotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-wigner">Wigner Matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-Ylm">Spherical Harmonics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Input Arguments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html#contact">Contact</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">chinook</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Support Files</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/support.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="toctree-wrapper compound">
+</div>
+<section id="support-files">
+<h1>Support Files<a class="headerlink" href="#support-files" title="Permalink to this heading"></a></h1>
+<p>The following modules and their functions are used extensively throughout the chinook package.</p>
+<section id="module-rotation_lib">
+<span id="rotations"></span><h2>Rotations<a class="headerlink" href="#module-rotation_lib" title="Permalink to this heading"></a></h2>
+<p>Created on Mon Oct  1 20:04:24 2018</p>
+<p>&#64;author: rday</p>
+<p>Various functions relevant to rotations</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="rotation_lib.Euler">
+<span class="sig-prename descclassname"><span class="pre">rotation_lib.</span></span><span class="sig-name descname"><span class="pre">Euler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rotation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rotation_lib.Euler" title="Permalink to this definition"></a></dt>
+<dd><p>Euler rotation angle generation, Z-Y-Z convention, as defined for a user-defined
+rotation matrix. Special case for B = +/- Z*pi where conventional approach doesn’t
+work due to division by zero, then Euler_A is zero and Euler_y is arctan(R10,R00)</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>rotation</strong>: numpy array of 3x3 float (rotation matrix)</p></li>
+</ul>
+<p>OR tuple/list of vector and angle (numpy array of 3 float, float) respectively</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Euler_A</strong>, <strong>Euler_B</strong>, <strong>Euler_y</strong>: float, Euler angles associated with</p></li>
+</ul>
+<p>the given rotation.</p>
+</div></blockquote>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a><a href="#id3"><span class="problematic" id="id4">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rotation_lib.Euler_to_R">
+<span class="sig-prename descclassname"><span class="pre">rotation_lib.</span></span><span class="sig-name descname"><span class="pre">Euler_to_R</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Euler_A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Euler_B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Euler_y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rotation_lib.Euler_to_R" title="Permalink to this definition"></a></dt>
+<dd><p>Inverse of <em>Euler</em>, generate a rotation matrix from the Euler angles A,B,y
+with the same conventiona as in <em>Euler</em>.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Euler_A</strong>, <strong>Euler_B</strong>, <strong>Euler_y</strong>: float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of 3x3 float</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id5"><span class="problematic" id="id6">**</span></a><a href="#id7"><span class="problematic" id="id8">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rotation_lib.Rodrigues_Rmat">
+<span class="sig-prename descclassname"><span class="pre">rotation_lib.</span></span><span class="sig-name descname"><span class="pre">Rodrigues_Rmat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nvec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rotation_lib.Rodrigues_Rmat" title="Permalink to this definition"></a></dt>
+<dd><p>Following Rodrigues theorem for rotations, define a rotation matrix which
+corresponds to the rotation about a vector nvec by the angle theta, in radians.
+Works in pre-multiplication order (i.e. v’ = R.v)</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>nvec</strong>: numpy array len 3 axis of rotation</p></li>
+<li><p><strong>theta</strong>: float radian angle of rotation counter clockwise for theta&gt;0</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Rmat</strong>: numpy array 3x3 of float rotation matrix</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id9"><span class="problematic" id="id10">**</span></a><a href="#id11"><span class="problematic" id="id12">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rotation_lib.rot_vector">
+<span class="sig-prename descclassname"><span class="pre">rotation_lib.</span></span><span class="sig-name descname"><span class="pre">rot_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Rmatrix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rotation_lib.rot_vector" title="Permalink to this definition"></a></dt>
+<dd><p>Inverse to <em>Rodrigues_Rmat</em>, take rotation matrix as input and return 
+the angle-axis convention rotations corresponding to this rotation matrix.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Rmatrix</strong>: numpy array of 3x3 float, rotation matrix</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>nvec</strong>: numpy array of 3 float, rotation axis</p></li>
+<li><p><strong>theta</strong>: float, rotation angle in float</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id13"><span class="problematic" id="id14">**</span></a><a href="#id15"><span class="problematic" id="id16">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rotation_lib.rotate_v1v2">
+<span class="sig-prename descclassname"><span class="pre">rotation_lib.</span></span><span class="sig-name descname"><span class="pre">rotate_v1v2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rotation_lib.rotate_v1v2" title="Permalink to this definition"></a></dt>
+<dd><p>This generates the rotation matrix for PRE-multiplication rotation:
+or written another way, defining R s.t. R.v1 = v2. This rotation will rotate
+the vector <strong>v1</strong> onto the vector <strong>v2</strong>.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>v1</strong>: numpy array len 3 of float, input vector</p></li>
+<li><p><strong>v2</strong>: numpy array len 3 of float, vector to rotate into</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Rmat</strong>: numpy array of 3x3 float, rotation matrix</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id17"><span class="problematic" id="id18">**</span></a><a href="#id19"><span class="problematic" id="id20">*</span></a></p>
+</dd></dl>
+
+</section>
+<section id="module-wigner">
+<span id="wigner-matrices"></span><h2>Wigner Matrices<a class="headerlink" href="#module-wigner" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="wigner.Wd_denominator">
+<span class="sig-prename descclassname"><span class="pre">wigner.</span></span><span class="sig-name descname"><span class="pre">Wd_denominator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wigner.Wd_denominator" title="Permalink to this definition"></a></dt>
+<dd><p>Small function for computing the denominator in the s-summation, one step 
+in defining the matrix elements of Wigner’s small d-matrix</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>j</strong>, <strong>m</strong>, <strong>mp</strong>: integer (or half-integer) angular momentum</p></li>
+</ul>
+<p>quantum numbers</p>
+<ul class="simple">
+<li><p><strong>s</strong>: int, the index of the summation</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>int, product of factorials</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id21"><span class="problematic" id="id22">**</span></a><a href="#id23"><span class="problematic" id="id24">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="wigner.WignerD">
+<span class="sig-prename descclassname"><span class="pre">wigner.</span></span><span class="sig-name descname"><span class="pre">WignerD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Euler_A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Euler_B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Euler_y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wigner.WignerD" title="Permalink to this definition"></a></dt>
+<dd><p>Full matrix representation of Wigner’s Big D matrix relating the rotation
+of states within the subspace of the angular momentum l by the Euler rotation
+Z”(A)-Y’(B)-Z(y)</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>l</strong>: int (or half integer) angular momentum</p></li>
+<li><p><strong>Euler_A</strong>, <strong>Euler_B</strong>, <strong>Euler_y</strong>: float z-y-z Euler angles defining</p></li>
+</ul>
+<p>the rotation</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Dmat</strong>: 2j+1 x 2j+1 numpy array of complex float</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id25"><span class="problematic" id="id26">**</span></a><a href="#id27"><span class="problematic" id="id28">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="wigner.big_D_element">
+<span class="sig-prename descclassname"><span class="pre">wigner.</span></span><span class="sig-name descname"><span class="pre">big_D_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Euler_A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Euler_B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Euler_y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wigner.big_D_element" title="Permalink to this definition"></a></dt>
+<dd><p>Combining Wigner’s small d matrix with the other two rotations, this defines
+Wigner’s big D matrix, which defines the projection of an angular momentum state
+onto the other azimuthal projections of this angular momentum. Wigner defined 
+these matrices in the convention of a set of z-y-z Euler angles, passed here 
+along with the relevant quantum numbers:</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>j</strong>, <strong>mp</strong>, <strong>m</strong>: integer (half-integer) angular momentum quantum numbers</p></li>
+<li><p><strong>Euler_A</strong>, <strong>Euler_B</strong>, <strong>Euler_y</strong>: float z-y-z Euler angles defining</p></li>
+</ul>
+<p>the rotation</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>complex float corresponding to the [mp,m] matrix element</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id29"><span class="problematic" id="id30">**</span></a><a href="#id31"><span class="problematic" id="id32">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="wigner.fact">
+<span class="sig-prename descclassname"><span class="pre">wigner.</span></span><span class="sig-name descname"><span class="pre">fact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wigner.fact" title="Permalink to this definition"></a></dt>
+<dd><p>Recursive factorial function for non-negative integers.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>N</strong>: int, or int-like float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>factorial of <strong>N</strong></p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id33"><span class="problematic" id="id34">**</span></a><a href="#id35"><span class="problematic" id="id36">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="wigner.s_lims">
+<span class="sig-prename descclassname"><span class="pre">wigner.</span></span><span class="sig-name descname"><span class="pre">s_lims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wigner.s_lims" title="Permalink to this definition"></a></dt>
+<dd><p>Limits for summation in definition of Wigner’s little d-matrix</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>j</strong>: int,(or half-integer) total angular momentum quantum number</p></li>
+<li><p><strong>m</strong>: int, (or half-integer) initial azimuthal angular momentum quantum number</p></li>
+<li><p><strong>mp</strong>: int, (or half-integer) final azimuthal angular momentum</p></li>
+</ul>
+<p>quantum number coupled to by rotation</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>list of int, viable candidates which result in well-defined factorials in</p></li>
+</ul>
+<p>summation</p>
+</div></blockquote>
+<p><a href="#id37"><span class="problematic" id="id38">**</span></a><a href="#id39"><span class="problematic" id="id40">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="wigner.small_D">
+<span class="sig-prename descclassname"><span class="pre">wigner.</span></span><span class="sig-name descname"><span class="pre">small_D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Euler_B</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wigner.small_D" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Wigner’s little d matrix, defined as         _</dt><dd><p>j                                                    (-1)^(mp-m+s)                 2j+m-mp-2s         mp-m+2s</p>
+</dd>
+<dt>d    (B) = sqrt((j+mp)!(j-mp)!(j+m)!(j-m)!)  &gt;  —————————– cos(B/2)          sin(B/2)</dt><dd><p>mp,m                                       /_s  (j+m-s)!s!(mp-m+s)!(j-mp-s)!</p>
+</dd>
+</dl>
+<p>where the sum over s includes all integers for which the factorial arguments in the denominator are non-negative.
+The limits for this summation are defined by s_lims(j,m,mp).</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>j</strong>, <strong>mp</strong> ,**m** – integer (or half-integer) angular momentum</p></li>
+</ul>
+<p>quantum numbers for the orbital angular momentum, and its azimuthal projections
+which are related by the Wigner D matrix during the rotation</p>
+<ul class="simple">
+<li><p><strong>Euler_B</strong>: float, angle of rotation in radians, for the y-rotation</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>float representing the matrix element of Wigner’s small d-matrix</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id41"><span class="problematic" id="id42">**</span></a><a href="#id43"><span class="problematic" id="id44">*</span></a></p>
+</dd></dl>
+
+</section>
+<section id="module-Ylm">
+<span id="spherical-harmonics"></span><h2>Spherical Harmonics<a class="headerlink" href="#module-Ylm" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="Ylm.GramSchmidt">
+<span class="sig-prename descclassname"><span class="pre">Ylm.</span></span><span class="sig-name descname"><span class="pre">GramSchmidt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Ylm.GramSchmidt" title="Permalink to this definition"></a></dt>
+<dd><p>Simple orthogonalization of two vectors, returns orthonormalized vector</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>a</strong>, <strong>b</strong>: numpy array of same length</p></li>
+</ul>
+</div></blockquote>
+<p><em>returns</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>GS_a</strong>: numpy array of same size, orthonormalized to the b vector</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id45"><span class="problematic" id="id46">**</span></a><a href="#id47"><span class="problematic" id="id48">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Ylm.Y">
+<span class="sig-prename descclassname"><span class="pre">Ylm.</span></span><span class="sig-name descname"><span class="pre">Y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Ylm.Y" title="Permalink to this definition"></a></dt>
+<dd><p>Spherical harmonics, defined here up to l = 4. This allows for photoemission from
+initial states up to and including f-electrons (final states can be d- or g- like).
+Can be vectorized with numpy.vectorize() to allow array-like input</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>l</strong>: int orbital angular momentum, up to l=4 supported</p></li>
+<li><p><strong>m</strong>: int, azimuthal angular momentum <a href="#id49"><span class="problematic" id="id50">|</span></a>m|&lt;=l</p></li>
+<li><p><strong>theta</strong>: float, angle in spherical coordinates, radian measured from the z-axis [0,pi]</p></li>
+<li><p><strong>phi</strong>: float, angle in spherical coordinates, radian measured from the x-axis [0,2pi]</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>complex float, value of spherical harmonic evaluated at theta,phi</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Ylm.Yproj">
+<span class="sig-prename descclassname"><span class="pre">Ylm.</span></span><span class="sig-name descname"><span class="pre">Yproj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Ylm.Yproj" title="Permalink to this definition"></a></dt>
+<dd><p>Define the unitary transformation rotating the basis of different inequivalent atoms in the
+basis to the basis of spherical harmonics for sake of defining L.S operator in basis of user</p>
+<p>29/09/2018 added reference to the spin character ‘sp’ to handle rotated systems effectively</p>
+<p><em>args:</em></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>basis</strong>: list of orbital objects</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>dictionary of matrices for the different atoms and l-shells–keys are tuples of (atom,l)</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id51"><span class="problematic" id="id52">**</span></a><a href="#id53"><span class="problematic" id="id54">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Ylm.binom">
+<span class="sig-prename descclassname"><span class="pre">Ylm.</span></span><span class="sig-name descname"><span class="pre">binom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Ylm.binom" title="Permalink to this definition"></a></dt>
+<dd><p>Binomial coefficient for ‘a choose b’</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>a</strong>: int, positive</p></li>
+<li><p><strong>b</strong>: int, positive</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>float, binomial coefficient</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id55"><span class="problematic" id="id56">**</span></a><a href="#id57"><span class="problematic" id="id58">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Ylm.fillin">
+<span class="sig-prename descclassname"><span class="pre">Ylm.</span></span><span class="sig-name descname"><span class="pre">fillin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Dmat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Ylm.fillin" title="Permalink to this definition"></a></dt>
+<dd><p>If only using a reduced subset of an orbital shell (for example, only t2g states in d-shell),
+need to fill in the rest of the projection matrix with some defaults</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>M</strong>: numpy array of (2l+1)x(2l+1) complex float</p></li>
+<li><p><strong>l</strong>: int</p></li>
+<li><p><strong>Dmat</strong>: numpy array of (2l+1)x(2l+1) complex float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>M</strong>: numpy arrayof (2l+1)x(2l+1) complex float</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id59"><span class="problematic" id="id60">**</span></a><a href="#id61"><span class="problematic" id="id62">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Ylm.gaunt">
+<span class="sig-prename descclassname"><span class="pre">Ylm.</span></span><span class="sig-name descname"><span class="pre">gaunt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Ylm.gaunt" title="Permalink to this definition"></a></dt>
+<dd><p>I prefer to avoid using the sympy library where possible, for speed reasons. These are the explicitly defined
+Gaunt coefficients required for dipole-allowed transitions (dl = +/-1) for arbitrary m,l and dm
+These have been tested against the sympy package to confirm numerical accuracy for all l,m possible
+up to l=5. This function is equivalent, for the subset of dm, dl allowed to
+sympy.physics.wigner.gaunt(l,1,l+dl,m,dm,-(m+dm))</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>l</strong>: int orbital angular momentum quantum number</p></li>
+<li><p><strong>m</strong>: int azimuthal angular momentum quantum number</p></li>
+<li><p><strong>dl</strong>: int change in l (+/-1)</p></li>
+<li><p><strong>dm</strong>: int change in azimuthal angular momentum (-1,0,1)</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>float Gaunt coefficient</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id63"><span class="problematic" id="id64">**</span></a><a href="#id65"><span class="problematic" id="id66">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Ylm.laguerre">
+<span class="sig-prename descclassname"><span class="pre">Ylm.</span></span><span class="sig-name descname"><span class="pre">laguerre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Ylm.laguerre" title="Permalink to this definition"></a></dt>
+<dd><p>Laguerre polynomial of order l, degree j, evaluated over x</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>x</strong>: float or numpy array of float, input</p></li>
+<li><p><strong>l</strong>: int, order of polynomial</p></li>
+<li><p><strong>j</strong>: int, degree of polynomial</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>laguerre_output</strong>: float or numpy array of float, shape as input <strong>x</strong></p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id67"><span class="problematic" id="id68">**</span></a><a href="#id69"><span class="problematic" id="id70">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Ylm.value_one">
+<span class="sig-prename descclassname"><span class="pre">Ylm.</span></span><span class="sig-name descname"><span class="pre">value_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Ylm.value_one" title="Permalink to this definition"></a></dt>
+<dd><p>Flexible generation of the number 1.0, in either float or array format</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>theta</strong>: float or numpy array of float</p></li>
+<li><p><strong>phi</strong>: float or numpy array of float</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><p><strong>out</strong>: float or numpy array of float, evaluated to 1.0, of same shape and type
+as <strong>theta</strong>, <strong>phi</strong></p>
+</div></blockquote>
+<p><a href="#id71"><span class="problematic" id="id72">**</span></a><a href="#id73"><span class="problematic" id="id74">*</span></a></p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="slab.html" class="btn btn-neutral float-left" title="Slab Calculation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="input.html" class="btn btn-neutral float-right" title="Input Arguments" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Ryan P. Day.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

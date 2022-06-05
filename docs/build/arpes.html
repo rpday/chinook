@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARPES Simulation &mdash; chinook 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tight Binding" href="tightbinding.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html">
+            <img src="_static/chinook_header_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ARPES Simulation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#numerical-integration">Numerical Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-ARPES_lib">ARPES Library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-intensity_map">Intensity Maps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#matplotlib-plotter">Matplotlib Plotter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tilt-geometry">Tilt Geometry</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tightbinding.html">Tight Binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operator.html">Model Diagnostics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slab.html">Slab Calculation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Input Arguments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html#contact">Contact</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">chinook</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>ARPES Simulation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/arpes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="toctree-wrapper compound">
+</div>
+<section id="arpes-simulation">
+<h1>ARPES Simulation<a class="headerlink" href="#arpes-simulation" title="Permalink to this heading"></a></h1>
+<p>In addition to the core <em>ARPES_lib</em> library, several other scripts in the module are written with the express purpose of facilitating calculation of the ARPES intensity. All relevant  docs are included below.</p>
+<p>In setting up an ARPES calculation, one requires an existing model system, i.e. instance of the <a class="reference internal" href="tightbinding.html#TB_lib.TB_model" title="TB_lib.TB_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TB_lib.TB_model</span></code></a> class. This includes all relevant information regarding the orbital basis and the model Hamiltonian. In addition to this, a number of experimental parameters should be specified. Similar to the input for defining an orbital basis and a Hamiltonian, we use python <em>dictionaries</em> to specify these details. An example input is shown here.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ARPES_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;cube&#39;</span><span class="p">:{</span><span class="s1">&#39;X&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">200</span><span class="p">],</span><span class="s1">&#39;Y&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">100</span><span class="p">],</span><span class="s1">&#39;E&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.05</span><span class="p">,</span><span class="mi">1000</span><span class="p">],</span><span class="s1">&#39;kz&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">},</span>
+                <span class="s1">&#39;hv&#39;</span><span class="p">:</span><span class="mf">21.2</span><span class="p">,</span>
+                <span class="s1">&#39;pol&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span>
+                <span class="s1">&#39;T&#39;</span><span class="p">:</span><span class="mf">4.2</span><span class="p">,</span>
+                <span class="s1">&#39;SE&#39;</span><span class="p">:[</span><span class="s1">&#39;fixed&#39;</span><span class="p">,</span><span class="mf">0.02</span><span class="p">],</span>
+                <span class="s1">&#39;resolution&#39;</span><span class="p">:{</span><span class="s1">&#39;dE&#39;</span><span class="p">:</span><span class="mf">0.005</span><span class="p">,</span><span class="s1">&#39;dk&#39;</span><span class="p">:</span><span class="mf">0.01</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>By passing this dictionary to the input statement</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">experiment</span> <span class="o">=</span> <span class="n">ARPES_lib</span><span class="o">.</span><span class="n">experiment</span><span class="p">(</span><span class="n">TB</span><span class="p">,</span><span class="n">ARPES_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We initialize an ARPES experiment which will diagonalize the Hamiltonian over a 200x100 point mesh in the region <span class="math notranslate nohighlight">\(-1 \leq k_x \leq 1\)</span> and <span class="math notranslate nohighlight">\(-0.5 \leq k_y\leq0.5\)</span> . For states in the range of energy <span class="math notranslate nohighlight">\(-1\leq E\leq 0.05\)</span> eV of the Fermi level, we will explicitly compute the ARPES cross section when requested. The calculation will be done with photon energy for He-1 <span class="math notranslate nohighlight">\(\alpha\)</span> at 21.2 eV, and a sample temperature of 4.2 K. This carries into the calculation in the form of a Fermi-Dirac distribution, which suppresses intensity from states with positive energies. The polarization of light is taken to be along the <em>x</em> direction, and is indicated by length-3 array associated with the keyword <em>pol</em>.</p>
+<p>The <em>SE</em> key indicates the form of the self-energy to be imposed in evaluating the lineshape of the spectral features associated with each peak. Here we impose a fixed-linewidth of 20 meV on all states, to allow us to focus on the matrix elements alone, without further complications from energy-dependent lineshape broadening. As detailed in the <code class="xref py py-meth docutils literal notranslate"><span class="pre">ARPES_lib.SE_gen()</span></code> below, more sophisticated options are available.</p>
+<p>Finally, resolution is passed as well, with arguments for both energy and momentum resolution, expressed as full-width half maximum values, in units of electron volts and inverse Angstrom. Many more non-default options are available, including sample rotations, spin-projection (for spin-ARPES) and radial-integrals. See the documentation for <a class="reference internal" href="code.html#ARPES_lib.experiment" title="ARPES_lib.experiment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARPES_lib.experiment</span></code></a> for further details.</p>
+<p>Once a calculation of the matrix elements is completed, one is interested in plotting the associated intensity map. There are several options for this. First, the intensity map must be built using <a class="reference internal" href="code.html#ARPES_lib.experiment.spectral" title="ARPES_lib.experiment.spectral"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ARPES_lib.experiment.spectral()</span></code></a>. Note that GUI tools do this automatically, without the user’s input. The <a class="reference internal" href="code.html#ARPES_lib.experiment.spectral" title="ARPES_lib.experiment.spectral"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ARPES_lib.experiment.spectral()</span></code></a> method will apply the matrix element associated with each state, to its spectral function, and sum over all states to produce a complete dataset. It generates a raw and resolution broadened intensity map. The <em>slice_select</em> option allows for plotting specific cuts in energy or momentum. Once a full dataset has been generated, this can be passed to <a class="reference internal" href="code.html#ARPES_lib.experiment.plot_intensity_map" title="ARPES_lib.experiment.plot_intensity_map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ARPES_lib.experiment.plot_intensity_map()</span></code></a> to quickly image a different cut. Alternatively, interactive GUI tools are available under <a class="reference internal" href="#matplotlib-plotter"><span class="std std-ref">Matplotlib Plotter</span></a>, or if the user has Tkinter installed, <a class="reference internal" href="code.html#ARPES_lib.experiment.plot_gui" title="ARPES_lib.experiment.plot_gui"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ARPES_lib.experiment.plot_gui()</span></code></a>.</p>
+<section id="numerical-integration">
+<h2>Numerical Integration<a class="headerlink" href="#numerical-integration" title="Permalink to this heading"></a></h2>
+<p>For evaluation of radial integrals</p>
+<div class="math notranslate nohighlight">
+\[B_{n,l}^{l'}(k) = (i)^{l'}\int dr R_{n,l}(r) r^3 j_{l'}(kr)\]</div>
+<p>we use an adaptive integration algorithm which allows for precise and accurate evaluation of numeric integrals, regardless of local curvature. We do this by defining a partition of the integration domain which is recursively refined to sample regions of high curvature more densely. This is done until the integral converges to within a numerical tolerance.</p>
+<span class="target" id="module-adaptive_int"></span><p>The user is given some opportunity to specify details of the evaluation of radial integrals <span class="math notranslate nohighlight">\(B_{n,l}^{l'}(k)\)</span> used in the calculations. Specifications can be passed to the ARPES calculation through the <em>ARPES_dict</em> argument passed to the <a class="reference internal" href="code.html#ARPES_lib.experiment" title="ARPES_lib.experiment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARPES_lib.experiment</span></code></a> object.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="adaptive_int.general_Bnl_integrand">
+<span class="sig-prename descclassname"><span class="pre">adaptive_int.</span></span><span class="sig-name descname"><span class="pre">general_Bnl_integrand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#adaptive_int.general_Bnl_integrand" title="Permalink to this definition"></a></dt>
+<dd><p>Standard form of executable integrand in the e.r approximation of the matrix element</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>func</strong>: executable function of position (float), in units of Angstrom</p></li>
+<li><p><strong>kn</strong>: float, norm of the k vector (in inverse Angstrom)</p></li>
+<li><p><strong>lp</strong>: int, final state angular momentum quantum number</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>executable function of float (position)</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a><a href="#id3"><span class="problematic" id="id4">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adaptive_int.integrate">
+<span class="sig-prename descclassname"><span class="pre">adaptive_int.</span></span><span class="sig-name descname"><span class="pre">integrate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#adaptive_int.integrate" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate the integral of <strong>func</strong> over the domain covered by <strong>a</strong>, <strong>b</strong>. This 
+begins by seeding the evaluation with a maximally coarse approximation
+to the integral.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>func</strong>: executable</p></li>
+<li><p><strong>a</strong>: float, start of interval</p></li>
+<li><p><strong>b</strong>: float, end of interval</p></li>
+<li><p><strong>tol</strong>: float, tolerance for convergence</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Q</strong>: (complex) float, value of the integral</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id5"><span class="problematic" id="id6">**</span></a><a href="#id7"><span class="problematic" id="id8">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adaptive_int.rect">
+<span class="sig-prename descclassname"><span class="pre">adaptive_int.</span></span><span class="sig-name descname"><span class="pre">rect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#adaptive_int.rect" title="Permalink to this definition"></a></dt>
+<dd><p>Approximation to contribution of a finite domain to the integral, 
+evaluated as a rough rectangle</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>func</strong>: executable to evaluate</p></li>
+<li><p><strong>a</strong>: float, start of interval</p></li>
+<li><p><strong>b</strong>: float, end of interval</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>recsum</strong>: (complex) float approximated area of the region under</p></li>
+</ul>
+<p>function between <strong>a</strong> and <strong>b</strong></p>
+</div></blockquote>
+<p><a href="#id9"><span class="problematic" id="id10">**</span></a><a href="#id11"><span class="problematic" id="id12">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="adaptive_int.recursion">
+<span class="sig-prename descclassname"><span class="pre">adaptive_int.</span></span><span class="sig-name descname"><span class="pre">recursion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">currsum</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#adaptive_int.recursion" title="Permalink to this definition"></a></dt>
+<dd><p>Recursive integration algorithm–rect is used to approximate the integral
+under each half of the domain, with the domain further divided until
+result has converged</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>func</strong>: executable</p></li>
+<li><p><strong>a</strong>: float, start of interval</p></li>
+<li><p><strong>b</strong>: float, end of interval</p></li>
+<li><p><strong>tol</strong>: float, tolerance for convergence</p></li>
+<li><p><strong>currsum</strong>: (complex) float, current evaluation for the integral</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>recursive call to the function if not converged, otherwise the result as complex (or real) float</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id13"><span class="problematic" id="id14">**</span></a><a href="#id15"><span class="problematic" id="id16">*</span></a></p>
+</dd></dl>
+
+<span class="target" id="module-radint_lib"></span><dl class="py function">
+<dt class="sig sig-object py" id="radint_lib.define_radial_wavefunctions">
+<span class="sig-prename descclassname"><span class="pre">radint_lib.</span></span><span class="sig-name descname"><span class="pre">define_radial_wavefunctions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rad_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#radint_lib.define_radial_wavefunctions" title="Permalink to this definition"></a></dt>
+<dd><p>Define the executable radial wavefunctions for computation of
+the radial integrals</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>rad_dict</strong>: essential key is <em>‘rad_type’</em>, if not passed,</p></li>
+</ul>
+<p>assume Slater orbitals.</p>
+<ul>
+<li><p><strong>rad_dict[‘rad_type’]</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>‘slater’</em>: default value, if <em>‘rad_type’</em> is not passed,</p></li>
+</ul>
+<dl>
+<dt>Slater type orbitals assumed and evaluated for the integral</dt><dd><ul class="simple">
+<li><p><em>‘rad_args’</em>: dictionary of float, supplying optional final-state</p></li>
+</ul>
+<p>phase shifts, accounting for scattering-type final states. keys of form
+‘a-n-l-lp’. Radial integrals will be accordingly multiplied</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p><em>‘hydrogenic’</em>: similar in execution to <em>‘slater’</em>,</p></li>
+</ul>
+<dl>
+<dt>but uses Hydrogenic orbitals–more realistic for light-atoms</dt><dd><ul class="simple">
+<li><p><em>‘rad_args’</em>: dictionary of float, supplying optional final-state</p></li>
+</ul>
+<p>phase shifts, accounting for scattering-type final states. keys of form
+‘a-n-l-lp’. Radial integrals will be accordingly multiplied</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p><em>‘grid’</em>: radial wavefunctions evaluated on a grid of</p></li>
+</ul>
+<p>radii. Requires also another key_value pair:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>‘rad_args’</em>: dictionary of numpy arrays evaluating</p></li>
+</ul>
+<p>the radial wavefunctions. Requires an <em>‘r’</em> array,
+as well as ‘a-n-l’ indicating ‘atom-principal quantum number-orbital angular momentum’.
+Must pass such a grid for each orbital in the basis!</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><em>‘exec’</em>: executable functions for each ‘a-n-l’ i.e.</p></li>
+</ul>
+<p>‘atom-principal quantum number-orbital angular momentum’. 
+If      executable is chosen, require also:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>‘rad_args’</em>, which will be a dictionary of</p></li>
+</ul>
+<p>executables, labelled by the keys ‘a-n-l’. 
+These will be passed to the integral routine.
+Note that it is required that the executables
+are localized, i.e. vanishing for large radii.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><em>‘fixed</em>: radial integrals taken to be constant float,</p></li>
+</ul>
+<p>require dictionary:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>‘rad_args’</em> with keys ‘a-n-l-lp’, i.e.</p></li>
+</ul>
+<p>‘atom-principal quantum number-orbital angular momentum-final state angular momentum’
+and complex float values for the radial integrals.</p>
+</div></blockquote>
+</div></blockquote>
+</li>
+<li><p><strong>basis</strong>: list of orbital objects</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><p><strong>orbital_funcs</strong>: dictionary of executables</p>
+</div></blockquote>
+<p><a href="#id17"><span class="problematic" id="id18">**</span></a><a href="#id19"><span class="problematic" id="id20">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="radint_lib.fill_radint_dic">
+<span class="sig-prename descclassname"><span class="pre">radint_lib.</span></span><span class="sig-name descname"><span class="pre">fill_radint_dic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Eb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orbital_funcs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_shifts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#radint_lib.fill_radint_dic" title="Permalink to this definition"></a></dt>
+<dd><p>Function for computing dictionary of radial integrals. 
+Can pass either an array of binding energies or a single binding
+energy as a float. In either case, returns a dictionary however 
+the difference being that the key value pairs will have a value
+which is itself either a float, or an interpolation mesh over 
+the range of the binding energy array. The output can then be 
+used by either writing <strong>Bdic[‘key’]</strong> or
+<a href="#id21"><span class="problematic" id="id22">**</span></a>Bdic[‘key’]**(valid float between endpoints of input array)</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Eb</strong>: float or tuple indicating the extremal energies</p></li>
+<li><p><strong>orbital_funcs</strong>: dictionary of executable orbital radial wavefunctions</p></li>
+<li><p><strong>fixed</strong>: bool, if True, constant radial integral for each scattering</p></li>
+</ul>
+<p>channel available: then the orbital_funcs dictionary already
+has the radial integral evaluated</p>
+<ul class="simple">
+<li><p><strong>hv</strong>: float, photon energy of incident light.</p></li>
+</ul>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>W</strong>: float, work function</p></li>
+<li><p><strong>phase_shifts</strong>: dictionary for final state phase shifts, as an optional</p></li>
+</ul>
+<p>extension beyond pure- free electron final states. For now, float type.</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Brad</strong>: dictionary of executable interpolation grids</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id23"><span class="problematic" id="id24">**</span></a><a href="#id25"><span class="problematic" id="id26">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="radint_lib.find_cutoff">
+<span class="sig-prename descclassname"><span class="pre">radint_lib.</span></span><span class="sig-name descname"><span class="pre">find_cutoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#radint_lib.find_cutoff" title="Permalink to this definition"></a></dt>
+<dd><p>Find a suitable cutoff lengthscale for the radial integration:
+Evaluate the function over a range of 20 Angstrom, with reasonable
+detail (dr = 0.02 A). Find the maximum in this range. The cutoff
+tolerance is set to 1/1e4 of the maximum value. Since this ‘max’
+is actually a lower bound on the true maximum, this will only give
+us a more strict cutoff tolerance than is absolutely possible. With
+this point found, we then find all points which are within the
+tolerance of zero. The frequency of these points is then found. When
+the frequency is constant and 1 for all subsequent points, we have
+found the point of convergence. If the ‘point of convergence’ is the
+last point in the array, the radial wavefunction really isn’t suitably
+localized and the user should not proceed without giving more
+consideration to the application of the LCAO approximation to such
+a function.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>func</strong>: the integrand executable</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>float, cutoff distance for integration</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id27"><span class="problematic" id="id28">**</span></a><a href="#id29"><span class="problematic" id="id30">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="radint_lib.gen_const">
+<span class="sig-prename descclassname"><span class="pre">radint_lib.</span></span><span class="sig-name descname"><span class="pre">gen_const</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#radint_lib.gen_const" title="Permalink to this definition"></a></dt>
+<dd><p>Create executable function returning a constant value</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>val</strong>: constant value to return when executable function</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>lambda function with constant value</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id31"><span class="problematic" id="id32">**</span></a><a href="#id33"><span class="problematic" id="id34">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="radint_lib.gen_orb_labels">
+<span class="sig-prename descclassname"><span class="pre">radint_lib.</span></span><span class="sig-name descname"><span class="pre">gen_orb_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#radint_lib.gen_orb_labels" title="Permalink to this definition"></a></dt>
+<dd><p>Simple utility function for generating a dictionary of 
+atom-n-l:[Z, orbital label] pairs, to establish which radial integrals
+need be computed.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>basis</strong>: list of orbitals in basis</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>orbitals</strong>: dictionary of radial integral pairs</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id35"><span class="problematic" id="id36">**</span></a><a href="#id37"><span class="problematic" id="id38">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="radint_lib.make_radint_pointer">
+<span class="sig-prename descclassname"><span class="pre">radint_lib.</span></span><span class="sig-name descname"><span class="pre">make_radint_pointer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rad_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Eb</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#radint_lib.make_radint_pointer" title="Permalink to this definition"></a></dt>
+<dd><p>Define executable radial integral functions, and store in a 
+pointer-integer referenced array. This allows for fewer executions
+of the interpolation function in the event where several orbitals
+in the basis share the same a,n,l. Each of these gets 2 functions
+for l +/-1, which are stored in the rows of the array <strong>B_array</strong>.
+The orbitals in the basis then are matched to these executables,
+with the corresponding executable row index saved in <strong>B_pointers</strong>.</p>
+<p>Begin by defining the executable radial wavefunctions, then perform
+integration at several binding energies, finally returning an
+interpolation of these integrations.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>rad_dict</strong>: dictionary of ARPES parameters: relevant keys are</p></li>
+</ul>
+<p>‘hv’ (photon energy), ‘W’ (work function), and the rad_type
+(radial wavefunction type, as well as any relevant additional
+pars, c.f. <em>radint_lib.define_radial_wavefunctions</em>).
+Note: <em>‘rad_type’</em> is optional, (as is <em>rad_args</em>, depending on choice
+of radial wavefunction.)</p>
+<ul class="simple">
+<li><p><strong>basis</strong>: list of orbitals in the basis</p></li>
+<li><p><strong>Eb</strong>: tuple of 2 floats indicating the range of energy of</p></li>
+</ul>
+<p>interest (increasing order)</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>B_array</strong>: numpy array of Nx2 executable functions of float</p></li>
+<li><p><strong>B_pointers</strong>: numpy array of integer indices matching orbital</p></li>
+</ul>
+<p>basis ordering to the functions in <strong>B_array</strong></p>
+</div></blockquote>
+<p><a href="#id39"><span class="problematic" id="id40">**</span></a><a href="#id41"><span class="problematic" id="id42">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="radint_lib.radint_calc">
+<span class="sig-prename descclassname"><span class="pre">radint_lib.</span></span><span class="sig-name descname"><span class="pre">radint_calc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orbital_funcs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_shifts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#radint_lib.radint_calc" title="Permalink to this definition"></a></dt>
+<dd><p>Compute dictionary of radial integrals evaluated at a single <a href="#id107"><span class="problematic" id="id108">|k|</span></a> value
+for the whole basis. Will avoid redundant integrations by checking for
+the presence of an identical dictionary key. The integration is done
+as a simple adaptive integration algorithm, defined in the 
+<em>adaptive_int</em> library.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>k_norm</strong>: float, length of the k-vector</p></li>
+</ul>
+<p>(as an argument for the spherical Bessel Function)</p>
+<ul class="simple">
+<li><p><strong>orbital_funcs</strong>: dictionary, radial wavefunction executables</p></li>
+</ul>
+</div></blockquote>
+<p><em>kwargs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>phase_shifts</strong>: dictionary of phase shifts, to convey final state scattering</p></li>
+</ul>
+</div></blockquote>
+<p><em>returns</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Bdic</strong>: dictionary, key value pairs in form – ‘ATOM-N-L’:<em>Bval</em></p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id43"><span class="problematic" id="id44">**</span></a><a href="#id45"><span class="problematic" id="id46">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="radint_lib.radint_dict_to_arr">
+<span class="sig-prename descclassname"><span class="pre">radint_lib.</span></span><span class="sig-name descname"><span class="pre">radint_dict_to_arr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Bdict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#radint_lib.radint_dict_to_arr" title="Permalink to this definition"></a></dt>
+<dd><p>Take a dictionary of executables defined for different combinations
+of a,n,l and send them to an array, with a corresponding pointer
+array which can be used to dereference the relevant executable.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Bdict</strong>: dictionary of executables with ‘a-n-l-l’’ keys</p></li>
+<li><p><strong>basis</strong>: list of orbital objects</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Blist</strong>: numpy array of the executables, organized by a-n-l,</p></li>
+</ul>
+<p>and l’ (size Nx2, where N is the length of the set of 
+distinct a-n-l triplets)</p>
+<ul class="simple">
+<li><p><strong>pointers</strong>: numpy array of length (basis), integer datatype</p></li>
+</ul>
+<p>indicating the related positions in the <strong>Blist</strong> array</p>
+</div></blockquote>
+<p><a href="#id47"><span class="problematic" id="id48">**</span></a><a href="#id49"><span class="problematic" id="id50">*</span></a></p>
+</dd></dl>
+
+</section>
+<section id="module-ARPES_lib">
+<span id="arpes-library"></span><h2>ARPES Library<a class="headerlink" href="#module-ARPES_lib" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ARPES_lib.G_dic">
+<span class="sig-prename descclassname"><span class="pre">ARPES_lib.</span></span><span class="sig-name descname"><span class="pre">G_dic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.G_dic" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize the gaunt coefficients associated with all possible transitions relevant</p>
+<dl>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p><strong>Gdict</strong>: dictionary with keys as a string representing (l,l’,m,dm) “ll’mdm” and values complex float.</p></li>
+</ul>
+<p>All unacceptable transitions set to zero.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ARPES_lib.Gmat_make">
+<span class="sig-prename descclassname"><span class="pre">ARPES_lib.</span></span><span class="sig-name descname"><span class="pre">Gmat_make</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Gdictionary</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.Gmat_make" title="Permalink to this definition"></a></dt>
+<dd><p>Use the dictionary of relevant Gaunt coefficients to generate a small 2x3 array of  
+float which carries the relevant Gaunt coefficients for a given initial state.</p>
+<dl class="simple">
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>lm</strong>: tuple of 2 int, initial state orbital angular momentum and azimuthal angular momentum</p></li>
+<li><p><strong>Gdictionary</strong>: pre-calculated dictionary of Gaunt coefficients, with key-values associated with “ll’mdm”</p></li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p><strong>mats</strong>: numpy array of float 2x3</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ARPES_lib.all_Y">
+<span class="sig-prename descclassname"><span class="pre">ARPES_lib.</span></span><span class="sig-name descname"><span class="pre">all_Y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.all_Y" title="Permalink to this definition"></a></dt>
+<dd><p>Build L-M argument array input arguments for every combination of l,m in the basis. The idea is for a given k-point to have a single call
+to evaluate all spherical harmonics at once. The pointer array orb_point is a list of lists, where for each projection in the basis, the integer
+in the list indicates which row (first axis) of the Ylm array should be taken. This allows for very quick access to the l+/-1, m+/-1,0 Ylm evaluation
+required.</p>
+<dl class="simple">
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>basis</strong>: list of orbital objects</p></li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p><strong>l_args</strong>: numpy array of int, of shape len(<em>lm_inds</em>),3,2, with the latter two indicating the final state orbital angular momentum</p></li>
+<li><p><strong>m_args</strong>: numpy array of int, of shape len(<em>lm_inds</em>),3,2, with the latter two indicating the final state azimuthal angular momentum</p></li>
+<li><p><strong>g_arr</strong>: numpy array of float, shape len(<em>lm_inds</em>),3,2, providing the related Gaunt coefficients.</p></li>
+<li><p><strong>orb_point</strong>: numpy array of int, matching the related sub-array of <em>l_args</em>, <em>m_args</em>, <em>g_arr</em> related to each orbital in basis</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ARPES_lib.con_ferm">
+<span class="sig-prename descclassname"><span class="pre">ARPES_lib.</span></span><span class="sig-name descname"><span class="pre">con_ferm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ekbt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.con_ferm" title="Permalink to this definition"></a></dt>
+<dd><p>Typical values in the relevant domain for execution of the Fermi distribution will
+result in an overflow associated with 64-bit float. To circumvent, set fermi-function
+to zero when the argument of the exponential in the denominator is too large.</p>
+<dl class="simple">
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>ekbt</strong>: float, (E-u)/kbT in terms of eV</p></li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p><strong>fermi</strong>: float, evaluation of Fermi function.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ARPES_lib.experiment">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ARPES_lib.</span></span><span class="sig-name descname"><span class="pre">experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ARPES_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment" title="Permalink to this definition"></a></dt>
+<dd><p>The experiment object is at the centre of the ARPES matrix element 
+calculation.This object keeps track of the experimental geometry as 
+well as a local copy of the tight-binding model and its dependents. 
+Such a copy is used to avoid corruption of these objects in the global
+space during a given run of the ARPES experiment.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul>
+<li><p><strong>TB</strong>: instance of a tight-binding model object</p></li>
+<li><p><strong>ARPES_dict</strong>: dictionary of relevant experimental parameters including</p>
+<blockquote>
+<div><ul>
+<li><p><em>‘hv’</em>: float, photon energy (eV),</p></li>
+<li><p><em>‘mfp’</em>: float, mean-free path (Angstrom),</p></li>
+<li><p><em>‘resolution’</em>: dictionary for energy and momentum resolution:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>‘dE’</em>: float, energy resolution (FWHM eV),</p></li>
+<li><p><em>‘dk’</em>: float, momentum resolution (FWHM 1/Angstrom)</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><em>‘T’</em>: float, Temperature of sample (Kelvin)</p></li>
+<li><p><em>‘cube’</em>: dictionary momentum and energy domain</p></li>
+</ul>
+<p>(<em>‘kz’</em> as float, all others ( <em>‘X’</em> , <em>‘Y’</em> , <em>‘E’</em> ) are list
+or tuple of floats Xo,Xf,dX)</p>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<p><em>optional args</em>:</p>
+<blockquote>
+<div><p>In addition to the keys above, <em>ARPES_dict</em> can also be fed the following:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>‘spin’</em>: spin-ARPES measurement, list [+/-1,np.array([a,b,c])]</p></li>
+</ul>
+<p>with the numpy array indicating the spin-projection 
+direction (with respect to) experimental frame.</p>
+<ul class="simple">
+<li><p><em>‘rad_type’</em>: string, radial wavefunctions, c.f. <em>chinook.rad_int.py</em> for details</p></li>
+<li><p><em>‘threads’</em>: int, number of threads on which to calculate the matrix elements.</p></li>
+</ul>
+<p>Requires very large calculation to see improvement over single core.</p>
+<ul class="simple">
+<li><p><em>‘slab’</em>: boolean, will truncate the eigenfunctions beyond the penetration depth (specifically 4x penetration depth), default is False</p></li>
+<li><p><em>‘angle’</em>: float, rotation of sample about normal emission i.e. z-axis (radian), default is 0.0</p></li>
+<li><p><em>‘W’</em>: float, work function (eV), default is 4.0</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p><a href="#id51"><span class="problematic" id="id52">**</span></a><a href="#id53"><span class="problematic" id="id54">*</span></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.M_compute">
+<span class="sig-name descname"><span class="pre">M_compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.M_compute" title="Permalink to this definition"></a></dt>
+<dd><p>The core method called during matrix element computation.</p>
+<dl class="simple">
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>i</strong>: integer, index and energy of state</p></li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p><strong>Mtmp</strong>: numpy array (2x3) of complex float corresponding to the matrix element
+projection for dm = -1,0,1 (columns) and spin down or up (rows) for a given
+state in k and energy.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.Mk_wrapper">
+<span class="sig-name descname"><span class="pre">Mk_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ilist</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.Mk_wrapper" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper function for use in multiprocessing, to run each of the processes
+as a serial matrix element calculation over a sublist of state indices.</p>
+<dl class="simple">
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>ilist</strong>: list of int, all state indices for execution.</p></li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p><strong>Mk_out</strong>: numpy array of complex float with shape (len(ilist), 2,3)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.SE_gen">
+<span class="sig-name descname"><span class="pre">SE_gen</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.SE_gen" title="Permalink to this definition"></a></dt>
+<dd><p>Self energy arguments are passed as a list, which supports mixed-datatype.
+The first entry in list is a string, indicating the type of self-energy, 
+and the remaining entries are the self-energy.</p>
+<dl>
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>SE_args</strong>: list, first entry can be ‘func’, ‘poly’, ‘constant’, or ‘grid’</p></li>
+</ul>
+<p>indicating an executable function, polynomial factors, constant, or a grid of values</p>
+</dd>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p>SE, numpy array of complex float, with either shape of the datacube,</p></li>
+</ul>
+<p>or as a one dimensional array over energy only.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.T_distribution">
+<span class="sig-name descname"><span class="pre">T_distribution</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.T_distribution" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the Fermi-distribution for a fixed temperature, over the domain of energy of interest</p>
+<dl class="simple">
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p><strong>fermi</strong>: numpy array of float, same length as energy domain array defined by <em>cube[2]</em> attribute.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.datacube">
+<span class="sig-name descname"><span class="pre">datacube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ARPES_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagonalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.datacube" title="Permalink to this definition"></a></dt>
+<dd><p>This function computes the photoemission matrix elements.
+Given a kmesh to calculate the photoemission over, the mesh is reshaped to an nx3 array and the Hamiltonian
+diagonalized over this set of k points. The matrix elements are then calculated for each 
+of these E-k points</p>
+<dl>
+<dt><em>kwargs</em>:</dt><dd><ul class="simple">
+<li><p><strong>ARPES_dict</strong>: can optionally pass a dictionary of experimental parameters, to update those defined</p></li>
+</ul>
+<p>in the initialization of the <em>experiment</em> object.</p>
+</dd>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p>boolean, True if function finishes successfully.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.diagonalize">
+<span class="sig-name descname"><span class="pre">diagonalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagonalize</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.diagonalize" title="Permalink to this definition"></a></dt>
+<dd><p>Diagonalize the Hamiltonian over the desired range of momentum, reshaping the 
+band-energies into a 1-dimensional array. If the user has not selected a energy
+grain for calculation, automatically calculate this.</p>
+<dl class="simple">
+<dt><em>return</em>:</dt><dd><p>None, however <em>experiment</em> attributes <em>X</em>, <em>Y</em>, <em>ph</em>, <em>TB.Kobj</em>, <em>Eb</em>, <em>Ev</em>, <em>cube</em>
+are modified.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.gen_all_pol">
+<span class="sig-name descname"><span class="pre">gen_all_pol</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.gen_all_pol" title="Permalink to this definition"></a></dt>
+<dd><p>Rotate polarization vector, as it appears for each angle in the experiment.
+Assume that it only rotates with THETA_y (vertical cryostat), and that the polarization
+vector defined by the user relates to centre of THETA_x axis. 
+Right now only handles zero vertical rotation (just tilt)</p>
+<dl>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p>numpy array of len(expmt.cube[1]) x 3 complex float, rotated polarization vectors</p></li>
+</ul>
+<p>expressed in basis of spherical harmonics</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.plot_gui">
+<span class="sig-name descname"><span class="pre">plot_gui</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.plot_gui" title="Permalink to this definition"></a></dt>
+<dd><p>Generate the Tkinter gui for exploring the experimental parameter-space
+associated with the present experiment.</p>
+<dl>
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>ARPES_dict</strong>: dictionary of experimental parameters, c.f. the</p></li>
+</ul>
+<p><em>__init__</em> function for details.</p>
+</dd>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p><strong>Tk_win</strong>: Tkinter window.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.plot_intensity_map">
+<span class="sig-name descname"><span class="pre">plot_intensity_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slice_select</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_bands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax_img</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colourmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.plot_intensity_map" title="Permalink to this definition"></a></dt>
+<dd><p>Plot a slice of the intensity map computed in <em>spectral</em>. The user selects either
+an array index along one of the axes, or the fixed value of interest, allowing
+either integer, or float selection.</p>
+<dl>
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>plot_map</strong>: numpy array of shape (self.cube[0],self.cube[1],self.cube[2]) of float</p></li>
+<li><p><strong>slice_select</strong>: list of either [int,int] or [str,float], corresponding to</p></li>
+</ul>
+<p>dimension, index or label, value. The former option takes dimensions 0,1,2 while
+the latter can handle ‘x’, ‘kx’, ‘y’, ‘ky’, ‘energy’, ‘w’, or ‘e’, and is not
+case-sensitive.</p>
+<ul class="simple">
+<li><p><strong>plot_bands</strong>: boolean, option to overlay a constant-momentum cut with</p></li>
+</ul>
+<p>the dispersion calculated from tight-binding</p>
+<ul class="simple">
+<li><p><strong>ax_img</strong>: matplotlib Axes, for option to plot onto existing Axes</p></li>
+<li><p><strong>colourmap</strong>: matplotlib colourmap</p></li>
+</ul>
+</dd>
+</dl>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>ax_img</strong>: matplotlib axis object</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.rot_basis">
+<span class="sig-name descname"><span class="pre">rot_basis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.rot_basis" title="Permalink to this definition"></a></dt>
+<dd><p>Rotate the basis orbitals and their positions in the lab frame to be consistent with the
+experimental geometry</p>
+<dl>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p>list of orbital objects, representing a rotated version of the original basis if the</p></li>
+</ul>
+<p>angle is finite. Otherwise, just return the original basis.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.sarpes_projector">
+<span class="sig-name descname"><span class="pre">sarpes_projector</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.sarpes_projector" title="Permalink to this definition"></a></dt>
+<dd><p>For use in spin-resolved ARPES experiments, project the computed
+matrix element values onto the desired spin-projection direction.
+In the event that the spin projection direction is not along the 
+standard out-of-plane quantization axis, we rotate the matrix elements
+computed into the desired basis direction.</p>
+<dl>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p><strong>spin_projected_Mk</strong>: numpy array of complex float with same</p></li>
+</ul>
+<p>shape as <em>Mk</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.serial_Mk">
+<span class="sig-name descname"><span class="pre">serial_Mk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.serial_Mk" title="Permalink to this definition"></a></dt>
+<dd><p>Run matrix element on a single thread, directly modifies the <em>Mk</em> attribute.</p>
+<dl>
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>indices</strong>: list of all state indices for execution; restricting states</p></li>
+</ul>
+<blockquote>
+<div><p>in <em>cube_indx</em> to those within the desired window</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.smat_gen">
+<span class="sig-name descname"><span class="pre">smat_gen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">svector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.smat_gen" title="Permalink to this definition"></a></dt>
+<dd><p>Define the spin-projection matrix related to a spin-resolved ARPES experiment.</p>
+<dl class="simple">
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p><strong>Smat</strong>: numpy array of 2x2 complex float corresponding to Pauli operator along the desired direction</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.spectral">
+<span class="sig-name descname"><span class="pre">spectral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ARPES_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slice_select</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_bands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colourmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.spectral" title="Permalink to this definition"></a></dt>
+<dd><p>Take the matrix elements and build a simulated ARPES spectrum. 
+The user has several options here for the self-energy to be used,  c.f. <em>SE_gen()</em> for details.
+Gaussian resolution broadening is the last operation performed, to be consistent with the
+practical experiment. <em>slice_select</em> instructs the method to also produce a plot of the designated
+slice through momentum or energy. If this is done, the function also returns the associated matplotlib.Axes
+object for further manipulation of the plot window.</p>
+<dl class="simple">
+<dt><em>kwargs</em>:</dt><dd><ul class="simple">
+<li><p><strong>ARPES_dict</strong>: dictionary, experimental configuration. See <em>experiment.__init__</em> and <em>experiment.update_pars()</em></p></li>
+<li><p><strong>slice_select</strong>: tuple, of either (int,int) or (str,float) format. If (int,int), first is axis index (0,1,2 for x,y,E) and the second is the index of the array. More useful typically is (str,float) format, with str as ‘x’, ‘kx’, ‘y’, ‘ky’, ‘E’, ‘w’ and the float the value requested. It will find the index along this direction closest to the request. Note the strings are not case-sensitive.</p></li>
+<li><p><strong>add_map</strong>: boolean, add intensity map to list of intensity maps. If true, a list of intensity objects is appended, otherwise, the intensity map is overwritten</p></li>
+<li><p><strong>plot_bands</strong>: boolean, plot bandstructure from tight-binding over the intensity map</p></li>
+<li><p><strong>ax</strong>: matplotlib Axes, only relevant if <strong>slice_select</strong>, option to pass existing Axes to plot onto</p></li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p><strong>I</strong>: numpy array of float, raw intensity map.</p></li>
+<li><p><strong>Ig</strong>: numpy array of float, resolution-broadened intensity map.</p></li>
+<li><p><strong>ax</strong>: matplotlib Axes, for further modifications to plot only if <strong>slice_select</strong> True</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.thread_Mk">
+<span class="sig-name descname"><span class="pre">thread_Mk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.thread_Mk" title="Permalink to this definition"></a></dt>
+<dd><p>Run matrix element on <em>N</em> threads using multiprocess functions, directly modifies the <em>Mk</em>
+attribute.</p>
+<p>NOTE 21/2/2019 – this has not been optimized to show any measureable improvement over serial execution.
+May require a more clever way to do this to get a proper speedup.</p>
+<dl>
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>N</strong>: int, number of threads</p></li>
+<li><p><strong>indices</strong>: list of int, all state indices for execution; restricting</p></li>
+</ul>
+<p>states in cube_indx to those within the desired window.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.truncate_model">
+<span class="sig-name descname"><span class="pre">truncate_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.truncate_model" title="Permalink to this definition"></a></dt>
+<dd><p>For slab calculations, the number of basis states becomes a significant memory load,
+as well as a time bottleneck. In reality, an ARPES calculation only needs the small
+number of basis states near the surface. Then for slab-calculations, we can truncate
+the basis and eigenvectors used in the calculation to dramatically improve our
+capacity to perform such calculations. We keep all eigenvectors, but retain only the
+projection of the basis states within 2*the mean free path of the surface. The 
+states associated with this projection are retained, while remainders are not.</p>
+<dl>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p><strong>tmp_basis</strong>: list, truncated subset of the basis’ orbital objects</p></li>
+<li><p><strong>Evec</strong>: numpy array of complex float corresponding to the truncated eigenvector</p></li>
+</ul>
+<blockquote>
+<div><p>array containing only the surface-projected wavefunctions</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.update_pars">
+<span class="sig-name descname"><span class="pre">update_pars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ARPES_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datacube</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.update_pars" title="Permalink to this definition"></a></dt>
+<dd><p>Several experimental parameters can be updated without re-calculating 
+the ARPES intensity explicitly. Specifically here, we can update 
+resolution in both energy and momentum, as well as temperature,
+spin-projection, self-energy function, and polarization.</p>
+<dl>
+<dt><em>args</em>:</dt><dd><ul>
+<li><p><strong>ARPES_dict</strong>: dictionary, specifically containing</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>‘resolution’</em>: dictionary with ‘E’:float and ‘k’:float</p></li>
+<li><p><em>‘T’</em>: float, temperature, a negative value will suppress the Fermi function</p></li>
+<li><p><em>‘spin’</em>: list of [int, numpy array of 3 float] indicating projection and spin vector</p></li>
+<li><p><em>‘SE’</em>: various types accepted, see <em>SE_gen</em> for details</p></li>
+<li><p><em>‘pol’</em>: numpy array of 3 complex float, polarization of light</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+<dt><em>kwargs</em>:</dt><dd><ul class="simple">
+<li><p><strong>datacube</strong>: bool, if updating in <em>spectral</em>, only the above  can be changed. If instead, updating</p></li>
+</ul>
+<dl class="simple">
+<dt>at the start of <em>datacube</em>, can also pass:</dt><dd><ul class="simple">
+<li><p><strong>hv</strong>: float, photon energy, eV</p></li>
+<li><p><strong>ang</strong>: float, sample orientation around normal, radiants</p></li>
+<li><p><strong>rad_type</strong>: string, radial integral type</p></li>
+<li><p><strong>rad_args</strong>: various datatype, see <em>radint_lib</em> for details</p></li>
+<li><p><strong>kz</strong>: float, out-of-plane momentum, inverse Angstrom</p></li>
+<li><p><strong>mfp</strong>: float, mean-free path, Angstrom</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.write_Ik">
+<span class="sig-name descname"><span class="pre">write_Ik</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.write_Ik" title="Permalink to this definition"></a></dt>
+<dd><p>Function for producing the textfiles associated with a 2 dimensional numpy array of float</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>filename</strong>: string indicating destination of file</p></li>
+<li><p><strong>mat</strong>: numpy array of float, two dimensional</p></li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p>boolean, True</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.write_map">
+<span class="sig-name descname"><span class="pre">write_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.write_map" title="Permalink to this definition"></a></dt>
+<dd><p>Write the intensity maps to a series of text files in the indicated directory.</p>
+<dl class="simple">
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>_map</strong>: numpy array of float to write to file</p></li>
+<li><p><strong>directory</strong>: string, name of directory + the file-lead name</p></li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p>boolean, True</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARPES_lib.experiment.write_params">
+<span class="sig-name descname"><span class="pre">write_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Adict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.experiment.write_params" title="Permalink to this definition"></a></dt>
+<dd><p>Generate metadata text file  associated with the saved map.</p>
+<dl>
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>Adict</strong>: dictionary, ARPES_dict same as in above functions, containing</p></li>
+</ul>
+<p>relevant experimental parameters for use in saving the metadata associated
+with the related calculation.</p>
+<ul class="simple">
+<li><p><strong>parfile</strong>: string, destination for the metadata</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ARPES_lib.find_mean_dE">
+<span class="sig-prename descclassname"><span class="pre">ARPES_lib.</span></span><span class="sig-name descname"><span class="pre">find_mean_dE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Eb</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.find_mean_dE" title="Permalink to this definition"></a></dt>
+<dd><p>Find the average spacing between adjacent points along the dispersion calculated.</p>
+<dl class="simple">
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>Eb</strong>: numpy array of float, eigenvalues</p></li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p><strong>dE_mean</strong>: float, average difference between consecutive eigenvalues.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ARPES_lib.gen_SE_KK">
+<span class="sig-prename descclassname"><span class="pre">ARPES_lib.</span></span><span class="sig-name descname"><span class="pre">gen_SE_KK</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SE_args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.gen_SE_KK" title="Permalink to this definition"></a></dt>
+<dd><p>The total self-energy is computed using Kramers’ Kronig relations:</p>
+<blockquote>
+<div><p>The user can pass the self-energy in the form of either a callable function, a list of polynomial coefficients, or as a numpy array with shape Nx2 (with the first
+column an array of frequency values, and the second the values of a function). For the latter option, the user is responsible for ensuring that the function goes 
+to zero at the tails of the domain. In the former two cases, the ‘cut’ parameter is used to impose an exponential cutoff near the edge of the domain to ensure this 
+is the case. In all cases the input imaginary self-energy must be single-signed to ensure it is purely even function. It is forced to be negative in all cases to give
+a positive spectral function.
+With the input defined, along with the energy range of interest to the calculation, a MUCH larger domain (100x in the maximal extent of the energy region of interest) is defined
+wf. This is the domain over which we evaluate the Hilbert transform, which itself is carried out using:
+the scipy.signal.hilbert() function. This function acting on an array f: H(f(x)) -&gt; f(x) + i Hf(x). It relies on the FFT performed on the product of the sgn(w) and F(w) functions,
+and then IFFT back so that we can use this to extract the real part of the self energy, given only the input.
+args:</p>
+<blockquote>
+<div><p>w – numpy array energy values for the spectral peaks used in the ARPES simulation
+SE_args – dictionary containing the ‘imfunc’ key value pair (values being either callable, list of polynomial prefactors (increasing order) or numpy array of energy and Im(SE) values)</p>
+<blockquote>
+<div><p>– for the first two options, a ‘cut’ key value pair is also required to force the function to vanish at the boundary of the Hilbert transform integration window.</p>
+</div></blockquote>
+</div></blockquote>
+<p>return: self energy as a numpy array of complex float. The indexing matches that of w, the spectral features to be plotted in the matrix element simulation.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ARPES_lib.pol_2_sph">
+<span class="sig-prename descclassname"><span class="pre">ARPES_lib.</span></span><span class="sig-name descname"><span class="pre">pol_2_sph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pol</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.pol_2_sph" title="Permalink to this definition"></a></dt>
+<dd><p>return polarization vector in spherical harmonics – order being Y_11, Y_10, Y_1-1.
+If an array of polarization vectors is passed, use the einsum function to broadcast over
+all vectors.</p>
+<dl class="simple">
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>pol</strong>: numpy array of 3 complex float, polarization vector in Cartesian coordinates (x,y,z)</p></li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p>numpy array of 3 complex float, transformed polarization vector.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ARPES_lib.poly">
+<span class="sig-prename descclassname"><span class="pre">ARPES_lib.</span></span><span class="sig-name descname"><span class="pre">poly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poly_args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.poly" title="Permalink to this definition"></a></dt>
+<dd><p>Recursive polynomial function.</p>
+<dl>
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>input_x</strong>: float, int or numpy array of numeric type, input value(s) at which to evaluate the polynomial</p></li>
+<li><p><strong>poly_args</strong>: list of coefficients, in INCREASING polynomial order i.e. [a_0,a_1,a_2] for y = a_0 + a_1 * x + a_2 <a href="#id55"><span class="problematic" id="id56">*</span></a>x <a href="#id57"><span class="problematic" id="id58">**</span></a>2</p></li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p>recursive call to <em>poly</em>, if <em>poly_args</em> is reduced to a single value, return explicit evaluation of the function.</p></li>
+</ul>
+<p>Same datatype as input, with int changed to float if <em>poly_args</em> are float, polynomial evaluated over domain of <em>input_x</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ARPES_lib.progress_bar">
+<span class="sig-prename descclassname"><span class="pre">ARPES_lib.</span></span><span class="sig-name descname"><span class="pre">progress_bar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nmax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.progress_bar" title="Permalink to this definition"></a></dt>
+<dd><p>Utility function, generate string to print matrix element calculation progress.</p>
+<dl class="simple">
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>N</strong>: int, number of iterations complete</p></li>
+<li><p><strong>Nmax</strong>: int, total number of iterations to complete</p></li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p><strong>st</strong>: string, progress status</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ARPES_lib.projection_map">
+<span class="sig-prename descclassname"><span class="pre">ARPES_lib.</span></span><span class="sig-name descname"><span class="pre">projection_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARPES_lib.projection_map" title="Permalink to this definition"></a></dt>
+<dd><p>In order to improve efficiency, an array of orbital projections is generated, carrying all and each
+orbital projection for the elements of the model basis. As these do not in general have the same length,
+the second dimension of this array corresponds to the largest of the sets of projections associated with
+a given orbital. This will in practice remain a modest number of order 1, since at worst we assume f-orbitals,
+in which case the projection can be no larger than 7 long. So output will be at worst len(basis)x7 complex float</p>
+<dl class="simple">
+<dt><em>args</em>:</dt><dd><ul class="simple">
+<li><p><strong>basis</strong>: list of orbital objects</p></li>
+</ul>
+</dd>
+<dt><em>return</em>:</dt><dd><ul class="simple">
+<li><p><strong>projarr</strong>: numpy array of complex float</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-intensity_map">
+<span id="intensity-maps"></span><h2>Intensity Maps<a class="headerlink" href="#module-intensity_map" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="intensity_map.intensity_map">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">intensity_map.</span></span><span class="sig-name descname"><span class="pre">intensity_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Imat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cube</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">self_energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#intensity_map.intensity_map" title="Permalink to this definition"></a></dt>
+<dd><p>Class for organization and saving of data, as well as metadata related to
+a specific ARPES calculation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="intensity_map.intensity_map.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#intensity_map.intensity_map.copy" title="Permalink to this definition"></a></dt>
+<dd><p>Copy-by-value of the intensity map object.</p>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>intensity_map</em> object with identical attributes to self.</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id59"><span class="problematic" id="id60">**</span></a><a href="#id61"><span class="problematic" id="id62">*</span></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="intensity_map.intensity_map.save_map">
+<span class="sig-name descname"><span class="pre">save_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#intensity_map.intensity_map.save_map" title="Permalink to this definition"></a></dt>
+<dd><p>Save the intensity map: if 2D, just a single file, if 3D, each constant-energy
+slice is saved separately. Saved as .txt file</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>directory</strong>: string, directory for saving intensity map to</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>boolean</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id63"><span class="problematic" id="id64">**</span></a><a href="#id65"><span class="problematic" id="id66">*</span></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="intensity_map.intensity_map.write_2D_Imat">
+<span class="sig-name descname"><span class="pre">write_2D_Imat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#intensity_map.intensity_map.write_2D_Imat" title="Permalink to this definition"></a></dt>
+<dd><p>Sub-function for producing the textfiles associated with a 2dimensional numpy array of float</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>filename</strong>: string, indicating destination of file</p></li>
+<li><p><strong>index</strong>: int, energy index of map to save, if -1, then just a 2D map, and save the whole</p></li>
+</ul>
+<p>thing</p>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>boolean</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id67"><span class="problematic" id="id68">**</span></a><a href="#id69"><span class="problematic" id="id70">*</span></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="intensity_map.intensity_map.write_meta">
+<span class="sig-name descname"><span class="pre">write_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#intensity_map.intensity_map.write_meta" title="Permalink to this definition"></a></dt>
+<dd><p>Write meta-data file for ARPES intensity calculation.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>destination</strong>: string, file-lead</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>boolean</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id71"><span class="problematic" id="id72">**</span></a><a href="#id73"><span class="problematic" id="id74">*</span></a></p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="matplotlib-plotter">
+<h2>Matplotlib Plotter<a class="headerlink" href="#matplotlib-plotter" title="Permalink to this heading"></a></h2>
+<p>A built-in data-explorer is included in chinook, built using matplotlib to ensure cross platform stability. The figure below shows an example screen capture for a calculation on <span class="math notranslate nohighlight">\(Sr_2IrO_4\)</span> . The user has the ability to scan through the momentum and energy axes of the dataset, and the cursor can be used actively to select momentum- and energy- distribution curves in the side and lower panels. A scatterplot of the bare dispersion, as computed from the Hamiltonian diagonalization is plotted overtop the intensity map.</p>
+<a class="reference internal image-reference" href="_images/matplotlib_plotter.png"><img alt="_images/matplotlib_plotter.png" src="_images/matplotlib_plotter.png" style="width: 600px;" /></a>
+<span class="target" id="module-matplotlib_plotter"></span><p>Created on Thu Sep 12 14:53:36 2019</p>
+<p>&#64;author: rday</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="matplotlib_plotter.interface">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matplotlib_plotter.</span></span><span class="sig-name descname"><span class="pre">interface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matplotlib_plotter.interface" title="Permalink to this definition"></a></dt>
+<dd><p>This interactive tool is intended for exploring the dataset associated
+with an ARPES simulation using chinook.
+The user can scan through the datacube in each dimension.
+This uses matplotlib natively rather than alternative gui systems in python like Tkinter,
+which makes it a bit more robust across platforms.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="matplotlib_plotter.interface.bin_energy">
+<span class="sig-name descname"><span class="pre">bin_energy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matplotlib_plotter.interface.bin_energy" title="Permalink to this definition"></a></dt>
+<dd><p>Translate the exact energy value for the band peaks into the discrete
+binning of the intensity map, to allow for cursor queries to be processed.</p>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>coarse_pts</strong>: numpy array of float, same lengths as <em>self.state_coords</em>,</p></li>
+</ul>
+<p>but sampled over a discrete grid.</p>
+</div></blockquote>
+<p><a href="#id75"><span class="problematic" id="id76">**</span></a><a href="#id77"><span class="problematic" id="id78">*</span></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matplotlib_plotter.interface.find_cursor">
+<span class="sig-name descname"><span class="pre">find_cursor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matplotlib_plotter.interface.find_cursor" title="Permalink to this definition"></a></dt>
+<dd><p>Find nearest point to the desired cursor position, as clicked by the
+user. The cursor event coordinates are compared against the peak positions
+from the tight-binding calculation, and a best choice within the plotted 
+slice is selected.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>cursor</strong>: tuple of 2 float, indicating the column and row of the</p></li>
+</ul>
+<p>event, in units of the data-set scaling (e.g. 1/A or eV)</p>
+</div></blockquote>
+<p><a href="#id79"><span class="problematic" id="id80">**</span></a><a href="#id81"><span class="problematic" id="id82">*</span></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matplotlib_plotter.interface.plot_img">
+<span class="sig-name descname"><span class="pre">plot_img</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matplotlib_plotter.interface.plot_img" title="Permalink to this definition"></a></dt>
+<dd><p>Update the plotted intensity map slice. The plotted bandstructure states are 
+also displayed.</p>
+<p><a href="#id83"><span class="problematic" id="id84">**</span></a><a href="#id85"><span class="problematic" id="id86">*</span></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matplotlib_plotter.interface.run_gui">
+<span class="sig-name descname"><span class="pre">run_gui</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matplotlib_plotter.interface.run_gui" title="Permalink to this definition"></a></dt>
+<dd><p>Execution of the matplotlib gui. The figure is initialized, along with all widgets and 
+chosen datasets. The user has access to both the slice of ARPES data plotted, in addition
+to the orbital projection plotted in upper right panel.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="tilt-geometry">
+<h2>Tilt Geometry<a class="headerlink" href="#tilt-geometry" title="Permalink to this heading"></a></h2>
+<p>One can account for rotation of the experimental geometry during acquisition of a particular dataset by performing an inverse rotation on the incoming light vector. Similarly, spin projections can also be rotated into the laboratory frame to reflect the effect of a misaligned or rotated sample in a spin-ARPES experiment.</p>
+<span class="target" id="module-tilt"></span><p>Created on Fri Dec 28 13:33:59 2018</p>
+<p>&#64;author: ryanday</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="tilt.ang_mesh">
+<span class="sig-prename descclassname"><span class="pre">tilt.</span></span><span class="sig-name descname"><span class="pre">ang_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">th</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tilt.ang_mesh" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a mesh over the indicated range of theta and phi,
+with N elements along each of the two directions</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>N</strong>: int or iterable of length 2 indicating # of points along <em>th</em>, and <em>ph</em> respectively</p></li>
+<li><p><strong>th</strong>: iterable length 2 of float (endpoints of theta range)</p></li>
+<li><p><strong>ph</strong>: iterable length 2 of float (endpoints of phi range)</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of N_th x N_ph float, representing mesh of angular coordinates</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id87"><span class="problematic" id="id88">**</span></a><a href="#id89"><span class="problematic" id="id90">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tilt.gen_kpoints">
+<span class="sig-prename descclassname"><span class="pre">tilt.</span></span><span class="sig-name descname"><span class="pre">gen_kpoints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ek</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kz</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tilt.gen_kpoints" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a mesh of kpoints over a mesh of emission angles.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>ek</strong>: float, kinetic energy, eV</p></li>
+<li><p><strong>N</strong>: tuple of 2 int, number of points along each axis</p></li>
+<li><p><strong>thx</strong>: tuple of 2 float, range of horizontal angles, radian</p></li>
+<li><p><strong>thy</strong>: tuple of 2 float, range of vertical angles, radian</p></li>
+<li><p><strong>kz</strong>: float, k-perpendicular of interest, inverse Angstrom</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>k_array</strong>: numpy array of N[1]xN[0] float, corresponding to mesh of in-plane momenta</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id91"><span class="problematic" id="id92">**</span></a><a href="#id93"><span class="problematic" id="id94">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tilt.k_mesh">
+<span class="sig-prename descclassname"><span class="pre">tilt.</span></span><span class="sig-name descname"><span class="pre">k_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Tmesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Pmesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ek</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tilt.k_mesh" title="Permalink to this definition"></a></dt>
+<dd><p>Application of rotation to a normal-emission vector (i.e. (0,0,1) vector)
+Third column of a rotation matrix formed by product of rotation about vertical (ky), and rotation around kx axis
+c.f. Labbook 28 December, 2018</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Tmesh</strong>: numpy array of float, output of <em>ang_mesh</em></p></li>
+<li><p><strong>Pmesh</strong>: numpy array of float, output of <em>ang_mesh</em></p></li>
+<li><p><strong>ek</strong>: float, kinetic energy in eV</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>kvec</strong>: numpy array of float, in-plane momentum array associated with angular emission coordinates</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id95"><span class="problematic" id="id96">**</span></a><a href="#id97"><span class="problematic" id="id98">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tilt.k_parallel">
+<span class="sig-prename descclassname"><span class="pre">tilt.</span></span><span class="sig-name descname"><span class="pre">k_parallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ek</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tilt.k_parallel" title="Permalink to this definition"></a></dt>
+<dd><p>Convert kinetic energy in eV to inverse Angstrom</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tilt.plot_mesh">
+<span class="sig-prename descclassname"><span class="pre">tilt.</span></span><span class="sig-name descname"><span class="pre">plot_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ek</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">th</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tilt.plot_mesh" title="Permalink to this definition"></a></dt>
+<dd><p>Plotting tool, plot all points in mesh, for an array of N angles,
+at a fixed kinetic energy.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>ek</strong>: float, kinetic energy, eV</p></li>
+<li><p><strong>N</strong>: tuple of 2 int, number of points along each axis</p></li>
+<li><p><strong>thx</strong>: tuple of 2 float, range of horizontal angles, radian</p></li>
+<li><p><strong>thy</strong>: tuple of 2 float, range of vertical angles, radian</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id99"><span class="problematic" id="id100">**</span></a><a href="#id101"><span class="problematic" id="id102">*</span></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tilt.rot_vector">
+<span class="sig-prename descclassname"><span class="pre">tilt.</span></span><span class="sig-name descname"><span class="pre">rot_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">th</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tilt.rot_vector" title="Permalink to this definition"></a></dt>
+<dd><p>Rotation of vector by theta and phi angles, about the global y-axis by theta, followed by a rotation about
+the LOCAL x axis by phi. This is analogous to the rotation of a cryostat with a vertical-rotation axis (theta),
+and a sample-mount tilt angle (phi). NOTE: need to extend to include cryostats where the horizontal rotation axis
+is fixed, as opposed to the vertical axis–I have never seen such a system but it is of course totally possible.</p>
+<p><em>args</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>vector</strong>: numpy array length 3 of float (vector to rotate)</p></li>
+<li><p><strong>th</strong>: float, or numpy array of float – vertical rotation angle(s)</p></li>
+<li><p><strong>ph</strong>: float, or numpy array of float – horizontal tilt angle(s)</p></li>
+</ul>
+</div></blockquote>
+<p><em>return</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>numpy array of float, rotated vectors for all angles: shape 3 x len(ph) x len(th)</p></li>
+</ul>
+<p>NOTE: will flatten any length-one dimensions</p>
+</div></blockquote>
+<p><a href="#id103"><span class="problematic" id="id104">**</span></a><a href="#id105"><span class="problematic" id="id106">*</span></a></p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="introduction.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tightbinding.html" class="btn btn-neutral float-right" title="Tight Binding" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Ryan P. Day.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
