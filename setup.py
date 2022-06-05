@@ -13,7 +13,7 @@ def readme():
     f.close()
     
 setup(name= 'chinook',
-      version = '1.0.0',
+      version = '1.1.0',
       author = 'Ryan P. Day', 
       author_email = 'ryanday7@gmail.com',
       description = 'Tools for tight-binding and simulation of ARPES',
