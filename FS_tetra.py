@@ -313,7 +313,7 @@ def get_kpts(TB, kfix, npts=100, shift=np.array([0,0,0])):
         K2 = Kpts[:,1].reshape((npts,npts))
     return Kpts, K1, K2
 
-def fermi_surface_2D(TB, npts=100, kfix=(2,0), energy=0, shift=np.array([0,0,0])):
+def fermi_surface_2D(TB, npts=100, kfix=(2,0), energy=0, shift=np.array([0,0,0]), do_plot=True):
     """
     Generate a 2D contour of the Fermi surface, projected into one of the 3 cardinal planes.
     User specifies which b-vector to be normal to, and its fixed value. The user also specifies
@@ -329,20 +329,40 @@ def fermi_surface_2D(TB, npts=100, kfix=(2,0), energy=0, shift=np.array([0,0,0])
         - **energy**: float, Fermi energy
 
         - **shift**: numpy array of 3 float, shift vector, in units or b-vectors
+
+        - **do_plot**: boolean, option to suppress plot and only return the FS contours
+
+    *returns*:
+        - **ax**: if do_plot, then a figure is generated and the axes object returned
+
+        - **FS**: if not do_plot, then a dictionary of contours, with keys indicating the associated band index, and
+                  values being the arrays of K points is returned
     """
 
     Kpts, K1, K2 = get_kpts(TB,kfix, npts, shift)
     TB.Kobj.kpts = Kpts
+    endpoints = np.array([[K1[0,0],K2[0,0]], [K1[-1,0],K2[-1,0]], [K1[-1,-1],K2[-1,-1]], [K1[0,-1],K2[0,-1]]])
+    edges = np.array([[endpoints[ii%4],endpoints[(ii+1)%4]] for ii in range(4)])
 
     TB.solve_H()
     Eband = np.reshape(TB.Eband,(npts,npts,len(TB.basis)))
+    FS = {}
 
     fig, ax = plt.subplots(1,1)
     for ei in range(len(TB.basis)):
         if Eband[:,:,ei].min() <= energy and Eband[:,:,ei].max() >= energy:
 
-            _ = ax.contour(K1,K2,Eband[:,:,ei],levels=[energy])
+            lines = ax.contour(K1,K2,Eband[:,:,ei],levels=[energy])
+            paths = np.concatenate(lines.allsegs[0],axis=0)
+            FS[ei] = paths
+    for ei in edges:
+        ax.plot(ei[:,0],ei[:,1],c='k',linestyle='dashed')
 
     ax.set_aspect(1)
-    
+    if do_plot:
+        return ax
+    else:
+        plt.close(fig)
+        return FS
+
     
