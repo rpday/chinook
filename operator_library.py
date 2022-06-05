@@ -428,8 +428,31 @@ def degen_Ovals(Oper_exp,Energy):
                 val = Energy[ki,bi]
     return O_copy  
 
-def operator_projected_fermi_surface(TB, matrix, npts=100, kfix=(2,0), energy=0, shift=np.array([0,0,0]),degen=True, fig=None, cmap=cm.rainbow):
-    
+def operator_projected_fermi_surface(TB, matrix, npts=100, kfix=(2,0), energy=0, shift=np.array([0,0,0]),degen=True, fig=None, cmap=cm.rainbow, scale=20):
+    """
+    Simple 2D-projected FS with operator expectation values plot over the FS contours.
+
+    *args*:
+        - **TB**: tight-binding object
+
+        - **matrix**: numpy array of complex float, operator matrix
+
+        - **npts**: number of k-points along axes of BZ
+
+        - **kfix**: fixed index of BZ. First value is projected reciprocal lattice vector (0,1,2), second is value (inverse Angstrom)
+
+        - **energy**: float, fixed value of energy (EF = 0 )
+
+        - **shift**: numpy array of 3 float. Shift of centre of plot
+
+        - **degen**: boolean, average over degenerate bands
+
+        - **fig**: matplotlib figure to plot on top of
+
+        - **cmap**: colourmap
+
+        - **scale**: multiplier for scatterplot point sizes
+    """
     FS = fermi_surface_2D(TB, npts=npts, kfix=kfix, energy=energy, shift=shift, do_plot = False)
     Ovals = {}
     if fig is None:
@@ -444,7 +467,7 @@ def operator_projected_fermi_surface(TB, matrix, npts=100, kfix=(2,0), energy=0,
         TB.solve_H()
         expectation,_ = O_path(matrix, TB, plot=False, degen=degen)
         Ovals[fi] = expectation[:,fi]
-        fig.axes[0].scatter(FS[fi][:,0], FS[fi][:,1], c=Ovals[fi],s=Ovals[fi]*20, cmap=cmap)
+        fig.axes[0].scatter(FS[fi][:,0], FS[fi][:,1], c=Ovals[fi],s=Ovals[fi]*scale, cmap=cmap)
 
     return fig              
 
