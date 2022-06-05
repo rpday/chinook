@@ -106,7 +106,7 @@ class kpath:
             cutst = self.kcut[-1]
             self.kcut_brk.append(cutst)
             self.ind_brk.append(len(self.kcut))
-        self.kpts = np.array(self.kpts)
+        self.kpts = np.array(self.kpts).squeeze()
         return self.kpts
     
     
@@ -305,7 +305,6 @@ def kmesh(ang,X,Y,kz,Vo=None,hv=None,W=None):
         Y = kp*np.sin(ph-ang)
     try:
         Zeff = kz_kpt(hv,kp,W,Vo)
-        print('Inner potential detected, overriding kz input.')
     except TypeError:    
         Zeff = kz*np.ones(np.shape(X))
     

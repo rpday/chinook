@@ -210,8 +210,10 @@ def score(vlist,v1,v2,avec):
     if abs(len_proj).max()>0.0:
         len_proj/=abs(len_proj).max()
     score_vec = np.array([[len_proj[i],angles[i]] for i in range(len(vlist))])
+    ln_score = np.linalg.norm(score_vec,axis=1)
+
     try:
-        return vlist[np.where(np.linalg.norm(score_vec)==np.linalg.norm(score_vec).min())[0][0]]
+        return vlist[np.where(ln_score == ln_score.min())[0][0]]
     except IndexError:
         print('Require larger search field, increasing range of acceptance for surface lattice vectors.')
         return np.zeros(3)               
