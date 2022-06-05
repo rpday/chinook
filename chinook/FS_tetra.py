@@ -39,7 +39,7 @@
 
 
 
-import chinook.tetrahedra as tetrahedra
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -47,6 +47,8 @@ from operator import itemgetter
 import warnings
 warnings.filterwarnings("error")
 
+import chinook.tetrahedra as tetrahedra
+from chinook.klib import bvectors
 
     
 
@@ -272,15 +274,95 @@ def sim_tri(vert):
         return [tris[2],tris[3]]
     
     
-#def FS_contour(TB,kmax,Ef):
-#    kr = np.linspace(kmax/1000,kmax,100)
-#    phi  = np.linspace(0,2*np.pi,100)
-#    k_phi = np.zeros((len(phi),3))
-#    for 
-#    kvecs = np.array([[kr[i]*np.cos(phi[j]),kr[i]*np.sin(phi[j]),0] for j in range(len(phi)) for i in range(len(kr))])
 
+def get_kpts(TB, kfix, npts=100, shift=np.array([0,0,0])):
+    """
+    Get k-grid for Brillouin zone sampling
 
-#    TB.Kobj.kpts = kvecs
-        
+    *args*:
+        - **TB**: tight-binding model object
+
+        - **kfix**: tuple of two numeric. First is b-vector index (0-base), second is the fixed value (float)
+
+        - **npts**: int or tuple of 2-int, number of kpoints in grid
+                
+        - **shift**: numpy array of 3 float, shift vector, in units or b-vectors
+    """
+    ibz = np.linspace(-0.5, 0.5,npts)
+    I1, I2 = np.meshgrid(ibz,ibz)
+    I3 = np.ones(npts**2) * kfix[1]
+    if kfix[0] == 0:
+        Ipts = np.column_stack([I3,I1.flatten(),I2.flatten()])
+    elif kfix[0] == 1:
+        Ipts = np.column_stack([I1.flatten(),I3,I2.flatten()])
+    elif kfix[0] == 2:
+        Ipts = np.column_stack([I1.flatten(),I2.flatten(),I3])
     
+    Ipts += shift
+        
+    Kpts = np.einsum('ij,jk->ik',Ipts,bvectors(TB.avec))
+
+    if kfix[0] == 0:
+        K1 = Kpts[:,1].reshape((npts,npts))
+        K2 = Kpts[:,2].reshape((npts,npts))
+    elif kfix[0] == 1:
+        K1 = Kpts[:,0].reshape((npts,npts))
+        K2 = Kpts[:,2].reshape((npts,npts))
+    elif kfix[0] == 2:
+        K1 = Kpts[:,0].reshape((npts,npts))
+        K2 = Kpts[:,1].reshape((npts,npts))
+    return Kpts, K1, K2
+
+def fermi_surface_2D(TB, npts=100, kfix=(2,0), energy=0, shift=np.array([0,0,0]), do_plot=True):
+    """
+    Generate a 2D contour of the Fermi surface, projected into one of the 3 cardinal planes.
+    User specifies which b-vector to be normal to, and its fixed value. The user also specifies
+    the 'Fermi' energy, and can shift the centre of the plot away from the origin if desired.
+    
+    *args*:
+        - **TB**: tight-binding model object
+
+        - **npts**: int or tuple of 2-int, number of kpoints in grid
+        
+        - **kfix**: tuple of two numeric. First is b-vector index (0-base), second is the fixed value (float)
+        
+        - **energy**: float, Fermi energy
+
+        - **shift**: numpy array of 3 float, shift vector, in units or b-vectors
+
+        - **do_plot**: boolean, option to suppress plot and only return the FS contours
+
+    *returns*:
+        - **ax**: if do_plot, then a figure is generated and the axes object returned
+
+        - **FS**: if not do_plot, then a dictionary of contours, with keys indicating the associated band index, and
+                  values being the arrays of K points is returned
+    """
+
+    Kpts, K1, K2 = get_kpts(TB,kfix, npts, shift)
+    TB.Kobj.kpts = Kpts
+    endpoints = np.array([[K1[0,0],K2[0,0]], [K1[-1,0],K2[-1,0]], [K1[-1,-1],K2[-1,-1]], [K1[0,-1],K2[0,-1]]])
+    edges = np.array([[endpoints[ii%4],endpoints[(ii+1)%4]] for ii in range(4)])
+
+    TB.solve_H()
+    Eband = np.reshape(TB.Eband,(npts,npts,len(TB.basis)))
+    FS = {}
+
+    fig, ax = plt.subplots(1,1)
+    for ei in range(len(TB.basis)):
+        if Eband[:,:,ei].min() <= energy and Eband[:,:,ei].max() >= energy:
+
+            lines = ax.contour(K1,K2,Eband[:,:,ei],levels=[energy])
+            paths = np.concatenate(lines.allsegs[0],axis=0)
+            FS[ei] = paths
+    for ei in edges:
+        ax.plot(ei[:,0],ei[:,1],c='k',linestyle='dashed')
+
+    ax.set_aspect(1)
+    if do_plot:
+        return ax
+    else:
+        plt.close(fig)
+        return FS
+
     

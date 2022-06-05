@@ -40,6 +40,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.cm as cm
 import chinook.klib as K_lib
 import chinook.Ylm as Ylm
+from chinook.FS_tetra import fermi_surface_2D
 rcParams.update({'font.size':14})
 
 '''
@@ -277,7 +278,7 @@ def fatbs(proj,TB,Kobj=None,vlims=None,Elims=None,degen=False,ax=None,colourbar=
     try:
         pvec[np.real(proj[:,0]).astype(int)] = proj[:,1]
         O = O*pvec
-    
+
         Ovals,ax = O_path(O,TB,Kobj,vlims,Elims,degen=degen,ax=ax,colourbar=colourbar,plot=plot)
     except ValueError:
         print('projections need to be passed as list or array of type [index,projection]')
@@ -355,27 +356,26 @@ def O_path(Operator,TB,Kobj=None,vlims=None,Elims=None,degen=False,plot=True,ax=
     if degen:
         O_vals = degen_Ovals(O_vals,TB.Eband)
 
-
-    
-    if ax is None:
-        fig,ax = plt.subplots(1,1)
-        fig.set_tight_layout(False)
-
-    for b in TB.Kobj.kcut_brk:
-        ax.axvline(x = b,color = 'grey',ls='--',lw=1.0)
-    
-    if colourmap is None:               
-        if np.sign(O_vals.min())<0 and np.sign(O_vals.max())>0:
-            colourmap = 'RdBu_alpha'
-        else:
-            colourmap = 'Blues_alpha'
-
-    if vlims is None:
-        vlims = (O_vals.min()-(O_vals.max()-O_vals.min())/10.0,O_vals.max()+(O_vals.max()-O_vals.min())/10.0)
-    if Elims is None:
-        Elims = (TB.Eband.min()-(TB.Eband.max()-TB.Eband.min())/10.0,TB.Eband.max()+(TB.Eband.max()-TB.Eband.min())/10.0)
-    
     if plot:
+
+        if ax is None:
+            fig,ax = plt.subplots(1,1)
+            fig.set_tight_layout(False)
+
+        for b in TB.Kobj.kcut_brk:
+            ax.axvline(x = b,color = 'grey',ls='--',lw=1.0)
+        
+        if colourmap is None:               
+            if np.sign(O_vals.min())<0 and np.sign(O_vals.max())>0:
+                colourmap = 'RdBu_alpha'
+            else:
+                colourmap = 'Blues_alpha'
+
+        if vlims is None:
+            vlims = (O_vals.min()-(O_vals.max()-O_vals.min())/10.0,O_vals.max()+(O_vals.max()-O_vals.min())/10.0)
+        if Elims is None:
+            Elims = (TB.Eband.min()-(TB.Eband.max()-TB.Eband.min())/10.0,TB.Eband.max()+(TB.Eband.max()-TB.Eband.min())/10.0)
+    
         for p in range(np.shape(O_vals)[1]):
 
             ax.plot(TB.Kobj.kcut,TB.Eband[:,p],color='k',lw=0.2)
@@ -388,7 +388,9 @@ def O_path(Operator,TB,Kobj=None,vlims=None,Elims=None,degen=False,plot=True,ax=
             plt.colorbar(O_line,ax=ax)
         ax.set_ylabel("Energy (eV)")
         
-    return O_vals,ax
+        return O_vals,ax
+    else:
+        return O_vals,None
 
 
 def degen_Ovals(Oper_exp,Energy):
@@ -424,7 +426,50 @@ def degen_Ovals(Oper_exp,Energy):
                 start = bi
                 counter = 1
                 val = Energy[ki,bi]
-    return O_copy                
+    return O_copy  
+
+def operator_projected_fermi_surface(TB, matrix, npts=100, kfix=(2,0), energy=0, shift=np.array([0,0,0]),degen=True, fig=None, cmap=cm.rainbow, scale=20):
+    """
+    Simple 2D-projected FS with operator expectation values plot over the FS contours.
+
+    *args*:
+        - **TB**: tight-binding object
+
+        - **matrix**: numpy array of complex float, operator matrix
+
+        - **npts**: number of k-points along axes of BZ
+
+        - **kfix**: fixed index of BZ. First value is projected reciprocal lattice vector (0,1,2), second is value (inverse Angstrom)
+
+        - **energy**: float, fixed value of energy (EF = 0 )
+
+        - **shift**: numpy array of 3 float. Shift of centre of plot
+
+        - **degen**: boolean, average over degenerate bands
+
+        - **fig**: matplotlib figure to plot on top of
+
+        - **cmap**: colourmap
+
+        - **scale**: multiplier for scatterplot point sizes
+    """
+    FS = fermi_surface_2D(TB, npts=npts, kfix=kfix, energy=energy, shift=shift, do_plot = False)
+    Ovals = {}
+    if fig is None:
+        fig, ax = plt.subplots(1,1)
+
+    for fi in FS:
+        kpoints = np.zeros((len(FS[fi]),3))
+        kpoints[:,kfix[0]] = kfix[1]
+        kpoints[:,(kfix[0]+1)%3] = FS[fi][:,0]
+        kpoints[:,(kfix[0]+2)%3] = FS[fi][:,1]
+        TB.Kobj.kpts = kpoints
+        TB.solve_H()
+        expectation,_ = O_path(matrix, TB, plot=False, degen=degen)
+        Ovals[fi] = expectation[:,fi]
+        fig.axes[0].scatter(FS[fi][:,0], FS[fi][:,1], c=Ovals[fi],s=Ovals[fi]*scale, cmap=cmap)
+
+    return fig              
 
 def O_surf(O,TB,ktuple,Ef,tol,vlims=(0,0),ax=None):
     

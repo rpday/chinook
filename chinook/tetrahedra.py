@@ -61,10 +61,7 @@ def corners():
     ***
     '''
     cube = np.array([[i,j,k] for k in range(2) for j in range(2) for i in range(2)])
-    diagonals = np.array([cube[7-ii]-cube[ii] for ii in range(4)])
-    min_ind = np.where(np.linalg.norm(diagonals)==np.linalg.norm(diagonals).min())[0][0]
-    main = sorted([min_ind,7-min_ind])
-    return main,cube
+    return [0,7],cube
     
 def tetrahedra():
     

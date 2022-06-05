@@ -287,11 +287,9 @@ class experiment:
             are modified.
         '''
         if self.Vo>0:
-            
-            kn = (self.hv-self.W)
-            Vo_args =[self.Vo,kn]
+            Vo_args = (self.Vo, self.hv, self.W)
         else:
-            Vo_args = None
+            Vo_args = [None, None, None]
             
         if self.coord_type=='momentum':
             x = np.linspace(*self.cube[0])
@@ -301,7 +299,7 @@ class experiment:
             self.X = X
             self.Y = Y
             
-            k_arr,self.ph = K_lib.kmesh(self.ang,self.X,self.Y,self.kz,Vo_args)      
+            k_arr,self.ph = K_lib.kmesh(self.ang,self.X,self.Y,self.kz,*Vo_args)      
             
     
         elif self.coord_type=='angle':
@@ -314,7 +312,6 @@ class experiment:
             self.ph = np.arctan2(k_arr[:,1],k_arr[:,0])
     
         self.TB.Kobj = K_lib.kpath(k_arr)
-        print(self.TB.Kobj.kpts[:,0].min(),self.TB.Kobj.kpts[:,0].max())
 #        if diagonalize:
         self.Eb,self.Ev = self.TB.solve_H()
 #        else:
@@ -861,6 +858,12 @@ class experiment:
                  indices = np.array([slice_select[1] + ii*self.cube[0][2] for ii in range(len(k))])
              for ii in range(len(self.TB.basis)):  
                  ax_img.plot(self.TB.Eband[indices,ii],k,alpha=0.4,c='w')
+         elif plot_bands and slice_select[0] == 2:
+             for ii in range(len(self.TB.basis)):
+                 if self.TB.Eband[:,ii].min() <= x[slice_select[1]] and self.TB.Eband[:,ii].max() >= x[slice_select[1]]:
+                     reshape = self.TB.Eband[:,ii].reshape(np.shape(X))
+                     ax_img.contour(X,Y,reshape,levels=[x[slice_select[1]]],colors='w',alpha=0.2)
+                
 #            
          ax_img.set_xlim(*ax_xlimit)
          ax_img.set_ylim(*ax_ylimit)
